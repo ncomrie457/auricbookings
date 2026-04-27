@@ -163,14 +163,12 @@
       cursor: not-allowed;  
     }
 
-    .btn-danger {  
-      background: #c0392b;  
-      color: #fff;  
-      font-size: 0.85rem;  
-      padding: 0.5rem 1rem;  
+    .btn-secondary {  
+      background: #eee7dd;  
+      color: #5c4a3a;  
     }  
-    .btn-danger:hover {  
-      background: #a93226;  
+    .btn-secondary:hover {  
+      background: #e0d6c9;  
     }
 
     .progress-section {  
@@ -287,35 +285,73 @@
       color: #5c4a3a;  
       font-size: 0.95rem;  
       margin-bottom: 0.35rem;  
-    }  
-    .note {  
-      background: #faf5ee;  
-      padding: 1rem;  
-      border-radius: 10px;  
-      font-size: 0.9rem;  
-      color: #7a6e63;  
-      margin: 1.5rem 0;  
     }
 
-    .dashboard-card {  
+    .email-status {  
+      margin-top: 1.25rem;  
+      padding: 0.85rem 1.25rem;  
+      border-radius: 10px;  
+      font-size: 0.9rem;  
+    }  
+    .email-sent {  
+      background: #e8f5e9;  
+      color: #2e7d32;  
+      border: 1px solid #a5d6a7;  
+    }  
+    .email-failed {  
+      background: #fef9e7;  
+      color: #7a6320;  
+      border: 1px solid #f0dca0;  
+    }
+
+    .admin-panel {  
+      display: none;  
       background: #fff;  
-      border: 1px solid #e8e0d5;  
+      border: 2px solid #b07840;  
       border-radius: 16px;  
       padding: 2rem;  
       margin-bottom: 1.5rem;  
-      box-shadow: 0 2px 12px rgba(92,74,58,0.06);  
+      box-shadow: 0 4px 20px rgba(92,74,58,0.12);  
     }  
-    .dashboard-card h2 {  
+    .admin-panel.visible {  
+      display: block;  
+    }  
+    .admin-panel h2 {  
       font-size: 1.2rem;  
       color: #5c4a3a;  
+      margin-bottom: 0.25rem;  
+    }  
+    .admin-badge {  
+      display: inline-block;  
+      background: #b07840;  
+      color: #fff;  
+      font-size: 0.7rem;  
+      font-weight: 700;  
+      padding: 0.2rem 0.6rem;  
+      border-radius: 20px;  
+      letter-spacing: 1px;  
+      text-transform: uppercase;  
       margin-bottom: 1rem;  
     }  
-    .dashboard-header {  
+    .admin-header {  
       display: flex;  
       justify-content: space-between;  
       align-items: center;  
       flex-wrap: wrap;  
       gap: 0.5rem;  
+      margin-bottom: 1rem;  
+    }  
+    .admin-actions {  
+      display: flex;  
+      gap: 0.5rem;  
+      flex-wrap: wrap;  
+    }  
+    .admin-hint {  
+      font-size: 0.8rem;  
+      color: #a89e94;  
+      margin-top: 1rem;  
+      text-align: center;  
+      font-style: italic;  
     }
 
     .submission-item {  
@@ -331,26 +367,18 @@
       gap: 0.5rem;  
     }  
     .submission-item .name { font-weight: 600; color: #3d322a; }  
-    .submission-item .time { font-size: 0.85rem; color: #7a6e63; }
+    .submission-item .time { font-size: 0.85rem; color: #7a6e63; }  
+    .submission-count {  
+      font-size: 0.9rem;  
+      color: #7a6e63;  
+      margin-bottom: 1rem;  
+    }
 
     .empty-state {  
       text-align: center;  
       padding: 2rem;  
       color: #a89e94;  
       font-style: italic;  
-    }
-
-    .email-banner {  
-      background: #fef9e7;  
-      border: 1px solid #f0dca0;  
-      border-radius: 10px;  
-      padding: 0.85rem 1.25rem;  
-      font-size: 0.9rem;  
-      color: #7a6320;  
-      margin-bottom: 1.5rem;  
-      display: flex;  
-      align-items: flex-start;  
-      gap: 0.5rem;  
     }
 
     footer {  
@@ -367,6 +395,8 @@
     @media (max-width: 600px) {  
       .card { padding: 1.5rem 1.25rem; }  
       header h1 { font-size: 1.35rem; }  
+      .admin-actions { width: 100%; }  
+      .admin-actions .btn { width: 100%; justify-content: center; }  
     }  
   </style>  
 </head>  
@@ -382,7 +412,7 @@
 
   <main id="main-content" role="main">
 
-    <!-- STEP 1 -->  
+    <!-- STEP 1: NAME -->  
     <div id="step-name" class="card">  
       <h2>Liability Waiver</h2>  
       <p class="subtitle">Before your session, please review and sign this waiver. Start by entering your full legal name.</p>  
@@ -394,7 +424,7 @@
       </div>  
     </div>
 
-    <!-- STEP 2 -->  
+    <!-- STEP 2: WAIVER -->  
     <div id="step-waiver" class="card hidden">  
       <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.5rem;">  
         <h2>Liability Waiver & Release</h2>  
@@ -434,37 +464,33 @@
       </div>  
     </div>
 
-    <!-- STEP 3 -->  
+    <!-- STEP 3: SUCCESS -->  
     <div id="step-success" class="card success-card hidden">  
       <div class="checkmark" aria-hidden="true">✦</div>  
       <h2>Waiver Signed</h2>  
       <p class="detail"><strong>Participant:</strong> <span id="success-name"></span></p>  
       <p class="detail"><strong>Signed at:</strong> <span id="success-time"></span></p>  
       <p class="detail"><strong>Clauses agreed:</strong> All 18 confirmed</p>  
-      <div class="note">  
-        <p>📧 <strong>Email not configured yet</strong></p>  
-        <p>Submissions are saved to the Dashboard below. To also receive emails, update the EmailJS config in the script section.</p>  
-      </div>  
-      <p style="color:#5c4a3a;font-size:0.95rem;">Your instructor has been notified. See you on the mat.</p>  
+      <div id="email-status"></div>  
+      <p style="color:#5c4a3a;font-size:0.95rem;margin-top:1.5rem;">Your instructor has been notified. See you on the mat. ✦</p>  
       <div style="margin-top:1.5rem;">  
         <button type="button" id="new-btn" class="btn btn-primary">New Participant →</button>  
       </div>  
     </div>
 
-    <!-- DASHBOARD -->  
-    <div class="dashboard-card">  
-      <div class="dashboard-header">  
+    <!-- ADMIN PANEL (Ctrl+Shift+A) -->  
+    <div id="admin-panel" class="admin-panel">  
+      <span class="admin-badge">Admin Only</span>  
+      <div class="admin-header">  
         <h2>Waiver Submissions</h2>  
-        <button type="button" id="clear-btn" class="btn btn-danger">Clear All</button>  
+        <div class="admin-actions">  
+          <button type="button" id="download-btn" class="btn btn-secondary">📥 Download CSV</button>  
+          <button type="button" id="close-admin-btn" class="btn btn-secondary">✕ Close</button>  
+        </div>  
       </div>  
-      <div id="submissions-list">  
-        <div class="empty-state">No submissions yet.</div>  
-      </div>  
-    </div>
-
-    <div class="email-banner" role="note">  
-      <span aria-hidden="true">📧</span>  
-      <span>Submissions are saved locally in your browser. To also receive email notifications, configure EmailJS in the script section.</span>  
+      <div id="submission-count" class="submission-count"></div>  
+      <div id="submissions-list"></div>  
+      <p class="admin-hint">Press Ctrl + Shift + A to toggle this panel</p>  
     </div>
 
   </main>
@@ -473,26 +499,40 @@
     Auric by Niara · Confidential & Secure  
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
 <script>  
 /* ==========================================  
-   ALL JAVASCRIPT - SELF CONTAINED  
+   YOUR EMAILJS CREDENTIALS (ACTIVE)  
    ========================================== */
 
-// Screen reader announcements  
+var EMAILJS_PUBLIC_KEY = 'xr1kT3l8rFhNodudq';  
+var EMAILJS_SERVICE_ID = 'service_ge79ji7';  
+var EMAILJS_TEMPLATE_ID = 'template_6qkcf8j';
+
+// Initialize EmailJS  
+if (typeof emailjs !== 'undefined') {  
+  emailjs.init(EMAILJS_PUBLIC_KEY);  
+}
+
+/* ==========================================  
+   UTILITIES  
+   ========================================== */  
 function announce(msg) {  
   var el = document.getElementById('sr-announce');  
   el.textContent = '';  
   setTimeout(function() { el.textContent = msg; }, 100);  
 }
 
-// Escape HTML for safe display  
 function escapeHTML(str) {  
   var div = document.createElement('div');  
   div.textContent = str;  
   return div.innerHTML;  
 }
 
-// Clause texts  
+/* ==========================================  
+   CLAUSES  
+   ========================================== */  
 var clauseTexts = [  
   "I understand that participation in wellness, movement, and/or energy-based sessions offered by Auric by Niara involves physical activity and inherent risks, including but not limited to muscle strain, sprains, fractures, and other injuries.",  
   "I acknowledge that I am voluntarily participating in these sessions and assume all risks of injury or harm that may result from my participation, whether foreseeable or unforeseeable.",  
@@ -514,12 +554,16 @@ var clauseTexts = [
   "I acknowledge that I have had sufficient opportunity to read this waiver, ask questions, and seek independent legal advice before signing."  
 ];
 
-// State  
+/* ==========================================  
+   STATE  
+   ========================================== */  
 var participantName = '';  
 var checkedClauses = {};  
 var checkedCount = 0;
 
-// Get elements  
+/* ==========================================  
+   DOM ELEMENTS  
+   ========================================== */  
 var stepName = document.getElementById('step-name');  
 var stepWaiver = document.getElementById('step-waiver');  
 var stepSuccess = document.getElementById('step-success');  
@@ -536,9 +580,14 @@ var sigInput = document.getElementById('sig-input');
 var sigError = document.getElementById('sig-error');  
 var submitBtn = document.getElementById('submit-btn');  
 var newBtn = document.getElementById('new-btn');  
-var clearBtn = document.getElementById('clear-btn');
+var adminPanel = document.getElementById('admin-panel');  
+var downloadBtn = document.getElementById('download-btn');  
+var closeAdminBtn = document.getElementById('close-admin-btn');  
+var emailStatusEl = document.getElementById('email-status');
 
-// STEP 1: Continue button click  
+/* ==========================================  
+   STEP 1: CONTINUE  
+   ========================================== */  
 continueBtn.addEventListener('click', function() {  
   var name = fullNameInput.value.trim();
 
@@ -556,7 +605,6 @@ continueBtn.addEventListener('click', function() {
     return;  
   }
 
-  // Success - move to step 2  
   nameError.textContent = '';  
   fullNameInput.setAttribute('aria-invalid', 'false');  
   participantName = name;
@@ -572,7 +620,6 @@ continueBtn.addEventListener('click', function() {
   announce('Waiver clauses loaded. 18 clauses to review.');  
 });
 
-// Also allow Enter key in name field  
 fullNameInput.addEventListener('keydown', function(e) {  
   if (e.key === 'Enter') {  
     e.preventDefault();  
@@ -580,7 +627,6 @@ fullNameInput.addEventListener('keydown', function(e) {
   }  
 });
 
-// Clear error on typing  
 fullNameInput.addEventListener('input', function() {  
   if (this.value.trim()) {  
     nameError.textContent = '';  
@@ -588,7 +634,9 @@ fullNameInput.addEventListener('input', function() {
   }  
 });
 
-// Build clause checkboxes  
+/* ==========================================  
+   BUILD CLAUSES  
+   ========================================== */  
 function buildClauses() {  
   clausesContainer.innerHTML = '';  
   checkedClauses = {};  
@@ -597,8 +645,7 @@ function buildClauses() {
   for (var i = 0; i < clauseTexts.length; i++) {  
     (function(index) {  
       var div = document.createElement('div');  
-      div.className = 'clause';  
-      div.id = 'clause-' + index;
+      div.className = 'clause';
 
       var cb = document.createElement('input');  
       cb.type = 'checkbox';  
@@ -627,7 +674,9 @@ function buildClauses() {
   }  
 }
 
-// Update progress bar  
+/* ==========================================  
+   UPDATE PROGRESS  
+   ========================================== */  
 function updateProgress() {  
   checkedCount = Object.keys(checkedClauses).length;  
   var total = clauseTexts.length;  
@@ -650,7 +699,9 @@ function updateProgress() {
   }  
 }
 
-// Final agreement checkbox  
+/* ==========================================  
+   FINAL AGREEMENT  
+   ========================================== */  
 finalAgree.addEventListener('change', function() {  
   if (this.checked && checkedCount === clauseTexts.length) {  
     sigInput.disabled = false;  
@@ -663,7 +714,9 @@ finalAgree.addEventListener('change', function() {
   }  
 });
 
-// Signature input  
+/* ==========================================  
+   SIGNATURE INPUT  
+   ========================================== */  
 sigInput.addEventListener('input', function() {  
   var val = this.value.trim();  
   if (val && val.length >= 2) {  
@@ -675,7 +728,9 @@ sigInput.addEventListener('input', function() {
   }  
 });
 
-// Submit waiver  
+/* ==========================================  
+   SUBMIT WAIVER  
+   ========================================== */  
 submitBtn.addEventListener('click', function() {  
   var sig = sigInput.value.trim();
 
@@ -696,11 +751,17 @@ submitBtn.addEventListener('click', function() {
   sigError.textContent = '';  
   sigInput.setAttribute('aria-invalid', 'false');
 
-  // Save submission  
   var now = new Date();  
   var timeStr = now.toLocaleString();  
-  var submission = { name: participantName, time: timeStr };
+  var submission = {  
+    name: participantName,  
+    signature: sig,  
+    time: timeStr,  
+    timestamp: now.toISOString(),  
+    clausesAgreed: 18  
+  };
 
+  // Save locally  
   var subs = [];  
   try {  
     subs = JSON.parse(localStorage.getItem('auric_submissions')) || [];  
@@ -719,10 +780,43 @@ submitBtn.addEventListener('click', function() {
   stepSuccess.scrollIntoView({ behavior: 'smooth' });  
   announce('Waiver successfully signed by ' + participantName);
 
+  // Send email to you  
+  sendEmail(submission);
+
   renderSubmissions();  
 });
 
-// New participant  
+/* ==========================================  
+   SEND EMAIL TO YOU  
+   ========================================== */  
+function sendEmail(submission) {  
+  emailStatusEl.innerHTML = '<div class="email-status email-sent">📧 Sending confirmation...</div>';
+
+  if (typeof emailjs === 'undefined') {  
+    emailStatusEl.innerHTML = '<div class="email-status email-failed">⚠️ Email service loading error. Record saved locally.</div>';  
+    return;  
+  }
+
+  var templateParams = {  
+    from_name: submission.name,  
+    signature: submission.signature,  
+    sign_time: submission.time,  
+    clauses_agreed: '18 of 18'  
+  };
+
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)  
+    .then(function() {  
+      emailStatusEl.innerHTML = '<div class="email-status email-sent">✅ Your instructor has received your waiver confirmation.</div>';  
+    })  
+    .catch(function(error) {  
+      console.log('EmailJS error:', error);  
+      emailStatusEl.innerHTML = '<div class="email-status email-failed">⚠️ Could not send email notification. Your waiver is still recorded.</div>';  
+    });  
+}
+
+/* ==========================================  
+   NEW PARTICIPANT  
+   ========================================== */  
 newBtn.addEventListener('click', function() {  
   participantName = '';  
   checkedClauses = {};  
@@ -734,7 +828,8 @@ newBtn.addEventListener('click', function() {
   finalAgree.disabled = true;  
   submitBtn.disabled = true;  
   nameError.textContent = '';  
-  sigError.textContent = '';
+  sigError.textContent = '';  
+  emailStatusEl.innerHTML = '';
 
   stepSuccess.classList.add('hidden');  
   stepWaiver.classList.add('hidden');  
@@ -744,9 +839,63 @@ newBtn.addEventListener('click', function() {
   announce('Form reset. Ready for a new participant.');  
 });
 
-// Render dashboard  
+/* ==========================================  
+   ADMIN PANEL (Ctrl + Shift + A)  
+   ========================================== */  
+document.addEventListener('keydown', function(e) {  
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {  
+    e.preventDefault();  
+    toggleAdmin();  
+  }  
+});
+
+function toggleAdmin() {  
+  if (adminPanel.classList.contains('visible')) {  
+    adminPanel.classList.remove('visible');  
+  } else {  
+    adminPanel.classList.add('visible');  
+    renderSubmissions();  
+    adminPanel.scrollIntoView({ behavior: 'smooth' });  
+  }  
+}
+
+closeAdminBtn.addEventListener('click', function() {  
+  adminPanel.classList.remove('visible');  
+});
+
+/* ==========================================  
+   RENDER SUBMISSIONS  
+   ========================================== */  
 function renderSubmissions() {  
   var list = document.getElementById('submissions-list');  
+  var countEl = document.getElementById('submission-count');  
+  var subs = [];  
+  try {  
+    subs = JSON.parse(localStorage.getItem('auric_submissions')) || [];  
+  } catch(e) {  
+    subs = [];  
+  }
+
+  countEl.textContent = subs.length + ' total submission' + (subs.length !== 1 ? 's' : '');
+
+  if (subs.length === 0) {  
+    list.innerHTML = '<div class="empty-state">No submissions yet.</div>';  
+    return;  
+  }
+
+  list.innerHTML = '';  
+  for (var i = subs.length - 1; i >= 0; i--) {  
+    var item = document.createElement('div');  
+    item.className = 'submission-item';  
+    item.innerHTML = '<span class="name">' + escapeHTML(subs[i].name) + '</span><span class="time">' + escapeHTML(subs[i].time) + '</span>';  
+    list.appendChild(item);  
+  }  
+}
+
+/* ==========================================  
+   DOWNLOAD CSV  
+   ========================================== */  
+downloadBtn.addEventListener('click', function() {  
   var subs = [];  
   try {  
     subs = JSON.parse(localStorage.getItem('auric_submissions')) || [];  
@@ -755,30 +904,31 @@ function renderSubmissions() {
   }
 
   if (subs.length === 0) {  
-    list.innerHTML = '<div class="empty-state">No submissions yet.</div>';  
+    alert('No submissions to download.');  
     return;  
   }
 
-  list.innerHTML = '';  
+  var csv = 'Full Name,Digital Signature,Date & Time,ISO Timestamp,Clauses Agreed\n';
+
   for (var i = 0; i < subs.length; i++) {  
-    var item = document.createElement('div');  
-    item.className = 'submission-item';  
-    item.innerHTML = '<span class="name">' + escapeHTML(subs[i].name) + '</span><span class="time">' + escapeHTML(subs[i].time) + '</span>';  
-    list.appendChild(item);  
-  }  
-}
+    var row = '"' + (subs[i].name || '').replace(/"/g, '""') + '",';  
+    row += '"' + (subs[i].signature || subs[i].name || '').replace(/"/g, '""') + '",';  
+    row += '"' + (subs[i].time || '').replace(/"/g, '""') + '",';  
+    row += '"' + (subs[i].timestamp || '').replace(/"/g, '""') + '",';  
+    row += '"' + (subs[i].clausesAgreed || 18) + '"';  
+    csv += row + '\n';  
+  }
 
-// Clear all  
-clearBtn.addEventListener('click', function() {  
-  if (confirm('Are you sure you want to clear all submissions? This cannot be undone.')) {  
-    localStorage.removeItem('auric_submissions');  
-    renderSubmissions();  
-    announce('All submissions cleared.');  
-  }  
+  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });  
+  var url = URL.createObjectURL(blob);  
+  var link = document.createElement('a');  
+  link.href = url;  
+  link.download = 'auric-waivers-' + new Date().toISOString().slice(0, 10) + '.csv';  
+  document.body.appendChild(link);  
+  link.click();  
+  document.body.removeChild(link);  
+  URL.revokeObjectURL(url);  
 });
-
-// Load dashboard on start  
-renderSubmissions();
 
 </script>
 
