@@ -57,31 +57,19 @@
     }
 
     /* ==========================================  
-       HERO SECTION  
+       HERO SECTION — NO IMAGE, JUST GRADIENT  
        ========================================== */  
     .hero {  
       position: relative;  
       width: 100%;  
-      min-height: 92vh;  
+      min-height: 60vh;  
       display: flex;  
       flex-direction: column;  
       align-items: center;  
       justify-content: center;  
       text-align: center;  
+      background: linear-gradient(180deg, #fdfbf7 0%, #f5f0e8 50%, #ebe4d8 100%);  
       overflow: hidden;  
-    }
-
-    .hero-bg {  
-      position: absolute;  
-      inset: 0;  
-      z-index: 0;  
-    }
-
-    .hero-bg img {  
-      width: 100%;  
-      height: 100%;  
-      object-fit: cover;  
-      display: block;  
     }
 
     /* Corner brackets */  
@@ -101,7 +89,7 @@
       height: 36px;  
       border-color: #5A3A1A;  
       border-style: solid;  
-      opacity: 0.45;  
+      opacity: 0.35;  
     }  
     .hero-frame::before {  
       top: 0; left: 0;  
@@ -133,7 +121,7 @@
       letter-spacing: 0.35em;  
       text-transform: uppercase;  
       color: #5A3A1A;  
-      margin-bottom: 2.5em;  
+      margin-bottom: 2em;  
     }
 
     .hero-welcome {  
@@ -171,37 +159,6 @@
       letter-spacing: 0.35em;  
       text-transform: uppercase;  
       color: #5A3A1A;  
-    }
-
-    /* Scroll indicator */  
-    .scroll-hint {  
-      position: absolute;  
-      bottom: 24px;  
-      left: 50%;  
-      transform: translateX(-50%);  
-      z-index: 2;  
-      display: flex;  
-      flex-direction: column;  
-      align-items: center;  
-      gap: 6px;  
-      color: #5A3A1A;  
-      opacity: 0.6;  
-      font-family: 'Jost', sans-serif;  
-      font-size: 0.75rem;  
-      letter-spacing: 0.15em;  
-      text-transform: uppercase;  
-      animation: bounce 2s infinite;  
-    }  
-    .scroll-hint svg {  
-      width: 20px;  
-      height: 20px;  
-      fill: none;  
-      stroke: #5A3A1A;  
-      stroke-width: 2;  
-    }  
-    @keyframes bounce {  
-      0%, 100% { transform: translateX(-50%) translateY(0); }  
-      50% { transform: translateX(-50%) translateY(6px); }  
     }
 
     /* ==========================================  
@@ -461,7 +418,7 @@
 
     @media (max-width: 600px) {  
       .card { padding: 1.5rem 1.25rem; }  
-      .hero { min-height: 75vh; }  
+      .hero { min-height: 50vh; }  
       .hero-frame { inset: 10px; }  
       .hero-frame::before,  
       .hero-frame::after,  
@@ -486,12 +443,9 @@
   <div id="sr-announce" aria-live="polite" aria-atomic="true" class="sr-only" role="status"></div>
 
   <!-- ==========================================  
-       HERO  
+       HERO — NO IMAGE, JUST TEXT + GRADIENT  
        ========================================== -->  
   <section class="hero" role="banner">  
-    <div class="hero-bg" aria-hidden="true">  
-      <img src="images/studio-hero.png" alt="" aria-hidden="true">  
-    </div>  
     <div class="hero-frame" aria-hidden="true"><span></span></div>  
     <div class="hero-content">  
       <div class="hero-overline">PILATES · WELLNESS · FLOW</div>  
@@ -499,10 +453,6 @@
       <div class="hero-title">Auric Movement</div>  
       <div class="hero-sub">Get euphoric with us</div>  
       <div class="hero-tagline">MOVE · FEEL · GLOW</div>  
-    </div>  
-    <div class="scroll-hint" aria-hidden="true">  
-      <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>  
-      scroll  
     </div>  
   </section>
 
@@ -601,9 +551,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
 <script>  
-/* ==========================================  
-   EMAILJS CREDENTIALS  
-   ========================================== */  
 var EMAILJS_PUBLIC_KEY = 'xr1kT3l8rFhNodudq';  
 var EMAILJS_SERVICE_ID = 'service_ge79ji7';  
 var EMAILJS_TEMPLATE_ID = 'template_6qkcf8j';
@@ -612,9 +559,6 @@ if (typeof emailjs !== 'undefined') {
   emailjs.init(EMAILJS_PUBLIC_KEY);  
 }
 
-/* ==========================================  
-   UTILITIES  
-   ========================================== */  
 function announce(msg) {  
   var el = document.getElementById('sr-announce');  
   el.textContent = '';  
@@ -627,9 +571,6 @@ function escapeHTML(str) {
   return div.innerHTML;  
 }
 
-/* ==========================================  
-   CLAUSES  
-   ========================================== */  
 var clauseTexts = [  
   "I understand that participation in wellness, movement, and/or energy-based sessions offered by Auric Movement involves physical activity and inherent risks, including but not limited to muscle strain, sprains, fractures, and other injuries.",  
   "I acknowledge that I am voluntarily participating in these sessions and assume all risks of injury or harm that may result from my participation, whether foreseeable or unforeseeable.",  
@@ -651,16 +592,10 @@ var clauseTexts = [
   "I acknowledge that I have had sufficient opportunity to read this waiver, ask questions, and seek independent legal advice before signing."  
 ];
 
-/* ==========================================  
-   STATE  
-   ========================================== */  
 var participantName = '';  
 var checkedClauses = {};  
 var checkedCount = 0;
 
-/* ==========================================  
-   DOM ELEMENTS  
-   ========================================== */  
 var stepName = document.getElementById('step-name');  
 var stepWaiver = document.getElementById('step-waiver');  
 var stepSuccess = document.getElementById('step-success');  
@@ -682,35 +617,26 @@ var downloadBtn = document.getElementById('download-btn');
 var closeAdminBtn = document.getElementById('close-admin-btn');  
 var emailStatusEl = document.getElementById('email-status');
 
-/* ==========================================  
-   STEP 1: CONTINUE  
-   ========================================== */  
 continueBtn.addEventListener('click', function() {  
-  var name = fullNameInput.value.trim();
-
+  var name = fullNameInput.value.trim();  
   if (!name) {  
     nameError.textContent = 'Please enter your full legal name.';  
     fullNameInput.setAttribute('aria-invalid', 'true');  
     fullNameInput.focus();  
     return;  
-  }
-
+  }  
   if (name.length < 2) {  
     nameError.textContent = 'Name must be at least 2 characters.';  
     fullNameInput.setAttribute('aria-invalid', 'true');  
     fullNameInput.focus();  
     return;  
-  }
-
+  }  
   nameError.textContent = '';  
   fullNameInput.setAttribute('aria-invalid', 'false');  
-  participantName = name;
-
+  participantName = name;  
   document.getElementById('display-name-top').textContent = name;  
-  document.getElementById('display-name-statement').textContent = name;
-
-  buildClauses();
-
+  document.getElementById('display-name-statement').textContent = name;  
+  buildClauses();  
   stepName.classList.add('hidden');  
   stepWaiver.classList.remove('hidden');  
   stepWaiver.scrollIntoView({ behavior: 'smooth' });  
@@ -718,52 +644,33 @@ continueBtn.addEventListener('click', function() {
 });
 
 fullNameInput.addEventListener('keydown', function(e) {  
-  if (e.key === 'Enter') {  
-    e.preventDefault();  
-    continueBtn.click();  
-  }  
+  if (e.key === 'Enter') { e.preventDefault(); continueBtn.click(); }  
 });
 
 fullNameInput.addEventListener('input', function() {  
-  if (this.value.trim()) {  
-    nameError.textContent = '';  
-    this.setAttribute('aria-invalid', 'false');  
-  }  
+  if (this.value.trim()) { nameError.textContent = ''; this.setAttribute('aria-invalid', 'false'); }  
 });
 
-/* ==========================================  
-   BUILD CLAUSES  
-   ========================================== */  
 function buildClauses() {  
   clausesContainer.innerHTML = '';  
   checkedClauses = {};  
-  checkedCount = 0;
-
+  checkedCount = 0;  
   for (var i = 0; i < clauseTexts.length; i++) {  
     (function(index) {  
       var div = document.createElement('div');  
-      div.className = 'clause';
-
+      div.className = 'clause';  
       var cb = document.createElement('input');  
       cb.type = 'checkbox';  
       cb.id = 'clause-cb-' + index;  
-      cb.setAttribute('aria-label', 'Agree to clause ' + (index + 1) + ' of 18');
-
+      cb.setAttribute('aria-label', 'Agree to clause ' + (index + 1) + ' of 18');  
       var span = document.createElement('span');  
       span.className = 'clause-text';  
-      span.innerHTML = '<span class="clause-num">' + (index + 1) + '.</span> ' + clauseTexts[index];
-
+      span.innerHTML = '<span class="clause-num">' + (index + 1) + '.</span> ' + clauseTexts[index];  
       cb.addEventListener('change', function() {  
-        if (this.checked) {  
-          checkedClauses[index] = true;  
-          div.classList.add('checked');  
-        } else {  
-          delete checkedClauses[index];  
-          div.classList.remove('checked');  
-        }  
+        if (this.checked) { checkedClauses[index] = true; div.classList.add('checked'); }  
+        else { delete checkedClauses[index]; div.classList.remove('checked'); }  
         updateProgress();  
-      });
-
+      });  
       div.appendChild(cb);  
       div.appendChild(span);  
       clausesContainer.appendChild(div);  
@@ -771,19 +678,14 @@ function buildClauses() {
   }  
 }
 
-/* ==========================================  
-   UPDATE PROGRESS  
-   ========================================== */  
 function updateProgress() {  
   checkedCount = Object.keys(checkedClauses).length;  
   var total = clauseTexts.length;  
-  var pct = (checkedCount / total) * 100;
-
+  var pct = (checkedCount / total) * 100;  
   if (confirmedCountEl) confirmedCountEl.textContent = checkedCount;  
   if (remainingTextEl) remainingTextEl.textContent = (total - checkedCount) + ' clauses remaining';  
   progressFillEl.style.width = pct + '%';  
-  progressTrack.setAttribute('aria-valuenow', checkedCount);
-
+  progressTrack.setAttribute('aria-valuenow', checkedCount);  
   if (checkedCount === total) {  
     finalAgree.disabled = false;  
     announce('All 18 clauses confirmed. Please agree to the final statement and sign.');  
@@ -796,9 +698,6 @@ function updateProgress() {
   }  
 }
 
-/* ==========================================  
-   FINAL AGREEMENT  
-   ========================================== */  
 finalAgree.addEventListener('change', function() {  
   if (this.checked && checkedCount === clauseTexts.length) {  
     sigInput.disabled = false;  
@@ -811,9 +710,6 @@ finalAgree.addEventListener('change', function() {
   }  
 });
 
-/* ==========================================  
-   SIGNATURE INPUT  
-   ========================================== */  
 sigInput.addEventListener('input', function() {  
   var val = this.value.trim();  
   if (val && val.length >= 2) {  
@@ -825,91 +721,51 @@ sigInput.addEventListener('input', function() {
   }  
 });
 
-/* ==========================================  
-   SUBMIT WAIVER  
-   ========================================== */  
 submitBtn.addEventListener('click', function() {  
-  var sig = sigInput.value.trim();
-
+  var sig = sigInput.value.trim();  
   if (!sig || sig.length < 2) {  
     sigError.textContent = 'Please type your full legal name to sign.';  
     sigInput.setAttribute('aria-invalid', 'true');  
     sigInput.focus();  
     return;  
-  }
-
+  }  
   if (sig.toLowerCase() !== participantName.toLowerCase()) {  
     sigError.textContent = 'Signature must match: "' + participantName + '"';  
     sigInput.setAttribute('aria-invalid', 'true');  
     sigInput.focus();  
     return;  
-  }
-
+  }  
   sigError.textContent = '';  
-  sigInput.setAttribute('aria-invalid', 'false');
-
+  sigInput.setAttribute('aria-invalid', 'false');  
   var now = new Date();  
   var timeStr = now.toLocaleString();  
-  var submission = {  
-    name: participantName,  
-    signature: sig,  
-    time: timeStr,  
-    timestamp: now.toISOString(),  
-    clausesAgreed: 18  
-  };
-
+  var submission = { name: participantName, signature: sig, time: timeStr, timestamp: now.toISOString(), clausesAgreed: 18 };  
   var subs = [];  
-  try {  
-    subs = JSON.parse(localStorage.getItem('auric_submissions')) || [];  
-  } catch(e) {  
-    subs = [];  
-  }  
+  try { subs = JSON.parse(localStorage.getItem('auric_submissions')) || []; } catch(e) { subs = []; }  
   subs.push(submission);  
-  localStorage.setItem('auric_submissions', JSON.stringify(subs));
-
+  localStorage.setItem('auric_submissions', JSON.stringify(subs));  
   document.getElementById('success-name').textContent = participantName;  
-  document.getElementById('success-time').textContent = timeStr;
-
+  document.getElementById('success-time').textContent = timeStr;  
   stepWaiver.classList.add('hidden');  
   stepSuccess.classList.remove('hidden');  
   stepSuccess.scrollIntoView({ behavior: 'smooth' });  
-  announce('Waiver successfully signed by ' + participantName);
-
+  announce('Waiver successfully signed by ' + participantName);  
   sendEmail(submission);  
   renderSubmissions();  
 });
 
-/* ==========================================  
-   SEND EMAIL  
-   ========================================== */  
 function sendEmail(submission) {  
-  emailStatusEl.innerHTML = '<div class="email-status email-sent">📧 Sending confirmation...</div>';
-
+  emailStatusEl.innerHTML = '<div class="email-status email-sent">📧 Sending confirmation...</div>';  
   if (typeof emailjs === 'undefined') {  
     emailStatusEl.innerHTML = '<div class="email-status email-failed">⚠️ Email service loading error. Record saved locally.</div>';  
     return;  
-  }
-
-  var templateParams = {  
-    from_name: submission.name,  
-    signature: submission.signature,  
-    sign_time: submission.time,  
-    clauses_agreed: '18 of 18'  
-  };
-
+  }  
+  var templateParams = { from_name: submission.name, signature: submission.signature, sign_time: submission.time, clauses_agreed: '18 of 18' };  
   emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)  
-    .then(function() {  
-      emailStatusEl.innerHTML = '<div class="email-status email-sent">✅ Your instructor has received your waiver confirmation.</div>';  
-    })  
-    .catch(function(error) {  
-      console.log('EmailJS error:', error);  
-      emailStatusEl.innerHTML = '<div class="email-status email-failed">⚠️ Could not send email notification. Your waiver is still recorded.</div>';  
-    });  
+    .then(function() { emailStatusEl.innerHTML = '<div class="email-status email-sent">✅ Your instructor has received your waiver confirmation.</div>'; })  
+    .catch(function(error) { console.log('EmailJS error:', error); emailStatusEl.innerHTML = '<div class="email-status email-failed">⚠️ Could not send email notification. Your waiver is still recorded.</div>'; });  
 }
 
-/* ==========================================  
-   NEW PARTICIPANT  
-   ========================================== */  
 newBtn.addEventListener('click', function() {  
   participantName = '';  
   checkedClauses = {};  
@@ -922,8 +778,7 @@ newBtn.addEventListener('click', function() {
   submitBtn.disabled = true;  
   nameError.textContent = '';  
   sigError.textContent = '';  
-  emailStatusEl.innerHTML = '';
-
+  emailStatusEl.innerHTML = '';  
   stepSuccess.classList.add('hidden');  
   stepWaiver.classList.add('hidden');  
   stepName.classList.remove('hidden');  
@@ -932,50 +787,24 @@ newBtn.addEventListener('click', function() {
   announce('Form reset. Ready for a new participant.');  
 });
 
-/* ==========================================  
-   ADMIN PANEL (Ctrl + Shift + A)  
-   ========================================== */  
 document.addEventListener('keydown', function(e) {  
-  if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {  
-    e.preventDefault();  
-    toggleAdmin();  
-  }  
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) { e.preventDefault(); toggleAdmin(); }  
 });
 
 function toggleAdmin() {  
-  if (adminPanel.classList.contains('visible')) {  
-    adminPanel.classList.remove('visible');  
-  } else {  
-    adminPanel.classList.add('visible');  
-    renderSubmissions();  
-    adminPanel.scrollIntoView({ behavior: 'smooth' });  
-  }  
+  if (adminPanel.classList.contains('visible')) { adminPanel.classList.remove('visible'); }  
+  else { adminPanel.classList.add('visible'); renderSubmissions(); adminPanel.scrollIntoView({ behavior: 'smooth' }); }  
 }
 
-closeAdminBtn.addEventListener('click', function() {  
-  adminPanel.classList.remove('visible');  
-});
+closeAdminBtn.addEventListener('click', function() { adminPanel.classList.remove('visible'); });
 
-/* ==========================================  
-   RENDER SUBMISSIONS  
-   ========================================== */  
 function renderSubmissions() {  
   var list = document.getElementById('submissions-list');  
   var countEl = document.getElementById('submission-count');  
   var subs = [];  
-  try {  
-    subs = JSON.parse(localStorage.getItem('auric_submissions')) || [];  
-  } catch(e) {  
-    subs = [];  
-  }
-
-  countEl.textContent = subs.length + ' total submission' + (subs.length !== 1 ? 's' : '');
-
-  if (subs.length === 0) {  
-    list.innerHTML = '<div class="empty-state">No submissions yet.</div>';  
-    return;  
-  }
-
+  try { subs = JSON.parse(localStorage.getItem('auric_submissions')) || []; } catch(e) { subs = []; }  
+  countEl.textContent = subs.length + ' total submission' + (subs.length !== 1 ? 's' : '');  
+  if (subs.length === 0) { list.innerHTML = '<div class="empty-state">No submissions yet.</div>'; return; }  
   list.innerHTML = '';  
   for (var i = subs.length - 1; i >= 0; i--) {  
     var item = document.createElement('div');  
@@ -985,24 +814,11 @@ function renderSubmissions() {
   }  
 }
 
-/* ==========================================  
-   DOWNLOAD CSV  
-   ========================================== */  
 downloadBtn.addEventListener('click', function() {  
   var subs = [];  
-  try {  
-    subs = JSON.parse(localStorage.getItem('auric_submissions')) || [];  
-  } catch(e) {  
-    subs = [];  
-  }
-
-  if (subs.length === 0) {  
-    alert('No submissions to download.');  
-    return;  
-  }
-
-  var csv = 'Full Name,Digital Signature,Date & Time,ISO Timestamp,Clauses Agreed\n';
-
+  try { subs = JSON.parse(localStorage.getItem('auric_submissions')) || []; } catch(e) { subs = []; }  
+  if (subs.length === 0) { alert('No submissions to download.'); return; }  
+  var csv = 'Full Name,Digital Signature,Date & Time,ISO Timestamp,Clauses Agreed\n';  
   for (var i = 0; i < subs.length; i++) {  
     var row = '"' + (subs[i].name || '').replace(/"/g, '""') + '",';  
     row += '"' + (subs[i].signature || subs[i].name || '').replace(/"/g, '""') + '",';  
@@ -1010,8 +826,7 @@ downloadBtn.addEventListener('click', function() {
     row += '"' + (subs[i].timestamp || '').replace(/"/g, '""') + '",';  
     row += '"' + (subs[i].clausesAgreed || 18) + '"';  
     csv += row + '\n';  
-  }
-
+  }  
   var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });  
   var url = URL.createObjectURL(blob);  
   var link = document.createElement('a');  
