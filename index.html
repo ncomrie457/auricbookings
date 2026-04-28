@@ -3,7 +3,8 @@
 <head>  
   <meta charset="UTF-8">  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-  <title>Liability Waiver - Auric by Niara</title>  
+  <title>Liability Waiver - Auric Movement</title>  
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">  
   <style>  
     *, *::before, *::after {  
       box-sizing: border-box;  
@@ -12,12 +13,13 @@
     }
 
     body {  
-      font-family: 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif;  
-      background: linear-gradient(135deg, #fdfbf7 0%, #f5f0e8 50%, #fdfbf7 100%);  
+      font-family: 'Jost', 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif;  
+      background: #f5f0e8;  
       color: #2c2420;  
       min-height: 100vh;  
       line-height: 1.6;  
       font-size: 1rem;  
+      margin: 0;  
     }
 
     .skip-link {  
@@ -28,7 +30,7 @@
       color: #fff;  
       padding: 0.75rem 1.25rem;  
       border-radius: 0 0 8px 8px;  
-      z-index: 1000;  
+      z-index: 10000;  
       font-size: 1rem;  
       text-decoration: none;  
     }  
@@ -54,29 +56,161 @@
       border: 0;  
     }
 
-    header {  
-      background: linear-gradient(135deg, #5c4a3a 0%, #7a6350 100%);  
-      color: #fdfbf7;  
-      padding: 1.5rem 2rem;  
+    /* ==========================================  
+       HERO SECTION  
+       ========================================== */  
+    .hero {  
+      position: relative;  
+      width: 100%;  
+      min-height: 92vh;  
+      display: flex;  
+      flex-direction: column;  
+      align-items: center;  
+      justify-content: center;  
       text-align: center;  
-    }  
-    header .brand {  
-      font-size: 0.85rem;  
-      letter-spacing: 3px;  
-      text-transform: uppercase;  
-      opacity: 0.85;  
-      margin-bottom: 0.25rem;  
-    }  
-    header h1 {  
-      font-size: 1.75rem;  
-      font-weight: 300;  
-      letter-spacing: 1px;  
+      overflow: hidden;  
     }
 
+    .hero-bg {  
+      position: absolute;  
+      inset: 0;  
+      z-index: 0;  
+    }
+
+    .hero-bg img {  
+      width: 100%;  
+      height: 100%;  
+      object-fit: cover;  
+      display: block;  
+    }
+
+    /* Corner brackets */  
+    .hero-frame {  
+      position: absolute;  
+      inset: 18px;  
+      z-index: 1;  
+      pointer-events: none;  
+    }  
+    .hero-frame::before,  
+    .hero-frame::after,  
+    .hero-frame span::before,  
+    .hero-frame span::after {  
+      content: '';  
+      position: absolute;  
+      width: 36px;  
+      height: 36px;  
+      border-color: #5A3A1A;  
+      border-style: solid;  
+      opacity: 0.45;  
+    }  
+    .hero-frame::before {  
+      top: 0; left: 0;  
+      border-width: 2px 0 0 2px;  
+    }  
+    .hero-frame::after {  
+      top: 0; right: 0;  
+      border-width: 2px 2px 0 0;  
+    }  
+    .hero-frame span::before {  
+      bottom: 0; left: 0;  
+      border-width: 0 0 2px 2px;  
+    }  
+    .hero-frame span::after {  
+      bottom: 0; right: 0;  
+      border-width: 0 2px 2px 0;  
+    }
+
+    .hero-content {  
+      position: relative;  
+      z-index: 2;  
+      padding: clamp(20px, 5vw, 48px);  
+    }
+
+    .hero-overline {  
+      font-family: 'Jost', sans-serif;  
+      font-size: clamp(11px, 1.6vw, 15px);  
+      font-weight: 700;  
+      letter-spacing: 0.35em;  
+      text-transform: uppercase;  
+      color: #5A3A1A;  
+      margin-bottom: 2.5em;  
+    }
+
+    .hero-welcome {  
+      font-family: 'Playfair Display', Georgia, serif;  
+      font-style: italic;  
+      font-weight: 700;  
+      font-size: clamp(20px, 3.5vw, 36px);  
+      color: #5A3A1A;  
+      margin-bottom: 0.1em;  
+    }
+
+    .hero-title {  
+      font-family: 'Playfair Display', Georgia, serif;  
+      font-style: italic;  
+      font-weight: 700;  
+      font-size: clamp(42px, 8vw, 88px);  
+      color: #5A3A1A;  
+      line-height: 1.05;  
+      margin-bottom: 0.05em;  
+    }
+
+    .hero-sub {  
+      font-family: 'Playfair Display', Georgia, serif;  
+      font-style: italic;  
+      font-weight: 700;  
+      font-size: clamp(24px, 4.5vw, 52px);  
+      color: #5A3A1A;  
+      margin-bottom: 0.6em;  
+    }
+
+    .hero-tagline {  
+      font-family: 'Jost', sans-serif;  
+      font-size: clamp(10px, 1.4vw, 14px);  
+      font-weight: 700;  
+      letter-spacing: 0.35em;  
+      text-transform: uppercase;  
+      color: #5A3A1A;  
+    }
+
+    /* Scroll indicator */  
+    .scroll-hint {  
+      position: absolute;  
+      bottom: 24px;  
+      left: 50%;  
+      transform: translateX(-50%);  
+      z-index: 2;  
+      display: flex;  
+      flex-direction: column;  
+      align-items: center;  
+      gap: 6px;  
+      color: #5A3A1A;  
+      opacity: 0.6;  
+      font-family: 'Jost', sans-serif;  
+      font-size: 0.75rem;  
+      letter-spacing: 0.15em;  
+      text-transform: uppercase;  
+      animation: bounce 2s infinite;  
+    }  
+    .scroll-hint svg {  
+      width: 20px;  
+      height: 20px;  
+      fill: none;  
+      stroke: #5A3A1A;  
+      stroke-width: 2;  
+    }  
+    @keyframes bounce {  
+      0%, 100% { transform: translateX(-50%) translateY(0); }  
+      50% { transform: translateX(-50%) translateY(6px); }  
+    }
+
+    /* ==========================================  
+       MAIN CONTENT  
+       ========================================== */  
     main {  
       max-width: 720px;  
-      margin: 2rem auto;  
-      padding: 0 1.25rem 3rem;  
+      margin: 0 auto;  
+      padding: 2rem 1.25rem 3rem;  
     }
 
     .card {  
@@ -89,10 +223,11 @@
     }
 
     .card h2 {  
+      font-family: 'Playfair Display', Georgia, serif;  
       font-size: 1.35rem;  
-      color: #5c4a3a;  
+      color: #5A3A1A;  
       margin-bottom: 0.5rem;  
-      font-weight: 600;  
+      font-weight: 700;  
     }
 
     .subtitle {  
@@ -121,6 +256,7 @@
       border: 2px solid #d5ccc1;  
       border-radius: 10px;  
       font-size: 1rem;  
+      font-family: 'Jost', sans-serif;  
       color: #2c2420;  
       background: #fdfbf7;  
     }  
@@ -145,6 +281,7 @@
       border: none;  
       border-radius: 10px;  
       font-size: 1rem;  
+      font-family: 'Jost', sans-serif;  
       font-weight: 600;  
       cursor: pointer;  
       text-decoration: none;  
@@ -171,9 +308,7 @@
       background: #e0d6c9;  
     }
 
-    .progress-section {  
-      margin-bottom: 1.5rem;  
-    }  
+    .progress-section { margin-bottom: 1.5rem; }  
     .progress-label {  
       display: flex;  
       justify-content: space-between;  
@@ -268,41 +403,14 @@
       cursor: pointer;  
     }
 
-    .success-card {  
-      text-align: center;  
-      padding: 3rem 2rem;  
-    }  
-    .checkmark {  
-      font-size: 3.5rem;  
-      margin-bottom: 1rem;  
-    }  
-    .success-card h2 {  
-      text-align: center;  
-      color: #2e7d32;  
-      margin-bottom: 0.75rem;  
-    }  
-    .detail {  
-      color: #5c4a3a;  
-      font-size: 0.95rem;  
-      margin-bottom: 0.35rem;  
-    }
+    .success-card { text-align: center; padding: 3rem 2rem; }  
+    .checkmark { font-size: 3.5rem; margin-bottom: 1rem; }  
+    .success-card h2 { text-align: center; color: #2e7d32; margin-bottom: 0.75rem; }  
+    .detail { color: #5c4a3a; font-size: 0.95rem; margin-bottom: 0.35rem; }
 
-    .email-status {  
-      margin-top: 1.25rem;  
-      padding: 0.85rem 1.25rem;  
-      border-radius: 10px;  
-      font-size: 0.9rem;  
-    }  
-    .email-sent {  
-      background: #e8f5e9;  
-      color: #2e7d32;  
-      border: 1px solid #a5d6a7;  
-    }  
-    .email-failed {  
-      background: #fef9e7;  
-      color: #7a6320;  
-      border: 1px solid #f0dca0;  
-    }
+    .email-status { margin-top: 1.25rem; padding: 0.85rem 1.25rem; border-radius: 10px; font-size: 0.9rem; }  
+    .email-sent { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }  
+    .email-failed { background: #fef9e7; color: #7a6320; border: 1px solid #f0dca0; }
 
     .admin-panel {  
       display: none;  
@@ -313,73 +421,31 @@
       margin-bottom: 1.5rem;  
       box-shadow: 0 4px 20px rgba(92,74,58,0.12);  
     }  
-    .admin-panel.visible {  
-      display: block;  
-    }  
-    .admin-panel h2 {  
-      font-size: 1.2rem;  
-      color: #5c4a3a;  
-      margin-bottom: 0.25rem;  
-    }  
+    .admin-panel.visible { display: block; }  
+    .admin-panel h2 { font-size: 1.2rem; color: #5c4a3a; margin-bottom: 0.25rem; }  
     .admin-badge {  
       display: inline-block;  
-      background: #b07840;  
-      color: #fff;  
-      font-size: 0.7rem;  
-      font-weight: 700;  
-      padding: 0.2rem 0.6rem;  
-      border-radius: 20px;  
-      letter-spacing: 1px;  
-      text-transform: uppercase;  
-      margin-bottom: 1rem;  
+      background: #b07840; color: #fff; font-size: 0.7rem; font-weight: 700;  
+      padding: 0.2rem 0.6rem; border-radius: 20px; letter-spacing: 1px;  
+      text-transform: uppercase; margin-bottom: 1rem;  
     }  
     .admin-header {  
-      display: flex;  
-      justify-content: space-between;  
-      align-items: center;  
-      flex-wrap: wrap;  
-      gap: 0.5rem;  
-      margin-bottom: 1rem;  
+      display: flex; justify-content: space-between; align-items: center;  
+      flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;  
     }  
-    .admin-actions {  
-      display: flex;  
-      gap: 0.5rem;  
-      flex-wrap: wrap;  
-    }  
-    .admin-hint {  
-      font-size: 0.8rem;  
-      color: #a89e94;  
-      margin-top: 1rem;  
-      text-align: center;  
-      font-style: italic;  
-    }
+    .admin-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }  
+    .admin-hint { font-size: 0.8rem; color: #a89e94; margin-top: 1rem; text-align: center; font-style: italic; }
 
     .submission-item {  
-      display: flex;  
-      justify-content: space-between;  
-      align-items: center;  
-      padding: 0.85rem 1rem;  
-      background: #fdfbf7;  
-      border: 1px solid #e8e0d5;  
-      border-radius: 10px;  
-      margin-bottom: 0.5rem;  
-      flex-wrap: wrap;  
-      gap: 0.5rem;  
+      display: flex; justify-content: space-between; align-items: center;  
+      padding: 0.85rem 1rem; background: #fdfbf7; border: 1px solid #e8e0d5;  
+      border-radius: 10px; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;  
     }  
     .submission-item .name { font-weight: 600; color: #3d322a; }  
     .submission-item .time { font-size: 0.85rem; color: #7a6e63; }  
-    .submission-count {  
-      font-size: 0.9rem;  
-      color: #7a6e63;  
-      margin-bottom: 1rem;  
-    }
+    .submission-count { font-size: 0.9rem; color: #7a6e63; margin-bottom: 1rem; }
 
-    .empty-state {  
-      text-align: center;  
-      padding: 2rem;  
-      color: #a89e94;  
-      font-style: italic;  
-    }
+    .empty-state { text-align: center; padding: 2rem; color: #a89e94; font-style: italic; }
 
     footer {  
       text-align: center;  
@@ -388,15 +454,29 @@
       color: #a89e94;  
       border-top: 1px solid #e8e0d5;  
       margin-top: 2rem;  
+      letter-spacing: 1px;  
     }
 
     .hidden { display: none; }
 
     @media (max-width: 600px) {  
       .card { padding: 1.5rem 1.25rem; }  
-      header h1 { font-size: 1.35rem; }  
+      .hero { min-height: 75vh; }  
+      .hero-frame { inset: 10px; }  
+      .hero-frame::before,  
+      .hero-frame::after,  
+      .hero-frame span::before,  
+      .hero-frame span::after { width: 24px; height: 24px; }  
       .admin-actions { width: 100%; }  
       .admin-actions .btn { width: 100%; justify-content: center; }  
+    }
+
+    @media (prefers-reduced-motion: reduce) {  
+      *, *::before, *::after {  
+        animation-duration: .01ms !important;  
+        transition-duration: .01ms !important;  
+        scroll-behavior: auto !important;  
+      }  
     }  
   </style>  
 </head>  
@@ -405,11 +485,30 @@
   <a href="#main-content" class="skip-link">Skip to main content</a>  
   <div id="sr-announce" aria-live="polite" aria-atomic="true" class="sr-only" role="status"></div>
 
-  <header role="banner">  
-    <div class="brand">AURIC</div>  
-    <h1>by Niara</h1>  
-  </header>
+  <!-- ==========================================  
+       HERO  
+       ========================================== -->  
+  <section class="hero" role="banner">  
+    <div class="hero-bg" aria-hidden="true">  
+      <img src="images/studio-hero.png" alt="" aria-hidden="true">  
+    </div>  
+    <div class="hero-frame" aria-hidden="true"><span></span></div>  
+    <div class="hero-content">  
+      <div class="hero-overline">PILATES · WELLNESS · FLOW</div>  
+      <div class="hero-welcome">Welcome to</div>  
+      <div class="hero-title">Auric Movement</div>  
+      <div class="hero-sub">Get euphoric with us</div>  
+      <div class="hero-tagline">MOVE · FEEL · GLOW</div>  
+    </div>  
+    <div class="scroll-hint" aria-hidden="true">  
+      <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>  
+      scroll  
+    </div>  
+  </section>
 
+  <!-- ==========================================  
+       MAIN WAIVER  
+       ========================================== -->  
   <main id="main-content" role="main">
 
     <!-- STEP 1: NAME -->  
@@ -478,7 +577,7 @@
       </div>  
     </div>
 
-    <!-- ADMIN PANEL (Ctrl+Shift+A) -->  
+    <!-- ADMIN PANEL -->  
     <div id="admin-panel" class="admin-panel">  
       <span class="admin-badge">Admin Only</span>  
       <div class="admin-header">  
@@ -496,21 +595,19 @@
   </main>
 
   <footer role="contentinfo">  
-    Auric by Niara · Confidential & Secure  
+    Auric Movement · Confidential & Secure  
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
 <script>  
 /* ==========================================  
-   YOUR EMAILJS CREDENTIALS (ACTIVE)  
-   ========================================== */
-
+   EMAILJS CREDENTIALS  
+   ========================================== */  
 var EMAILJS_PUBLIC_KEY = 'xr1kT3l8rFhNodudq';  
 var EMAILJS_SERVICE_ID = 'service_ge79ji7';  
 var EMAILJS_TEMPLATE_ID = 'template_6qkcf8j';
 
-// Initialize EmailJS  
 if (typeof emailjs !== 'undefined') {  
   emailjs.init(EMAILJS_PUBLIC_KEY);  
 }
@@ -534,23 +631,23 @@ function escapeHTML(str) {
    CLAUSES  
    ========================================== */  
 var clauseTexts = [  
-  "I understand that participation in wellness, movement, and/or energy-based sessions offered by Auric by Niara involves physical activity and inherent risks, including but not limited to muscle strain, sprains, fractures, and other injuries.",  
+  "I understand that participation in wellness, movement, and/or energy-based sessions offered by Auric Movement involves physical activity and inherent risks, including but not limited to muscle strain, sprains, fractures, and other injuries.",  
   "I acknowledge that I am voluntarily participating in these sessions and assume all risks of injury or harm that may result from my participation, whether foreseeable or unforeseeable.",  
   "I represent that I am physically and mentally fit to participate and have no medical conditions that would prevent safe participation, or I have obtained clearance from a licensed healthcare provider.",  
   "I agree to disclose any known medical conditions, allergies, injuries, or physical limitations to my instructor before each session.",  
-  "I understand that the instructors and staff of Auric by Niara are not licensed medical professionals and that no session is a substitute for professional medical advice, diagnosis, or treatment.",  
-  "I agree to follow all instructions, safety guidelines, and rules provided by Auric by Niara staff during sessions.",  
+  "I understand that the instructors and staff of Auric Movement are not licensed medical professionals and that no session is a substitute for professional medical advice, diagnosis, or treatment.",  
+  "I agree to follow all instructions, safety guidelines, and rules provided by Auric Movement staff during sessions.",  
   "I understand that I may stop participation at any time if I feel pain, discomfort, or distress, and I agree to immediately notify my instructor.",  
-  "I release, discharge, and hold harmless Auric by Niara, its owners, instructors, employees, agents, and affiliates from any and all claims, liabilities, damages, or expenses arising from my participation.",  
-  "I waive any right to bring a lawsuit or legal claim against Auric by Niara, its owners, instructors, employees, agents, or affiliates for any injury, illness, or loss sustained during or as a result of my participation.",  
-  "I understand that this waiver extends to any claims arising from the negligence of Auric by Niara, its owners, instructors, employees, agents, or affiliates, excluding gross negligence or willful misconduct.",  
-  "I consent to the use of any photographs, video recordings, or audio recordings taken during sessions for promotional, educational, or marketing purposes by Auric by Niara, unless I submit a written opt-out request.",  
-  "I understand that personal belongings brought to sessions are my responsibility and that Auric by Niara is not liable for any lost, stolen, or damaged items.",  
+  "I release, discharge, and hold harmless Auric Movement, its owners, instructors, employees, agents, and affiliates from any and all claims, liabilities, damages, or expenses arising from my participation.",  
+  "I waive any right to bring a lawsuit or legal claim against Auric Movement, its owners, instructors, employees, agents, or affiliates for any injury, illness, or loss sustained during or as a result of my participation.",  
+  "I understand that this waiver extends to any claims arising from the negligence of Auric Movement, its owners, instructors, employees, agents, or affiliates, excluding gross negligence or willful misconduct.",  
+  "I consent to the use of any photographs, video recordings, or audio recordings taken during sessions for promotional, educational, or marketing purposes by Auric Movement, unless I submit a written opt-out request.",  
+  "I understand that personal belongings brought to sessions are my responsibility and that Auric Movement is not liable for any lost, stolen, or damaged items.",  
   "I agree that any disputes arising from this waiver or my participation shall be resolved through binding arbitration in accordance with the rules of the American Arbitration Association, and not through court litigation.",  
-  "I acknowledge that this waiver is governed by and construed in accordance with the laws of the state in which Auric by Niara operates.",  
+  "I acknowledge that this waiver is governed by and construed in accordance with the laws of the state in which Auric Movement operates.",  
   "I understand that if any provision of this waiver is found to be unenforceable, the remaining provisions shall remain in full force and effect.",  
   "I confirm that I am at least 18 years of age, or that I have obtained parental or guardian consent if I am a minor.",  
-  "I agree that this waiver remains in effect for all future sessions and activities with Auric by Niara unless I submit a written revocation.",  
+  "I agree that this waiver remains in effect for all future sessions and activities with Auric Movement unless I submit a written revocation.",  
   "I acknowledge that I have had sufficient opportunity to read this waiver, ask questions, and seek independent legal advice before signing."  
 ];
 
@@ -682,8 +779,8 @@ function updateProgress() {
   var total = clauseTexts.length;  
   var pct = (checkedCount / total) * 100;
 
-  confirmedCountEl.textContent = checkedCount;  
-  remainingTextEl.textContent = (total - checkedCount) + ' clauses remaining';  
+  if (confirmedCountEl) confirmedCountEl.textContent = checkedCount;  
+  if (remainingTextEl) remainingTextEl.textContent = (total - checkedCount) + ' clauses remaining';  
   progressFillEl.style.width = pct + '%';  
   progressTrack.setAttribute('aria-valuenow', checkedCount);
 
@@ -761,7 +858,6 @@ submitBtn.addEventListener('click', function() {
     clausesAgreed: 18  
   };
 
-  // Save locally  
   var subs = [];  
   try {  
     subs = JSON.parse(localStorage.getItem('auric_submissions')) || [];  
@@ -771,7 +867,6 @@ submitBtn.addEventListener('click', function() {
   subs.push(submission);  
   localStorage.setItem('auric_submissions', JSON.stringify(subs));
 
-  // Show success  
   document.getElementById('success-name').textContent = participantName;  
   document.getElementById('success-time').textContent = timeStr;
 
@@ -780,14 +875,12 @@ submitBtn.addEventListener('click', function() {
   stepSuccess.scrollIntoView({ behavior: 'smooth' });  
   announce('Waiver successfully signed by ' + participantName);
 
-  // Send email to you  
-  sendEmail(submission);
-
+  sendEmail(submission);  
   renderSubmissions();  
 });
 
 /* ==========================================  
-   SEND EMAIL TO YOU  
+   SEND EMAIL  
    ========================================== */  
 function sendEmail(submission) {  
   emailStatusEl.innerHTML = '<div class="email-status email-sent">📧 Sending confirmation...</div>';
@@ -928,8 +1021,7 @@ downloadBtn.addEventListener('click', function() {
   link.click();  
   document.body.removeChild(link);  
   URL.revokeObjectURL(url);  
-});
-
+});  
 </script>
 
 </body>  
