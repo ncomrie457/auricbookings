@@ -18,27 +18,23 @@
     .skip-link:focus { top:0; outline:3px solid var(--gold-light); }
     .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; }
     :focus-visible { outline:3px solid var(--gold); outline-offset:3px; border-radius:4px; }
-    .hidden { display:none; }
+    .hidden { display:none !important; }
 
     /* Hero */
-    .hero { background:linear-gradient(180deg,var(--cream-light) 0%,var(--cream) 60%,var(--cream-mid) 100%); text-align:center; padding:3rem 1.5rem 2rem; position:relative; }
-    .hero-frame { position:absolute; inset:14px; pointer-events:none; }
-    .hero-frame::before,.hero-frame::after,.hero-frame span::before,.hero-frame span::after { content:''; position:absolute; width:30px; height:30px; border-color:var(--brown); border-style:solid; opacity:.3; }
-    .hero-frame::before { top:0; left:0; border-width:2px 0 0 2px; }
-    .hero-frame::after  { top:0; right:0; border-width:2px 2px 0 0; }
-    .hero-frame span::before { bottom:0; left:0; border-width:0 0 2px 2px; }
-    .hero-frame span::after  { bottom:0; right:0; border-width:0 2px 2px 0; }
-    .hero-inner { position:relative; z-index:1; }
-    .hero-overline { font-size:clamp(10px,1.4vw,13px); font-weight:700; letter-spacing:.35em; text-transform:uppercase; color:var(--brown); margin-bottom:1rem; }
-    .hero-title { font-family:'Playfair Display',serif; font-style:italic; font-weight:700; font-size:clamp(36px,7vw,72px); color:var(--brown); line-height:1.05; }
-    .hero-sub { font-size:clamp(10px,1.3vw,13px); font-weight:600; letter-spacing:.3em; text-transform:uppercase; color:var(--gold); margin-top:.75rem; }
+    .hero { background:var(--cream-light); border-bottom:1px solid var(--border); text-align:center; padding:.9rem 1.5rem; }
+    .hero-title { font-family:'Playfair Display',serif; font-style:italic; font-weight:700; font-size:1.2rem; color:var(--brown); letter-spacing:.02em; }
 
     /* Layout */
     .page-layout { max-width:1100px; margin:0 auto; padding:2rem 1.25rem 4rem; display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:start; }
-    @media(max-width:780px){ .page-layout{grid-template-columns:1fr;} .flyer-col{order:-1;} }
+    @media(max-width:780px){ 
+      .page-layout { grid-template-columns:1fr; padding:1rem 1rem 3rem; }
+      .flyer-col { order:-1; position:static !important; }
+      .form-col { position:static; }
+    }
 
     /* Flyer */
     .flyer-col { position:sticky; top:1.5rem; }
+    @media(max-width:780px){ .flyer-col { position:static; top:auto; } }
     .flyer-img { width:100%; border-radius:16px; box-shadow:0 8px 32px rgba(44,26,14,.15); display:block; }
     .event-details-box { background:var(--white); border:1px solid var(--border); border-radius:12px; padding:1.25rem 1.5rem; margin-top:1rem; font-size:.9rem; color:var(--text-muted); }
     .event-details-box strong { color:var(--brown); display:block; margin-bottom:.25rem; font-size:.95rem; }
@@ -153,13 +149,17 @@
     .empty-state { text-align:center; padding:1.5rem; color:#a89e94; font-style:italic; font-size:.9rem; }
 
     footer { text-align:center; padding:1.5rem; font-size:.78rem; color:#a89e94; border-top:1px solid var(--border); letter-spacing:1px; }
-    footer a { color:var(--gold); text-decoration:underline; font-size:.78rem; font-family:'Jost',sans-serif; }
+    footer button { background:none; border:none; color:var(--gold); cursor:pointer; font-size:.78rem; text-decoration:underline; font-family:'Jost',sans-serif; }
+    .privacy-bar { text-align:center; font-size:.8rem; color:var(--text-muted); margin-top:.5rem; }
+    .privacy-bar button { background:none; border:none; color:var(--gold); cursor:pointer; font-size:.8rem; text-decoration:underline; font-family:'Jost',sans-serif; padding:0; }
 
     @media(max-width:600px){
-      .card { padding:1.5rem 1.25rem; }
+      .card { padding:1.25rem 1rem; }
       .session-grid { grid-template-columns:1fr; }
       .admin-actions,.success-actions { flex-direction:column; }
       .admin-actions .btn,.success-actions .btn { width:100%; justify-content:center; }
+      .hero { padding:2rem 1rem 1.5rem; }
+      .hero-title { font-size:clamp(32px,10vw,52px); }
     }
     @media(prefers-reduced-motion:reduce){ *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; } }
   </style>
@@ -170,12 +170,7 @@
 <div id="sr-announce" aria-live="polite" aria-atomic="true" class="sr-only" role="status"></div>
 
 <section class="hero" role="banner">
-  <div class="hero-frame" aria-hidden="true"><span></span></div>
-  <div class="hero-inner">
-    <div class="hero-overline">PILATES · WELLNESS · FLOW</div>
-    <div class="hero-title">Auric Movement</div>
-    <div class="hero-sub">MOVE · FEEL · GLOW</div>
-  </div>
+  <div class="hero-title">Auric Movement</div>
 </section>
 
 <main id="main-content" role="main">
@@ -219,7 +214,7 @@
         </div>
         <div class="privacy-bar">
           By registering you agree to our
-          <a href="#privacy-policy">Privacy Policy</a> and <a href="#terms">Terms &amp; Refund Policy</a>.
+          <button type="button" id="open-privacy-btn2">Privacy Policy</button> and <button type="button" id="open-terms-btn2">Terms &amp; Refund Policy</button>.
         </div>
         <div style="margin-top:.75rem;padding:.75rem 1rem;background:#fdecea;border-left:3px solid var(--red);border-radius:0 8px 8px 0;font-size:.82rem;color:#3d322a;line-height:1.6;">
           ⏰ <strong>Lateness Policy:</strong> Please arrive at your session arrival time. Class starts 5 minutes after arrival — there is a <strong>5-minute grace period only</strong>. Late arrivals will not be admitted and are not eligible for refunds or transfers. No exceptions.
@@ -437,133 +432,78 @@
 
 <footer role="contentinfo">
   Auric Movement · Pilates x Niara · June 19th ·
-  <a href="#privacy-policy">Privacy Policy</a> ·
-  <a href="#terms">Terms &amp; Refund Policy</a>
+  <button type="button" id="open-privacy-btn">Privacy Policy</button> ·
+  <button type="button" id="open-terms-btn">Terms &amp; Refund Policy</button>
   · auricmovement@outlook.com
 </footer>
 
-<!-- Terms & Refund Policy Section -->
-<section id="terms" aria-labelledby="terms-heading" style="background:var(--cream);border-top:1px solid var(--border);padding:3rem 1.25rem 4rem;">
-  <div style="max-width:720px;margin:0 auto;">
-    <h2 id="terms-heading" style="font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--brown);margin-bottom:.5rem;font-weight:700;">Terms of Attendance &amp; Refund Policy</h2>
-    <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:2rem;"><em>Effective Date: May 2026</em></p>
-    <div style="display:flex;flex-direction:column;gap:1.25rem;">
-
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;">
-        <h3 style="font-family:'Playfair Display',serif;color:var(--brown);font-size:1rem;margin-bottom:.5rem;">1. Refund Policy</h3>
-        <p style="font-size:.9rem;color:#3d322a;line-height:1.75;">Refunds are available if requested within <strong>24 hours of your original purchase</strong>. After 24 hours, all sales are final and no refunds will be issued. To request a refund within the eligible window, please email <strong>auricmovement@outlook.com</strong> with your confirmation code and reason for cancellation.</p>
-      </div>
-
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;">
-        <h3 style="font-family:'Playfair Display',serif;color:var(--brown);font-size:1rem;margin-bottom:.5rem;">2. Spot Transfers</h3>
-        <p style="font-size:.9rem;color:#3d322a;line-height:1.75;">After the 24-hour refund window has passed, you may transfer your spot to another person at no additional charge. <strong>All transfers must be completed at least 4 hours before your session start time</strong> — no transfers will be accepted after that point. The new attendee must complete a signed liability waiver before attending. Transfers can be initiated using the Transfer feature on this page with your confirmation code. Auric Movement reserves the right to deny a transfer at its discretion.</p>
-      </div>
-
-      <div style="background:#fdecea;border:1px solid #f5c6c2;border-radius:12px;padding:1.25rem 1.5rem;">
-        <h3 style="font-family:'Playfair Display',serif;color:var(--red);font-size:1rem;margin-bottom:.5rem;">3. Arrival &amp; Lateness Policy</h3>
-        <p style="font-size:.9rem;color:#3d322a;line-height:1.75;margin-bottom:.75rem;">Please plan to arrive at your session arrival time — <strong>1:00 PM for Session 1</strong> or <strong>2:00 PM for Session 2</strong>. The first 5 minutes are reserved for a brief reformer orientation and review of standard Pilates moves and terminology. Class begins promptly at <strong>1:05 PM / 2:05 PM</strong>.</p>
-        <p style="font-size:.9rem;color:#3d322a;line-height:1.75;margin-bottom:.75rem;"><strong>There is a 5-minute grace period only.</strong> Any participant arriving after 1:05 PM (Session 1) or 2:05 PM (Session 2) will not be admitted. This policy is strictly enforced — we are operating within a booked shared space and must adhere to a firm schedule.</p>
-        <p style="font-size:.9rem;color:#3d322a;line-height:1.75;"><strong>No refunds or transfers will be issued for late arrivals.</strong> Please factor in travel time, building access, and removing your shoes by the elevator before entering.</p>
-      </div>
-
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;">
-        <h3 style="font-family:'Playfair Display',serif;color:var(--brown);font-size:1rem;margin-bottom:.5rem;">4. Event Cancellation or Postponement by Auric Movement</h3>
-        <p style="font-size:.9rem;color:#3d322a;line-height:1.75;">If Auric Movement cancels or postpones the event for any reason, all registered participants will receive a <strong>full refund</strong>. Refunds will be processed through the original payment method within 5–10 business days. Auric Movement is not responsible for any incidental costs incurred by participants such as travel or accommodation.</p>
-      </div>
-
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;">
-        <h3 style="font-family:'Playfair Display',serif;color:var(--brown);font-size:1rem;margin-bottom:.5rem;">5. Code of Conduct</h3>
-        <p style="font-size:.9rem;color:#3d322a;line-height:1.75;">All attendees are expected to treat instructors, staff, and fellow participants with respect. Auric Movement is a welcoming, inclusive space. Any behavior deemed disruptive, disrespectful, or unsafe — including harassment of any kind — will result in removal from the session without refund.</p>
-      </div>
-
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;">
-        <h3 style="font-family:'Playfair Display',serif;color:var(--brown);font-size:1rem;margin-bottom:.5rem;">6. Right to Refuse Entry Entry</h3>
-        <p style="font-size:.9rem;color:#3d322a;line-height:1.75;">Auric Movement reserves the right to refuse entry to any individual who: has not completed a signed liability waiver, arrives more than 10 minutes after the session start time, appears to be under the influence of alcohol or substances, or poses a safety risk to themselves or others. No refund will be issued in these circumstances.</p>
-      </div>
-
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;">
-        <h3 style="font-family:'Playfair Display',serif;color:var(--brown);font-size:1rem;margin-bottom:.5rem;">7. Photography &amp; Video</h3>
-        <p style="font-size:.9rem;color:#3d322a;line-height:1.75;">Photography and video may be captured during the event for promotional purposes. A notice will be posted at the venue entrance. If you do not wish to be photographed, please notify your instructor before the session begins or submit a written opt-out request to auricmovement@outlook.com.</p>
-      </div>
-
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;">
-        <h3 style="font-family:'Playfair Display',serif;color:var(--brown);font-size:1rem;margin-bottom:.5rem;">8. Medical Disclaimer</h3>
-        <p style="font-size:.9rem;color:#3d322a;line-height:1.75;">Pilates and movement-based activities involve physical exertion and carry inherent risk. Participants are strongly encouraged to consult a physician before attending if they have any medical conditions, injuries, or health concerns. Auric Movement instructors are not licensed medical professionals. Participation is at your own risk.</p>
-      </div>
-
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;">
-        <h3 style="font-family:'Playfair Display',serif;color:var(--brown);font-size:1rem;margin-bottom:.5rem;">9. Contact</h3>
-        <p style="font-size:.9rem;color:#3d322a;line-height:1.75;">For any questions about these terms, please contact us at <strong>auricmovement@outlook.com</strong>.</p>
-      </div>
-
+<!-- Terms Modal -->
+<div id="terms-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="terms-title">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="terms-title">Terms of Attendance &amp; Refund Policy</h3>
+      <button class="modal-close" id="close-terms-btn" aria-label="Close terms">✕</button>
     </div>
-    <p style="margin-top:1.5rem;text-align:center;"><a href="#main-content" style="color:var(--gold);font-size:.85rem;font-family:'Jost',sans-serif;">↑ Back to top</a></p>
-  </div>
-</section>
-
-<!-- Privacy Policy — Full Page Section -->
-<section id="privacy-policy" aria-labelledby="privacy-heading" style="background:var(--cream-light);border-top:1px solid var(--border);padding:3rem 1.25rem 4rem;">
-  <div style="max-width:720px;margin:0 auto;">
-    <h2 id="privacy-heading" style="font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--brown);margin-bottom:.5rem;font-weight:700;">Privacy Policy</h2>
-    <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:2rem;"><em>Effective Date: May 2026 · Last updated: May 2026</em></p>
-    <p style="font-size:.92rem;color:#3d322a;line-height:1.8;margin-bottom:1rem;">Auric Movement ("we," "us," or "our") is committed to protecting your personal information in accordance with the New York SHIELD Act, the federal CAN-SPAM Act, and other applicable laws. This policy explains how we collect, use, and protect your information when you register for our events.</p>
-
-    <div style="display:flex;flex-direction:column;gap:1.25rem;">
-
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;">
-        <h3 style="font-family:'Playfair Display',serif;color:var(--brown);font-size:1rem;margin-bottom:.5rem;">1. Information We Collect</h3>
-        <p style="font-size:.9rem;color:#3d322a;line-height:1.75;">We collect your <strong>full legal name</strong> and <strong>email address</strong> when you register for an event or join a waitlist. We also record the date and time of your signed waiver and the session you selected.</p>
-      </div>
-
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;">
-        <h3 style="font-family:'Playfair Display',serif;color:var(--brown);font-size:1rem;margin-bottom:.5rem;">2. How We Use Your Information</h3>
-        <p style="font-size:.9rem;color:#3d322a;line-height:1.75;">Your information is used solely to: (a) confirm your registration; (b) send event communications including session reminders and access instructions; (c) notify waitlisted participants when a spot becomes available; (d) maintain a record of signed liability waivers; and (e) process cancellations.</p>
-      </div>
-
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;">
-        <h3 style="font-family:'Playfair Display',serif;color:var(--brown);font-size:1rem;margin-bottom:.5rem;">3. How Your Data Is Stored</h3>
-        <p style="font-size:.9rem;color:#3d322a;line-height:1.75;">Registration data is stored locally in your browser (localStorage) and transmitted via EmailJS to our inbox at auricmovement@outlook.com. We do not operate a centralized database. Data is not transferred outside the United States.</p>
-      </div>
-
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;">
-        <h3 style="font-family:'Playfair Display',serif;color:var(--brown);font-size:1rem;margin-bottom:.5rem;">4. Third-Party Payment Processing</h3>
-        <p style="font-size:.9rem;color:#3d322a;line-height:1.75;">Payment processing for our events is handled by a third-party payment provider. We do not collect, store, or have access to your payment card details. Any financial information you provide during checkout is submitted directly to and governed by the privacy policy and terms of that third-party processor. We encourage you to review their privacy policy before completing any transaction.</p>
-      </div>
-
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;">
-        <h3 style="font-family:'Playfair Display',serif;color:var(--brown);font-size:1rem;margin-bottom:.5rem;">5. We Do Not Sell Your Data</h3>
-        <p style="font-size:.9rem;color:#3d322a;line-height:1.75;">We do not sell, rent, trade, or otherwise share your personal information with any third parties for marketing purposes.</p>
-      </div>
-
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;">
-        <h3 style="font-family:'Playfair Display',serif;color:var(--brown);font-size:1rem;margin-bottom:.5rem;">6. Email Communications</h3>
-        <p style="font-size:.9rem;color:#3d322a;line-height:1.75;">By registering, you consent to receive transactional emails related to your registration (confirmation, cancellation, waitlist updates). These are not marketing emails. Each email includes our contact information as required by the CAN-SPAM Act.</p>
-      </div>
-
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;">
-        <h3 style="font-family:'Playfair Display',serif;color:var(--brown);font-size:1rem;margin-bottom:.5rem;">7. Your Rights (NY SHIELD Act)</h3>
-        <p style="font-size:.9rem;color:#3d322a;line-height:1.75;">You have the right to request access to, correction of, or deletion of your personal information. To make a request, email us at <strong>auricmovement@outlook.com</strong>. We will respond within 30 days.</p>
-      </div>
-
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;">
-        <h3 style="font-family:'Playfair Display',serif;color:var(--brown);font-size:1rem;margin-bottom:.5rem;">8. Data Security</h3>
-        <p style="font-size:.9rem;color:#3d322a;line-height:1.75;">We implement reasonable administrative and technical safeguards to protect your information, consistent with the requirements of the New York SHIELD Act.</p>
-      </div>
-
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;">
-        <h3 style="font-family:'Playfair Display',serif;color:var(--brown);font-size:1rem;margin-bottom:.5rem;">9. Minors</h3>
-        <p style="font-size:.9rem;color:#3d322a;line-height:1.75;">Our events and this website are not directed at individuals under the age of 18. We do not knowingly collect information from minors.</p>
-      </div>
-
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;">
-        <h3 style="font-family:'Playfair Display',serif;color:var(--brown);font-size:1rem;margin-bottom:.5rem;">10. Contact Us</h3>
-        <p style="font-size:.9rem;color:#3d322a;line-height:1.75;"><strong>Auric Movement</strong><br>auricmovement@outlook.com</p>
-      </div>
-
+    <div class="modal-body">
+      <p><em>Effective Date: May 2026</em></p>
+      <h4>1. Refund Policy</h4>
+      <p>Refunds are available if requested within <strong>24 hours of your original purchase</strong>. After 24 hours, all sales are final. To request a refund, email <strong>auricmovement@outlook.com</strong> with your confirmation code.</p>
+      <h4>2. Spot Transfers</h4>
+      <p>After the 24-hour refund window, you may transfer your spot to another person at no charge. <strong>All transfers must be completed at least 4 hours before your session start time.</strong> The new attendee must complete a signed liability waiver. Auric Movement reserves the right to deny a transfer at its discretion.</p>
+      <h4>3. Arrival &amp; Lateness Policy</h4>
+      <p>Please arrive at your session arrival time — <strong>1:00 PM for Session 1</strong> or <strong>2:00 PM for Session 2</strong>. The first 5 minutes are reserved for a reformer orientation. Class begins promptly at <strong>1:05 PM / 2:05 PM</strong>.</p>
+      <p><strong>There is a 5-minute grace period only.</strong> Any participant arriving after 1:05 PM (Session 1) or 2:05 PM (Session 2) will not be admitted. This is strictly enforced. <strong>No refunds or transfers will be issued for late arrivals.</strong></p>
+      <h4>4. Event Cancellation by Auric Movement</h4>
+      <p>If Auric Movement cancels or postpones the event, all registered participants will receive a <strong>full refund</strong> within 5–10 business days via the original payment method. Auric Movement is not responsible for incidental costs such as travel or accommodation.</p>
+      <h4>5. Code of Conduct</h4>
+      <p>All attendees are expected to treat instructors, staff, and fellow participants with respect. Auric Movement is a welcoming, inclusive space. Disruptive, disrespectful, or unsafe behavior will result in removal from the session without refund.</p>
+      <h4>6. Right to Refuse Entry</h4>
+      <p>Auric Movement reserves the right to refuse entry to any individual who has not completed a signed liability waiver, arrives late, appears to be under the influence of alcohol or substances, or poses a safety risk. No refund will be issued in these circumstances.</p>
+      <h4>7. Photography &amp; Video</h4>
+      <p>Photography and video may be captured during the event for promotional purposes. A notice will be posted at the venue. To opt out, notify your instructor before the session or email auricmovement@outlook.com.</p>
+      <h4>8. Medical Disclaimer</h4>
+      <p>Pilates involves physical exertion and inherent risk. Please consult a physician before attending if you have any medical conditions or health concerns. Auric Movement instructors are not licensed medical professionals. Participation is at your own risk.</p>
+      <h4>9. Third-Party Payment</h4>
+      <p>Payment processing is handled by a third-party provider. We do not store your payment details. Refer to your payment provider's privacy policy for information on how your financial data is handled.</p>
+      <h4>10. Contact</h4>
+      <p><strong>Auric Movement</strong><br>auricmovement@outlook.com</p>
     </div>
-    <p style="margin-top:1.5rem;text-align:center;"><a href="#main-content" style="color:var(--gold);font-size:.85rem;font-family:'Jost',sans-serif;">↑ Back to top</a></p>
   </div>
-</section>
+</div>
+
+<!-- Privacy Policy Modal -->
+<div id="privacy-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="privacy-title">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="privacy-title">Privacy Policy — Auric Movement</h3>
+      <button class="modal-close" id="close-privacy-btn" aria-label="Close privacy policy">✕</button>
+    </div>
+    <div class="modal-body">
+      <p><em>Effective Date: May 2026 · Last updated: May 2026</em></p>
+      <p>Auric Movement ("we," "us," or "our") is committed to protecting your personal information in accordance with the New York SHIELD Act, the federal CAN-SPAM Act, and other applicable laws.</p>
+      <h4>1. Information We Collect</h4>
+      <p>We collect your full legal name and email address when you register for an event or join a waitlist. We also record the date and time of your signed waiver and the session you selected.</p>
+      <h4>2. How We Use Your Information</h4>
+      <p>Your information is used solely to: (a) confirm your registration; (b) send event communications; (c) notify waitlisted participants when a spot opens; (d) maintain a record of signed liability waivers; and (e) process cancellations.</p>
+      <h4>3. How Your Data Is Stored</h4>
+      <p>Registration data is stored locally in your browser (localStorage) and transmitted via EmailJS to our inbox at auricmovement@outlook.com. We do not operate a centralized database. Data is not transferred outside the United States.</p>
+      <h4>4. Third-Party Payment Processing</h4>
+      <p>Payment processing is handled by a third-party payment provider. We do not collect, store, or have access to your payment card details. Any financial information you provide is submitted directly to and governed by the privacy policy of that third-party processor.</p>
+      <h4>5. We Do Not Sell Your Data</h4>
+      <p>We do not sell, rent, trade, or share your personal information with any third parties for marketing purposes.</p>
+      <h4>6. Email Communications</h4>
+      <p>By registering, you consent to receive transactional emails related to your registration. Each email includes our contact information as required by the CAN-SPAM Act.</p>
+      <h4>7. Your Rights (NY SHIELD Act)</h4>
+      <p>You have the right to request access to, correction of, or deletion of your personal information. Email us at auricmovement@outlook.com. We will respond within 30 days.</p>
+      <h4>8. Data Security</h4>
+      <p>We implement reasonable administrative and technical safeguards consistent with the New York SHIELD Act.</p>
+      <h4>9. Minors</h4>
+      <p>Our events and this website are not directed at individuals under the age of 18. We do not knowingly collect information from minors.</p>
+      <h4>10. Contact Us</h4>
+      <p><strong>Auric Movement</strong><br>auricmovement@outlook.com</p>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
@@ -674,6 +614,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!selectedSession) { document.getElementById('reg-session-err').textContent='Please select a session.'; ok=false; }
     else { document.getElementById('reg-session-err').textContent=''; }
     if (!ok) return;
+
     document.getElementById('waiver-name-display').textContent = name;
     document.getElementById('waiver-name-stmt').textContent    = name;
     buildClauses();
@@ -1168,6 +1109,30 @@ document.addEventListener('DOMContentLoaded', function() {
     var url=URL.createObjectURL(blob);
     var a=document.createElement('a'); a.href=url; a.download='auric-registrations-june19.csv';
     document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  });
+
+  // Privacy & Terms modals
+  function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+  function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+  ['open-privacy-btn','open-privacy-btn2'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('click', function(){ openModal('privacy-modal'); });
+  });
+  ['open-terms-btn','open-terms-btn2'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('click', function(){ openModal('terms-modal'); });
+  });
+
+  document.getElementById('close-privacy-btn').addEventListener('click', function(){ closeModal('privacy-modal'); });
+  document.getElementById('close-terms-btn').addEventListener('click', function(){ closeModal('terms-modal'); });
+
+  ['privacy-modal','terms-modal'].forEach(function(id){
+    document.getElementById(id).addEventListener('click', function(e){ if(e.target===this) closeModal(id); });
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key==='Escape') { closeModal('privacy-modal'); closeModal('terms-modal'); }
   });
 
 }); // end DOMContentLoaded
