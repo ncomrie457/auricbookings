@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -267,23 +267,27 @@
         </div>
       </div>
 
-      <!-- STEP 3a: Confirmed -->
+      <!-- STEP 3a: Waiver signed — pay to confirm -->
       <div id="step-confirmed" class="card success-card hidden">
         <div class="checkmark" aria-hidden="true">✦</div>
-        <h2>You're In!</h2>
+        <h2 style="color:var(--brown);">Almost There!</h2>
+        <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:1.25rem;">Your waiver has been signed. Complete your payment of <strong>$25</strong> to confirm your spot.</p>
         <p class="detail"><strong>Name:</strong> <span id="conf-name"></span></p>
         <p class="detail"><strong>Session:</strong> <span id="conf-session"></span></p>
-        <p class="detail"><strong>Signed at:</strong> <span id="conf-time"></span></p>
-        <p class="detail"><strong>Clauses agreed:</strong> All 19 confirmed</p>
+        <p class="detail"><strong>Waiver signed at:</strong> <span id="conf-time"></span></p>
         <div id="email-status"></div>
-        <p style="color:var(--brown);font-size:.9rem;margin-top:1.25rem;">Your instructor has been notified that the waiver has been completed. See you soon. ✦</p>
+        <div style="margin-top:1.25rem;padding:1rem 1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:10px;">
+          <p style="font-size:.85rem;color:#3d322a;line-height:1.7;margin-bottom:.75rem;">⚠️ <strong>Your spot is not confirmed until payment is received.</strong> Spots are held on a first-paid basis. If you do not complete payment your spot may be released.</p>
+          <a id="stripe-pay-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-full" style="text-decoration:none;justify-content:center;">💳 Pay $25 to Confirm My Spot →</a>
+          <p style="font-size:.78rem;color:var(--text-muted);margin-top:.75rem;line-height:1.6;text-align:center;">Only click once. If you have already completed payment, please check your email for a Stripe receipt before clicking again. Contact us at auricmovement@outlook.com if you have any issues.</p>
+        </div>
         <div style="margin-top:1rem;padding:1rem 1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:10px;text-align:left;">
-          <p style="font-size:.85rem;color:var(--brown);font-weight:700;margin-bottom:.35rem;">📋 One more thing — Studio Waiver Required</p>
-          <p style="font-size:.85rem;color:#3d322a;line-height:1.7;">As per The Space Pilates Studio's policy, you must also sign the studio's own waiver before attending. A link has been sent to your email, or sign it now:</p>
+          <p style="font-size:.85rem;color:var(--brown);font-weight:700;margin-bottom:.35rem;">📋 Studio Waiver Required</p>
+          <p style="font-size:.85rem;color:#3d322a;line-height:1.7;">You must also sign The Space Pilates Studio's waiver before attending:</p>
           <a href="https://app.waiversign.com/e/5dea878fd3241f001981567e/doc/5dea8941d3241f001981582c?event=none" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:.6rem;color:var(--gold);font-weight:700;font-size:.85rem;">Sign the Studio Waiver →</a>
         </div>
         <div class="success-actions">
-          <button type="button" id="download-waiver-btn" class="btn btn-primary">📄 Download My Waiver (PDF)</button>
+          <button type="button" id="download-waiver-btn" class="btn btn-secondary">📄 Download My Waiver (PDF)</button>
           <button type="button" id="transfer-spot-btn" class="btn btn-secondary">🔄 Transfer My Spot</button>
           <button type="button" id="new-btn" class="btn btn-secondary">New Participant →</button>
         </div>
@@ -521,8 +525,8 @@ document.addEventListener('DOMContentLoaded', function() {
   var STORAGE_KEY         = 'auric_june19';
   var TOTAL_CLAUSES       = 19;
   var SESSIONS = [
-    { id:'s1', label:'Session 1', arrival:'1:00 PM', start:'1:05 PM', date:'June 19th' },
-    { id:'s2', label:'Session 2', arrival:'2:00 PM', start:'2:05 PM', date:'June 19th' }
+    { id:'s1', label:'Session 1', arrival:'1:00 PM', start:'1:05 PM', date:'June 19th', stripeUrl:'https://buy.stripe.com/4gMeVc5d8dT3ewI4ci9sk00' },
+    { id:'s2', label:'Session 2', arrival:'2:00 PM', start:'2:05 PM', date:'June 19th', stripeUrl:'https://buy.stripe.com/aFafZgbBw8yJ4W8dMS9sk01' }
   ];
 
   var clauseTexts = [
@@ -688,6 +692,7 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('conf-name').textContent    = name;
       document.getElementById('conf-session').textContent = sess.label+' · Arrival '+sess.arrival+' · Class '+sess.start;
       document.getElementById('conf-time').textContent    = timeStr;
+      document.getElementById('stripe-pay-btn').href      = sess.stripeUrl;
       showStep('step-confirmed');
       document.getElementById('step-confirmed').scrollIntoView({behavior:'smooth'});
       announce('Confirmed for '+sess.label+'!');
@@ -708,21 +713,21 @@ document.addEventListener('DOMContentLoaded', function() {
   // Emails
   function sendConfirmEmail(rec) {
     var el=document.getElementById('email-status');
-    el.innerHTML='<div class="email-status email-sent">Sending confirmation...</div>';
-    if(typeof emailjs==='undefined'){el.innerHTML='<div class="email-status email-failed">Email service unavailable. Spot is saved.</div>';return;}
-    // Send to participant
+    el.innerHTML='<div class="email-status email-sent">Sending waiver confirmation...</div>';
+    if(typeof emailjs==='undefined'){el.innerHTML='<div class="email-status email-failed">Email service unavailable. Waiver is saved.</div>';return;}
+    var sess = SESSIONS.find(function(s){ return s.id === rec.session; });
     emailjs.send(EMAILJS_SERVICE_ID, TMPL_CONFIRM, {
       from_name:rec.name, to_email:rec.email, session_label:rec.sessionLabel,
       arrival_time:rec.arrival, class_time:rec.classStart, sign_time:rec.time,
       cancel_code:rec.code, clauses_agreed:TOTAL_CLAUSES+' of '+TOTAL_CLAUSES,
       venue:'The Space Pilates Studio, 201 West 20th Street, 2nd Floor, New York, NY 10011',
-      cancel_url:window.location.href.split('?')[0]+'?cancel='+rec.code
-    }).then(function(){ el.innerHTML='<div class="email-status email-sent">✅ Confirmation sent to '+escapeHTML(rec.email)+'</div>'; })
-      .catch(function(){ el.innerHTML='<div class="email-status email-failed">⚠️ Could not send email. Your spot is still confirmed.</div>'; });
-    // Send admin notification
+      cancel_url:window.location.href.split('?')[0]+'?cancel='+rec.code,
+      stripe_url:sess.stripeUrl
+    }).then(function(){ el.innerHTML='<div class="email-status email-sent">✅ Waiver confirmation sent to '+escapeHTML(rec.email)+'</div>'; })
+      .catch(function(){ el.innerHTML='<div class="email-status email-failed">⚠️ Could not send email. Your waiver is still saved.</div>'; });
     emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
       from_name:rec.name, to_email:rec.email, session_label:rec.sessionLabel,
-      arrival_time:rec.arrival, registration_type:'Confirmed',
+      arrival_time:rec.arrival, registration_type:'Waiver signed — payment pending',
       sign_time:rec.time, clauses_agreed:TOTAL_CLAUSES+' of '+TOTAL_CLAUSES,
       cancel_code:rec.code
     });
