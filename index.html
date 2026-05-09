@@ -211,7 +211,7 @@
       <!-- STEP 1: Register -->
       <div id="step-register" class="card">
         <h2>Reserve Your Spot</h2>
-        <p class="subtitle">Fill in your details, choose a session, then sign the waiver — all in one step.</p>
+        <p class="subtitle">Fill in your details and choose a session. If a session is full you can join the waitlist.</p>
         <div class="field">
           <label for="reg-name">Full Legal Name <span class="required" aria-hidden="true">*</span><span class="sr-only"> required</span></label>
           <input type="text" id="reg-name" placeholder="Enter your full legal name" aria-describedby="reg-name-err" aria-required="true">
@@ -240,7 +240,8 @@
         <p style="margin-top:.75rem;font-size:.82rem;color:var(--text-muted);line-height:1.6;">
           📋 <strong style="color:#3d322a;">Studio Waiver Required:</strong> As per The Space Pilates Studio's policy, all participants must also sign the studio's own waiver. You will receive the link in your confirmation email, or <a href="https://app.waiversign.com/e/5dea878fd3241f001981567e/doc/5dea8941d3241f001981582c?event=none" target="_blank" rel="noopener noreferrer" style="color:var(--gold);font-weight:600;">sign it here now</a>.
         </p>
-        <div style="margin-top:1.25rem;text-align:right;">
+        <div style="margin-top:1.25rem;display:flex;justify-content:flex-end;gap:.75rem;">
+          <button type="button" id="join-waitlist-btn" class="btn btn-secondary hidden">Join Waitlist →</button>
           <button type="button" id="to-waiver-btn" class="btn btn-primary">Continue to Waiver →</button>
         </div>
       </div>
@@ -502,14 +503,16 @@ document.addEventListener('DOMContentLoaded', function() {
   function buildSessionCards() {
     var grid = document.getElementById('session-grid');
     grid.innerHTML = '';
+    var anyFullSelected = false;
     SESSIONS.forEach(function(sess) {
       var confirmed = confirmedCount(sess.id);
       var remaining = MAX_PER_SESSION - confirmed;
       var isFull    = remaining <= 0;
+      if (isFull && selectedSession === sess.id) anyFullSelected = true;
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.setAttribute('role', 'radio');
-      btn.className = 'session-btn' + (isFull ? ' full' : '') + (selectedSession===sess.id && !isFull ? ' selected' : '');
+      btn.className = 'session-btn' + (isFull ? ' full' : '') + (selectedSession===sess.id ? ' selected' : '');
       btn.setAttribute('aria-checked', selectedSession===sess.id ? 'true' : 'false');
       var spotsText, spotsClass, badgeClass, badgeText;
       if (isFull) { spotsText='Full — Waitlist open'; spotsClass='spots-full'; badgeClass='badge-waitlist'; badgeText='Waitlist'; }
@@ -523,8 +526,52 @@ document.addEventListener('DOMContentLoaded', function() {
       btn.addEventListener('click', function(){ selectedSession=sess.id; buildSessionCards(); });
       grid.appendChild(btn);
     });
+
+    // Show correct button based on session fullness
+    var wlBtn = document.getElementById('join-waitlist-btn');
+    var continueBtn = document.getElementById('to-waiver-btn');
+    if (selectedSession && anyFullSelected) {
+      wlBtn.classList.remove('hidden');
+      continueBtn.classList.add('hidden');
+    } else {
+      wlBtn.classList.add('hidden');
+      continueBtn.classList.remove('hidden');
+    }
   }
   buildSessionCards();
+
+  // Join Waitlist (no waiver needed)
+  document.getElementById('join-waitlist-btn').addEventListener('click', function() {
+    var name  = document.getElementById('reg-name').value.trim();
+    var email = document.getElementById('reg-email').value.trim();
+    var ok    = true;
+    if (!name||name.length<2) { document.getElementById('reg-name-err').textContent='Please enter your full name.'; document.getElementById('reg-name').setAttribute('aria-invalid','true'); ok=false; }
+    else { document.getElementById('reg-name-err').textContent=''; document.getElementById('reg-name').setAttribute('aria-invalid','false'); }
+    if (!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('reg-email-err').textContent='Please enter a valid email address.'; document.getElementById('reg-email').setAttribute('aria-invalid','true'); ok=false; }
+    else { document.getElementById('reg-email-err').textContent=''; document.getElementById('reg-email').setAttribute('aria-invalid','false'); }
+    if (!selectedSession) { document.getElementById('reg-session-err').textContent='Please select a session.'; ok=false; }
+    else { document.getElementById('reg-session-err').textContent=''; }
+    if (!ok) return;
+
+    var sess   = SESSIONS.find(function(s){ return s.id===selectedSession; });
+    var data   = getData();
+    var wlPos  = data[selectedSession].filter(function(r){ return r.type==='waitlist'; }).length + 1;
+    var code   = genCode();
+    var now    = new Date(); var timeStr = now.toLocaleString();
+    var record = { name:name, email:email, session:selectedSession, sessionLabel:sess.label, arrival:sess.arrival, classStart:sess.start, type:'waitlist', wlPosition:wlPos, code:code, time:timeStr, timestamp:now.toISOString(), clausesAgreed:0, signature:'' };
+    data[selectedSession].push(record);
+    saveData(data);
+
+    document.getElementById('wl-name').textContent    = name;
+    document.getElementById('wl-email').textContent   = email;
+    document.getElementById('wl-session').textContent = sess.label+' · Arrival '+sess.arrival;
+    document.getElementById('waitlist-pos-display').textContent = 'Waitlist position #'+wlPos;
+    showStep('step-waitlist');
+    document.getElementById('step-waitlist').scrollIntoView({behavior:'smooth'});
+    announce('You have been added to the waitlist at position '+wlPos+'.');
+    sendWaitlistEmail(record);
+    buildSessionCards();
+  });
 
   // Step 1 → Step 2
   document.getElementById('to-waiver-btn').addEventListener('click', function() {
