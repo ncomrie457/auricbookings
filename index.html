@@ -348,25 +348,6 @@
     </div>
   </div>
 
-  <!-- Admin -->
-  <div style="max-width:1100px;margin:0 auto;padding:0 1.25rem 2rem;">
-    <div id="admin-panel" class="admin-panel">
-      <span class="admin-badge">Admin Only</span>
-      <div class="admin-header">
-        <h2>Registrations</h2>
-        <div class="admin-actions">
-          <button type="button" id="admin-csv-btn" class="btn btn-secondary">📥 CSV</button>
-          <button type="button" id="admin-notify-btn" class="btn btn-secondary">📣 Notify Waitlists</button>
-          <button type="button" id="admin-blast-btn" class="btn btn-primary">🚀 Blast Notify List</button>
-          <button type="button" id="admin-reminder-btn" class="btn btn-primary">📨 Send Reminders</button>
-          <button type="button" id="admin-clear-btn" class="btn btn-danger">🗑 Clear All Data</button>
-          <button type="button" id="admin-close-btn" class="btn btn-secondary">✕ Close</button>
-        </div>
-      </div>
-      <div id="admin-body"></div>
-      <p class="admin-hint">Ctrl+Shift+A to toggle · Ctrl+Shift+N to notify waitlists</p>
-    </div>
-  </div>
 </main>
 </div><!-- /tab-current -->
 
@@ -392,6 +373,30 @@
       </div>
   </div>
 </div><!-- /tab-coming -->
+
+<!-- Admin panel — outside tabs so always accessible -->
+<div style="max-width:1100px;margin:0 auto;padding:0 1.25rem 2rem;">
+  <div id="admin-panel" class="admin-panel">
+    <span class="admin-badge">Admin Only</span>
+    <div class="admin-header">
+      <h2>Registrations</h2>
+      <div class="admin-actions">
+        <button type="button" id="admin-csv-btn" class="btn btn-secondary">📥 CSV</button>
+        <button type="button" id="admin-notify-btn" class="btn btn-secondary">📣 Notify Waitlists</button>
+        <button type="button" id="admin-blast-btn" class="btn btn-primary">🚀 Blast Notify List</button>
+        <button type="button" id="admin-reminder-btn" class="btn btn-primary">📨 Send Reminders</button>
+        <button type="button" id="admin-clear-btn" class="btn btn-danger">🗑 Clear All Data</button>
+        <button type="button" id="admin-close-btn" class="btn btn-secondary">✕ Close</button>
+      </div>
+    </div>
+    <div id="admin-body"></div>
+    <div id="admin-notify-list-section" style="margin-top:1.5rem;">
+      <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem;border-bottom:1px solid var(--border);padding-bottom:.4rem;">Mat &amp; Chat — Notify List</h3>
+      <div id="admin-notify-list-body"></div>
+    </div>
+    <p class="admin-hint">Ctrl+Shift+A to toggle · Ctrl+Shift+N to notify waitlists</p>
+  </div>
+</div>
 
 <footer role="contentinfo">
   Auric Movement · Pilates x Niara · June 19th ·
@@ -972,6 +977,8 @@ document.addEventListener('DOMContentLoaded', function() {
   function renderAdmin(){
     var body=document.getElementById('admin-body');
     body.innerHTML='<div style="text-align:center;padding:1rem;color:var(--text-muted);font-size:.85rem;">Loading...</div>';
+    document.getElementById('admin-notify-list-body').innerHTML='<div style="text-align:center;padding:.5rem;color:var(--text-muted);font-size:.85rem;">Loading...</div>';
+
     getData(function(data){
       body.innerHTML='';
       SESSIONS.forEach(function(sess){
@@ -993,6 +1000,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         body.appendChild(block);
       });
+    });
+
+    getNotifyList(function(data){
+      var notifyBody = document.getElementById('admin-notify-list-body');
+      var list = data.notify || [];
+      if (!list.length) { notifyBody.innerHTML='<div class="empty-state">No signups yet.</div>'; return; }
+      notifyBody.innerHTML='';
+      list.forEach(function(person){
+        var item=document.createElement('div'); item.className='admin-sub-item';
+        item.innerHTML='<div><span class="aname">'+escapeHTML(person.name)+'</span><br><span class="aemail">'+escapeHTML(person.email)+'</span></div>'+
+          '<span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(person.time)+'</span>';
+        notifyBody.appendChild(item);
+      });
+      var count=document.createElement('p');
+      count.style.cssText='font-size:.8rem;color:var(--text-muted);margin-top:.5rem;';
+      count.textContent=list.length+' person'+(list.length!==1?'s':'')+' on the notify list';
+      notifyBody.appendChild(count);
     });
   }
 
