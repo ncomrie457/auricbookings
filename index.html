@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -357,6 +357,7 @@
         <div class="admin-actions">
           <button type="button" id="admin-csv-btn" class="btn btn-secondary">📥 CSV</button>
           <button type="button" id="admin-notify-btn" class="btn btn-secondary">📣 Notify Waitlists</button>
+          <button type="button" id="admin-blast-btn" class="btn btn-primary">🚀 Blast Notify List</button>
           <button type="button" id="admin-reminder-btn" class="btn btn-primary">📨 Send Reminders</button>
           <button type="button" id="admin-clear-btn" class="btn btn-danger">🗑 Clear All Data</button>
           <button type="button" id="admin-close-btn" class="btn btn-secondary">✕ Close</button>
@@ -939,6 +940,29 @@ document.addEventListener('DOMContentLoaded', function() {
     var v=adminPanel.classList.toggle('visible');
     if(v){renderAdmin();adminPanel.scrollIntoView({behavior:'smooth'});}
   }
+  document.getElementById('admin-blast-btn').addEventListener('click', function(){
+    getNotifyList(function(data){
+      var list = data.notify || [];
+      if (!list.length){ alert('No one on the notify list yet.'); return; }
+      if (!confirm('Send registration open email to ' + list.length + ' people on the Mat & Chat notify list?')) return;
+      if (typeof emailjs === 'undefined'){ alert('EmailJS not loaded.'); return; }
+      var sent = 0;
+      list.forEach(function(person){
+        emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
+          from_name: person.name,
+          to_email:  person.email,
+          session_label: 'Mat & Chat — August 1st',
+          arrival_time: '11:30 AM',
+          registration_type: 'Registration is now open!',
+          sign_time: new Date().toLocaleString(),
+          clauses_agreed: 'N/A',
+          cancel_code: 'Register now at book.auricmovement.com'
+        }).then(function(){ sent++; if(sent===list.length) alert('✅ Blasted to ' + sent + ' people!'); })
+          .catch(function(){ alert('⚠️ Some emails may not have sent.'); });
+      });
+    });
+  });
+
   document.getElementById('admin-close-btn').addEventListener('click',function(){adminPanel.classList.remove('visible');});
   document.getElementById('admin-notify-btn').addEventListener('click',function(){
     SESSIONS.forEach(function(s){notifyWaitlist(s.id);});
@@ -1052,6 +1076,29 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
+  // ── Notify List JSONBin ───────────────────────────────────────────────────
+  var JSONBIN_NOTIFY_ID  = '69ff2348c0954111d8fb83bf';
+  var JSONBIN_NOTIFY_URL = 'https://api.jsonbin.io/v3/b/' + JSONBIN_NOTIFY_ID;
+
+  function getNotifyList(callback) {
+    fetch(JSONBIN_NOTIFY_URL + '/latest', {
+      headers: { 'X-Access-Key': JSONBIN_KEY }
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){ callback(data.record || { notify:[] }); })
+    .catch(function(){ callback({ notify:[] }); });
+  }
+
+  function saveNotifyList(d, callback) {
+    fetch(JSONBIN_NOTIFY_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Access-Key': JSONBIN_KEY },
+      body: JSON.stringify(d)
+    })
+    .then(function(){ if (callback) callback(); })
+    .catch(function(){ if (callback) callback(); });
+  }
+
   // ── Notify Me ────────────────────────────────────────────────────────────
   document.getElementById('notify-btn').addEventListener('click', function() {
     var name  = document.getElementById('notify-name').value.trim();
@@ -1066,29 +1113,26 @@ document.addEventListener('DOMContentLoaded', function() {
     var btn = document.getElementById('notify-btn');
     btn.disabled = true; btn.textContent = 'Saving...';
 
-    if (typeof emailjs !== 'undefined') {
-      emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
-        from_name: name,
-        to_email:  email,
-        session_label: 'Mat & Chat — August 1st Notify List',
-        arrival_time: '11:30 AM',
-        registration_type: 'Notify Me signup',
-        sign_time: new Date().toLocaleString(),
-        clauses_agreed: 'N/A',
-        cancel_code: 'N/A'
-      }).then(function(){
+    getNotifyList(function(data) {
+      data.notify.push({ name:name, email:email, time:new Date().toLocaleString() });
+      saveNotifyList(data, function() {
+        // Send admin notification
+        if (typeof emailjs !== 'undefined') {
+          emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
+            from_name: name, to_email: email,
+            session_label: 'Mat & Chat — August 1st Notify List',
+            arrival_time: '11:30 AM',
+            registration_type: 'Notify Me signup',
+            sign_time: new Date().toLocaleString(),
+            clauses_agreed: 'N/A', cancel_code: 'N/A'
+          });
+        }
         document.getElementById('notify-status').innerHTML = '<div class="email-status email-sent">✅ You\'re on the list! We\'ll email you when registration opens.</div>';
         document.getElementById('notify-name').value = '';
         document.getElementById('notify-email').value = '';
         btn.disabled = false; btn.textContent = 'Notify Me When Registration Opens →';
-      }).catch(function(){
-        document.getElementById('notify-status').innerHTML = '<div class="email-status email-failed">⚠️ Something went wrong. Please try again.</div>';
-        btn.disabled = false; btn.textContent = 'Notify Me When Registration Opens →';
       });
-    } else {
-      document.getElementById('notify-status').innerHTML = '<div class="email-status email-failed">⚠️ Email service unavailable. Please try again later.</div>';
-      btn.disabled = false; btn.textContent = 'Notify Me When Registration Opens →';
-    }
+    });
   });
 
   // 1. Modal focus trap with return focus
