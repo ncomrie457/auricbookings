@@ -179,14 +179,28 @@
     <!-- LEFT: Flyer -->
     <div class="flyer-col">
       <img src="flyer.png"
-           alt="Pilates x Niara — June 19th. Two sessions: 1pm and 2pm. The Space Pilates Studio, 201 West 20th Street 8th Floor, New York NY. Reformer, All Levels, ADA Accessible."
+           alt="Pilates x Niara — June 19th. Two sessions: 1pm and 2pm. The Space Pilates Studio, 36 West 20th Street 2nd Floor, New York NY. Reformer, All Levels, ADA Accessible."
            class="flyer-img">
       <div class="event-details-box" role="complementary" aria-label="Event details">
         <strong>The Space Pilates Studio</strong>
-        <p>201 West 20th Street, 8th Floor<br>New York, NY 10011</p>
+        <p>36 West 20th Street, 2nd Floor<br>New York, NY 10011</p>
         <strong>June 19th — Two Sessions</strong>
         <p>Session 1 · Arrival 1:00 PM · Class starts 1:05 PM<br>
            Session 2 · Arrival 2:00 PM · Class starts 2:05 PM</p>
+        <strong>Getting There</strong>
+        <p>
+          🚇 <strong>Subway:</strong> 1 train to 18th St · C/E to 23rd St<br>
+          🚌 <strong>Bus:</strong> M11, M23 nearby<br>
+          🚗 <strong>Parking:</strong> Street parking available on West 20th St
+        </p>
+        <p style="margin-top:.5rem;">
+          <a href="https://maps.google.com/?q=36+West+20th+Street+New+York+NY+10011" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:.35rem;color:var(--gold);font-weight:600;font-size:.85rem;text-decoration:none;margin-right:.75rem;">
+            🗺 Google Maps
+          </a>
+          <a href="https://maps.apple.com/?q=36+West+20th+Street+New+York+NY+10011" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:.35rem;color:var(--gold);font-weight:600;font-size:.85rem;text-decoration:none;">
+            🍎 Apple Maps
+          </a>
+        </p>
       </div>
     </div>
 
@@ -225,9 +239,9 @@
         <div style="margin-top:.75rem;padding:.75rem 1rem;background:#faf5ee;border-left:3px solid var(--gold);border-radius:0 8px 8px 0;font-size:.82rem;color:#3d322a;line-height:1.6;">
           ⚕️ <strong>Medical Disclaimer:</strong> Pilates involves physical activity. Please consult your physician before participating if you have any medical conditions, injuries, or health concerns. By continuing, you confirm you are physically able to participate.
         </div>
-        <div style="margin-top:.75rem;padding:.75rem 1rem;background:var(--white);border:1px solid var(--border);border-radius:8px;font-size:.82rem;color:#3d322a;line-height:1.6;">
-          📋 <strong>Studio Waiver Required:</strong> As per The Space Pilates Studio's policy, all participants must also sign the studio's own waiver in addition to the Auric Movement waiver. You will receive the link in your confirmation email, or you can <a href="https://app.waiversign.com/e/5dea878fd3241f001981567e/doc/5dea8941d3241f001981582c?event=none" target="_blank" rel="noopener noreferrer" style="color:var(--gold);font-weight:600;">sign it here now</a>.
-        </div>
+        <p style="margin-top:.75rem;font-size:.82rem;color:var(--text-muted);line-height:1.6;">
+          📋 <strong style="color:#3d322a;">Studio Waiver Required:</strong> As per The Space Pilates Studio's policy, all participants must also sign the studio's own waiver. You will receive the link in your confirmation email, or <a href="https://app.waiversign.com/e/5dea878fd3241f001981567e/doc/5dea8941d3241f001981582c?event=none" target="_blank" rel="noopener noreferrer" style="color:var(--gold);font-weight:600;">sign it here now</a>.
+        </p>
         <div style="margin-top:1.25rem;text-align:right;">
           <button type="button" id="to-waiver-btn" class="btn btn-primary">Continue to Waiver →</button>
         </div>
@@ -527,8 +541,8 @@ document.addEventListener('DOMContentLoaded', function() {
   var STORAGE_KEY         = 'auric_june19';
   var TOTAL_CLAUSES       = 19;
   var SESSIONS = [
-    { id:'s1', label:'Session 1', arrival:'1:00 PM', start:'1:05 PM', date:'June 19th', stripeUrl:'https://buy.stripe.com/4gMeVc5d8dT3ewI4ci9sk00' },
-    { id:'s2', label:'Session 2', arrival:'2:00 PM', start:'2:05 PM', date:'June 19th', stripeUrl:'https://buy.stripe.com/aFafZgbBw8yJ4W8dMS9sk01' }
+    { id:'s1', label:'Session 1', arrival:'1:00 PM', start:'1:05 PM', date:'June 19th', stripeUrl:'https://buy.stripe.com/4gMeVc5d8dT3ewI4ci9sk00', calendarUrl:'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Pilates+x+Niara+%E2%9C%A6+Auric+Movement&dates=20260619T170000Z/20260619T180000Z&details=The+Space+Pilates+Studio%0A36+West+20th+Street%2C+2nd+Floor%0ANew+York%2C+NY+10011%0A%0APress+%23+then+3539+to+be+buzzed+in.&location=36+West+20th+Street+New+York+NY+10011' },
+    { id:'s2', label:'Session 2', arrival:'2:00 PM', start:'2:05 PM', date:'June 19th', stripeUrl:'https://buy.stripe.com/aFafZgbBw8yJ4W8dMS9sk01', calendarUrl:'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Pilates+x+Niara+%E2%9C%A6+Auric+Movement&dates=20260619T190000Z/20260619T200000Z&details=The+Space+Pilates+Studio%0A36+West+20th+Street%2C+2nd+Floor%0ANew+York%2C+NY+10011%0A%0APress+%23+then+3539+to+be+buzzed+in.&location=36+West+20th+Street+New+York+NY+10011' }
   ];
 
   var clauseTexts = [
@@ -559,14 +573,53 @@ document.addEventListener('DOMContentLoaded', function() {
   var checkedClauses  = {};
   var checkedCount    = 0;
   var lastSubmission  = null;
+  var sheetData       = { s1:[], s2:[] }; // local cache loaded from Google Sheets
 
-  // Storage
-  function getData() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { s1:[], s2:[] }; }
-    catch(e) { return { s1:[], s2:[] }; }
+  // ── Google Sheets API ─────────────────────────────────────────────────────
+  var SHEET_URL = 'https://script.google.com/macros/s/AKfycbxmZDlud0qijWmTIEVqkSiX6SoZlvTqs7PB-obAYBVPA-DLAPUjKXxoKn57gqBq0iUj/exec';
+
+  function sheetGet(callback) {
+    fetch(SHEET_URL + '?action=get')
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        sheetData = { s1:[], s2:[] };
+        if (data.result === 'success') {
+          data.data.forEach(function(row){
+            if (row.session === 's1') sheetData.s1.push(row);
+            if (row.session === 's2') sheetData.s2.push(row);
+          });
+        }
+        if (callback) callback(sheetData);
+      })
+      .catch(function(){ if (callback) callback(sheetData); });
   }
-  function saveData(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
-  function confirmedCount(sid) { return getData()[sid].filter(function(r){ return r.type==='confirmed'; }).length; }
+
+  function sheetAdd(record, callback) {
+    fetch(SHEET_URL + '?action=add', {
+      method: 'POST',
+      body: JSON.stringify(record)
+    }).then(function(r){ return r.json(); })
+      .then(function(data){ if (callback) callback(data); })
+      .catch(function(e){ if (callback) callback({ result:'error', message: e.toString() }); });
+  }
+
+  function sheetDelete(code, callback) {
+    fetch(SHEET_URL + '?action=delete&code=' + encodeURIComponent(code))
+      .then(function(r){ return r.json(); })
+      .then(function(data){ if (callback) callback(data); })
+      .catch(function(e){ if (callback) callback({ result:'error', message: e.toString() }); });
+  }
+
+  function sheetUpdate(record, callback) {
+    fetch(SHEET_URL + '?action=update', {
+      method: 'POST',
+      body: JSON.stringify(record)
+    }).then(function(r){ return r.json(); })
+      .then(function(data){ if (callback) callback(data); })
+      .catch(function(e){ if (callback) callback({ result:'error', message: e.toString() }); });
+  }
+
+  function confirmedCount(sid) { return sheetData[sid].filter(function(r){ return r.type==='confirmed'; }).length; }
   function genCode() { return 'AUR-' + Math.random().toString(36).substr(2,6).toUpperCase(); }
 
   function announce(msg) {
@@ -581,29 +634,32 @@ document.addEventListener('DOMContentLoaded', function() {
     steps.forEach(function(s){ document.getElementById(s).classList.toggle('hidden', s!==id); });
   }
 
-  // Build session cards
+  // Load data from Google Sheets on page load then build session cards
   function buildSessionCards() {
     var grid = document.getElementById('session-grid');
-    grid.innerHTML = '';
-    SESSIONS.forEach(function(sess) {
-      var confirmed = confirmedCount(sess.id);
-      var remaining = MAX_PER_SESSION - confirmed;
-      var isFull    = remaining <= 0;
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'session-btn' + (isFull ? ' full' : '') + (selectedSession===sess.id && !isFull ? ' selected' : '');
-      btn.setAttribute('aria-pressed', selectedSession===sess.id ? 'true' : 'false');
-      var spotsText, spotsClass, badgeClass, badgeText;
-      if (isFull) { spotsText='Full — Waitlist open'; spotsClass='spots-full'; badgeClass='badge-waitlist'; badgeText='Waitlist'; }
-      else if (remaining<=2) { spotsText=remaining+' spot'+(remaining===1?'':'s')+' left'; spotsClass='spots-warn'; badgeClass='badge-open'; badgeText='Almost full'; }
-      else { spotsText=remaining+' spots available'; spotsClass='spots-open'; badgeClass='badge-open'; badgeText='Open'; }
-      btn.innerHTML =
-        '<div class="session-time">'+sess.arrival+'</div>'+
-        '<div class="session-start">Arrival · Class starts '+sess.start+'</div>'+
-        '<div class="session-spots '+spotsClass+'">'+spotsText+'</div>'+
-        '<span class="session-badge '+badgeClass+'">'+badgeText+'</span>';
-      btn.addEventListener('click', function(){ selectedSession=sess.id; buildSessionCards(); });
-      grid.appendChild(btn);
+    grid.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--text-muted);font-size:.85rem;">Loading...</div>';
+    sheetGet(function(){
+      grid.innerHTML = '';
+      SESSIONS.forEach(function(sess) {
+        var confirmed = confirmedCount(sess.id);
+        var remaining = MAX_PER_SESSION - confirmed;
+        var isFull    = remaining <= 0;
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'session-btn' + (isFull ? ' full' : '') + (selectedSession===sess.id && !isFull ? ' selected' : '');
+        btn.setAttribute('aria-pressed', selectedSession===sess.id ? 'true' : 'false');
+        var spotsText, spotsClass, badgeClass, badgeText;
+        if (isFull) { spotsText='Full — Waitlist open'; spotsClass='spots-full'; badgeClass='badge-waitlist'; badgeText='Waitlist'; }
+        else if (remaining<=2) { spotsText=remaining+' spot'+(remaining===1?'':'s')+' left'; spotsClass='spots-warn'; badgeClass='badge-open'; badgeText='Almost full'; }
+        else { spotsText=remaining+' spots available'; spotsClass='spots-open'; badgeClass='badge-open'; badgeText='Open'; }
+        btn.innerHTML =
+          '<div class="session-time">'+sess.arrival+'</div>'+
+          '<div class="session-start">Arrival · Class starts '+sess.start+'</div>'+
+          '<div class="session-spots '+spotsClass+'">'+spotsText+'</div>'+
+          '<span class="session-badge '+badgeClass+'">'+badgeText+'</span>';
+        btn.addEventListener('click', function(){ selectedSession=sess.id; buildSessionCards(); });
+        grid.appendChild(btn);
+      });
     });
   }
   buildSessionCards();
@@ -681,35 +737,44 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('sig-input').focus(); return;
     }
     document.getElementById('sig-err').textContent='';
+
+    var submitBtn = document.getElementById('submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Saving...';
+
     var now=new Date(); var timeStr=now.toLocaleString(); var code=genCode();
     var sess=SESSIONS.find(function(s){return s.id===selectedSession;});
-    var data=getData();
-    var confirmed=data[selectedSession].filter(function(r){return r.type==='confirmed';}).length;
-    var type=confirmed<MAX_PER_SESSION?'confirmed':'waitlist';
-    var wlPos=type==='waitlist'?data[selectedSession].filter(function(r){return r.type==='waitlist';}).length+1:null;
+    var confirmed = confirmedCount(selectedSession);
+    var type = confirmed < MAX_PER_SESSION ? 'confirmed' : 'waitlist';
+    var wlPos = type==='waitlist' ? sheetData[selectedSession].filter(function(r){return r.type==='waitlist';}).length+1 : null;
     var record={ name:name, email:email, signature:sig, session:selectedSession, sessionLabel:sess.label, arrival:sess.arrival, classStart:sess.start, time:timeStr, timestamp:now.toISOString(), code:code, type:type, wlPosition:wlPos, clausesAgreed:TOTAL_CLAUSES };
-    data[selectedSession].push(record); saveData(data); lastSubmission=record;
+    lastSubmission=record;
 
-    if (type==='confirmed') {
-      document.getElementById('conf-name').textContent    = name;
-      document.getElementById('conf-session').textContent = sess.label+' · Arrival '+sess.arrival+' · Class '+sess.start;
-      document.getElementById('conf-time').textContent    = timeStr;
-      document.getElementById('stripe-pay-btn').href      = sess.stripeUrl;
-      showStep('step-confirmed');
-      document.getElementById('step-confirmed').scrollIntoView({behavior:'smooth'});
-      announce('Confirmed for '+sess.label+'!');
-      sendConfirmEmail(record);
-    } else {
-      document.getElementById('wl-name').textContent    = name;
-      document.getElementById('wl-email').textContent   = email;
-      document.getElementById('wl-session').textContent = sess.label+' · Arrival '+sess.arrival;
-      document.getElementById('waitlist-pos-display').textContent='Waitlist position #'+wlPos;
-      showStep('step-waitlist');
-      document.getElementById('step-waitlist').scrollIntoView({behavior:'smooth'});
-      announce('Session full. Added to waitlist at position '+wlPos+'.');
-      sendWaitlistEmail(record);
-    }
-    buildSessionCards();
+    sheetAdd(record, function(){
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit & Reserve My Spot ✦';
+
+      if (type==='confirmed') {
+        document.getElementById('conf-name').textContent    = name;
+        document.getElementById('conf-session').textContent = sess.label+' · Arrival '+sess.arrival+' · Class '+sess.start;
+        document.getElementById('conf-time').textContent    = timeStr;
+        document.getElementById('stripe-pay-btn').href      = sess.stripeUrl;
+        showStep('step-confirmed');
+        document.getElementById('step-confirmed').scrollIntoView({behavior:'smooth'});
+        announce('Waiver signed! Please complete payment to confirm your spot.');
+        sendConfirmEmail(record);
+      } else {
+        document.getElementById('wl-name').textContent    = name;
+        document.getElementById('wl-email').textContent   = email;
+        document.getElementById('wl-session').textContent = sess.label+' · Arrival '+sess.arrival;
+        document.getElementById('waitlist-pos-display').textContent='Waitlist position #'+wlPos;
+        showStep('step-waitlist');
+        document.getElementById('step-waitlist').scrollIntoView({behavior:'smooth'});
+        announce('Session full. Added to waitlist at position '+wlPos+'.');
+        sendWaitlistEmail(record);
+      }
+      buildSessionCards();
+    });
   });
 
   // Emails
@@ -722,9 +787,10 @@ document.addEventListener('DOMContentLoaded', function() {
       from_name:rec.name, to_email:rec.email, session_label:rec.sessionLabel,
       arrival_time:rec.arrival, class_time:rec.classStart, sign_time:rec.time,
       cancel_code:rec.code, clauses_agreed:TOTAL_CLAUSES+' of '+TOTAL_CLAUSES,
-      venue:'The Space Pilates Studio, 201 West 20th Street, 2nd Floor, New York, NY 10011',
+      venue:'The Space Pilates Studio, 36 West 20th Street, 2nd Floor, New York, NY 10011',
       cancel_url:window.location.href.split('?')[0]+'?cancel='+rec.code,
-      stripe_url:sess.stripeUrl
+      stripe_url:sess.stripeUrl,
+      calendar_url:sess.calendarUrl
     }).then(function(){ el.innerHTML='<div class="email-status email-sent">✅ Waiver confirmation sent to '+escapeHTML(rec.email)+'</div>'; })
       .catch(function(){ el.innerHTML='<div class="email-status email-failed">⚠️ Could not send email. Your waiver is still saved.</div>'; });
     emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
@@ -780,26 +846,60 @@ document.addEventListener('DOMContentLoaded', function() {
   checkUrlParams();
 
   document.getElementById('do-cancel-btn').addEventListener('click', function(){
-    var code=document.getElementById('cancel-code-input').value.trim().toUpperCase();
-    if(!code){document.getElementById('cancel-err').textContent='Please enter your cancellation code.';return;}
-    var data=getData(); var found=false; var foundSession,foundPerson;
+    var code = document.getElementById('cancel-code-input').value.trim().toUpperCase();
+    if (!code) { document.getElementById('cancel-err').textContent='Please enter your cancellation code.'; return; }
+
+    var cancelBtn = document.getElementById('do-cancel-btn');
+    cancelBtn.disabled = true;
+    cancelBtn.textContent = 'Cancelling...';
+    document.getElementById('cancel-err').textContent = '';
+
+    // Find in sheet data
+    var found = false; var foundSession, foundPerson;
     SESSIONS.forEach(function(sess){
-      data[sess.id].forEach(function(rec){ if(rec.code===code){found=true;foundSession=sess.id;foundPerson=rec;} });
+      sheetData[sess.id].forEach(function(rec){
+        if (rec.code === code) { found = true; foundSession = sess.id; foundPerson = rec; }
+      });
     });
-    if(!found){document.getElementById('cancel-err').textContent='Code not found. Please check and try again.';return;}
-    data[foundSession]=data[foundSession].filter(function(r){return r.code!==code;});
-    if(foundPerson.type==='confirmed'){
-      var pos=1;
-      data[foundSession].forEach(function(r){if(r.type==='waitlist'){r.wlPosition=pos++;}});
-      notifyWaitlist(foundSession);
+
+    if (!found) {
+      // Try fetching fresh from sheet in case they're on a different device
+      sheetGet(function(){
+        SESSIONS.forEach(function(sess){
+          sheetData[sess.id].forEach(function(rec){
+            if (rec.code === code) { found = true; foundSession = sess.id; foundPerson = rec; }
+          });
+        });
+        if (!found) {
+          document.getElementById('cancel-err').textContent = 'Code not found. Please check and try again.';
+          cancelBtn.disabled = false;
+          cancelBtn.textContent = 'Cancel My Spot';
+        } else {
+          doCancel(code, foundSession, foundPerson, cancelBtn);
+        }
+      });
+      return;
     }
-    saveData(data); buildSessionCards();
-    var msg=foundPerson.name+', your spot for '+foundPerson.sessionLabel+' has been cancelled.';
-    if(foundPerson.type==='confirmed') msg+=' The waitlist has been notified of the opening.';
-    document.getElementById('cancel-done-msg').textContent=msg;
-    showStep('step-cancel-done');
-    announce('Cancellation confirmed.');
+    doCancel(code, foundSession, foundPerson, cancelBtn);
   });
+
+  function doCancel(code, foundSession, foundPerson, cancelBtn) {
+    sheetDelete(code, function(result){
+      cancelBtn.disabled = false;
+      cancelBtn.textContent = 'Cancel My Spot';
+      if (result.result !== 'success') {
+        document.getElementById('cancel-err').textContent = 'Could not cancel. Please try again or contact auricmovement@outlook.com.';
+        return;
+      }
+      if (foundPerson.type === 'confirmed') notifyWaitlist(foundSession);
+      var msg = foundPerson.name + ', your spot for ' + foundPerson.sessionLabel + ' has been cancelled.';
+      if (foundPerson.type === 'confirmed') msg += ' The waitlist has been notified of the opening.';
+      document.getElementById('cancel-done-msg').textContent = msg;
+      showStep('step-cancel-done');
+      announce('Cancellation confirmed.');
+      buildSessionCards();
+    });
+  }
 
   document.getElementById('cancel-back-btn').addEventListener('click', function(){ showStep('step-register'); window.history.replaceState({},'',window.location.pathname); });
   document.getElementById('new-btn-cancel').addEventListener('click', resetForm);
@@ -827,31 +927,38 @@ document.addEventListener('DOMContentLoaded', function() {
     else                                                              { document.getElementById('transfer-email-err').textContent = ''; }
     if (!ok) return;
 
-    // Find the record
-    var data = getData(); var found = false;
-    SESSIONS.forEach(function(sess) {
-      data[sess.id].forEach(function(rec) {
-        if (rec.code === code && rec.type === 'confirmed') { found = true; transferRecord = rec; }
+    var transferBtn = document.getElementById('do-transfer-btn');
+    transferBtn.disabled = true;
+    transferBtn.textContent = 'Looking up...';
+
+    // First refresh from sheet to get latest data
+    sheetGet(function(){
+      var found = false;
+      SESSIONS.forEach(function(sess) {
+        sheetData[sess.id].forEach(function(rec) {
+          if (rec.code === code && rec.type === 'confirmed') { found = true; transferRecord = rec; }
+        });
       });
+
+      transferBtn.disabled = false;
+      transferBtn.textContent = 'Transfer Spot →';
+
+      if (!found) {
+        document.getElementById('transfer-code-err').textContent = 'Code not found or this spot is not eligible for transfer. Waitlist spots cannot be transferred.';
+        return;
+      }
+
+      transferRecord._transferNewName  = newName;
+      transferRecord._transferNewEmail = newEmail;
+
+      document.getElementById('transfer-waiver-name-display').textContent = newName;
+      document.getElementById('transfer-waiver-name-stmt').textContent    = newName;
+      document.getElementById('transfer-session-info').textContent        = transferRecord.sessionLabel + ' · Arrival ' + transferRecord.arrival + ' · Class ' + transferRecord.classStart;
+      buildTransferClauses();
+      showStep('step-transfer-waiver');
+      document.getElementById('step-transfer-waiver').scrollIntoView({ behavior: 'smooth' });
+      announce('Waiver loaded for ' + newName + '. ' + TOTAL_CLAUSES + ' clauses to review.');
     });
-
-    if (!found) {
-      document.getElementById('transfer-code-err').textContent = 'Code not found or this spot is not eligible for transfer. Waitlist spots cannot be transferred.';
-      return;
-    }
-
-    // Store new person's details on the record temporarily
-    transferRecord._transferNewName  = newName;
-    transferRecord._transferNewEmail = newEmail;
-
-    // Show transfer waiver
-    document.getElementById('transfer-waiver-name-display').textContent = newName;
-    document.getElementById('transfer-waiver-name-stmt').textContent    = newName;
-    document.getElementById('transfer-session-info').textContent        = transferRecord.sessionLabel + ' · Arrival ' + transferRecord.arrival + ' · Class ' + transferRecord.classStart;
-    buildTransferClauses();
-    showStep('step-transfer-waiver');
-    document.getElementById('step-transfer-waiver').scrollIntoView({ behavior: 'smooth' });
-    announce('Waiver loaded for ' + newName + '. ' + TOTAL_CLAUSES + ' clauses to review.');
   });
 
   function buildTransferClauses() {
@@ -905,25 +1012,28 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('transfer-sig-input').focus(); return;
     }
 
-    // Update the record in storage
-    var data = getData(); var now = new Date(); var timeStr = now.toLocaleString(); var newCode = genCode();
-    data[transferRecord.session] = data[transferRecord.session].map(function(rec) {
-      if (rec.code === transferRecord.code) {
-        return Object.assign({}, rec, { name: newName, email: newEmail, signature: sig, code: newCode, time: timeStr, timestamp: now.toISOString(), clausesAgreed: TOTAL_CLAUSES, transferred: true });
-      }
-      return rec;
-    });
-    saveData(data);
+    var tBtn = document.getElementById('transfer-submit-btn');
+    tBtn.disabled = true;
+    tBtn.textContent = 'Saving...';
 
-    var updatedRec = Object.assign({}, transferRecord, { name: newName, email: newEmail, signature: sig, code: newCode, time: timeStr });
+    var now = new Date(); var timeStr = now.toLocaleString(); var newCode = genCode();
+    var updatedRec = Object.assign({}, transferRecord, {
+      name: newName, email: newEmail, signature: sig,
+      code: newCode, newCode: newCode, time: timeStr,
+      timestamp: now.toISOString(), clausesAgreed: TOTAL_CLAUSES
+    });
     transferSubmission = updatedRec;
 
-    document.getElementById('transfer-conf-name').textContent    = newName;
-    document.getElementById('transfer-conf-session').textContent = updatedRec.sessionLabel + ' · Arrival ' + updatedRec.arrival + ' · Class ' + updatedRec.classStart;
-    document.getElementById('transfer-conf-time').textContent    = timeStr;
-    showStep('step-transfer-done');
-    document.getElementById('step-transfer-done').scrollIntoView({ behavior: 'smooth' });
-    announce('Registration complete for ' + newName + '!');
+    sheetUpdate(updatedRec, function(result){
+      tBtn.disabled = false;
+      tBtn.textContent = 'Complete My Registration ✦';
+
+      document.getElementById('transfer-conf-name').textContent    = newName;
+      document.getElementById('transfer-conf-session').textContent = updatedRec.sessionLabel + ' · Arrival ' + updatedRec.arrival + ' · Class ' + updatedRec.classStart;
+      document.getElementById('transfer-conf-time').textContent    = timeStr;
+      showStep('step-transfer-done');
+      document.getElementById('step-transfer-done').scrollIntoView({ behavior: 'smooth' });
+      announce('Registration complete for ' + newName + '!');
 
     // Email new person
     if (typeof emailjs !== 'undefined') {
@@ -934,11 +1044,10 @@ document.addEventListener('DOMContentLoaded', function() {
         session_label: updatedRec.sessionLabel, arrival_time: updatedRec.arrival,
         class_time: updatedRec.classStart, sign_time: timeStr, cancel_code: newCode,
         clauses_agreed: TOTAL_CLAUSES + ' of ' + TOTAL_CLAUSES,
-        venue: 'The Space Pilates Studio, 201 West 20th Street, 2nd Floor, New York, NY 10011',
+        venue: 'The Space Pilates Studio, 36 West 20th Street, 2nd Floor, New York, NY 10011',
         cancel_url: window.location.href.split('?')[0] + '?cancel=' + newCode
       }).then(function(){ el.innerHTML = '<div class="email-status email-sent">✅ Confirmation sent to ' + escapeHTML(newEmail) + '</div>'; })
         .catch(function(){ el.innerHTML = '<div class="email-status email-failed">⚠️ Could not send email. Registration is still confirmed.</div>'; });
-      // Admin notification
       emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
         from_name: newName, to_email: newEmail,
         session_label: updatedRec.sessionLabel, arrival_time: updatedRec.arrival,
@@ -947,7 +1056,8 @@ document.addEventListener('DOMContentLoaded', function() {
         cancel_code: newCode
       });
     }
-    buildSessionCards();
+      buildSessionCards();
+    }); // end sheetUpdate
   });
 
   document.getElementById('transfer-download-btn').addEventListener('click', function() {
@@ -1084,38 +1194,63 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   function renderAdmin(){
-    var body=document.getElementById('admin-body'); var data=getData(); body.innerHTML='';
-    SESSIONS.forEach(function(sess){
-      var block=document.createElement('div'); block.className='admin-session-block';
-      var confirmed=data[sess.id].filter(function(r){return r.type==='confirmed';});
-      var waitlist=data[sess.id].filter(function(r){return r.type==='waitlist';});
-      block.innerHTML='<h3>'+sess.label+' · '+confirmed.length+'/'+MAX_PER_SESSION+' confirmed · '+waitlist.length+' waitlisted</h3>';
-      if(!data[sess.id].length){block.innerHTML+='<div class="empty-state">No registrations yet.</div>';}
-      else {
-        data[sess.id].forEach(function(rec){
-          var item=document.createElement('div'); item.className='admin-sub-item';
-          item.innerHTML='<div><span class="aname">'+escapeHTML(rec.name)+'</span><br><span class="aemail">'+escapeHTML(rec.email)+'</span></div>'+
-            '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
-            '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
-            '<br><span style="font-size:.7rem;color:#aaa;">'+rec.code+'</span></div>';
-          block.appendChild(item);
-        });
-      }
-      body.appendChild(block);
+    var body=document.getElementById('admin-body');
+    body.innerHTML='<div style="text-align:center;padding:1rem;color:var(--text-muted);font-size:.85rem;">Loading...</div>';
+    sheetGet(function(){
+      body.innerHTML='';
+      SESSIONS.forEach(function(sess){
+        var block=document.createElement('div'); block.className='admin-session-block';
+        var confirmed=sheetData[sess.id].filter(function(r){return r.type==='confirmed';});
+        var waitlist=sheetData[sess.id].filter(function(r){return r.type==='waitlist';});
+        block.innerHTML='<h3>'+sess.label+' · '+confirmed.length+'/'+MAX_PER_SESSION+' confirmed · '+waitlist.length+' waitlisted</h3>';
+        if(!sheetData[sess.id].length){block.innerHTML+='<div class="empty-state">No registrations yet.</div>';}
+        else {
+          sheetData[sess.id].forEach(function(rec){
+            var item=document.createElement('div'); item.className='admin-sub-item';
+            var removeBtn = '<button onclick="adminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .6rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;">Remove</button>';
+            item.innerHTML='<div><span class="aname">'+escapeHTML(rec.name)+'</span><br><span class="aemail">'+escapeHTML(rec.email)+'</span></div>'+
+              '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
+              '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
+              '<br><span style="font-size:.7rem;color:#aaa;">'+rec.code+'</span>'+
+              '<br>'+removeBtn+'</div>';
+            block.appendChild(item);
+          });
+        }
+        body.appendChild(block);
+      });
     });
   }
 
-  document.getElementById('admin-reminder-btn').addEventListener('click', function(){
-    var data = getData();
-    var confirmed = [];
+  window.adminRemove = function(code) {
+    if (!confirm('Remove this registration? This cannot be undone.')) return;
+    var foundSession, foundPerson;
     SESSIONS.forEach(function(sess){
-      data[sess.id].filter(function(r){ return r.type === 'confirmed'; }).forEach(function(rec){
-        confirmed.push({ rec: rec, sess: sess });
+      sheetData[sess.id].forEach(function(rec){
+        if (rec.code === code) { foundSession = sess.id; foundPerson = rec; }
       });
     });
-    if (!confirmed.length) { alert('No confirmed registrants to remind.'); return; }
-    if (!confirm('Send reminder emails to ' + confirmed.length + ' confirmed participant(s)?')) return;
-    if (typeof emailjs === 'undefined') { alert('EmailJS not loaded.'); return; }
+    sheetDelete(code, function(result){
+      if (result.result === 'success') {
+        if (foundPerson && foundPerson.type === 'confirmed') notifyWaitlist(foundSession);
+        renderAdmin();
+        buildSessionCards();
+      } else {
+        alert('Could not remove. Please try again.');
+      }
+    });
+  };
+
+  document.getElementById('admin-reminder-btn').addEventListener('click', function(){
+    sheetGet(function(){
+      var confirmed = [];
+      SESSIONS.forEach(function(sess){
+        sheetData[sess.id].filter(function(r){ return r.type === 'confirmed'; }).forEach(function(rec){
+          confirmed.push({ rec: rec, sess: sess });
+        });
+      });
+      if (!confirmed.length) { alert('No confirmed registrants to remind.'); return; }
+      if (!confirm('Send reminder emails to ' + confirmed.length + ' confirmed participant(s)?')) return;
+      if (typeof emailjs === 'undefined') { alert('EmailJS not loaded.'); return; }
 
     var sent = 0;
     confirmed.forEach(function(item){
@@ -1124,32 +1259,36 @@ document.addEventListener('DOMContentLoaded', function() {
         to_email:     item.rec.email,
         session_label: item.sess.label,
         arrival_time:  item.sess.arrival,
-        class_time:    item.sess.start
+        class_time:    item.sess.start,
+        calendar_url:  item.sess.calendarUrl
       }).then(function(){ sent++; if (sent === confirmed.length) alert('✅ Reminder sent to ' + sent + ' participant(s)!'); })
         .catch(function(){ alert('⚠️ Some reminders may not have sent. Check your EmailJS dashboard.'); });
     });
+    }); // end sheetGet
   });
 
   document.getElementById('admin-clear-btn').addEventListener('click', function(){
-    if (confirm('Are you sure you want to delete ALL registrations? This cannot be undone.')) {
-      localStorage.removeItem(STORAGE_KEY);
+    if (confirm('Are you sure you want to delete ALL registrations? This cannot be undone.\n\nNote: This clears local cache only. To fully clear, delete rows in your Google Sheet.')) {
+      sheetData = { s1:[], s2:[] };
       renderAdmin();
       buildSessionCards();
-      alert('All data cleared. Spots are now reset.');
+      alert('Local cache cleared. Please also manually clear your Google Sheet rows.');
     }
   });
 
-  document.getElementById('admin-csv-btn').addEventListener('click',function(){
-    var data=getData(); var csv='Name,Email,Session,Arrival,Type,Waitlist Position,Code,Time\n';
-    SESSIONS.forEach(function(sess){
-      data[sess.id].forEach(function(rec){
-        csv+='"'+rec.name.replace(/"/g,'""')+'","'+rec.email.replace(/"/g,'""')+'","'+sess.label+'","'+sess.arrival+'","'+rec.type+'","'+(rec.wlPosition||'')+'","'+rec.code+'","'+rec.time+'"\n';
+  document.getElementById('admin-csv-btn').addEventListener('click', function(){
+    sheetGet(function(){
+      var csv='Name,Email,Session,Arrival,Type,Waitlist Position,Code,Time\n';
+      SESSIONS.forEach(function(sess){
+        sheetData[sess.id].forEach(function(rec){
+          csv+='"'+rec.name.replace(/"/g,'""')+'","'+rec.email.replace(/"/g,'""')+'","'+sess.label+'","'+sess.arrival+'","'+rec.type+'","'+(rec.wlPosition||'')+'","'+rec.code+'","'+rec.time+'"\n';
+        });
       });
+      var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+      var url=URL.createObjectURL(blob);
+      var a=document.createElement('a'); a.href=url; a.download='auric-registrations-june19.csv';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
     });
-    var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-    var url=URL.createObjectURL(blob);
-    var a=document.createElement('a'); a.href=url; a.download='auric-registrations-june19.csv';
-    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
   });
 
   // Privacy & Terms modals
