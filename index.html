@@ -802,11 +802,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   document.getElementById('new-btn').addEventListener('click', resetForm);
   document.getElementById('new-btn-wl').addEventListener('click', resetForm);
-  document.getElementById('transfer-spot-btn').addEventListener('click', function() {
-    if (lastSubmission) document.getElementById('transfer-code-input').value = lastSubmission.code;
-    showStep('step-transfer');
-    document.getElementById('step-transfer').scrollIntoView({ behavior: 'smooth' });
-  });
 
   // PDF
   document.getElementById('download-waiver-btn').addEventListener('click', function(){
