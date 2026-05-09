@@ -491,6 +491,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var TMPL_WL_OPEN    = 'template_upkcys7'; // Waitlist Spot Opened
   var TMPL_ADMIN      = 'template_6qkcf8j'; // Admin Notification
   var TMPL_REMINDER   = 'template_1fol3sf'; // Event Reminder
+  var TMPL_BLAST      = 'template_ncfk6or'; // Mat & Chat Registration Open
   var MAX_PER_SESSION     = 6;
   var STORAGE_KEY         = 'auric_june19';
   var TOTAL_CLAUSES       = 19;
@@ -953,15 +954,9 @@ document.addEventListener('DOMContentLoaded', function() {
       if (typeof emailjs === 'undefined'){ alert('EmailJS not loaded.'); return; }
       var sent = 0;
       list.forEach(function(person){
-        emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
+        emailjs.send(EMAILJS_SERVICE_ID, TMPL_BLAST, {
           from_name: person.name,
-          to_email:  person.email,
-          session_label: 'Mat & Chat — August 1st',
-          arrival_time: '11:30 AM',
-          registration_type: 'Registration is now open!',
-          sign_time: new Date().toLocaleString(),
-          clauses_agreed: 'N/A',
-          cancel_code: 'Register now at book.auricmovement.com'
+          to_email:  person.email
         }).then(function(){ sent++; if(sent===list.length) alert('✅ Blasted to ' + sent + ' people!'); })
           .catch(function(){ alert('⚠️ Some emails may not have sent.'); });
       });
