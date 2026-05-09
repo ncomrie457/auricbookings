@@ -232,10 +232,7 @@
           <button type="button" id="open-privacy-btn2">Privacy Policy</button> and <button type="button" id="open-terms-btn2">Terms &amp; Refund Policy</button>.
         </div>
         <div style="margin-top:.75rem;padding:.75rem 1rem;background:#fdecea;border-left:3px solid var(--red);border-radius:0 8px 8px 0;font-size:.82rem;color:#3d322a;line-height:1.6;">
-          ⏰ <strong>Lateness Policy:</strong> Please arrive at your session arrival time. Class starts 5 minutes after arrival — there is a <strong>5-minute grace period only</strong>. Late arrivals will not be admitted and are not eligible for refunds or transfers. No exceptions.
-        </div>
-        <div style="margin-top:.75rem;padding:.75rem 1rem;background:#faf5ee;border-left:3px solid var(--gold);border-radius:0 8px 8px 0;font-size:.82rem;color:#3d322a;line-height:1.6;">
-          🔄 <strong>Transfers:</strong> Spots may be transferred to a friend, but must be completed at least <strong>4 hours before your session start time</strong>.
+          ⏰ <strong>Lateness Policy:</strong> Please arrive at your session arrival time. Class starts 5 minutes after arrival — there is a <strong>5-minute grace period only</strong>. Late arrivals will not be admitted and are not eligible for refunds. No exceptions.
         </div>
         <div style="margin-top:.75rem;padding:.75rem 1rem;background:#faf5ee;border-left:3px solid var(--gold);border-radius:0 8px 8px 0;font-size:.82rem;color:#3d322a;line-height:1.6;">
           ⚕️ <strong>Medical Disclaimer:</strong> Pilates involves physical activity. Please consult your physician before participating if you have any medical conditions, injuries, or health concerns. By continuing, you confirm you are physically able to participate.
@@ -304,7 +301,6 @@
         </div>
         <div class="success-actions">
           <button type="button" id="download-waiver-btn" class="btn btn-secondary">📄 Download My Waiver (PDF)</button>
-          <button type="button" id="transfer-spot-btn" class="btn btn-secondary">🔄 Transfer My Spot</button>
           <button type="button" id="new-btn" class="btn btn-secondary">New Participant →</button>
         </div>
       </div>
@@ -323,109 +319,6 @@
         </p>
         <div class="success-actions">
           <button type="button" id="new-btn-wl" class="btn btn-secondary">New Participant →</button>
-        </div>
-      </div>
-
-      <!-- Cancel entry -->
-      <div id="step-cancel" class="card cancel-box hidden">
-        <h2>Cancel Registration</h2>
-        <p class="subtitle" style="text-align:left;">Enter your cancellation code from your confirmation email.</p>
-        <div class="field">
-          <label for="cancel-code-input">Cancellation Code</label>
-          <input type="text" id="cancel-code-input" placeholder="e.g. AUR-ABC123" style="text-transform:uppercase;">
-          <div id="cancel-err" class="err-msg" role="alert"></div>
-        </div>
-        <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
-          <button type="button" id="do-cancel-btn" class="btn btn-danger">Cancel My Spot</button>
-          <button type="button" id="cancel-back-btn" class="btn btn-secondary">Go Back</button>
-        </div>
-      </div>
-
-      <!-- Cancel done -->
-      <div id="step-cancel-done" class="card success-card hidden">
-        <div class="checkmark" aria-hidden="true">✓</div>
-        <h2 style="color:var(--text-muted);">Cancellation Confirmed</h2>
-        <p class="detail" id="cancel-done-msg"></p>
-        <div class="success-actions">
-          <button type="button" id="new-btn-cancel" class="btn btn-secondary">Back to Registration</button>
-        </div>
-      </div>
-
-      <!-- Transfer: Step 1 — enter code + new person details -->
-      <div id="step-transfer" class="card hidden">
-        <h2>Transfer Your Spot</h2>
-        <p class="subtitle">Enter your confirmation code and the details of the person taking your spot. They'll receive an email to complete the waiver.</p>
-        <div class="field">
-          <label for="transfer-code-input">Your Confirmation Code <span class="required" aria-hidden="true">*</span></label>
-          <input type="text" id="transfer-code-input" placeholder="e.g. AUR-ABC123" style="text-transform:uppercase;">
-          <div id="transfer-code-err" class="err-msg" role="alert"></div>
-        </div>
-        <div class="field">
-          <label for="transfer-new-name">New Attendee's Full Name <span class="required" aria-hidden="true">*</span></label>
-          <input type="text" id="transfer-new-name" placeholder="Their full legal name">
-          <div id="transfer-name-err" class="err-msg" role="alert"></div>
-        </div>
-        <div class="field">
-          <label for="transfer-new-email">New Attendee's Email <span class="required" aria-hidden="true">*</span></label>
-          <input type="email" id="transfer-new-email" placeholder="their@email.com">
-          <div id="transfer-email-err" class="err-msg" role="alert"></div>
-        </div>
-        <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
-          <button type="button" id="do-transfer-btn" class="btn btn-primary">Transfer Spot →</button>
-          <button type="button" id="transfer-back-btn" class="btn btn-secondary">Go Back</button>
-        </div>
-      </div>
-
-      <!-- Transfer: Step 2 — new person signs waiver -->
-      <div id="step-transfer-waiver" class="card hidden">
-        <div style="background:#faf5ee;border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.25rem;">
-          <p style="font-size:.85rem;color:var(--brown);font-weight:600;margin-bottom:.25rem;">Spot transferred to you!</p>
-          <p style="font-size:.85rem;color:var(--text-muted);">Please sign the liability waiver below to complete your registration. <strong id="transfer-session-info"></strong></p>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.5rem;margin-bottom:.4rem;">
-          <h2>Liability Waiver &amp; Release</h2>
-          <span style="font-size:.85rem;color:var(--text-muted);">Signing as <strong id="transfer-waiver-name-display"></strong></span>
-        </div>
-        <p class="subtitle">Read each clause carefully and check the box to confirm. All 19 clauses must be acknowledged before signing.</p>
-        <div class="progress-section">
-          <div class="progress-label">
-            <span><span id="transfer-confirmed-count">0</span>/19 confirmed</span>
-            <span id="transfer-remaining-text">19 remaining</span>
-          </div>
-          <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="19" aria-label="Clause confirmation progress" id="transfer-progress-track">
-            <div class="progress-fill" id="transfer-progress-fill"></div>
-          </div>
-        </div>
-        <div id="transfer-clauses-container" role="group" aria-label="Waiver clauses"></div>
-        <div class="sig-section">
-          <div class="statement">
-            I, <strong id="transfer-waiver-name-stmt"></strong>, acknowledge that I have carefully read and fully understand this Liability Waiver &amp; Release. I understand that I am giving up substantial legal rights, including the right to sue. I sign this agreement freely and voluntarily, without any inducement.
-          </div>
-          <div class="final-check">
-            <input type="checkbox" id="transfer-final-agree" disabled>
-            <label for="transfer-final-agree">I have read, understood, and agree to all terms above</label>
-          </div>
-          <div class="field">
-            <label for="transfer-sig-input">Digital Signature — Type your full name <span class="required" aria-hidden="true">*</span></label>
-            <input type="text" id="transfer-sig-input" placeholder="Type your full legal name to sign" aria-describedby="transfer-sig-err" aria-required="true" disabled>
-            <div id="transfer-sig-err" class="err-msg" role="alert"></div>
-          </div>
-          <button type="button" id="transfer-submit-btn" class="btn btn-primary btn-full" disabled>Complete My Registration ✦</button>
-        </div>
-      </div>
-
-      <!-- Transfer done -->
-      <div id="step-transfer-done" class="card success-card hidden">
-        <div class="checkmark" aria-hidden="true">✦</div>
-        <h2>You're In!</h2>
-        <p class="detail"><strong>Name:</strong> <span id="transfer-conf-name"></span></p>
-        <p class="detail"><strong>Session:</strong> <span id="transfer-conf-session"></span></p>
-        <p class="detail"><strong>Signed at:</strong> <span id="transfer-conf-time"></span></p>
-        <div id="transfer-email-status"></div>
-        <p style="color:var(--brown);font-size:.9rem;margin-top:1.25rem;">Your instructor has been notified that the waiver has been completed. See you soon. ✦</p>
-        <div class="success-actions">
-          <button type="button" id="transfer-download-btn" class="btn btn-primary">📄 Download My Waiver (PDF)</button>
-          <button type="button" id="new-btn-transfer" class="btn btn-secondary">New Participant →</button>
         </div>
       </div>
 
@@ -474,9 +367,9 @@
     <div class="modal-body">
       <p><em>Effective Date: May 2026</em></p>
       <h4>1. Refund Policy</h4>
-      <p>Refunds are available if requested within <strong>24 hours of your original purchase</strong>. After 24 hours, all sales are final. To request a refund, email <strong>auricmovement@outlook.com</strong> with your confirmation code.</p>
-      <h4>2. Spot Transfers</h4>
-      <p>After the 24-hour refund window, you may transfer your spot to another person at no charge. <strong>All transfers must be completed at least 4 hours before your session start time.</strong> The new attendee must complete a signed liability waiver. Auric Movement reserves the right to deny a transfer at its discretion.</p>
+      <p>Refunds are available if requested within <strong>24 hours of your original purchase</strong>. After 24 hours, all sales are final. To request a refund or a spot transfer to a friend, email <strong>auricmovement@outlook.com</strong> with your name, session, and reason.</p>
+      <h4>2. Cancellations &amp; Transfers</h4>
+      <p>To cancel your spot or transfer it to a friend, please email <strong>auricmovement@outlook.com</strong> directly. Include your full name, session, and the name and email of the person taking your spot if transferring. All requests must be received at least <strong>4 hours before your session start time</strong>. Auric Movement reserves the right to deny a transfer at its discretion.</p>
       <h4>3. Arrival &amp; Lateness Policy</h4>
       <p>Please arrive at your session arrival time — <strong>1:00 PM for Session 1</strong> or <strong>2:00 PM for Session 2</strong>. The first 5 minutes are reserved for a reformer orientation. Class begins promptly at <strong>1:05 PM / 2:05 PM</strong>.</p>
       <p><strong>There is a 5-minute grace period only.</strong> Any participant arriving after 1:05 PM (Session 1) or 2:05 PM (Session 2) will not be admitted. This is strictly enforced. <strong>No refunds or transfers will be issued for late arrivals.</strong></p>
@@ -647,35 +540,6 @@ document.addEventListener('DOMContentLoaded', function() {
     form.submit();
   }
 
-  function sheetDelete(code, callback) {
-    jsonp(SHEET_URL + '?action=delete&code=' + encodeURIComponent(code), function(data) {
-      if (callback) callback(data);
-    });
-  }
-
-  function sheetUpdate(record, callback) {
-    var form = document.createElement('form');
-    form.method = 'POST';
-    form.action = SHEET_URL + '?action=update';
-    form.target = '_sheet_iframe2';
-    var input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'data';
-    input.value = JSON.stringify(record);
-    form.appendChild(input);
-    var iframe = document.createElement('iframe');
-    iframe.name = '_sheet_iframe2';
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-    document.body.appendChild(form);
-    iframe.onload = function() {
-      document.body.removeChild(form);
-      document.body.removeChild(iframe);
-      if (callback) callback({ result: 'success' });
-    };
-    form.submit();
-  }
-
   function confirmedCount(sid) { return sheetData[sid].filter(function(r){ return r.type==='confirmed'; }).length; }
   function genCode() { return 'AUR-' + Math.random().toString(36).substr(2,6).toUpperCase(); }
 
@@ -686,7 +550,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   function escapeHTML(str) { var d=document.createElement('div'); d.textContent=str; return d.innerHTML; }
 
-  var steps = ['step-register','step-waiver','step-confirmed','step-waitlist','step-cancel','step-cancel-done','step-transfer','step-transfer-waiver','step-transfer-done'];
+  var steps = ['step-register','step-waiver','step-confirmed','step-waitlist'];
   function showStep(id) {
     steps.forEach(function(s){ document.getElementById(s).classList.toggle('hidden', s!==id); });
   }
@@ -893,239 +757,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Cancel & Transfer URL params
-  function checkUrlParams() {
-    var params = new URLSearchParams(window.location.search);
-    var cancelCode   = params.get('cancel');
-    var transferCode = params.get('transfer');
-    if (cancelCode)   { document.getElementById('cancel-code-input').value = cancelCode.toUpperCase(); showStep('step-cancel'); }
-    if (transferCode) { document.getElementById('transfer-code-input').value = transferCode.toUpperCase(); showStep('step-transfer'); }
-  }
-  checkUrlParams();
-
-  document.getElementById('do-cancel-btn').addEventListener('click', function(){
-    var code = document.getElementById('cancel-code-input').value.trim().toUpperCase();
-    if (!code) { document.getElementById('cancel-err').textContent='Please enter your cancellation code.'; return; }
-
-    var cancelBtn = document.getElementById('do-cancel-btn');
-    cancelBtn.disabled = true;
-    cancelBtn.textContent = 'Cancelling...';
-    document.getElementById('cancel-err').textContent = '';
-
-    // Find in sheet data
-    var found = false; var foundSession, foundPerson;
-    SESSIONS.forEach(function(sess){
-      sheetData[sess.id].forEach(function(rec){
-        if (rec.code === code) { found = true; foundSession = sess.id; foundPerson = rec; }
-      });
-    });
-
-    if (!found) {
-      // Try fetching fresh from sheet in case they're on a different device
-      sheetGet(function(){
-        SESSIONS.forEach(function(sess){
-          sheetData[sess.id].forEach(function(rec){
-            if (rec.code === code) { found = true; foundSession = sess.id; foundPerson = rec; }
-          });
-        });
-        if (!found) {
-          document.getElementById('cancel-err').textContent = 'Code not found. Please check and try again.';
-          cancelBtn.disabled = false;
-          cancelBtn.textContent = 'Cancel My Spot';
-        } else {
-          doCancel(code, foundSession, foundPerson, cancelBtn);
-        }
-      });
-      return;
-    }
-    doCancel(code, foundSession, foundPerson, cancelBtn);
-  });
-
-  function doCancel(code, foundSession, foundPerson, cancelBtn) {
-    sheetDelete(code, function(result){
-      cancelBtn.disabled = false;
-      cancelBtn.textContent = 'Cancel My Spot';
-      if (result.result !== 'success') {
-        document.getElementById('cancel-err').textContent = 'Could not cancel. Please try again or contact auricmovement@outlook.com.';
-        return;
-      }
-      if (foundPerson.type === 'confirmed') notifyWaitlist(foundSession);
-      var msg = foundPerson.name + ', your spot for ' + foundPerson.sessionLabel + ' has been cancelled.';
-      if (foundPerson.type === 'confirmed') msg += ' The waitlist has been notified of the opening.';
-      document.getElementById('cancel-done-msg').textContent = msg;
-      showStep('step-cancel-done');
-      announce('Cancellation confirmed.');
-      buildSessionCards();
-    });
-  }
-
-  document.getElementById('cancel-back-btn').addEventListener('click', function(){ showStep('step-register'); window.history.replaceState({},'',window.location.pathname); });
-  document.getElementById('new-btn-cancel').addEventListener('click', resetForm);
-
-  // ── Transfer ──────────────────────────────────────────────────────────────────
-  var transferRecord  = null; // the original registration being transferred
-  var transferChecked = {};
-  var transferCount   = 0;
-  var transferSubmission = null;
-
-  document.getElementById('transfer-back-btn').addEventListener('click', function(){ showStep('step-register'); window.history.replaceState({},'',window.location.pathname); });
-  document.getElementById('new-btn-transfer').addEventListener('click', resetForm);
-
-  document.getElementById('do-transfer-btn').addEventListener('click', function() {
-    var code     = document.getElementById('transfer-code-input').value.trim().toUpperCase();
-    var newName  = document.getElementById('transfer-new-name').value.trim();
-    var newEmail = document.getElementById('transfer-new-email').value.trim();
-    var ok = true;
-
-    if (!code) { document.getElementById('transfer-code-err').textContent = 'Please enter your confirmation code.'; ok = false; }
-    else        { document.getElementById('transfer-code-err').textContent = ''; }
-    if (!newName || newName.length < 2) { document.getElementById('transfer-name-err').textContent = 'Please enter the new attendee\'s full name.'; ok = false; }
-    else                                 { document.getElementById('transfer-name-err').textContent = ''; }
-    if (!newEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) { document.getElementById('transfer-email-err').textContent = 'Please enter a valid email address.'; ok = false; }
-    else                                                              { document.getElementById('transfer-email-err').textContent = ''; }
-    if (!ok) return;
-
-    var transferBtn = document.getElementById('do-transfer-btn');
-    transferBtn.disabled = true;
-    transferBtn.textContent = 'Looking up...';
-
-    // First refresh from sheet to get latest data
-    sheetGet(function(){
-      var found = false;
-      SESSIONS.forEach(function(sess) {
-        sheetData[sess.id].forEach(function(rec) {
-          if (rec.code === code && rec.type === 'confirmed') { found = true; transferRecord = rec; }
-        });
-      });
-
-      transferBtn.disabled = false;
-      transferBtn.textContent = 'Transfer Spot →';
-
-      if (!found) {
-        document.getElementById('transfer-code-err').textContent = 'Code not found or this spot is not eligible for transfer. Waitlist spots cannot be transferred.';
-        return;
-      }
-
-      transferRecord._transferNewName  = newName;
-      transferRecord._transferNewEmail = newEmail;
-
-      document.getElementById('transfer-waiver-name-display').textContent = newName;
-      document.getElementById('transfer-waiver-name-stmt').textContent    = newName;
-      document.getElementById('transfer-session-info').textContent        = transferRecord.sessionLabel + ' · Arrival ' + transferRecord.arrival + ' · Class ' + transferRecord.classStart;
-      buildTransferClauses();
-      showStep('step-transfer-waiver');
-      document.getElementById('step-transfer-waiver').scrollIntoView({ behavior: 'smooth' });
-      announce('Waiver loaded for ' + newName + '. ' + TOTAL_CLAUSES + ' clauses to review.');
-    });
-  });
-
-  function buildTransferClauses() {
-    var container = document.getElementById('transfer-clauses-container');
-    container.innerHTML = ''; transferChecked = {}; transferCount = 0; updateTransferProgress();
-    clauseTexts.forEach(function(text, i) {
-      var div = document.createElement('div'); div.className = 'clause';
-      var cb  = document.createElement('input'); cb.type = 'checkbox'; cb.id = 'tcb-' + i;
-      cb.setAttribute('aria-label', 'Agree to clause ' + (i+1) + ' of ' + TOTAL_CLAUSES);
-      var lbl = document.createElement('label'); lbl.htmlFor = 'tcb-' + i; lbl.className = 'clause-text';
-      lbl.innerHTML = '<span class="clause-num">' + (i+1) + '.</span> ' + text;
-      cb.addEventListener('change', function() {
-        if (this.checked) { transferChecked[i] = true; div.classList.add('checked'); }
-        else              { delete transferChecked[i]; div.classList.remove('checked'); }
-        updateTransferProgress();
-      });
-      div.appendChild(cb); div.appendChild(lbl); container.appendChild(div);
-    });
-  }
-
-  function updateTransferProgress() {
-    transferCount = Object.keys(transferChecked).length;
-    document.getElementById('transfer-confirmed-count').textContent = transferCount;
-    document.getElementById('transfer-remaining-text').textContent  = (TOTAL_CLAUSES - transferCount) + ' remaining';
-    document.getElementById('transfer-progress-fill').style.width   = (transferCount / TOTAL_CLAUSES * 100) + '%';
-    document.getElementById('transfer-progress-track').setAttribute('aria-valuenow', transferCount);
-    var fa = document.getElementById('transfer-final-agree');
-    if (transferCount === TOTAL_CLAUSES) { fa.disabled = false; }
-    else { fa.disabled = true; fa.checked = false; document.getElementById('transfer-sig-input').disabled = true; document.getElementById('transfer-sig-input').value = ''; document.getElementById('transfer-submit-btn').disabled = true; }
-  }
-
-  document.getElementById('transfer-final-agree').addEventListener('change', function() {
-    var si = document.getElementById('transfer-sig-input');
-    if (this.checked && transferCount === TOTAL_CLAUSES) { si.disabled = false; si.focus(); }
-    else { si.disabled = true; si.value = ''; document.getElementById('transfer-submit-btn').disabled = true; }
-  });
-
-  document.getElementById('transfer-sig-input').addEventListener('input', function() {
-    document.getElementById('transfer-submit-btn').disabled = this.value.trim().length < 2;
-    document.getElementById('transfer-sig-err').textContent = '';
-  });
-
-  document.getElementById('transfer-submit-btn').addEventListener('click', function() {
-    var newName  = transferRecord._transferNewName;
-    var newEmail = transferRecord._transferNewEmail;
-    var sig      = document.getElementById('transfer-sig-input').value.trim();
-
-    if (sig.toLowerCase() !== newName.toLowerCase()) {
-      document.getElementById('transfer-sig-err').textContent = 'Signature must match: "' + newName + '"';
-      document.getElementById('transfer-sig-input').setAttribute('aria-invalid','true');
-      document.getElementById('transfer-sig-input').focus(); return;
-    }
-
-    var tBtn = document.getElementById('transfer-submit-btn');
-    tBtn.disabled = true;
-    tBtn.textContent = 'Saving...';
-
-    var now = new Date(); var timeStr = now.toLocaleString(); var newCode = genCode();
-    var updatedRec = Object.assign({}, transferRecord, {
-      name: newName, email: newEmail, signature: sig,
-      code: newCode, newCode: newCode, time: timeStr,
-      timestamp: now.toISOString(), clausesAgreed: TOTAL_CLAUSES
-    });
-    transferSubmission = updatedRec;
-
-    sheetUpdate(updatedRec, function(result){
-      tBtn.disabled = false;
-      tBtn.textContent = 'Complete My Registration ✦';
-
-      document.getElementById('transfer-conf-name').textContent    = newName;
-      document.getElementById('transfer-conf-session').textContent = updatedRec.sessionLabel + ' · Arrival ' + updatedRec.arrival + ' · Class ' + updatedRec.classStart;
-      document.getElementById('transfer-conf-time').textContent    = timeStr;
-      showStep('step-transfer-done');
-      document.getElementById('step-transfer-done').scrollIntoView({ behavior: 'smooth' });
-      announce('Registration complete for ' + newName + '!');
-
-    // Email new person
-    if (typeof emailjs !== 'undefined') {
-      var el = document.getElementById('transfer-email-status');
-      el.innerHTML = '<div class="email-status email-sent">Sending confirmation...</div>';
-      emailjs.send(EMAILJS_SERVICE_ID, TMPL_TRANSFER, {
-        from_name: newName, to_email: newEmail,
-        session_label: updatedRec.sessionLabel, arrival_time: updatedRec.arrival,
-        class_time: updatedRec.classStart, sign_time: timeStr, cancel_code: newCode,
-        clauses_agreed: TOTAL_CLAUSES + ' of ' + TOTAL_CLAUSES,
-        venue: 'The Space Pilates Studio, 36 West 20th Street, 2nd Floor, New York, NY 10011',
-        cancel_url: window.location.href.split('?')[0] + '?cancel=' + newCode
-      }).then(function(){ el.innerHTML = '<div class="email-status email-sent">✅ Confirmation sent to ' + escapeHTML(newEmail) + '</div>'; })
-        .catch(function(){ el.innerHTML = '<div class="email-status email-failed">⚠️ Could not send email. Registration is still confirmed.</div>'; });
-      emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
-        from_name: newName, to_email: newEmail,
-        session_label: updatedRec.sessionLabel, arrival_time: updatedRec.arrival,
-        registration_type: 'Transfer (was: ' + transferRecord.name + ')',
-        sign_time: timeStr, clauses_agreed: TOTAL_CLAUSES + ' of ' + TOTAL_CLAUSES,
-        cancel_code: newCode
-      });
-    }
-      buildSessionCards();
-    }); // end sheetUpdate
-  });
-
-  document.getElementById('transfer-download-btn').addEventListener('click', function() {
-    if (!transferSubmission) return; generateWaiverPDF(transferSubmission);
-  });
-
   // Reset
   function resetForm() {
     selectedSession=null; checkedClauses={}; checkedCount=0; lastSubmission=null;
-    transferRecord=null; transferChecked={}; transferCount=0; transferSubmission=null;
     document.getElementById('reg-name').value='';
     document.getElementById('reg-email').value='';
     document.getElementById('sig-input').value='';
@@ -1133,18 +767,11 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('final-agree').checked=false;
     document.getElementById('final-agree').disabled=true;
     document.getElementById('submit-btn').disabled=true;
-    document.getElementById('transfer-sig-input').value='';
-    document.getElementById('transfer-sig-input').disabled=true;
-    document.getElementById('transfer-final-agree').checked=false;
-    document.getElementById('transfer-final-agree').disabled=true;
-    document.getElementById('transfer-submit-btn').disabled=true;
     document.getElementById('email-status').innerHTML='';
     document.getElementById('wl-email-status').innerHTML='';
-    document.getElementById('transfer-email-status').innerHTML='';
-    ['reg-name-err','reg-email-err','reg-session-err','sig-err','cancel-err','transfer-code-err','transfer-name-err','transfer-email-err','transfer-sig-err'].forEach(function(id){ document.getElementById(id).textContent=''; });
+    ['reg-name-err','reg-email-err','reg-session-err','sig-err'].forEach(function(id){ document.getElementById(id).textContent=''; });
     buildSessionCards(); showStep('step-register');
     window.scrollTo({top:0,behavior:'smooth'});
-    window.history.replaceState({},'',window.location.pathname);
     announce('Form reset.');
   }
   document.getElementById('new-btn').addEventListener('click', resetForm);
@@ -1419,8 +1046,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (sessionGrid) sessionGrid.setAttribute('role', 'radiogroup');
 
   // 3. Ensure all error message divs have role="alert"
-  ['reg-name-err','reg-email-err','reg-session-err','sig-err','cancel-err',
-   'transfer-code-err','transfer-name-err','transfer-email-err','transfer-sig-err'].forEach(function(id){
+  ['reg-name-err','reg-email-err','reg-session-err','sig-err'].forEach(function(id){
     var el = document.getElementById(id);
     if (el && !el.getAttribute('role')) el.setAttribute('role','alert');
     if (el) el.setAttribute('aria-live','polite');
