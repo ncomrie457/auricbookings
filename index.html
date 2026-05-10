@@ -1764,8 +1764,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   var urlParams = new URLSearchParams(window.location.search);
   var eventParam = urlParams.get('event');
-  if (eventParam === 'matchat') switchTab('tab-matchat');
-  else if (eventParam === 'coming') switchTab('tab-coming');
+  if (eventParam) {
+    setTimeout(function(){
+      if (eventParam === 'matchat') switchTab('tab-matchat');
+      else if (eventParam === 'coming') switchTab('tab-coming');
+    }, 100);
+  }
 
   // ── Notify List JSONBin ───────────────────────────────────────────────────
   var JSONBIN_NOTIFY_ID  = '69ff2348c0954111d8fb83bf';
