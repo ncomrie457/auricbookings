@@ -872,8 +872,7 @@ document.addEventListener('DOMContentLoaded', function() {
       cancel_code:rec.code, clauses_agreed:TOTAL_CLAUSES+' of '+TOTAL_CLAUSES,
       venue:'The Space Pilates Studio, 36 West 20th Street, 2nd Floor, New York, NY 10011',
       cancel_url:window.location.href.split('?')[0]+'?cancel='+rec.code,
-      stripe_url:sess.stripeUrl,
-      calendar_url:sess.calendarUrl
+      stripe_url:sess.stripeUrl
     }).then(function(){ el.innerHTML='<div class="email-status email-sent">✅ Waiver confirmation sent to '+escapeHTML(rec.email)+'</div>'; })
       .catch(function(){ el.innerHTML='<div class="email-status email-failed">⚠️ Could not send email. Your waiver is still saved.</div>'; });
     emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
@@ -1211,8 +1210,7 @@ document.addEventListener('DOMContentLoaded', function() {
           to_email:     item.rec.email,
           session_label: item.sess.label,
           arrival_time:  item.sess.arrival,
-          class_time:    item.sess.start,
-          calendar_url:  item.sess.calendarUrl
+          class_time:    item.sess.start
         }).then(function(){ sent++; if(sent===confirmed.length) alert('✅ Reminder sent to '+sent+' participant(s)!'); })
           .catch(function(){ alert('⚠️ Some reminders may not have sent.'); });
       });
