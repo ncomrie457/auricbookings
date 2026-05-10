@@ -816,13 +816,40 @@ document.addEventListener('DOMContentLoaded', function() {
     return (data[sid] || []).filter(function(r){ return r.type==='confirmed'; }).length; 
   }
 
-  // ── Mat & Chat Storage ────────────────────────────────────────────────────
-  function getMCData() {
-    try { return JSON.parse(localStorage.getItem(MC_STORAGE_KEY)) || { mc1:[] }; }
-    catch(e) { return { mc1:[] }; }
+  // ── Mat & Chat JSONBin ────────────────────────────────────────────────────
+  var MC_JSONBIN_URL = 'https://api.jsonbin.io/v3/b/6a00f959adc21f119a7f3687';
+
+  function getMCData(callback) {
+    fetch(MC_JSONBIN_URL + '/latest', {
+      headers: { 'X-Access-Key': JSONBIN_KEY }
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){ callback(data.record || { mc1:[] }); })
+    .catch(function(){
+      try { callback(JSON.parse(localStorage.getItem(MC_STORAGE_KEY)) || { mc1:[] }); }
+      catch(e){ callback({ mc1:[] }); }
+    });
   }
-  function saveMCData(d) { localStorage.setItem(MC_STORAGE_KEY, JSON.stringify(d)); }
-  function mcConfirmedCount() { return getMCData().mc1.filter(function(r){ return r.type==='confirmed'; }).length; }
+
+  function saveMCData(d, callback) {
+    fetch(MC_JSONBIN_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Access-Key': JSONBIN_KEY },
+      body: JSON.stringify(d)
+    })
+    .then(function(){
+      localStorage.setItem(MC_STORAGE_KEY, JSON.stringify(d));
+      if (callback) callback();
+    })
+    .catch(function(){
+      localStorage.setItem(MC_STORAGE_KEY, JSON.stringify(d));
+      if (callback) callback();
+    });
+  }
+
+  function mcConfirmedCount(data) {
+    return (data.mc1 || []).filter(function(r){ return r.type==='confirmed'; }).length;
+  }
   function genCode() { return 'AUR-' + Math.random().toString(36).substr(2,6).toUpperCase(); }
 
   function announce(msg) {
@@ -1299,26 +1326,27 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Mat & Chat section
-    var mcData = getMCData();
-    var mcBlock = document.createElement('div'); mcBlock.className='admin-session-block';
-    var mcConfirmed = mcData.mc1.filter(function(r){ return r.type==='confirmed'; });
-    var mcWaitlist  = mcData.mc1.filter(function(r){ return r.type==='waitlist'; });
-    mcBlock.innerHTML='<h3 style="color:var(--gold);">Mat &amp; Chat — Aug 1st · '+mcConfirmed.length+'/'+MC_MAX_SPOTS+' confirmed · '+mcWaitlist.length+' waitlisted</h3>';
-    if(!mcData.mc1.length){ mcBlock.innerHTML+='<div class="empty-state">No registrations yet.</div>'; }
-    else {
-      mcData.mc1.forEach(function(rec){
-        var item=document.createElement('div'); item.className='admin-sub-item';
-        var confirmBtn='<button onclick="mcAdminConfirmPayment(\''+rec.code+'\')" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .6rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;margin-top:.25rem;">✅ Send Payment Confirmation</button>';
-        var pendingBtn='<button onclick="mcAdminPaymentPending(\''+rec.code+'\')" style="background:#fff8e1;border:1px solid #ffe082;color:#f57f17;border-radius:6px;padding:.2rem .6rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;margin-top:.25rem;">⏳ Payment Pending</button>';
-        var removeBtn='<button onclick="mcAdminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .6rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;margin-top:.25rem;">Remove</button>';
-        item.innerHTML='<div><span class="aname">'+escapeHTML(rec.name)+'</span><br><span class="aemail">'+escapeHTML(rec.email)+'</span></div>'+
-          '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
-          '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
-          '<br>'+confirmBtn+'<br>'+pendingBtn+'<br>'+removeBtn+'</div>';
-        mcBlock.appendChild(item);
-      });
-    }
-    body.appendChild(mcBlock);
+    getMCData(function(mcData){
+      var mcBlock = document.createElement('div'); mcBlock.className='admin-session-block';
+      var mcConfirmed = mcData.mc1.filter(function(r){ return r.type==='confirmed'; });
+      var mcWaitlist  = mcData.mc1.filter(function(r){ return r.type==='waitlist'; });
+      mcBlock.innerHTML='<h3 style="color:var(--gold);">Mat &amp; Chat — Aug 1st · '+mcConfirmed.length+'/'+MC_MAX_SPOTS+' confirmed · '+mcWaitlist.length+' waitlisted</h3>';
+      if(!mcData.mc1.length){ mcBlock.innerHTML+='<div class="empty-state">No registrations yet.</div>'; }
+      else {
+        mcData.mc1.forEach(function(rec){
+          var item=document.createElement('div'); item.className='admin-sub-item';
+          var confirmBtn='<button onclick="mcAdminConfirmPayment(\''+rec.code+'\')" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .6rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;margin-top:.25rem;">✅ Send Payment Confirmation</button>';
+          var pendingBtn='<button onclick="mcAdminPaymentPending(\''+rec.code+'\')" style="background:#fff8e1;border:1px solid #ffe082;color:#f57f17;border-radius:6px;padding:.2rem .6rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;margin-top:.25rem;">⏳ Payment Pending</button>';
+          var removeBtn='<button onclick="mcAdminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .6rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;margin-top:.25rem;">Remove</button>';
+          item.innerHTML='<div><span class="aname">'+escapeHTML(rec.name)+'</span><br><span class="aemail">'+escapeHTML(rec.email)+'</span></div>'+
+            '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
+            '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
+            '<br>'+confirmBtn+'<br>'+pendingBtn+'<br>'+removeBtn+'</div>';
+          mcBlock.appendChild(item);
+        });
+      }
+      document.getElementById('admin-body').appendChild(mcBlock);
+    });
   }
 
   window.adminPaymentPending = function(code) {
@@ -1419,33 +1447,35 @@ document.addEventListener('DOMContentLoaded', function() {
           confirmed.push({ rec:rec, sess:sess, tmpl:TMPL_REMINDER });
         });
       });
-      var mcData2 = getMCData();
-      mcData2.mc1.filter(function(r){ return r.type==='confirmed'; }).forEach(function(rec){
-        confirmed.push({ rec:rec, sess:{ label:'Mat & Chat', arrival:'11:25 AM', start:'11:30 AM' }, tmpl:MC_TMPL_REMINDER });
-      });
-      if (!confirmed.length){ alert('No confirmed registrants to remind.'); return; }
-      if (!confirm('Send reminder emails to '+confirmed.length+' confirmed participant(s)?')) return;
-      if (typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
-      var sent=0;
-      confirmed.forEach(function(item){
-        emailjs.send(EMAILJS_SERVICE_ID, item.tmpl || TMPL_REMINDER, {
-          from_name:    item.rec.name,
-          to_email:     item.rec.email,
-          session_label: item.sess.label,
-          arrival_time:  item.sess.arrival,
-          class_time:    item.sess.start
-        }).then(function(){ sent++; if(sent===confirmed.length) alert('✅ Reminder sent to '+sent+' participant(s)!'); })
-          .catch(function(){ alert('⚠️ Some reminders may not have sent.'); });
-      });
-    });
+      getMCData(function(mcData2){
+        mcData2.mc1.filter(function(r){ return r.type==='confirmed'; }).forEach(function(rec){
+          confirmed.push({ rec:rec, sess:{ label:'Mat & Chat', arrival:'11:25 AM', start:'11:30 AM' }, tmpl:MC_TMPL_REMINDER });
+        });
+        if (!confirmed.length){ alert('No confirmed registrants to remind.'); return; }
+        if (!confirm('Send reminder emails to '+confirmed.length+' confirmed participant(s)?')) return;
+        if (typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
+        var sent=0;
+        confirmed.forEach(function(item){
+          emailjs.send(EMAILJS_SERVICE_ID, item.tmpl || TMPL_REMINDER, {
+            from_name:    item.rec.name,
+            to_email:     item.rec.email,
+            session_label: item.sess.label,
+            arrival_time:  item.sess.arrival,
+            class_time:    item.sess.start
+          }).then(function(){ sent++; if(sent===confirmed.length) alert('✅ Reminder sent to '+sent+' participant(s)!'); })
+            .catch(function(){ alert('⚠️ Some reminders may not have sent.'); });
+        });
+      }); // end getMCData
+    }); // end getData
   });
 
   document.getElementById('admin-clear-btn').addEventListener('click', function(){
     if (confirm('Are you sure you want to delete ALL registrations for both events? This cannot be undone.')) {
       saveData({ s1:[], s2:[] }, function(){
-        saveMCData({ mc1:[] });
-        renderAdmin(); buildSessionCards(); buildMCSpots();
-        alert('All data cleared. Spots are now reset.');
+        saveMCData({ mc1:[] }, function(){
+          renderAdmin(); buildSessionCards(); buildMCSpots();
+          alert('All data cleared. Spots are now reset.');
+        });
       });
     }
   });
@@ -1470,23 +1500,25 @@ document.addEventListener('DOMContentLoaded', function() {
   var mcCheckedClauses = {}; var mcCheckedCount = 0; var mcLastSubmission = null;
 
   function buildMCSpots() {
-    var remaining = MC_MAX_SPOTS - mcConfirmedCount();
-    var isFull = remaining <= 0;
-    var el = document.getElementById('mc-spots-display');
-    if (!el) return;
-    if (isFull) {
-      el.innerHTML = '<span style="color:var(--red);font-weight:700;">This session is full — you can join the waitlist below.</span>';
-      document.getElementById('mc-join-waitlist-btn').classList.remove('hidden');
-      document.getElementById('mc-to-waiver-btn').classList.add('hidden');
-    } else if (remaining <= 5) {
-      el.innerHTML = '<span style="color:#b07840;font-weight:600;">Only '+remaining+' spot'+(remaining===1?'':'s')+' left!</span>';
-      document.getElementById('mc-join-waitlist-btn').classList.add('hidden');
-      document.getElementById('mc-to-waiver-btn').classList.remove('hidden');
-    } else {
-      el.innerHTML = '<span style="color:#4a7c59;font-weight:600;">'+remaining+' spots available</span>';
-      document.getElementById('mc-join-waitlist-btn').classList.add('hidden');
-      document.getElementById('mc-to-waiver-btn').classList.remove('hidden');
-    }
+    getMCData(function(data) {
+      var remaining = MC_MAX_SPOTS - mcConfirmedCount(data);
+      var isFull = remaining <= 0;
+      var el = document.getElementById('mc-spots-display');
+      if (!el) return;
+      if (isFull) {
+        el.innerHTML = '<span style="color:var(--red);font-weight:700;">This session is full — you can join the waitlist below.</span>';
+        document.getElementById('mc-join-waitlist-btn').classList.remove('hidden');
+        document.getElementById('mc-to-waiver-btn').classList.add('hidden');
+      } else if (remaining <= 5) {
+        el.innerHTML = '<span style="color:#b07840;font-weight:600;">Only '+remaining+' spot'+(remaining===1?'':'s')+' left!</span>';
+        document.getElementById('mc-join-waitlist-btn').classList.add('hidden');
+        document.getElementById('mc-to-waiver-btn').classList.remove('hidden');
+      } else {
+        el.innerHTML = '<span style="color:#4a7c59;font-weight:600;">'+remaining+' spots available</span>';
+        document.getElementById('mc-join-waitlist-btn').classList.add('hidden');
+        document.getElementById('mc-to-waiver-btn').classList.remove('hidden');
+      }
+    });
   }
   buildMCSpots();
 
@@ -1501,18 +1533,25 @@ document.addEventListener('DOMContentLoaded', function() {
     else { document.getElementById('mc-reg-email-err').textContent=''; }
     if (!ok) return;
 
-    var data = getMCData();
-    var wlPos = data.mc1.filter(function(r){ return r.type==='waitlist'; }).length + 1;
-    var code = genCode(); var now = new Date(); var timeStr = now.toLocaleString();
-    var record = { name:name, email:email, session:'mc1', sessionLabel:'Mat & Chat', arrival:'11:25 AM', classStart:'11:30 AM', type:'waitlist', wlPosition:wlPos, code:code, time:timeStr, timestamp:now.toISOString(), clausesAgreed:0 };
-    data.mc1.push(record); saveMCData(data);
-    document.getElementById('mc-wl-name').textContent = name;
-    document.getElementById('mc-wl-email').textContent = email;
-    document.getElementById('mc-waitlist-pos-display').textContent = 'Waitlist position #'+wlPos;
-    mcShowStep('mc-step-waitlist');
-    document.getElementById('mc-page-layout').classList.remove('waiver-active');
-    announce('Added to waitlist at position '+wlPos+'.');
-    buildMCSpots();
+    var btn = document.getElementById('mc-join-waitlist-btn');
+    btn.disabled=true; btn.textContent='Saving...';
+
+    getMCData(function(data) {
+      var wlPos = data.mc1.filter(function(r){ return r.type==='waitlist'; }).length + 1;
+      var code = genCode(); var now = new Date(); var timeStr = now.toLocaleString();
+      var record = { name:name, email:email, session:'mc1', sessionLabel:'Mat & Chat', arrival:'11:25 AM', classStart:'11:30 AM', type:'waitlist', wlPosition:wlPos, code:code, time:timeStr, timestamp:now.toISOString(), clausesAgreed:0 };
+      data.mc1.push(record);
+      saveMCData(data, function() {
+        btn.disabled=false; btn.textContent='Join Waitlist →';
+        document.getElementById('mc-wl-name').textContent = name;
+        document.getElementById('mc-wl-email').textContent = email;
+        document.getElementById('mc-waitlist-pos-display').textContent = 'Waitlist position #'+wlPos;
+        mcShowStep('mc-step-waitlist');
+        document.getElementById('mc-page-layout').classList.remove('waiver-active');
+        announce('Added to waitlist at position '+wlPos+'.');
+        buildMCSpots();
+      });
+    });
   });
 
   // MC Continue to Waiver
@@ -1597,40 +1636,41 @@ document.addEventListener('DOMContentLoaded', function() {
     var submitBtn = document.getElementById('mc-submit-btn');
     submitBtn.disabled=true; submitBtn.textContent='Saving...';
 
-    var data = getMCData();
-    var confirmed = data.mc1.filter(function(r){ return r.type==='confirmed'; }).length;
-    var type = confirmed < MC_MAX_SPOTS ? 'confirmed' : 'waitlist';
-    var wlPos = type==='waitlist' ? data.mc1.filter(function(r){ return r.type==='waitlist'; }).length+1 : null;
-    var now=new Date(); var timeStr=now.toLocaleString(); var code=genCode();
-    var record={ name:name, email:email, signature:sig, session:'mc1', sessionLabel:'Mat & Chat', arrival:'11:25 AM', classStart:'11:30 AM', time:timeStr, timestamp:now.toISOString(), code:code, type:type, wlPosition:wlPos, clausesAgreed:19 };
-    data.mc1.push(record); saveMCData(data); mcLastSubmission=record;
+    getMCData(function(data) {
+      var confirmed = data.mc1.filter(function(r){ return r.type==='confirmed'; }).length;
+      var type = confirmed < MC_MAX_SPOTS ? 'confirmed' : 'waitlist';
+      var wlPos = type==='waitlist' ? data.mc1.filter(function(r){ return r.type==='waitlist'; }).length+1 : null;
+      var now=new Date(); var timeStr=now.toLocaleString(); var code=genCode();
+      var record={ name:name, email:email, signature:sig, session:'mc1', sessionLabel:'Mat & Chat', arrival:'11:25 AM', classStart:'11:30 AM', time:timeStr, timestamp:now.toISOString(), code:code, type:type, wlPosition:wlPos, clausesAgreed:19 };
+      data.mc1.push(record); mcLastSubmission=record;
 
-    submitBtn.disabled=false; submitBtn.textContent='Submit & Reserve My Spot ✦';
-
-    if(type==='confirmed'){
-      document.getElementById('mc-conf-name').textContent = name;
-      document.getElementById('mc-conf-time').textContent = timeStr;
-      mcShowStep('mc-step-confirmed');
-      document.getElementById('mc-page-layout').classList.remove('waiver-active');
-      document.getElementById('mc-step-confirmed').scrollIntoView({behavior:'smooth'});
-      announce('Waiver signed! Complete payment to confirm your spot.');
-      // Admin notification
-      if(typeof emailjs!=='undefined'){
-        emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
-          from_name:name, to_email:email, session_label:'Mat & Chat — August 1st',
-          arrival_time:'11:25 AM', registration_type:'Waiver signed — payment pending',
-          sign_time:timeStr, clauses_agreed:'19 of 19', cancel_code:code
-        });
-      }
-    } else {
-      document.getElementById('mc-wl-name').textContent = name;
-      document.getElementById('mc-wl-email').textContent = email;
-      document.getElementById('mc-waitlist-pos-display').textContent = 'Waitlist position #'+wlPos;
-      mcShowStep('mc-step-waitlist');
-      document.getElementById('mc-page-layout').classList.remove('waiver-active');
-      announce('Session full. Added to waitlist at position '+wlPos+'.');
-    }
-    buildMCSpots();
+      saveMCData(data, function() {
+        submitBtn.disabled=false; submitBtn.textContent='Submit & Reserve My Spot ✦';
+        if(type==='confirmed'){
+          document.getElementById('mc-conf-name').textContent = name;
+          document.getElementById('mc-conf-time').textContent = timeStr;
+          mcShowStep('mc-step-confirmed');
+          document.getElementById('mc-page-layout').classList.remove('waiver-active');
+          document.getElementById('mc-step-confirmed').scrollIntoView({behavior:'smooth'});
+          announce('Waiver signed! Complete payment to confirm your spot.');
+          if(typeof emailjs!=='undefined'){
+            emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
+              from_name:name, to_email:email, session_label:'Mat & Chat — August 1st',
+              arrival_time:'11:25 AM', registration_type:'Waiver signed — payment pending',
+              sign_time:timeStr, clauses_agreed:'19 of 19', cancel_code:code
+            });
+          }
+        } else {
+          document.getElementById('mc-wl-name').textContent = name;
+          document.getElementById('mc-wl-email').textContent = email;
+          document.getElementById('mc-waitlist-pos-display').textContent = 'Waitlist position #'+wlPos;
+          mcShowStep('mc-step-waitlist');
+          document.getElementById('mc-page-layout').classList.remove('waiver-active');
+          announce('Session full. Added to waitlist at position '+wlPos+'.');
+        }
+        buildMCSpots();
+      });
+    });
   });
 
   var mcSteps = ['mc-step-register','mc-step-waiver','mc-step-confirmed','mc-step-waitlist'];
@@ -1662,38 +1702,40 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // MC Admin functions
   window.mcAdminConfirmPayment = function(code){
-    var data = getMCData(); var foundPerson;
-    data.mc1.forEach(function(rec){ if(rec.code===code) foundPerson=rec; });
-    if(!foundPerson){ alert('Could not find registration.'); return; }
-    if(!confirm('Send payment confirmation to '+foundPerson.name+' ('+foundPerson.email+')?')) return;
-    if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
-    emailjs.send(EMAILJS_SERVICE_ID, MC_TMPL_PAYMENT_CONFIRM, {
-      from_name:foundPerson.name, to_email:foundPerson.email,
-      arrival_time:'11:25 AM', class_time:'11:30 AM'
-    }).then(function(){ alert('✅ Payment confirmation sent to '+foundPerson.email); })
-      .catch(function(){ alert('⚠️ Could not send. Check EmailJS dashboard.'); });
+    getMCData(function(data){
+      var foundPerson = data.mc1.find(function(r){ return r.code===code; });
+      if(!foundPerson){ alert('Could not find registration.'); return; }
+      if(!confirm('Send payment confirmation to '+foundPerson.name+' ('+foundPerson.email+')?')) return;
+      if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
+      emailjs.send(EMAILJS_SERVICE_ID, MC_TMPL_PAYMENT_CONFIRM, {
+        from_name:foundPerson.name, to_email:foundPerson.email,
+        arrival_time:'11:25 AM', class_time:'11:30 AM'
+      }).then(function(){ alert('✅ Payment confirmation sent to '+foundPerson.email); })
+        .catch(function(){ alert('⚠️ Could not send. Check EmailJS dashboard.'); });
+    });
   };
 
   window.mcAdminPaymentPending = function(code){
-    var data = getMCData(); var foundPerson;
-    data.mc1.forEach(function(rec){ if(rec.code===code) foundPerson=rec; });
-    if(!foundPerson){ alert('Could not find registration.'); return; }
-    if(!confirm('Send payment pending reminder to '+foundPerson.name+' ('+foundPerson.email+')?')) return;
-    if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
-    emailjs.send(EMAILJS_SERVICE_ID, MC_TMPL_PAYMENT_PENDING, {
-      from_name:foundPerson.name, to_email:foundPerson.email,
-      arrival_time:'11:25 AM', class_time:'11:30 AM',
-      stripe_url:MC_EVENT.stripeUrl
-    }).then(function(){ alert('⏳ Payment pending sent to '+foundPerson.email); })
-      .catch(function(){ alert('⚠️ Could not send. Check EmailJS dashboard.'); });
+    getMCData(function(data){
+      var foundPerson = data.mc1.find(function(r){ return r.code===code; });
+      if(!foundPerson){ alert('Could not find registration.'); return; }
+      if(!confirm('Send payment pending reminder to '+foundPerson.name+' ('+foundPerson.email+')?')) return;
+      if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
+      emailjs.send(EMAILJS_SERVICE_ID, MC_TMPL_PAYMENT_PENDING, {
+        from_name:foundPerson.name, to_email:foundPerson.email,
+        arrival_time:'11:25 AM', class_time:'11:30 AM',
+        stripe_url:MC_EVENT.stripeUrl
+      }).then(function(){ alert('⏳ Payment pending sent to '+foundPerson.email); })
+        .catch(function(){ alert('⚠️ Could not send. Check EmailJS dashboard.'); });
+    });
   };
 
   window.mcAdminRemove = function(code){
     if(!confirm('Remove this registration? This cannot be undone.')) return;
-    var data = getMCData(); var foundPerson;
-    data.mc1.forEach(function(rec){ if(rec.code===code) foundPerson=rec; });
-    data.mc1 = data.mc1.filter(function(r){ return r.code!==code; });
-    saveMCData(data); renderAdmin(); buildMCSpots();
+    getMCData(function(data){
+      data.mc1 = data.mc1.filter(function(r){ return r.code!==code; });
+      saveMCData(data, function(){ renderAdmin(); buildMCSpots(); });
+    });
   };
 
   // ── End Mat & Chat JS ──────────────────────────────────────────────────────
