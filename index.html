@@ -1292,15 +1292,13 @@ document.addEventListener('DOMContentLoaded', function() {
         else {
           data[sess.id].forEach(function(rec){
             var item=document.createElement('div'); item.className='admin-sub-item';
-            var removeBtn='<button onclick="adminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .6rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;margin-top:.25rem;">Remove</button>';
-            var confirmBtn='<button onclick="adminConfirmPayment(\''+rec.code+'\')" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .6rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;margin-top:.25rem;">✅ Payment Confirmed</button>';
-            var pendingBtn='<button onclick="adminPaymentPending(\''+rec.code+'\')" style="background:#fef9e7;border:1px solid #f0dca0;color:#7a6320;border-radius:6px;padding:.2rem .6rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;margin-top:.25rem;">⏳ Payment Pending</button>';
+            var removeBtn='<button onclick="adminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">🗑 Remove</button>';
+            var confirmBtn='<button onclick="adminConfirmPayment(\''+rec.code+'\')" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">✅ Confirmed</button>';
+            var pendingBtn='<button onclick="adminPaymentPending(\''+rec.code+'\')" style="background:#fef9e7;border:1px solid #f0dca0;color:#7a6320;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">⏳ Pending</button>';
             item.innerHTML='<div><span class="aname">'+escapeHTML(rec.name)+'</span><br><span class="aemail">'+escapeHTML(rec.email)+'</span></div>'+
               '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
               '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
-              '<br>'+confirmBtn+
-              '<br>'+pendingBtn+
-              '<br>'+removeBtn+'</div>';
+              '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;">'+confirmBtn+pendingBtn+removeBtn+'</div></div>';
             block.appendChild(item);
           });
         }
@@ -1335,13 +1333,13 @@ document.addEventListener('DOMContentLoaded', function() {
       else {
         mcData.mc1.forEach(function(rec){
           var item=document.createElement('div'); item.className='admin-sub-item';
-          var confirmBtn='<button onclick="mcAdminConfirmPayment(\''+rec.code+'\')" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .6rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;margin-top:.25rem;">✅ Send Payment Confirmation</button>';
-          var pendingBtn='<button onclick="mcAdminPaymentPending(\''+rec.code+'\')" style="background:#fff8e1;border:1px solid #ffe082;color:#f57f17;border-radius:6px;padding:.2rem .6rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;margin-top:.25rem;">⏳ Payment Pending</button>';
-          var removeBtn='<button onclick="mcAdminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .6rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;margin-top:.25rem;">Remove</button>';
+          var confirmBtn='<button onclick="mcAdminConfirmPayment(\''+rec.code+'\')" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">✅ Confirmed</button>';
+          var pendingBtn='<button onclick="mcAdminPaymentPending(\''+rec.code+'\')" style="background:#fff8e1;border:1px solid #ffe082;color:#f57f17;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">⏳ Pending</button>';
+          var removeBtn='<button onclick="mcAdminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">🗑 Remove</button>';
           item.innerHTML='<div><span class="aname">'+escapeHTML(rec.name)+'</span><br><span class="aemail">'+escapeHTML(rec.email)+'</span></div>'+
             '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
             '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
-            '<br>'+confirmBtn+'<br>'+pendingBtn+'<br>'+removeBtn+'</div>';
+            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;">'+confirmBtn+pendingBtn+removeBtn+'</div></div>';
           mcBlock.appendChild(item);
         });
       }
