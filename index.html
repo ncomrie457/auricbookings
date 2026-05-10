@@ -189,7 +189,13 @@
     .notify-card h2 { font-family:'Playfair Display',serif; font-size:1.3rem; color:var(--brown); margin-bottom:.4rem; font-weight:700; }
     .notify-status { margin-top:1rem; padding:.75rem 1rem; border-radius:10px; font-size:.85rem; }
 
-    @media(max-width:600px){ .tab-btn { padding:.75rem 1rem; font-size:.82rem; } }
+    .page-layout.waiver-active { grid-template-columns:1fr; }
+    .page-layout.waiver-active .flyer-col { display:none; }
+
+    @media(max-width:600px){ 
+      .tab-btn { padding:.75rem 1rem; font-size:.82rem; }
+      #step-waiver .waiver-two-col { grid-template-columns:1fr !important; }
+    }
   </style>
 </head>
 <body>
@@ -283,60 +289,92 @@
 
       <!-- STEP 2: Waiver -->
       <div id="step-waiver" class="card hidden">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.5rem;margin-bottom:.4rem;">
-          <h2>Liability Waiver &amp; Release</h2>
-          <span style="font-size:.85rem;color:var(--text-muted);">Signing as <strong id="waiver-name-display"></strong></span>
+
+        <!-- Summary box at top -->
+        <div id="waiver-summary-box" style="background:#faf5ee;border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.25rem;margin-bottom:1.25rem;">
+          <p style="font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--brown);margin-bottom:.6rem;">Your Booking Summary</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;font-size:.85rem;color:#3d322a;margin-bottom:.5rem;">
+            <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Session</span><strong id="waiver-summary-session"></strong></div>
+            <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Arrival</span><strong id="waiver-summary-arrival"></strong></div>
+            <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Class Starts</span><strong id="waiver-summary-start"></strong></div>
+            <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Price</span><strong>$25</strong></div>
+          </div>
+          <p style="font-size:.8rem;color:#3d322a;">📍 The Space Pilates Studio · 36 West 20th Street, 2nd Floor · New York, NY 10011</p>
         </div>
-        <p class="subtitle">Read each clause carefully and check the box to confirm. All 19 clauses must be acknowledged before signing.</p>
-        <div class="progress-section">
-          <div class="progress-label">
-            <span><span id="confirmed-count">0</span>/19 confirmed</span>
-            <span id="remaining-text">19 remaining</span>
+
+        <!-- Two column layout: waiver left, payment right -->
+        <div class="waiver-two-col" style="display:grid;grid-template-columns:1fr 280px;gap:1.5rem;align-items:start;">
+
+          <!-- Left: Waiver -->
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.5rem;margin-bottom:.4rem;">
+              <h2>Liability Waiver &amp; Release</h2>
+              <span style="font-size:.85rem;color:var(--text-muted);">Signing as <strong id="waiver-name-display"></strong></span>
+            </div>
+            <p class="subtitle">Read each clause carefully and check the box to confirm. All 19 clauses must be acknowledged before signing.</p>
+            <div class="progress-section">
+              <div class="progress-label">
+                <span><span id="confirmed-count">0</span>/19 confirmed</span>
+                <span id="remaining-text">19 remaining</span>
+              </div>
+              <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="19" aria-label="Clause confirmation progress" id="progress-track">
+                <div class="progress-fill" id="progress-fill"></div>
+              </div>
+            </div>
+            <div id="clauses-container" role="group" aria-label="Waiver clauses"></div>
+            <div class="sig-section">
+              <div class="statement">
+                I, <strong id="waiver-name-stmt"></strong>, acknowledge that I have carefully read and fully understand this Liability Waiver &amp; Release. I understand that I am giving up substantial legal rights, including the right to sue. I sign this agreement freely and voluntarily, without any inducement.
+              </div>
+              <div class="final-check">
+                <input type="checkbox" id="final-agree" disabled>
+                <label for="final-agree">I have read, understood, and agree to all terms above</label>
+              </div>
+              <p style="font-size:.78rem;color:var(--text-muted);line-height:1.6;margin-bottom:.75rem;">By typing your name below you are signing this agreement electronically. You agree that your electronic signature is the legal equivalent of your handwritten signature and is legally binding under the Electronic Signatures in Global and National Commerce Act (E-SIGN Act), 15 U.S.C. § 7001.</p>
+              <div class="field">
+                <label for="sig-input">Digital Signature — Type your full name <span class="required" aria-hidden="true">*</span><span class="sr-only"> required</span></label>
+                <input type="text" id="sig-input" placeholder="Type your full legal name to sign" aria-describedby="sig-err" aria-required="true" disabled>
+                <div id="sig-err" class="err-msg" role="alert"></div>
+              </div>
+              <button type="button" id="submit-btn" class="btn btn-primary btn-full" disabled>Submit &amp; Reserve My Spot ✦</button>
+            </div>
           </div>
-          <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="19" aria-label="Clause confirmation progress" id="progress-track">
-            <div class="progress-fill" id="progress-fill"></div>
+
+          <!-- Right: Sticky payment box -->
+          <div style="position:sticky;top:1.5rem;">
+            <div style="background:#faf5ee;border:1px solid var(--border);border-radius:12px;padding:1.25rem;text-align:center;">
+              <p style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--brown);margin-bottom:.5rem;">Complete Your Booking</p>
+              <p style="font-size:.82rem;color:#3d322a;line-height:1.6;margin-bottom:.75rem;">Check all 19 clauses, sign your name, then pay $25 to confirm your spot.</p>
+              <a id="waiver-stripe-link" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-full" style="text-decoration:none;font-size:.9rem;justify-content:center;">💳 Pay $25 →</a>
+              <p style="font-size:.72rem;color:var(--text-muted);margin-top:.6rem;line-height:1.5;">Only click once. Check your inbox for a Stripe receipt if you've already paid.</p>
+            </div>
           </div>
-        </div>
-        <div id="clauses-container" role="group" aria-label="Waiver clauses"></div>
-        <div class="sig-section">
-          <div class="statement">
-            I, <strong id="waiver-name-stmt"></strong>, acknowledge that I have carefully read and fully understand this Liability Waiver &amp; Release. I understand that I am giving up substantial legal rights, including the right to sue. I sign this agreement freely and voluntarily, without any inducement.
-          </div>
-          <div class="final-check">
-            <input type="checkbox" id="final-agree" disabled>
-            <label for="final-agree">I have read, understood, and agree to all terms above</label>
-          </div>
-          <p style="font-size:.78rem;color:var(--text-muted);line-height:1.6;margin-bottom:.75rem;">By typing your name below you are signing this agreement electronically. You agree that your electronic signature is the legal equivalent of your handwritten signature and is legally binding under the Electronic Signatures in Global and National Commerce Act (E-SIGN Act), 15 U.S.C. § 7001.</p>
-          <div class="field">
-            <label for="sig-input">Digital Signature — Type your full name <span class="required" aria-hidden="true">*</span><span class="sr-only"> required</span></label>
-            <input type="text" id="sig-input" placeholder="Type your full legal name to sign" aria-describedby="sig-err" aria-required="true" disabled>
-            <div id="sig-err" class="err-msg" role="alert"></div>
-          </div>
-          <button type="button" id="submit-btn" class="btn btn-primary btn-full" disabled>Submit &amp; Reserve My Spot ✦</button>
-        </div>
+
+        </div><!-- /two col -->
       </div>
 
       <!-- STEP 3a: Waiver signed — pay to confirm -->
       <div id="step-confirmed" class="card success-card hidden">
         <div class="checkmark" aria-hidden="true">✦</div>
-        <h2 style="color:var(--brown);">Almost There!</h2>
-        <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:1.25rem;">Your waiver has been signed. Complete your payment of <strong>$25</strong> to confirm your spot.</p>
+        <h2 style="color:var(--brown);">Thank You!</h2>
+        <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:1.25rem;">Your waiver has been completed successfully.</p>
         <p class="detail"><strong>Name:</strong> <span id="conf-name"></span></p>
         <p class="detail"><strong>Session:</strong> <span id="conf-session"></span></p>
         <p class="detail"><strong>Waiver signed at:</strong> <span id="conf-time"></span></p>
         <div id="email-status"></div>
-        <div style="margin-top:1rem;padding:.75rem 1rem;background:#fef9e7;border:1px solid #f0dca0;border-radius:10px;font-size:.82rem;color:#7a6320;line-height:1.6;">
-          📬 <strong>Can't find your confirmation email?</strong> Please check your <strong>spam or junk folder</strong> — it may have landed there. Mark it as "Not Spam" so future emails come through.
-        </div>
-        <div style="margin-top:1.25rem;padding:1rem 1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:10px;">
-          <p style="font-size:.85rem;color:#3d322a;line-height:1.7;margin-bottom:.75rem;">⚠️ <strong>Your spot is not confirmed until payment is received.</strong> Spots are held on a first-paid basis. If you do not complete payment your spot may be released.</p>
-          <a id="stripe-pay-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-full" style="text-decoration:none;justify-content:center;">💳 Pay $25 to Confirm My Spot →</a>
-          <p style="font-size:.78rem;color:var(--text-muted);margin-top:.75rem;line-height:1.6;text-align:center;">Only click once. If you have already completed payment, please check your email for a Stripe receipt before clicking again. Contact us at auricmovement@outlook.com if you have any issues.</p>
+        <div style="margin-top:1.25rem;padding:1rem 1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:10px;text-align:left;">
+          <p style="font-size:.9rem;color:var(--brown);font-weight:700;margin-bottom:.5rem;">What happens next?</p>
+          <p style="font-size:.85rem;color:#3d322a;line-height:1.75;">Our team will verify your payment and send you a confirmation email once your spot is secured. If you have not yet completed payment, please do so below.</p>
+          <a id="stripe-pay-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="text-decoration:none;margin-top:.75rem;font-size:.85rem;">💳 Complete Payment →</a>
+          <p style="font-size:.75rem;color:var(--text-muted);margin-top:.5rem;">Already paid? You're all set — watch for your confirmation email.</p>
         </div>
         <div style="margin-top:1rem;padding:1rem 1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:10px;text-align:left;">
           <p style="font-size:.85rem;color:var(--brown);font-weight:700;margin-bottom:.35rem;">📋 Studio Waiver Required</p>
           <p style="font-size:.85rem;color:#3d322a;line-height:1.7;">You must also sign The Space Pilates Studio's waiver before attending:</p>
           <a href="https://app.waiversign.com/e/5dea878fd3241f001981567e/doc/5dea8941d3241f001981582c?event=none" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:.6rem;color:var(--gold);font-weight:700;font-size:.85rem;">Sign the Studio Waiver →</a>
+        </div>
+        <div style="margin-top:1rem;padding:.75rem 1rem;background:#fef9e7;border:1px solid #f0dca0;border-radius:10px;font-size:.82rem;color:#7a6320;line-height:1.6;">
+          📬 <strong>Can't find your waiver email?</strong> Please check your <strong>spam or junk folder</strong> and mark it as "Not Spam".
         </div>
         <div class="success-actions">
           <button type="button" id="download-waiver-btn" class="btn btn-secondary">📄 Download My Waiver (PDF)</button>
@@ -507,7 +545,9 @@ document.addEventListener('DOMContentLoaded', function() {
   var TMPL_WL_OPEN    = 'template_upkcys7'; // Waitlist Spot Opened
   var TMPL_ADMIN      = 'template_6qkcf8j'; // Admin Notification
   var TMPL_REMINDER   = 'template_1fol3sf'; // Event Reminder
-  var TMPL_BLAST      = 'template_ncfk6or'; // Mat & Chat Registration Open
+  var TMPL_BLAST           = 'template_ncfk6or'; // Mat & Chat Registration Open
+  var TMPL_PAYMENT_CONFIRM = 'template_1lv10up'; // Payment Confirmation
+  var TMPL_PAYMENT_PENDING = 'template_kx1d3td'; // Payment Pending
   var MAX_PER_SESSION     = 6;
   var STORAGE_KEY         = 'auric_june19';
   var TOTAL_CLAUSES       = 19;
@@ -693,8 +733,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('waiver-name-display').textContent = name;
     document.getElementById('waiver-name-stmt').textContent    = name;
+
+    // Populate summary box
+    var sess = SESSIONS.find(function(s){ return s.id===selectedSession; });
+    document.getElementById('waiver-summary-session').textContent = sess.label;
+    document.getElementById('waiver-summary-arrival').textContent = sess.arrival;
+    document.getElementById('waiver-summary-start').textContent   = sess.start;
+    document.getElementById('waiver-stripe-link').href            = sess.stripeUrl;
     buildClauses();
     showStep('step-waiver');
+    document.querySelector('.page-layout').classList.add('waiver-active');
     document.getElementById('step-waiver').scrollIntoView({ behavior:'smooth' });
     announce('Waiver loaded. '+TOTAL_CLAUSES+' clauses to review.');
   });
@@ -866,6 +914,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('wl-email-status').innerHTML='';
     ['reg-name-err','reg-email-err','reg-session-err','sig-err'].forEach(function(id){ document.getElementById(id).textContent=''; });
     buildSessionCards(); showStep('step-register');
+    document.querySelector('.page-layout').classList.remove('waiver-active');
     window.scrollTo({top:0,behavior:'smooth'});
     announce('Form reset.');
   }
@@ -1001,10 +1050,14 @@ document.addEventListener('DOMContentLoaded', function() {
         else {
           data[sess.id].forEach(function(rec){
             var item=document.createElement('div'); item.className='admin-sub-item';
-            var removeBtn='<button onclick="adminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .6rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;">Remove</button>';
+            var removeBtn='<button onclick="adminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .6rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;margin-top:.25rem;">Remove</button>';
+            var confirmBtn='<button onclick="adminConfirmPayment(\''+rec.code+'\')" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .6rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;margin-top:.25rem;">✅ Payment Confirmed</button>';
+            var pendingBtn='<button onclick="adminPaymentPending(\''+rec.code+'\')" style="background:#fef9e7;border:1px solid #f0dca0;color:#7a6320;border-radius:6px;padding:.2rem .6rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;margin-top:.25rem;">⏳ Payment Pending</button>';
             item.innerHTML='<div><span class="aname">'+escapeHTML(rec.name)+'</span><br><span class="aemail">'+escapeHTML(rec.email)+'</span></div>'+
               '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
               '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
+              '<br>'+confirmBtn+
+              '<br>'+pendingBtn+
               '<br>'+removeBtn+'</div>';
             block.appendChild(item);
           });
@@ -1030,6 +1083,77 @@ document.addEventListener('DOMContentLoaded', function() {
       notifyBody.appendChild(count);
     });
   }
+
+  window.adminPaymentPending = function(code) {
+    getData(function(data){
+      var foundPerson, foundSess;
+      SESSIONS.forEach(function(sess){
+        data[sess.id].forEach(function(rec){
+          if (rec.code===code){ foundPerson=rec; foundSess=sess; }
+        });
+      });
+      if (!foundPerson){ alert('Could not find registration.'); return; }
+      if (!confirm('Send payment pending reminder to '+foundPerson.name+' ('+foundPerson.email+')?')) return;
+      if (typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
+      emailjs.send(EMAILJS_SERVICE_ID, TMPL_PAYMENT_PENDING, {
+        from_name:     foundPerson.name,
+        to_email:      foundPerson.email,
+        session_label: foundSess.label,
+        arrival_time:  foundSess.arrival,
+        class_time:    foundSess.start,
+        stripe_url:    foundSess.stripeUrl
+      }).then(function(){ alert('✅ Payment pending reminder sent to '+foundPerson.email); })
+        .catch(function(){ alert('⚠️ Could not send. Check your EmailJS dashboard.'); });
+    });
+  };
+
+  window.adminPaymentPending = function(code) {
+    getData(function(data){
+      var foundPerson, foundSess;
+      SESSIONS.forEach(function(sess){
+        data[sess.id].forEach(function(rec){
+          if (rec.code===code){ foundPerson=rec; foundSess=sess; }
+        });
+      });
+      if (!foundPerson){ alert('Could not find registration.'); return; }
+      if (!confirm('Send payment pending reminder to '+foundPerson.name+' ('+foundPerson.email+')?')) return;
+      if (typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
+      emailjs.send(EMAILJS_SERVICE_ID, TMPL_PAYMENT_PENDING, {
+        from_name:     foundPerson.name,
+        to_email:      foundPerson.email,
+        session_label: foundSess.label,
+        arrival_time:  foundSess.arrival,
+        class_time:    foundSess.start,
+        stripe_url:    foundSess.stripeUrl,
+        cancel_code:   foundPerson.code
+      }).then(function(){ alert('⏳ Payment pending reminder sent to '+foundPerson.email); })
+        .catch(function(){ alert('⚠️ Could not send. Check your EmailJS dashboard.'); });
+    });
+  };
+
+  window.adminConfirmPayment = function(code) {
+    getData(function(data){
+      var foundPerson, foundSess;
+      SESSIONS.forEach(function(sess){
+        data[sess.id].forEach(function(rec){
+          if (rec.code===code){ foundPerson=rec; foundSess=sess; }
+        });
+      });
+      if (!foundPerson){ alert('Could not find registration.'); return; }
+      if (!confirm('Send payment confirmation to '+foundPerson.name+' ('+foundPerson.email+')?')) return;
+      if (typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
+      emailjs.send(EMAILJS_SERVICE_ID, TMPL_PAYMENT_CONFIRM, {
+        from_name:     foundPerson.name,
+        to_email:      foundPerson.email,
+        session_label: foundSess.label,
+        arrival_time:  foundSess.arrival,
+        class_time:    foundSess.start,
+        sign_time:     foundPerson.time,
+        cancel_code:   foundPerson.code
+      }).then(function(){ alert('✅ Payment confirmation sent to '+foundPerson.email); })
+        .catch(function(){ alert('⚠️ Could not send. Check your EmailJS dashboard.'); });
+    });
+  };
 
   window.adminRemove = function(code) {
     if (!confirm('Remove this registration? This cannot be undone.')) return;
