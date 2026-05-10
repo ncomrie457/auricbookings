@@ -1740,7 +1740,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ── End Mat & Chat JS ──────────────────────────────────────────────────────
 
-  // ── Tabs ──────────────────────────────────────────────────────────────────
+  // ── Tab switching ─────────────────────────────────────────────────────────
   document.querySelectorAll('.tab-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
       document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
@@ -1750,6 +1750,22 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById(btn.getAttribute('aria-controls')).classList.add('active');
     });
   });
+
+  // Auto-switch tab based on URL parameter
+  function switchTab(tabId) {
+    var btn = document.querySelector('[aria-controls="'+tabId+'"]');
+    if (!btn) return;
+    document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+    document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected','true');
+    document.getElementById(tabId).classList.add('active');
+  }
+
+  var urlParams = new URLSearchParams(window.location.search);
+  var eventParam = urlParams.get('event');
+  if (eventParam === 'matchat') switchTab('tab-matchat');
+  else if (eventParam === 'coming') switchTab('tab-coming');
 
   // ── Notify List JSONBin ───────────────────────────────────────────────────
   var JSONBIN_NOTIFY_ID  = '69ff2348c0954111d8fb83bf';
