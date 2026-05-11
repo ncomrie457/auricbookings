@@ -476,7 +476,7 @@
         </div>
         <div id="mc-spots-display" style="margin-bottom:1rem;padding:.75rem 1rem;background:#faf5ee;border-radius:10px;font-size:.85rem;color:#3d322a;text-align:center;"></div>
         <div class="privacy-bar">
-          By registering you agree to our <button type="button" id="mc-open-privacy-btn" style="background:none;border:none;color:var(--gold);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Privacy Policy</button>.
+          By registering you agree to our <button type="button" id="mc-open-privacy-btn" style="background:none;border:none;color:var(--gold);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Privacy Policy</button> and <button type="button" id="mc-open-terms-btn" style="background:none;border:none;color:var(--gold);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Terms &amp; Refund Policy</button>.
         </div>
         <div style="margin-top:.75rem;padding:.75rem 1rem;background:#fdecea;border-left:3px solid var(--red);border-radius:0 8px 8px 0;font-size:.82rem;color:#3d322a;line-height:1.6;">
           ⏰ <strong>Lateness Policy:</strong> Please arrive at 11:25 AM. Class starts at 11:30 AM — 5-minute grace period only. Late arrivals will not be admitted. No exceptions.
@@ -623,7 +623,7 @@
 </div>
 
 <footer role="contentinfo">
-  Auric Movement · Pilates x Niara · June 19th ·
+  Auric Movement · Pilates x Niara ·
   <button type="button" id="open-privacy-btn">Privacy Policy</button> ·
   <button type="button" id="open-terms-btn">Terms &amp; Refund Policy</button>
   · auricmovement@outlook.com
@@ -683,7 +683,7 @@
       <h4>2. How We Use Your Information</h4>
       <p>Your information is used solely to: (a) confirm your registration; (b) send event communications; (c) notify waitlisted participants when a spot opens; (d) maintain a record of signed liability waivers; and (e) process cancellations.</p>
       <h4>3. How Your Data Is Stored</h4>
-      <p>Registration data is stored via Google Sheets (a Google LLC service) and transmitted via EmailJS to our inbox at auricmovement@outlook.com. We do not operate a centralized proprietary database. Data is not transferred outside the United States. All registration data will be permanently deleted within 30 days following the event date.</p>
+      <p>Registration data is stored via JSONBin (a secure third-party JSON storage service) and transmitted via EmailJS to our inbox at auricmovement@outlook.com. We do not operate a centralized proprietary database. Data is not transferred outside the United States. All registration data will be permanently deleted within 30 days following the event date.</p>
       <h4>4. Third-Party Payment Processing</h4>
       <p>Payment processing is handled by a third-party payment provider. We do not collect, store, or have access to your payment card details. Any financial information you provide is submitted directly to and governed by the privacy policy of that third-party processor.</p>
       <h4>5. We Do Not Sell Your Data</h4>
@@ -1866,11 +1866,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  ['open-privacy-btn','open-privacy-btn2'].forEach(function(id){
+  ['open-privacy-btn','open-privacy-btn2','mc-open-privacy-btn'].forEach(function(id){
     var el = document.getElementById(id);
     if (el) el.addEventListener('click', function(){ openModal('privacy-modal'); });
   });
-  ['open-terms-btn','open-terms-btn2'].forEach(function(id){
+  ['open-terms-btn','open-terms-btn2','mc-open-terms-btn'].forEach(function(id){
     var el = document.getElementById(id);
     if (el) el.addEventListener('click', function(){ openModal('terms-modal'); });
   });
