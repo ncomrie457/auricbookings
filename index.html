@@ -552,7 +552,7 @@
                 buy-button-id="buy_btn_1TW4cqCyx5PIptEioWrQzOT8"
                 publishable-key="pk_live_51TSmNuCyx5PIptEi8SCgMFB3I7ECVFeAzDOwjj1ZLrVZX1scB6cH8wAjNor3SFilMwMuqo0aFsbsckjYLU33iSAp00tmUxBVlK"
               ></stripe-buy-button>
-              <p style="font-size:.72rem;color:var(--text-muted);margin-top:.6rem;line-height:1.5;">Only click once. Check your inbox for a Stripe receipt if you've already paid.</p>
+              <p style="font-size:.72rem;color:var(--text-muted);margin-top:.6rem;line-height:1.5;">Clicking will open Stripe in a new tab to complete payment. Return here after paying. Check your inbox for a receipt if you've already paid.</p>
             </div>
           </div>
         </div>
@@ -570,7 +570,7 @@
         <div id="mc-email-status"></div>
         <div style="margin-top:1.25rem;padding:1rem 1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:10px;text-align:left;">
           <p style="font-size:.9rem;color:var(--brown);font-weight:700;margin-bottom:.5rem;">What happens next?</p>
-          <p style="font-size:.85rem;color:#3d322a;line-height:1.75;">Our team will verify your payment and send you a confirmation email once your spot is secured. If you have not yet completed payment, please do so below.</p>
+          <p style="font-size:.85rem;color:#3d322a;line-height:1.75;">Our team will verify your payment and send you a confirmation email once your spot is secured. If you have not yet completed payment, click below — it will open Stripe in a new tab.</p>
           <stripe-buy-button
             buy-button-id="buy_btn_1TW4cqCyx5PIptEioWrQzOT8"
             publishable-key="pk_live_51TSmNuCyx5PIptEi8SCgMFB3I7ECVFeAzDOwjj1ZLrVZX1scB6cH8wAjNor3SFilMwMuqo0aFsbsckjYLU33iSAp00tmUxBVlK"
@@ -624,6 +624,39 @@
       <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem;border-bottom:1px solid var(--border);padding-bottom:.4rem;">Mat &amp; Chat — Notify List</h3>
       <div id="admin-notify-list-body"></div>
     </div>
+
+    <!-- Manual Add -->
+    <div style="margin-top:1.5rem;padding:1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:12px;">
+      <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--brown);margin-bottom:1rem;">➕ Manually Add Registration</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
+        <div>
+          <label style="font-size:.78rem;font-weight:600;color:var(--brown);display:block;margin-bottom:.3rem;">Full Name</label>
+          <input type="text" id="admin-add-name" placeholder="Full name" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;">
+        </div>
+        <div>
+          <label style="font-size:.78rem;font-weight:600;color:var(--brown);display:block;margin-bottom:.3rem;">Email</label>
+          <input type="email" id="admin-add-email" placeholder="email@example.com" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;">
+        </div>
+        <div>
+          <label style="font-size:.78rem;font-weight:600;color:var(--brown);display:block;margin-bottom:.3rem;">Event</label>
+          <select id="admin-add-event" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;">
+            <option value="s1">Pilates x Niara — Session 1 (1:00 PM)</option>
+            <option value="s2">Pilates x Niara — Session 2 (2:00 PM)</option>
+            <option value="mc1">Mat &amp; Chat — August 1st</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:.78rem;font-weight:600;color:var(--brown);display:block;margin-bottom:.3rem;">Type</label>
+          <select id="admin-add-type" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;">
+            <option value="confirmed">Confirmed</option>
+            <option value="waitlist">Waitlist</option>
+          </select>
+        </div>
+      </div>
+      <button type="button" id="admin-add-btn" class="btn btn-primary" style="font-size:.85rem;">➕ Add Registration</button>
+      <div id="admin-add-status" style="margin-top:.5rem;font-size:.82rem;"></div>
+    </div>
+
     <p class="admin-hint">Ctrl+Shift+A to toggle · Ctrl+Shift+N to notify waitlists</p>
   </div>
 </div>
@@ -1275,6 +1308,47 @@ document.addEventListener('DOMContentLoaded', function() {
           .catch(function(){ alert('⚠️ Some emails may not have sent.'); });
       });
     });
+  });
+
+  document.getElementById('admin-add-btn').addEventListener('click', function(){
+    var name   = document.getElementById('admin-add-name').value.trim();
+    var email  = document.getElementById('admin-add-email').value.trim();
+    var event  = document.getElementById('admin-add-event').value;
+    var type   = document.getElementById('admin-add-type').value;
+    var status = document.getElementById('admin-add-status');
+
+    if (!name || name.length < 2) { status.innerHTML='<span style="color:var(--red);">Please enter a full name.</span>'; return; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { status.innerHTML='<span style="color:var(--red);">Please enter a valid email.</span>'; return; }
+
+    status.innerHTML='<span style="color:var(--text-muted);">Saving...</span>';
+
+    var now = new Date(); var timeStr = now.toLocaleString(); var code = genCode();
+    var record = { name:name, email:email, session:event, time:timeStr, timestamp:now.toISOString(), code:code, type:type, clausesAgreed:19, manuallyAdded:true };
+
+    if (event === 'mc1') {
+      record.sessionLabel = 'Mat & Chat'; record.arrival = '11:25 AM'; record.classStart = '11:30 AM';
+      getMCData(function(data){
+        data.mc1.push(record);
+        saveMCData(data, function(){
+          status.innerHTML='<span style="color:#2e7d32;">✅ Added '+name+' to Mat & Chat!</span>';
+          document.getElementById('admin-add-name').value='';
+          document.getElementById('admin-add-email').value='';
+          renderAdmin(); buildMCSpots();
+        });
+      });
+    } else {
+      var sess = SESSIONS.find(function(s){ return s.id===event; });
+      record.sessionLabel = sess.label; record.arrival = sess.arrival; record.classStart = sess.start;
+      getData(function(data){
+        data[event].push(record);
+        saveData(data, function(){
+          status.innerHTML='<span style="color:#2e7d32;">✅ Added '+name+' to '+sess.label+'!</span>';
+          document.getElementById('admin-add-name').value='';
+          document.getElementById('admin-add-email').value='';
+          renderAdmin(); buildSessionCards();
+        });
+      });
+    }
   });
 
   document.getElementById('admin-close-btn').addEventListener('click',function(){adminPanel.classList.remove('visible');});
