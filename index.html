@@ -2279,8 +2279,9 @@ document.addEventListener('DOMContentLoaded', function() {
     var allPanels = ['tab-events','tab-current','tab-matchat','tab-coming','tab-corporate'];
     allPanels.forEach(function(id){
       var el = document.getElementById(id);
-      if (el) el.classList.toggle('active', id === activeId);
-      if (el) el.style.display = (id === activeId) ? 'block' : 'none';
+      if (!el) return;
+      if (id === activeId) { el.classList.add('active'); el.style.display = 'block'; }
+      else { el.classList.remove('active'); el.style.display = 'none'; }
     });
   }
 
@@ -2305,7 +2306,9 @@ document.addEventListener('DOMContentLoaded', function() {
       var allPanels = ['tab-events','tab-current','tab-matchat','tab-coming','tab-corporate'];
       allPanels.forEach(function(id){
         var el = document.getElementById(id);
-        if (el) el.classList.toggle('active', id === target);
+        if (!el) return;
+        if (id === target) { el.classList.add('active'); el.style.display = 'block'; }
+        else { el.classList.remove('active'); el.style.display = 'none'; }
       });
     });
   });
