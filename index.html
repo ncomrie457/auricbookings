@@ -666,6 +666,11 @@
           <input type="email" id="mc-reg-email" placeholder="your@email.com" aria-required="true">
           <div id="mc-reg-email-err" class="err-msg" role="alert"></div>
         </div>
+        <div class="field">
+          <label for="mc-reg-notes">Anything the instructor should know? <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
+          <p style="font-size:.78rem;color:var(--text-muted);margin:-.15rem 0 .35rem;line-height:1.5;">Injuries, recent surgeries, physical limitations, or anything that might affect your practice.</p>
+          <textarea id="mc-reg-notes" rows="3" placeholder="Share anything you'd like the instructor to know" style="width:100%;padding:.8rem 1rem;border:2px solid var(--border);border-radius:10px;font-size:.95rem;font-family:'Jost',sans-serif;color:var(--text);background:var(--cream-light);resize:vertical;box-sizing:border-box;"></textarea>
+        </div>
         <div id="mc-spots-display" style="margin-bottom:1rem;padding:.75rem 1rem;background:#faf5ee;border-radius:10px;font-size:.85rem;color:#3d322a;text-align:center;"></div>
         <div class="privacy-bar">
           By registering you agree to our <button type="button" id="mc-open-privacy-btn" style="background:none;border:none;color:var(--gold);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Privacy Policy</button> and <button type="button" id="mc-open-terms-btn" style="background:none;border:none;color:var(--gold);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Terms &amp; Refund Policy</button>.
@@ -1656,7 +1661,8 @@ document.addEventListener('DOMContentLoaded', function() {
           var confirmBtn='<button onclick="mcAdminConfirmPayment(\''+rec.code+'\')" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">✅ Confirmed</button>';
           var pendingBtn='<button onclick="mcAdminPaymentPending(\''+rec.code+'\')" style="background:#fff8e1;border:1px solid #ffe082;color:#f57f17;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">⏳ Pending</button>';
           var removeBtn='<button onclick="mcAdminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">🗑 Remove</button>';
-          item.innerHTML='<div><span class="aname">'+escapeHTML(rec.name)+'</span><br><span class="aemail">'+escapeHTML(rec.email)+'</span></div>'+
+          var notesHTML = rec.notes ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;"><strong style="color:var(--gold);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">📝 Notes for Instructor:</strong><br>'+escapeHTML(rec.notes)+'</div>' : '';
+          item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span><br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+notesHTML+'</div>'+
             '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
             '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
             '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;">'+confirmBtn+pendingBtn+removeBtn+'</div></div>';
@@ -1899,9 +1905,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Mat & Chat
             csv += '\n=== Mat & Chat (Aug 1) ===\n';
-            csv += 'Name,Email,Type,Waitlist Position,Time\n';
+            csv += 'Name,Email,Type,Waitlist Position,Notes for Instructor,Time\n';
             (mcData.mc1 || []).forEach(function(rec){
-              csv += [csvEscape(rec.name), csvEscape(rec.email), csvEscape(rec.type), csvEscape(rec.wlPosition||''), csvEscape(rec.time)].join(',') + '\n';
+              csv += [csvEscape(rec.name), csvEscape(rec.email), csvEscape(rec.type), csvEscape(rec.wlPosition||''), csvEscape(rec.notes||''), csvEscape(rec.time)].join(',') + '\n';
             });
 
             // Corporate Inquiries
@@ -1993,7 +1999,8 @@ document.addEventListener('DOMContentLoaded', function() {
     getMCData(function(data) {
       var wlPos = data.mc1.filter(function(r){ return r.type==='waitlist'; }).length + 1;
       var code = genCode(); var now = new Date(); var timeStr = now.toLocaleString();
-      var record = { name:name, email:email, session:'mc1', sessionLabel:'Mat & Chat', arrival:'11:25 AM', classStart:'11:30 AM', type:'waitlist', wlPosition:wlPos, code:code, time:timeStr, timestamp:now.toISOString(), clausesAgreed:0 };
+      var notes = document.getElementById('mc-reg-notes').value.trim();
+      var record = { name:name, email:email, session:'mc1', sessionLabel:'Mat & Chat', arrival:'11:25 AM', classStart:'11:30 AM', type:'waitlist', wlPosition:wlPos, code:code, time:timeStr, timestamp:now.toISOString(), clausesAgreed:0, notes:notes };
       data.mc1.push(record);
       saveMCData(data, function() {
         btn.disabled=false; btn.textContent='Join Waitlist →';
@@ -2095,7 +2102,8 @@ document.addEventListener('DOMContentLoaded', function() {
       var type = confirmed < MC_MAX_SPOTS ? 'confirmed' : 'waitlist';
       var wlPos = type==='waitlist' ? data.mc1.filter(function(r){ return r.type==='waitlist'; }).length+1 : null;
       var now=new Date(); var timeStr=now.toLocaleString(); var code=genCode();
-      var record={ name:name, email:email, signature:sig, session:'mc1', sessionLabel:'Mat & Chat', arrival:'11:25 AM', classStart:'11:30 AM', time:timeStr, timestamp:now.toISOString(), code:code, type:type, wlPosition:wlPos, clausesAgreed:19 };
+      var notes = document.getElementById('mc-reg-notes').value.trim();
+      var record={ name:name, email:email, signature:sig, session:'mc1', sessionLabel:'Mat & Chat', arrival:'11:25 AM', classStart:'11:30 AM', time:timeStr, timestamp:now.toISOString(), code:code, type:type, wlPosition:wlPos, clausesAgreed:19, notes:notes };
       data.mc1.push(record); mcLastSubmission=record;
 
       saveMCData(data, function() {
@@ -2134,6 +2142,7 @@ document.addEventListener('DOMContentLoaded', function() {
     mcCheckedClauses={}; mcCheckedCount=0; mcLastSubmission=null;
     document.getElementById('mc-reg-name').value='';
     document.getElementById('mc-reg-email').value='';
+    document.getElementById('mc-reg-notes').value='';
     document.getElementById('mc-sig-input').value='';
     document.getElementById('mc-sig-input').disabled=true;
     document.getElementById('mc-final-agree').checked=false;
