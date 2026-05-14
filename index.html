@@ -2236,6 +2236,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ── Events Hub ────────────────────────────────────────────────────────────
 
+  function showAllPanels(activeId) {
+    var allPanels = ['tab-events','tab-current','tab-matchat','tab-coming','tab-corporate'];
+    allPanels.forEach(function(id){
+      var el = document.getElementById(id);
+      if (!el) return;
+      if (id === activeId) { el.classList.add('active'); el.style.display = 'block'; }
+      else { el.classList.remove('active'); el.style.display = 'none'; }
+    });
+  }
+
   // Load spot counts for event cards
   function updateEventCardSpots() {
     getData(function(data) {
@@ -2274,16 +2284,6 @@ document.addEventListener('DOMContentLoaded', function() {
     showAllPanels('tab-coming');
     window.scrollTo({top:0,behavior:'smooth'});
   });
-
-  function showAllPanels(activeId) {
-    var allPanels = ['tab-events','tab-current','tab-matchat','tab-coming','tab-corporate'];
-    allPanels.forEach(function(id){
-      var el = document.getElementById(id);
-      if (!el) return;
-      if (id === activeId) { el.classList.add('active'); el.style.display = 'block'; }
-      else { el.classList.remove('active'); el.style.display = 'none'; }
-    });
-  }
 
   // Back buttons
   ['back-to-events-pilates','back-to-events-matchat','back-to-events-coming'].forEach(function(id){
