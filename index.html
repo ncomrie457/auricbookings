@@ -201,7 +201,7 @@
 
     @media(max-width:600px){
       .tab-btn { padding:.75rem 1rem; font-size:.82rem; }
-      #step-waiver .waiver-two-col { grid-template-columns:1fr !important; }
+      #step-waiver .waiver-two-col, #mc-step-waiver .waiver-two-col { grid-template-columns:1fr !important; }
       #tab-corporate div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns:1fr !important; }
       #tab-corporate .card { padding:1.25rem 1rem; }
       #tab-corporate input, #tab-corporate select, #tab-corporate textarea { width:100%; min-width:0; max-width:100%; box-sizing:border-box; }
@@ -1590,11 +1590,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function renderAdmin(){
     var body=document.getElementById('admin-body');
-    body.innerHTML='<div style="text-align:center;padding:1rem;color:var(--text-muted);font-size:.85rem;">Loading...</div>';
+    body.innerHTML='';
     document.getElementById('admin-notify-list-body').innerHTML='<div style="text-align:center;padding:.5rem;color:var(--text-muted);font-size:.85rem;">Loading...</div>';
 
+    // Pre-create section containers in fixed order so async fetches don't race
+    var sessionsContainer = document.createElement('div'); sessionsContainer.id = 'admin-sessions-container';
+    var mcContainer       = document.createElement('div'); mcContainer.id       = 'admin-mc-container';
+    var corpContainer     = document.createElement('div'); corpContainer.id     = 'admin-corp-container';
+    body.appendChild(sessionsContainer);
+    body.appendChild(mcContainer);
+    body.appendChild(corpContainer);
+
     getData(function(data){
-      body.innerHTML='';
+      sessionsContainer.innerHTML='';
       SESSIONS.forEach(function(sess){
         var block=document.createElement('div'); block.className='admin-session-block';
         var confirmed=data[sess.id].filter(function(r){return r.type==='confirmed';});
@@ -1614,7 +1622,7 @@ document.addEventListener('DOMContentLoaded', function() {
             block.appendChild(item);
           });
         }
-        body.appendChild(block);
+        sessionsContainer.appendChild(block);
       });
     });
 
@@ -1655,11 +1663,12 @@ document.addEventListener('DOMContentLoaded', function() {
           mcBlock.appendChild(item);
         });
       }
-      document.getElementById('admin-body').appendChild(mcBlock);
+      mcContainer.innerHTML=''; mcContainer.appendChild(mcBlock);
     });
 
     // Corporate sections (inquiries + signed bookings)
     getCorpData(function(corpData){
+      corpContainer.innerHTML='';
       var inquiries = corpData.inquiries || [];
       var bookings  = corpData.bookings  || [];
 
@@ -1705,7 +1714,7 @@ document.addEventListener('DOMContentLoaded', function() {
           inqBlock.appendChild(item);
         });
       }
-      document.getElementById('admin-body').appendChild(inqBlock);
+      corpContainer.appendChild(inqBlock);
 
       // Bookings block
       var bookBlock = document.createElement('div'); bookBlock.className = 'admin-session-block';
@@ -1739,7 +1748,7 @@ document.addEventListener('DOMContentLoaded', function() {
           bookBlock.appendChild(item);
         });
       }
-      document.getElementById('admin-body').appendChild(bookBlock);
+      corpContainer.appendChild(bookBlock);
     });
   }
 
@@ -1857,28 +1866,86 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   document.getElementById('admin-clear-btn').addEventListener('click', function(){
-    if (confirm('Are you sure you want to delete ALL registrations for both events? This cannot be undone.')) {
-      saveData({ s1:[], s2:[] }, function(){
-        saveMCData({ mc1:[] }, function(){
-          renderAdmin(); buildSessionCards(); buildMCSpots();
-          alert('All data cleared. Spots are now reset.');
+    if (!confirm('Are you sure you want to delete ALL data — Pilates, Mat & Chat, Corporate, and Notify List? This cannot be undone.')) return;
+    saveData({ s1:[], s2:[] }, function(){
+      saveMCData({ mc1:[] }, function(){
+        saveCorpData({ inquiries:[], bookings:[] }, function(){
+          saveNotifyList({ notify:[] }, function(){
+            renderAdmin(); buildSessionCards(); buildMCSpots();
+            alert('All data cleared.');
+          });
         });
       });
-    }
+    });
   });
+
+  function csvEscape(v){ return '"' + String(v == null ? '' : v).replace(/"/g,'""') + '"'; }
 
   document.getElementById('admin-csv-btn').addEventListener('click', function(){
     getData(function(data){
-      var csv='Name,Email,Session,Arrival,Type,Waitlist Position,Time\n';
-      SESSIONS.forEach(function(sess){
-        data[sess.id].forEach(function(rec){
-          csv+='"'+rec.name.replace(/"/g,'""')+'","'+rec.email.replace(/"/g,'""')+'","'+sess.label+'","'+sess.arrival+'","'+rec.type+'","'+(rec.wlPosition||'')+'","'+rec.time+'"\n';
+      getMCData(function(mcData){
+        getCorpData(function(corpData){
+          getNotifyList(function(notifyData){
+            var csv = '';
+
+            // Pilates sessions
+            csv += '=== Pilates x Niara (June 19) ===\n';
+            csv += 'Name,Email,Session,Arrival,Type,Waitlist Position,Time\n';
+            SESSIONS.forEach(function(sess){
+              (data[sess.id] || []).forEach(function(rec){
+                csv += [csvEscape(rec.name), csvEscape(rec.email), csvEscape(sess.label), csvEscape(sess.arrival), csvEscape(rec.type), csvEscape(rec.wlPosition||''), csvEscape(rec.time)].join(',') + '\n';
+              });
+            });
+
+            // Mat & Chat
+            csv += '\n=== Mat & Chat (Aug 1) ===\n';
+            csv += 'Name,Email,Type,Waitlist Position,Time\n';
+            (mcData.mc1 || []).forEach(function(rec){
+              csv += [csvEscape(rec.name), csvEscape(rec.email), csvEscape(rec.type), csvEscape(rec.wlPosition||''), csvEscape(rec.time)].join(',') + '\n';
+            });
+
+            // Corporate Inquiries
+            csv += '\n=== Corporate Inquiries ===\n';
+            csv += 'Company,Contact Name,Email,Phone,Industry,Class Type,Level,Duration,Frequency,Headcount,Experience,Location,Space Status,Preferred Day,Timeline,Theme,Budget,Referral,Injuries,Notes,Time\n';
+            (corpData.inquiries || []).forEach(function(rec){
+              csv += [
+                csvEscape(rec.company_name), csvEscape(rec.contact_name), csvEscape(rec.contact_email),
+                csvEscape(rec.contact_phone), csvEscape(rec.industry), csvEscape(rec.class_type),
+                csvEscape(rec.class_level), csvEscape(rec.duration), csvEscape(rec.frequency),
+                csvEscape(rec.headcount), csvEscape(rec.experience), csvEscape(rec.location),
+                csvEscape(rec.space_status), csvEscape(rec.preferred_day), csvEscape(rec.timeline),
+                csvEscape(rec.theme), csvEscape(rec.budget), csvEscape(rec.referral_source),
+                csvEscape(rec.injuries), csvEscape(rec.additional_notes), csvEscape(rec.time)
+              ].join(',') + '\n';
+            });
+
+            // Corporate Bookings (signed waivers)
+            csv += '\n=== Corporate Bookings (Signed Waivers) ===\n';
+            csv += 'Company,Contact Name,Email,Headcount,Date,Location,Injuries,Signature,Signed At\n';
+            (corpData.bookings || []).forEach(function(rec){
+              csv += [
+                csvEscape(rec.company_name), csvEscape(rec.contact_name), csvEscape(rec.contact_email),
+                csvEscape(rec.headcount), csvEscape(rec.session_date), csvEscape(rec.location),
+                csvEscape(rec.injuries), csvEscape(rec.signature), csvEscape(rec.sign_time)
+              ].join(',') + '\n';
+            });
+
+            // Notify List
+            csv += '\n=== Coming Soon — Notify List ===\n';
+            csv += 'Name,Email,Time\n';
+            (notifyData.notify || []).forEach(function(person){
+              csv += [csvEscape(person.name), csvEscape(person.email), csvEscape(person.time)].join(',') + '\n';
+            });
+
+            var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+            var url  = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'auric-all-data-' + new Date().toISOString().slice(0,10) + '.csv';
+            document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+          });
         });
       });
-      var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-      var url=URL.createObjectURL(blob);
-      var a=document.createElement('a'); a.href=url; a.download='auric-registrations-june19.csv';
-      document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
     });
   });
 
