@@ -208,14 +208,67 @@
   <p style="font-size:clamp(.8rem,1.5vw,.9rem);color:var(--text-muted);margin-top:.5rem;max-width:560px;margin-left:auto;margin-right:auto;line-height:1.7;font-family:'Jost',sans-serif;">An intentional movement experience where wellness meets community. At Auric Movement, we move with purpose, set intentions, reconnect with our bodies, and create space for meaningful connection.</p>
 </section>
 
-<nav class="tabs-nav" role="tablist" aria-label="Events">
-  <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-current" id="btn-current">Pilates x Niara — June 19th</button>
-  <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-matchat" id="btn-matchat">Mat &amp; Chat — Aug 1st</button>
-  <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-coming" id="btn-coming">Coming Soon ✦</button>
+<nav class="tabs-nav" role="tablist" aria-label="Navigation">
+  <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-events" id="btn-events">Events</button>
+  <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-corporate" id="btn-corporate">Corporate Event Inquiries</button>
 </nav>
 
-<!-- TAB 1: Current event -->
-<div id="tab-current" class="tab-panel active" role="tabpanel" aria-labelledby="btn-current">
+<!-- TAB: Events Hub -->
+<div id="tab-events" class="tab-panel active" role="tabpanel" aria-labelledby="btn-events">
+  <div style="max-width:1100px;margin:0 auto;padding:2rem 1.25rem 4rem;">
+    <p style="font-size:.88rem;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.7;">Select an event below to view details and register.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem;">
+
+      <!-- Pilates x Niara card -->
+      <button type="button" id="event-card-pilates" style="background:var(--white);border:1px solid var(--border);border-radius:16px;padding:0;cursor:pointer;text-align:left;transition:all .2s;box-shadow:0 2px 12px rgba(92,74,58,.06);overflow:hidden;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(92,74,58,.12)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 12px rgba(92,74,58,.06)'">
+        <img src="flyer.png" alt="Pilates x Niara — June 19th" style="width:100%;height:180px;object-fit:cover;object-position:top;display:block;">
+        <div style="padding:1rem 1.25rem 1.25rem;">
+          <div style="font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:.35rem;">June 19th</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--brown);font-weight:700;margin-bottom:.35rem;">Pilates x Niara</div>
+          <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:.75rem;">Two sessions · 1:00 PM & 2:00 PM · $25</div>
+          <div id="pilates-card-spots" style="font-size:.82rem;font-weight:600;margin-bottom:.75rem;"></div>
+          <div style="font-size:.82rem;color:var(--brown);font-weight:600;">Register → </div>
+        </div>
+      </button>
+
+      <!-- Mat & Chat card -->
+      <button type="button" id="event-card-matchat" style="background:var(--white);border:1px solid var(--border);border-radius:16px;padding:0;cursor:pointer;text-align:left;transition:all .2s;box-shadow:0 2px 12px rgba(92,74,58,.06);overflow:hidden;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(92,74,58,.12)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 12px rgba(92,74,58,.06)'">
+        <img src="flyer2.png" alt="Mat and Chat — August 1st" style="width:100%;height:180px;object-fit:cover;object-position:top;display:block;">
+        <div style="padding:1rem 1.25rem 1.25rem;">
+          <div style="font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:.35rem;">August 1st</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--brown);font-weight:700;margin-bottom:.35rem;">Mat &amp; Chat</div>
+          <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:.75rem;">One session · 11:30 AM · $30</div>
+          <div id="matchat-card-spots" style="font-size:.82rem;font-weight:600;margin-bottom:.75rem;"></div>
+          <div style="font-size:.82rem;color:var(--brown);font-weight:600;">Register → </div>
+        </div>
+      </button>
+
+      <!-- Coming Soon card -->
+      <button type="button" id="event-card-coming" style="background:var(--white);border:1px solid var(--border);border-radius:16px;padding:0;cursor:pointer;text-align:left;transition:all .2s;box-shadow:0 2px 12px rgba(92,74,58,.06);overflow:hidden;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(92,74,58,.12)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 12px rgba(92,74,58,.06)'">
+        <div style="width:100%;height:180px;background:var(--cream-mid);display:flex;align-items:center;justify-content:center;">
+          <div style="text-align:center;">
+            <div style="font-family:'Playfair Display',serif;font-style:italic;font-size:1.5rem;color:var(--brown);opacity:.4;">Coming Soon</div>
+            <div style="font-size:1.5rem;color:var(--gold);margin-top:.25rem;">✦</div>
+          </div>
+        </div>
+        <div style="padding:1rem 1.25rem 1.25rem;">
+          <div style="font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:.35rem;">Future Events</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--brown);font-weight:700;margin-bottom:.35rem;">Stay in the Loop</div>
+          <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:.75rem;">Get notified when new events open</div>
+          <div style="font-size:.82rem;color:var(--brown);font-weight:600;">Notify Me → </div>
+        </div>
+      </button>
+
+    </div>
+  </div>
+</div><!-- /tab-events -->
+
+<!-- TAB: Pilates x Niara -->
+<div id="tab-current" class="tab-panel" role="tabpanel" aria-labelledby="btn-events">
+  <div style="max-width:1100px;margin:2rem auto 0;padding:0 1.25rem;">
+    <button type="button" id="back-to-events-pilates" class="btn btn-secondary" style="font-size:.82rem;margin-bottom:1rem;">← Back to Events</button>
+  </div>
 <main id="main-content" role="main">
   <div class="page-layout">
 
@@ -410,8 +463,10 @@
 </div><!-- /tab-current -->
 
 <!-- TAB 2: Coming Soon -->
-<div id="tab-coming" class="tab-panel" role="tabpanel" aria-labelledby="btn-coming">
-  <div style="max-width:600px;margin:2rem auto;padding:0 1.25rem 4rem;">
+<div id="tab-coming" class="tab-panel" role="tabpanel" aria-labelledby="btn-events">
+  <div style="max-width:600px;margin:2rem auto 0;padding:0 1.25rem;">
+    <button type="button" id="back-to-events-coming" class="btn btn-secondary" style="font-size:.82rem;margin-bottom:1rem;">← Back to Events</button>
+  </div>
       <div class="notify-card">
         <h2>Stay in the Loop ✦</h2>
         <p class="subtitle">Sign up to get notified regarding upcoming events.</p>
@@ -432,8 +487,133 @@
   </div>
 </div><!-- /tab-coming -->
 
+<!-- TAB 4: Corporate -->
+<div id="tab-corporate" class="tab-panel" role="tabpanel" aria-labelledby="btn-corporate">
+  <div style="max-width:900px;margin:0 auto;padding:2rem 1.25rem 4rem;">
+
+    <!-- Info box -->
+    <div style="background:var(--cream-light);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;">
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--brown);margin-bottom:.5rem;">Bring Movement to Your Team ✦</h3>
+      <p style="font-size:.85rem;color:var(--text-muted);line-height:1.7;">Fill out the form below and we'll be in touch within 48 hours to discuss your needs and provide a custom quote.</p>
+      <p style="font-size:.85rem;color:var(--text-muted);line-height:1.7;margin-top:.5rem;">Please note: we will do our best to accommodate your preferred location, however availability may vary. Alternatives will be provided where needed.</p>
+    </div>
+
+    <!-- Inquiry Form -->
+    <div id="corp-step-inquiry" class="card">
+      <h2>Request a Quote</h2>
+      <p class="subtitle">Tell us about your team and what you're looking for. Fields marked * are required.</p>
+
+      <p class="section-label" style="font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);border-bottom:1px solid var(--border);padding-bottom:.5rem;margin:1.5rem 0 1rem;">Contact Information</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="field"><label for="corp-company-name">Company Name <span class="required" aria-hidden="true">*</span></label><input type="text" id="corp-company-name" placeholder="Your company name"><div id="corp-company-name-err" class="err-msg" role="alert"></div></div>
+        <div class="field"><label for="corp-contact-name">Your Full Name <span class="required" aria-hidden="true">*</span></label><input type="text" id="corp-contact-name" placeholder="Your full name"><div id="corp-contact-name-err" class="err-msg" role="alert"></div></div>
+        <div class="field"><label for="corp-contact-email">Email Address <span class="required" aria-hidden="true">*</span></label><input type="email" id="corp-contact-email" placeholder="your@company.com"><div id="corp-contact-email-err" class="err-msg" role="alert"></div></div>
+        <div class="field"><label for="corp-contact-phone">Phone Number</label><input type="tel" id="corp-contact-phone" placeholder="+1 (555) 000-0000"></div>
+        <div class="field"><label for="corp-industry">Industry</label><input type="text" id="corp-industry" placeholder="e.g. Finance, Tech, Healthcare"></div>
+        <div class="field"><label for="corp-referral">How did you hear about us?</label><select id="corp-referral"><option value="">Select one</option><option>Instagram</option><option>Word of mouth</option><option>Google search</option><option>LinkedIn</option><option>Other</option></select></div>
+      </div>
+
+      <p class="section-label" style="font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);border-bottom:1px solid var(--border);padding-bottom:.5rem;margin:1.5rem 0 1rem;">Class Details</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="field"><label for="corp-class-type">Class Type <span class="required" aria-hidden="true">*</span></label><select id="corp-class-type"><option value="">Select one</option><option>Mat Pilates</option><option>Reformer Pilates</option><option>Both / Open to suggestions</option></select><div id="corp-class-type-err" class="err-msg" role="alert"></div></div>
+        <div class="field"><label for="corp-class-level">Level</label><select id="corp-class-level"><option value="">Select one</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option><option>Mixed / All levels</option></select></div>
+        <div class="field"><label for="corp-duration">Preferred Duration</label><select id="corp-duration"><option value="">Select one</option><option>45 minutes</option><option>60 minutes</option><option>90 minutes</option><option>Open to suggestions</option></select></div>
+        <div class="field"><label for="corp-frequency">Frequency</label><select id="corp-frequency"><option value="">Select one</option><option>One-time session</option><option>Weekly</option><option>Bi-weekly</option><option>Monthly</option><option>Custom package</option></select></div>
+        <div class="field"><label for="corp-headcount">Number of Participants <span class="required" aria-hidden="true">*</span></label><input type="number" id="corp-headcount" placeholder="e.g. 15" min="1"><div id="corp-headcount-err" class="err-msg" role="alert"></div></div>
+        <div class="field"><label for="corp-experience">Prior Pilates Experience</label><select id="corp-experience"><option value="">Select one</option><option>None — complete beginners</option><option>Some experience</option><option>Regular practitioners</option><option>Mixed group</option></select></div>
+      </div>
+
+      <p class="section-label" style="font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);border-bottom:1px solid var(--border);padding-bottom:.5rem;margin:1.5rem 0 1rem;">Logistics</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="field"><label for="corp-location">Preferred Location <span class="required" aria-hidden="true">*</span></label><select id="corp-location"><option value="">Select one</option><option>Our office / corporate space</option><option>A studio (you arrange)</option><option>A studio (we arrange)</option><option>Outdoor space</option><option>Open to suggestions</option></select><div id="corp-location-err" class="err-msg" role="alert"></div></div>
+        <div class="field"><label for="corp-space-status">Do you already have a space?</label><select id="corp-space-status"><option value="">Select one</option><option>Yes — we have a space, just need an instructor</option><option>No — open to suggestions</option><option>No — need help finding a space</option></select></div>
+        <div class="field"><label for="corp-preferred-day">Preferred Day</label><select id="corp-preferred-day"><option value="">Select one</option><option>Weekday morning</option><option>Weekday afternoon</option><option>Weekday evening</option><option>Weekend morning</option><option>Weekend afternoon</option><option>Flexible</option></select></div>
+        <div class="field"><label for="corp-timeline">When do you need this by?</label><input type="text" id="corp-timeline" placeholder="e.g. Within 2 weeks, End of Q2"></div>
+      </div>
+      <div class="field"><label for="corp-theme">Theme or intention? <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label><input type="text" id="corp-theme" placeholder="e.g. stress relief, team energizer, mindfulness"></div>
+
+      <p class="section-label" style="font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);border-bottom:1px solid var(--border);padding-bottom:.5rem;margin:1.5rem 0 1rem;">Budget & Health</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="field"><label for="corp-budget">Budget Range</label><select id="corp-budget"><option value="">Select one</option><option>Under $500</option><option>$500 – $1,000</option><option>$1,000 – $2,500</option><option>$2,500 – $5,000</option><option>$5,000+</option><option>Open / TBD</option></select></div>
+      </div>
+      <div class="field"><label for="corp-injuries">Injuries or Physical Considerations</label><textarea id="corp-injuries" placeholder="List any injuries or health considerations the instructor should be aware of."></textarea></div>
+      <div class="field"><label for="corp-notes">Additional Notes</label><textarea id="corp-notes" placeholder="Anything else we should know?"></textarea></div>
+
+      <div style="margin-top:.75rem;font-size:.8rem;color:var(--text-muted);">By submitting you agree to our <button type="button" id="corp-open-privacy-btn" style="background:none;border:none;color:var(--gold);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Privacy Policy</button>.</div>
+      <button type="button" id="corp-inquiry-submit-btn" class="btn btn-primary btn-full" style="margin-top:1.25rem;">Submit Inquiry →</button>
+      <div id="corp-inquiry-status" style="margin-top:.75rem;font-size:.85rem;"></div>
+    </div>
+
+    <!-- Inquiry Done -->
+    <div id="corp-step-inquiry-done" class="card success-card hidden">
+      <div class="checkmark" aria-hidden="true">✦</div>
+      <h2 style="color:var(--brown);">Thank You!</h2>
+      <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:1rem;">Your inquiry has been received. We'll be in touch within <strong>48 hours</strong> with availability and a custom quote.</p>
+      <p style="font-size:.85rem;color:var(--text-muted);">Questions? Email us at <a href="mailto:auricmovement@outlook.com" style="color:var(--gold);">auricmovement@outlook.com</a></p>
+      <div style="margin-top:1.25rem;"><button type="button" id="corp-inquiry-new-btn" class="btn btn-secondary">Submit Another Inquiry</button></div>
+    </div>
+
+    <!-- Booking Form (hidden — URL param only) -->
+    <div id="corp-step-booking" class="card hidden">
+      <h2>Confirm Your Booking</h2>
+      <p class="subtitle">Please confirm the details below and sign the corporate liability waiver to complete your booking.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="field"><label for="corp-book-company">Company Name <span class="required" aria-hidden="true">*</span></label><input type="text" id="corp-book-company" placeholder="Your company name"><div id="corp-book-company-err" class="err-msg" role="alert"></div></div>
+        <div class="field"><label for="corp-book-name">Your Full Name <span class="required" aria-hidden="true">*</span></label><input type="text" id="corp-book-name" placeholder="Your full legal name"><div id="corp-book-name-err" class="err-msg" role="alert"></div></div>
+        <div class="field"><label for="corp-book-email">Email Address <span class="required" aria-hidden="true">*</span></label><input type="email" id="corp-book-email" placeholder="your@company.com"><div id="corp-book-email-err" class="err-msg" role="alert"></div></div>
+        <div class="field"><label for="corp-book-headcount">Number of Participants <span class="required" aria-hidden="true">*</span></label><input type="number" id="corp-book-headcount" placeholder="e.g. 15" min="1"><div id="corp-book-headcount-err" class="err-msg" role="alert"></div></div>
+        <div class="field"><label for="corp-book-date">Confirmed Date &amp; Time <span class="required" aria-hidden="true">*</span></label><input type="text" id="corp-book-date" placeholder="e.g. June 25th at 10:00 AM"><div id="corp-book-date-err" class="err-msg" role="alert"></div></div>
+        <div class="field"><label for="corp-book-location">Confirmed Location <span class="required" aria-hidden="true">*</span></label><input type="text" id="corp-book-location" placeholder="Full address or studio name"><div id="corp-book-location-err" class="err-msg" role="alert"></div></div>
+      </div>
+      <div class="field"><label for="corp-book-injuries">Any injuries or health considerations to flag? <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label><textarea id="corp-book-injuries" placeholder="List any injuries or physical limitations."></textarea></div>
+      <button type="button" id="corp-to-waiver-btn" class="btn btn-primary" style="margin-top:.75rem;">Continue to Waiver →</button>
+    </div>
+
+    <!-- Corporate Waiver -->
+    <div id="corp-step-waiver" class="card hidden">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.5rem;margin-bottom:.4rem;">
+        <h2>Corporate Liability Waiver</h2>
+        <span style="font-size:.85rem;color:var(--text-muted);">Signing as <strong id="corp-waiver-company-display"></strong></span>
+      </div>
+      <p class="subtitle">Read each clause carefully. All 19 clauses must be acknowledged before signing.</p>
+      <div class="progress-section">
+        <div class="progress-label"><span><span id="corp-confirmed-count">0</span>/19 confirmed</span><span id="corp-remaining-text">19 remaining</span></div>
+        <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="19" id="corp-progress-track"><div class="progress-fill" id="corp-progress-fill"></div></div>
+      </div>
+      <div style="margin-bottom:.75rem;"><button type="button" id="corp-select-all-btn" class="btn btn-secondary" style="font-size:.82rem;padding:.5rem 1rem;width:100%;justify-content:center;">✓ Select All Clauses</button></div>
+      <div id="corp-clauses-container" role="group" aria-label="Corporate waiver clauses"></div>
+      <div class="sig-section">
+        <div class="statement">I, <strong id="corp-waiver-name-stmt"></strong>, as an authorized representative of <strong id="corp-waiver-company-stmt"></strong>, acknowledge that I have carefully read and fully understand this Corporate Liability Waiver &amp; Release. I understand that I am signing on behalf of the company and all participating employees/guests, and that this agreement is legally binding.</div>
+        <div class="final-check"><input type="checkbox" id="corp-final-agree" disabled><label for="corp-final-agree">I have read, understood, and agree to all terms above on behalf of myself and my company</label></div>
+        <p style="font-size:.78rem;color:var(--text-muted);line-height:1.6;margin-bottom:.75rem;">By typing your name below you are signing this agreement electronically. Your electronic signature is legally binding under the E-SIGN Act, 15 U.S.C. § 7001.</p>
+        <div class="field"><label for="corp-sig-input">Digital Signature — Type your full legal name <span class="required" aria-hidden="true">*</span></label><input type="text" id="corp-sig-input" placeholder="Type your full legal name" aria-required="true" disabled><div id="corp-sig-err" class="err-msg" role="alert"></div></div>
+        <button type="button" id="corp-submit-btn" class="btn btn-primary btn-full" disabled>Submit Booking ✦</button>
+      </div>
+    </div>
+
+    <!-- Booking Done -->
+    <div id="corp-step-booking-done" class="card success-card hidden">
+      <div class="checkmark" aria-hidden="true">✦</div>
+      <h2 style="color:var(--brown);">Booking Submitted!</h2>
+      <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:1.25rem;">Your corporate waiver has been signed and your booking details have been received.</p>
+      <p class="detail"><strong>Company:</strong> <span id="corp-booking-conf-company"></span></p>
+      <p class="detail"><strong>Contact:</strong> <span id="corp-booking-conf-name"></span></p>
+      <p class="detail"><strong>Signed at:</strong> <span id="corp-booking-conf-time"></span></p>
+      <div id="corp-booking-email-status"></div>
+      <div style="margin-top:1.25rem;padding:1rem 1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:10px;text-align:left;">
+        <p style="font-size:.9rem;color:var(--brown);font-weight:700;margin-bottom:.5rem;">What happens next?</p>
+        <p style="font-size:.85rem;color:#3d322a;line-height:1.75;">We'll send you an invoice and confirm all final details via email. Questions? Reach us at <a href="mailto:auricmovement@outlook.com" style="color:var(--gold);">auricmovement@outlook.com</a></p>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /tab-corporate -->
+
 <!-- TAB 3: Mat & Chat -->
-<div id="tab-matchat" class="tab-panel" role="tabpanel" aria-labelledby="btn-matchat">
+<div id="tab-matchat" class="tab-panel" role="tabpanel" aria-labelledby="btn-events">
+  <div style="max-width:1100px;margin:2rem auto 0;padding:0 1.25rem;">
+    <button type="button" id="back-to-events-matchat" class="btn btn-secondary" style="font-size:.82rem;margin-bottom:1rem;">← Back to Events</button>
+  </div>
   <div class="page-layout" id="mc-page-layout">
 
     <!-- Left: Flyer -->
@@ -1819,35 +1999,349 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ── End Mat & Chat JS ──────────────────────────────────────────────────────
 
+  // ── Corporate JS ──────────────────────────────────────────────────────────
+
+  var TMPL_CORP_INQUIRY  = 'template_n2g8qps';
+  var TMPL_CORP_CONFIRM  = 'template_r9qts6s';
+  var TMPL_CORP_SIGNED   = 'template_hs76rf1';
+
+  // Open privacy modal from corporate tab
+  var corpPrivacyBtn = document.getElementById('corp-open-privacy-btn');
+  if (corpPrivacyBtn) corpPrivacyBtn.addEventListener('click', function(){ openModal('privacy-modal'); });
+
+  // URL param for corporate booking
+  if (urlParams.get('booking') === 'corporate') {
+    setTimeout(function(){
+      switchTab('tab-corporate');
+      document.getElementById('corp-step-inquiry').classList.add('hidden');
+      document.getElementById('corp-step-booking').classList.remove('hidden');
+    }, 150);
+  }
+
+  // Corporate inquiry submit
+  document.getElementById('corp-inquiry-submit-btn').addEventListener('click', function(){
+    var companyName  = document.getElementById('corp-company-name').value.trim();
+    var contactName  = document.getElementById('corp-contact-name').value.trim();
+    var contactEmail = document.getElementById('corp-contact-email').value.trim();
+    var classType    = document.getElementById('corp-class-type').value;
+    var headcount    = document.getElementById('corp-headcount').value.trim();
+    var location     = document.getElementById('corp-location').value;
+    var ok = true;
+
+    if (!companyName){ document.getElementById('corp-company-name-err').textContent='Please enter your company name.'; ok=false; } else { document.getElementById('corp-company-name-err').textContent=''; }
+    if (!contactName||contactName.length<2){ document.getElementById('corp-contact-name-err').textContent='Please enter your full name.'; ok=false; } else { document.getElementById('corp-contact-name-err').textContent=''; }
+    if (!contactEmail||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)){ document.getElementById('corp-contact-email-err').textContent='Please enter a valid email.'; ok=false; } else { document.getElementById('corp-contact-email-err').textContent=''; }
+    if (!classType){ document.getElementById('corp-class-type-err').textContent='Please select a class type.'; ok=false; } else { document.getElementById('corp-class-type-err').textContent=''; }
+    if (!headcount){ document.getElementById('corp-headcount-err').textContent='Please enter the number of participants.'; ok=false; } else { document.getElementById('corp-headcount-err').textContent=''; }
+    if (!location){ document.getElementById('corp-location-err').textContent='Please select a location preference.'; ok=false; } else { document.getElementById('corp-location-err').textContent=''; }
+    if (!ok) return;
+
+    var btn = document.getElementById('corp-inquiry-submit-btn');
+    btn.disabled=true; btn.textContent='Submitting...';
+
+    var params = {
+      company_name:    companyName, contact_name: contactName,
+      contact_email:   contactEmail, to_email: 'auricmovement@outlook.com',
+      contact_phone:   document.getElementById('corp-contact-phone').value.trim() || 'Not provided',
+      industry:        document.getElementById('corp-industry').value.trim() || 'Not provided',
+      referral_source: document.getElementById('corp-referral').value || 'Not provided',
+      class_type:      classType,
+      class_level:     document.getElementById('corp-class-level').value || 'Not provided',
+      duration:        document.getElementById('corp-duration').value || 'Not provided',
+      frequency:       document.getElementById('corp-frequency').value || 'Not provided',
+      headcount:       headcount,
+      experience:      document.getElementById('corp-experience').value || 'Not provided',
+      location:        location,
+      space_status:    document.getElementById('corp-space-status').value || 'Not provided',
+      preferred_day:   document.getElementById('corp-preferred-day').value || 'Not provided',
+      timeline:        document.getElementById('corp-timeline').value.trim() || 'Not provided',
+      theme:           document.getElementById('corp-theme').value.trim() || 'Not provided',
+      budget:          document.getElementById('corp-budget').value || 'Not provided',
+      injuries:        document.getElementById('corp-injuries').value.trim() || 'None provided',
+      additional_notes:document.getElementById('corp-notes').value.trim() || 'None'
+    };
+
+    if (typeof emailjs !== 'undefined') {
+      emailjs.send(EMAILJS_SERVICE_ID, TMPL_CORP_INQUIRY, params)
+        .then(function(){
+          return emailjs.send(EMAILJS_SERVICE_ID, TMPL_CORP_CONFIRM, {
+            contact_name: contactName, to_email: contactEmail, company_name: companyName
+          });
+        })
+        .then(function(){
+          btn.disabled=false; btn.textContent='Submit Inquiry →';
+          document.getElementById('corp-step-inquiry').classList.add('hidden');
+          document.getElementById('corp-step-inquiry-done').classList.remove('hidden');
+          announce('Inquiry submitted!');
+        })
+        .catch(function(){
+          btn.disabled=false; btn.textContent='Submit Inquiry →';
+          document.getElementById('corp-inquiry-status').innerHTML='<span style="color:var(--red);">⚠️ Could not submit. Please email auricmovement@outlook.com directly.</span>';
+        });
+    } else {
+      btn.disabled=false; btn.textContent='Submit Inquiry →';
+      document.getElementById('corp-inquiry-status').innerHTML='<span style="color:var(--red);">⚠️ Email service unavailable. Please contact auricmovement@outlook.com.</span>';
+    }
+  });
+
+  document.getElementById('corp-inquiry-new-btn').addEventListener('click', function(){
+    document.getElementById('corp-step-inquiry').classList.remove('hidden');
+    document.getElementById('corp-step-inquiry-done').classList.add('hidden');
+  });
+
+  // Corporate booking
+  document.getElementById('corp-to-waiver-btn').addEventListener('click', function(){
+    var company  = document.getElementById('corp-book-company').value.trim();
+    var name     = document.getElementById('corp-book-name').value.trim();
+    var email    = document.getElementById('corp-book-email').value.trim();
+    var headcount= document.getElementById('corp-book-headcount').value.trim();
+    var date     = document.getElementById('corp-book-date').value.trim();
+    var location = document.getElementById('corp-book-location').value.trim();
+    var ok = true;
+
+    if (!company){ document.getElementById('corp-book-company-err').textContent='Please enter your company name.'; ok=false; } else { document.getElementById('corp-book-company-err').textContent=''; }
+    if (!name||name.length<2){ document.getElementById('corp-book-name-err').textContent='Please enter your full name.'; ok=false; } else { document.getElementById('corp-book-name-err').textContent=''; }
+    if (!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ document.getElementById('corp-book-email-err').textContent='Please enter a valid email.'; ok=false; } else { document.getElementById('corp-book-email-err').textContent=''; }
+    if (!headcount){ document.getElementById('corp-book-headcount-err').textContent='Please enter the number of participants.'; ok=false; } else { document.getElementById('corp-book-headcount-err').textContent=''; }
+    if (!date){ document.getElementById('corp-book-date-err').textContent='Please confirm the date and time.'; ok=false; } else { document.getElementById('corp-book-date-err').textContent=''; }
+    if (!location){ document.getElementById('corp-book-location-err').textContent='Please confirm the location.'; ok=false; } else { document.getElementById('corp-book-location-err').textContent=''; }
+    if (!ok) return;
+
+    document.getElementById('corp-waiver-company-display').textContent = company;
+    document.getElementById('corp-waiver-name-stmt').textContent       = name;
+    document.getElementById('corp-waiver-company-stmt').textContent    = company;
+    buildCorpClauses();
+    document.getElementById('corp-step-booking').classList.add('hidden');
+    document.getElementById('corp-step-waiver').classList.remove('hidden');
+    document.getElementById('corp-step-waiver').scrollIntoView({behavior:'smooth'});
+    announce('Corporate waiver loaded. 19 clauses to review.');
+  });
+
+  var corpClauses = [
+    'I acknowledge that mat and/or reformer Pilates involves physical exercise and movement that carries inherent risks of physical injury, including but not limited to muscle strains, joint injuries, falls, and cardiovascular events.',
+    'I, on behalf of myself and all participants under this corporate booking, voluntarily assume all risks associated with participation in Auric Movement classes, whether known or unknown, foreseen or unforeseen.',
+    'As the authorized representative of the company named in this booking, I confirm that I have the authority to sign this waiver on behalf of all participating employees and/or guests.',
+    'I confirm that all participants have been informed of the physical nature of this activity and have been advised to consult a physician prior to participation if they have any medical conditions, injuries, or physical limitations.',
+    'I confirm that all known injuries, medical conditions, and physical limitations of participants have been disclosed in the inquiry form. I understand that failure to disclose may result in increased risk of injury.',
+    'I, on behalf of the company and all participants, release, waive, discharge, and covenant not to sue Auric Movement, its instructors, agents, and affiliates from any and all claims, damages, losses, or liability arising from participation in this class.',
+    'This release includes claims arising from the negligence of Auric Movement or its instructors, to the fullest extent permitted by law.',
+    'I agree to indemnify and hold harmless Auric Movement, its instructors, agents, and affiliates from any claims, damages, or expenses (including legal fees) arising from the participation of any individual under this corporate booking.',
+    'I acknowledge that if the class is held at a location provided by the company, Auric Movement is not responsible for the condition, safety, or suitability of that space or any equipment provided by the company.',
+    'I agree that the Auric Movement instructor has the authority to modify, pause, or end any activity if they determine it is unsafe for any participant. Participants who cannot safely continue may be asked to stop.',
+    'All participants must be at least 18 years of age or accompanied by a legal guardian. I confirm that all participants under this booking meet this requirement.',
+    'In the event of a medical emergency during the session, I authorize Auric Movement instructors to call emergency services and take any reasonable steps necessary to assist any participant. I understand that Auric Movement is not liable for costs associated with emergency services.',
+    'Auric Movement reserves the right to refuse service to any participant who appears unfit to participate safely, is disruptive, or poses a risk to themselves or others. No refund will be issued in such cases.',
+    'Participants are responsible for any damage caused to studio equipment or property through negligent or intentional misuse. The company agrees to cover the cost of any such damages.',
+    'Class content, sequences, and programming created by Auric Movement are proprietary and may not be recorded, reproduced, or distributed without prior written consent from Auric Movement.',
+    'Auric Movement is not liable for cancellations or modifications due to circumstances beyond our reasonable control, including but not limited to weather events, venue unavailability, illness, government restrictions, or other force majeure events. Rescheduling will be offered where possible.',
+    'I understand that late arrivals may not be permitted to join the class in progress for safety reasons. No refunds or credits will be issued for late arrivals or no-shows. Cancellations must be made at least 48 hours before the scheduled class to be eligible for rescheduling.',
+    'Any disputes arising out of or related to this agreement or the services provided by Auric Movement shall be resolved through binding arbitration in accordance with the rules of the American Arbitration Association, rather than through litigation, in New York County, New York.',
+    'I confirm that I am at least 18 years of age, of sound mind, and legally authorized to enter into this binding agreement on behalf of the company named in this booking. I have read this waiver in full, understand its contents, and sign it freely and voluntarily.'
+  ];
+
+  var corpChecked = {}; var corpCount = 0;
+
+  function buildCorpClauses() {
+    var container = document.getElementById('corp-clauses-container');
+    container.innerHTML=''; corpChecked={}; corpCount=0; updateCorpProgress();
+    var selBtn = document.getElementById('corp-select-all-btn');
+    if (selBtn){ selBtn.textContent='✓ Select All Clauses'; selBtn.disabled=false; }
+    corpClauses.forEach(function(text, i){
+      var div=document.createElement('div'); div.className='clause';
+      var cb=document.createElement('input'); cb.type='checkbox'; cb.id='corpcb-'+i;
+      cb.setAttribute('aria-label','Agree to clause '+(i+1)+' of 19');
+      var lbl=document.createElement('label'); lbl.htmlFor='corpcb-'+i; lbl.className='clause-text';
+      lbl.innerHTML='<span class="clause-num">'+(i+1)+'.</span> '+text;
+      cb.addEventListener('change', function(){
+        if(this.checked){ corpChecked[i]=true; div.classList.add('checked'); }
+        else { delete corpChecked[i]; div.classList.remove('checked'); }
+        updateCorpProgress();
+      });
+      div.appendChild(cb); div.appendChild(lbl); container.appendChild(div);
+    });
+  }
+
+  function updateCorpProgress() {
+    corpCount = Object.keys(corpChecked).length;
+    document.getElementById('corp-confirmed-count').textContent = corpCount;
+    document.getElementById('corp-remaining-text').textContent  = (19-corpCount)+' remaining';
+    document.getElementById('corp-progress-fill').style.width   = (corpCount/19*100)+'%';
+    document.getElementById('corp-progress-track').setAttribute('aria-valuenow', corpCount);
+    var fa = document.getElementById('corp-final-agree');
+    if (corpCount===19){ fa.disabled=false; }
+    else { fa.disabled=true; fa.checked=false; document.getElementById('corp-sig-input').disabled=true; document.getElementById('corp-sig-input').value=''; document.getElementById('corp-submit-btn').disabled=true; }
+  }
+
+  document.getElementById('corp-select-all-btn').addEventListener('click', function(){
+    document.querySelectorAll('#corp-clauses-container input[type="checkbox"]').forEach(function(cb){
+      if(!cb.checked){ cb.checked=true; cb.dispatchEvent(new Event('change')); }
+    });
+    this.textContent='✓ All Clauses Selected'; this.disabled=true;
+    announce('All 19 clauses selected.');
+  });
+
+  document.getElementById('corp-final-agree').addEventListener('change', function(){
+    var si = document.getElementById('corp-sig-input');
+    if(this.checked && corpCount===19){ si.disabled=false; si.focus(); }
+    else { si.disabled=true; si.value=''; document.getElementById('corp-submit-btn').disabled=true; }
+  });
+
+  document.getElementById('corp-sig-input').addEventListener('input', function(){
+    document.getElementById('corp-submit-btn').disabled = this.value.trim().length < 2;
+    document.getElementById('corp-sig-err').textContent = '';
+  });
+
+  document.getElementById('corp-submit-btn').addEventListener('click', function(){
+    var company  = document.getElementById('corp-book-company').value.trim();
+    var name     = document.getElementById('corp-book-name').value.trim();
+    var email    = document.getElementById('corp-book-email').value.trim();
+    var headcount= document.getElementById('corp-book-headcount').value.trim();
+    var sig      = document.getElementById('corp-sig-input').value.trim();
+
+    if (sig.toLowerCase() !== name.toLowerCase()) {
+      document.getElementById('corp-sig-err').textContent='Signature must match your name: "'+name+'"';
+      document.getElementById('corp-sig-input').setAttribute('aria-invalid','true');
+      document.getElementById('corp-sig-input').focus(); return;
+    }
+    document.getElementById('corp-sig-err').textContent='';
+
+    var submitBtn = document.getElementById('corp-submit-btn');
+    submitBtn.disabled=true; submitBtn.textContent='Submitting...';
+    var now = new Date(); var timeStr = now.toLocaleString();
+
+    if (typeof emailjs !== 'undefined') {
+      emailjs.send(EMAILJS_SERVICE_ID, TMPL_CORP_SIGNED, {
+        company_name:  company, contact_name: name,
+        contact_email: email, to_email: 'auricmovement@outlook.com',
+        headcount:     headcount,
+        session_date:  document.getElementById('corp-book-date').value.trim(),
+        location:      document.getElementById('corp-book-location').value.trim() || 'Not provided',
+        injuries:      document.getElementById('corp-book-injuries').value.trim() || 'None provided',
+        sign_time:     timeStr
+      }).then(function(){
+        submitBtn.disabled=false; submitBtn.textContent='Submit Booking ✦';
+        document.getElementById('corp-booking-conf-company').textContent = company;
+        document.getElementById('corp-booking-conf-name').textContent    = name;
+        document.getElementById('corp-booking-conf-time').textContent    = timeStr;
+        document.getElementById('corp-step-waiver').classList.add('hidden');
+        document.getElementById('corp-step-booking-done').classList.remove('hidden');
+        document.getElementById('corp-step-booking-done').scrollIntoView({behavior:'smooth'});
+        announce('Booking submitted successfully!');
+      }).catch(function(){
+        submitBtn.disabled=false; submitBtn.textContent='Submit Booking ✦';
+        document.getElementById('corp-booking-email-status').innerHTML='<div style="color:var(--red);font-size:.85rem;margin-top:.5rem;">⚠️ Could not submit. Please email auricmovement@outlook.com</div>';
+      });
+    }
+  });
+
+  // ── Events Hub ────────────────────────────────────────────────────────────
+
+  // Load spot counts for event cards
+  function updateEventCardSpots() {
+    getData(function(data) {
+      var s1remaining = MAX_PER_SESSION - data.s1.filter(function(r){ return r.type==='confirmed'; }).length;
+      var s2remaining = MAX_PER_SESSION - data.s2.filter(function(r){ return r.type==='confirmed'; }).length;
+      var pilatesEl = document.getElementById('pilates-card-spots');
+      if (pilatesEl) {
+        var total = s1remaining + s2remaining;
+        if (total <= 0) pilatesEl.innerHTML = '<span style="color:var(--red);">Waitlist only</span>';
+        else if (total <= 4) pilatesEl.innerHTML = '<span style="color:#b07840;">Only '+total+' spots left!</span>';
+        else pilatesEl.innerHTML = '<span style="color:#4a7c59;">'+total+' spots available</span>';
+      }
+    });
+    getMCData(function(data) {
+      var mcRemaining = MC_MAX_SPOTS - data.mc1.filter(function(r){ return r.type==='confirmed'; }).length;
+      var mcEl = document.getElementById('matchat-card-spots');
+      if (mcEl) {
+        if (mcRemaining <= 0) mcEl.innerHTML = '<span style="color:var(--red);">Waitlist only</span>';
+        else if (mcRemaining <= 5) mcEl.innerHTML = '<span style="color:#b07840;">Only '+mcRemaining+' spots left!</span>';
+        else mcEl.innerHTML = '<span style="color:#4a7c59;">'+mcRemaining+' spots available</span>';
+      }
+    });
+  }
+  updateEventCardSpots();
+
+  // Event card clicks
+  document.getElementById('event-card-pilates').addEventListener('click', function(){
+    showAllPanels('tab-current');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+  document.getElementById('event-card-matchat').addEventListener('click', function(){
+    showAllPanels('tab-matchat');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+  document.getElementById('event-card-coming').addEventListener('click', function(){
+    showAllPanels('tab-coming');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+
+  function showAllPanels(activeId) {
+    var allPanels = ['tab-events','tab-current','tab-matchat','tab-coming','tab-corporate'];
+    allPanels.forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.classList.toggle('active', id === activeId);
+      if (el) el.style.display = (id === activeId) ? 'block' : 'none';
+    });
+  }
+
+  // Back buttons
+  ['back-to-events-pilates','back-to-events-matchat','back-to-events-coming'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('click', function(){
+      showAllPanels('tab-events');
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+
+  // ── End Events Hub ─────────────────────────────────────────────────────────
+
   // ── Tab switching ─────────────────────────────────────────────────────────
   document.querySelectorAll('.tab-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
       document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
-      document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
       btn.classList.add('active');
       btn.setAttribute('aria-selected','true');
-      document.getElementById(btn.getAttribute('aria-controls')).classList.add('active');
+      var target = btn.getAttribute('aria-controls');
+      var allPanels = ['tab-events','tab-current','tab-matchat','tab-coming','tab-corporate'];
+      allPanels.forEach(function(id){
+        var el = document.getElementById(id);
+        if (el) el.classList.toggle('active', id === target);
+      });
     });
   });
 
-  // Auto-switch tab based on URL parameter
   function switchTab(tabId) {
-    var btn = document.querySelector('[aria-controls="'+tabId+'"]');
-    if (!btn) return;
     document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
-    document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
-    btn.classList.add('active');
-    btn.setAttribute('aria-selected','true');
-    document.getElementById(tabId).classList.add('active');
+    var allPanels = ['tab-events','tab-current','tab-matchat','tab-coming','tab-corporate'];
+    allPanels.forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.classList.toggle('active', id === tabId);
+    });
+    // highlight correct nav button
+    var btn = document.querySelector('[aria-controls="'+tabId+'"]');
+    if (btn) { btn.classList.add('active'); btn.setAttribute('aria-selected','true'); }
+    else {
+      // sub-panels highlight Events tab
+      var eventsBtn = document.getElementById('btn-events');
+      if (eventsBtn) { eventsBtn.classList.add('active'); eventsBtn.setAttribute('aria-selected','true'); }
+    }
   }
 
   var urlParams = new URLSearchParams(window.location.search);
   var eventParam = urlParams.get('event');
   if (eventParam) {
     setTimeout(function(){
-      if (eventParam === 'matchat') switchTab('tab-matchat');
-      else if (eventParam === 'coming') switchTab('tab-coming');
+      if (eventParam === 'matchat') { switchTab('btn-events'); showAllPanels('tab-matchat'); }
+      else if (eventParam === 'coming') { switchTab('btn-events'); showAllPanels('tab-coming'); }
+      else if (eventParam === 'corporate') switchTab('tab-corporate');
     }, 100);
+  }
+  if (urlParams.get('booking') === 'corporate') {
+    setTimeout(function(){
+      switchTab('tab-corporate');
+      document.getElementById('corp-step-inquiry').classList.add('hidden');
+      document.getElementById('corp-step-booking').classList.remove('hidden');
+    }, 150);
   }
 
   // ── Notify List JSONBin ───────────────────────────────────────────────────
