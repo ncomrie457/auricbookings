@@ -1032,7 +1032,8 @@ document.addEventListener('DOMContentLoaded', function() {
       arrival: row.arrival, classStart: row.class_start,
       time: row.time_str, timestamp: row.timestamp_iso,
       code: row.code, type: row.type,
-      wlPosition: row.wl_position, clausesAgreed: row.clauses_agreed
+      wlPosition: row.wl_position, clausesAgreed: row.clauses_agreed,
+      adminNotes: row.admin_notes || ''
     };
   }
   function _pRecToRow(rec, sid) {
@@ -1107,7 +1108,8 @@ document.addEventListener('DOMContentLoaded', function() {
       time: row.time_str, timestamp: row.timestamp_iso,
       code: row.code, type: row.type,
       wlPosition: row.wl_position, clausesAgreed: row.clauses_agreed,
-      notes: row.notes || ''
+      notes: row.notes || '',
+      adminNotes: row.admin_notes || ''
     };
   }
   function _mcRecToRow(rec) {
@@ -1175,7 +1177,8 @@ document.addEventListener('DOMContentLoaded', function() {
       location: r.location, space_status: r.space_status, preferred_day: r.preferred_day,
       timeline: r.timeline, theme: r.theme, budget: r.budget, injuries: r.injuries,
       additional_notes: r.additional_notes, code: r.code,
-      time: r.time_str, timestamp: r.timestamp_iso
+      time: r.time_str, timestamp: r.timestamp_iso,
+      adminNotes: r.admin_notes || ''
     };
   }
   function _corpInqRecToRow(rec){
@@ -1197,7 +1200,8 @@ document.addEventListener('DOMContentLoaded', function() {
       company_name: r.company_name, contact_name: r.contact_name, contact_email: r.contact_email,
       headcount: r.headcount, session_date: r.session_date, location: r.location,
       injuries: r.injuries, signature: r.signature, clauses_agreed: r.clauses_agreed,
-      code: r.code, sign_time: r.sign_time, timestamp: r.timestamp_iso
+      code: r.code, sign_time: r.sign_time, timestamp: r.timestamp_iso,
+      adminNotes: r.admin_notes || ''
     };
   }
   function _corpBookRecToRow(rec){
@@ -1285,6 +1289,11 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(function(){ el.textContent = msg; }, 80);
   }
   function escapeHTML(str) { var d=document.createElement('div'); d.textContent=str; return d.innerHTML; }
+
+  function adminNotesField(table, code, existingNote) {
+    var safe = escapeHTML(existingNote || '');
+    return '<textarea class="admin-note-input" data-table="'+table+'" data-code="'+code+'" placeholder="📝 Admin notes (auto-saves)…" style="width:100%;margin-top:.5rem;padding:.4rem .6rem;border:1px solid var(--border);border-radius:6px;font-family:\'Jost\',sans-serif;font-size:.78rem;background:#fdfbf7;resize:vertical;min-height:36px;box-sizing:border-box;color:#3d322a;">'+safe+'</textarea>';
+  }
 
   var steps = ['step-register','step-waiver','step-confirmed','step-waitlist'];
   function showStep(id) {
@@ -1709,6 +1718,23 @@ document.addEventListener('DOMContentLoaded', function() {
     var block = h3.closest('.admin-session-block') || h3.closest('#admin-notify-list-section');
     if (block) block.classList.toggle('collapsed');
   });
+
+  // Auto-save admin notes on blur
+  adminPanel.addEventListener('blur', function(e){
+    if (!e.target.classList || !e.target.classList.contains('admin-note-input')) return;
+    var table = e.target.getAttribute('data-table');
+    var code  = e.target.getAttribute('data-code');
+    var note  = e.target.value;
+    if (!table || !code) return;
+    e.target.style.borderColor = 'var(--gold)';
+    supabase.from(table).update({ admin_notes: note }).eq('code', code)
+      .then(function(){
+        e.target.style.borderColor = 'var(--green, #2e7d32)';
+        setTimeout(function(){ e.target.style.borderColor = 'var(--border)'; }, 800);
+      }, function(){
+        e.target.style.borderColor = 'var(--red)';
+      });
+  }, true);
   document.getElementById('admin-blast-btn').addEventListener('click', function(){
     getNotifyList(function(data){
       var list = data.notify || [];
@@ -1800,7 +1826,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var removeBtn='<button onclick="adminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">🗑 Remove</button>';
             var confirmBtn='<button onclick="adminConfirmPayment(\''+rec.code+'\')" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">✅ Confirmed</button>';
             var pendingBtn='<button onclick="adminPaymentPending(\''+rec.code+'\')" style="background:#fef9e7;border:1px solid #f0dca0;color:#7a6320;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">⏳ Pending</button>';
-            item.innerHTML='<div><span class="aname">'+escapeHTML(rec.name)+'</span><br><span class="aemail">'+escapeHTML(rec.email)+'</span></div>'+
+            item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span><br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+adminNotesField('pilates_registrations', rec.code, rec.adminNotes)+'</div>'+
               '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
               '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
               '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;">'+confirmBtn+pendingBtn+removeBtn+'</div></div>';
@@ -1842,7 +1868,7 @@ document.addEventListener('DOMContentLoaded', function() {
           var pendingBtn='<button onclick="mcAdminPaymentPending(\''+rec.code+'\')" style="background:#fff8e1;border:1px solid #ffe082;color:#f57f17;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">⏳ Pending</button>';
           var removeBtn='<button onclick="mcAdminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">🗑 Remove</button>';
           var notesHTML = rec.notes ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;"><strong style="color:var(--gold);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">📝 Notes for Instructor:</strong><br>'+escapeHTML(rec.notes)+'</div>' : '';
-          item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span><br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+notesHTML+'</div>'+
+          item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span><br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+notesHTML+adminNotesField('matchat_registrations', rec.code, rec.adminNotes)+'</div>'+
             '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
             '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
             '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;">'+confirmBtn+pendingBtn+removeBtn+'</div></div>';
@@ -1892,6 +1918,7 @@ document.addEventListener('DOMContentLoaded', function() {
               ' <span style="font-size:.78rem;color:var(--text-muted);">— ' + escapeHTML(rec.contact_name) + '</span>' +
               '<br><span class="aemail">' + escapeHTML(rec.contact_email) + '</span>' +
               details +
+              adminNotesField('corporate_inquiries', rec.code, rec.adminNotes) +
             '</div>' +
             '<div style="text-align:right">' +
               '<span style="font-size:.75rem;color:var(--text-muted);">' + escapeHTML(rec.time) + '</span>' +
@@ -1925,6 +1952,7 @@ document.addEventListener('DOMContentLoaded', function() {
               ' <span style="font-size:.78rem;color:var(--text-muted);">— ' + escapeHTML(rec.contact_name) + '</span>' +
               '<br><span class="aemail">' + escapeHTML(rec.contact_email) + '</span>' +
               details +
+              adminNotesField('corporate_bookings', rec.code, rec.adminNotes) +
             '</div>' +
             '<div style="text-align:right">' +
               '<span class="atype type-confirmed">signed</span>' +
