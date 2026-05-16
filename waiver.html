@@ -748,6 +748,22 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   buildClauses();
+
+  // Prefill from URL params (?name=... &email=... &event=... &date=...)
+  try {
+    var params = new URLSearchParams(window.location.search);
+    var pName  = params.get('name');
+    var pEmail = params.get('email');
+    var pEvent = params.get('event');
+    var pDate  = params.get('date');
+    if (pName)  {
+      document.getElementById('reg-name').value = pName;
+      document.getElementById('waiver-name-stmt').textContent = pName;
+    }
+    if (pEmail) document.getElementById('reg-email').value = pEmail;
+    if (pEvent) document.getElementById('reg-event').value = pEvent;
+    if (pDate)  document.getElementById('reg-date').value = pDate;
+  } catch(e) {}
 });
 </script>
 </body>
