@@ -504,13 +504,11 @@
             </div>
           </div>
 
-          <!-- Right: Sticky payment box -->
+          <!-- Right: Sticky info box (payment opens automatically after signing) -->
           <div style="position:sticky;top:1.5rem;">
             <div style="background:#faf5ee;border:1px solid var(--border);border-radius:12px;padding:1.25rem;text-align:center;">
               <p style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--brown);margin-bottom:.5rem;">Complete Your Booking</p>
-              <p style="font-size:.82rem;color:#3d322a;line-height:1.6;margin-bottom:.75rem;">Check all 19 clauses, sign your name, then pay $25 to confirm your spot.</p>
-              <a id="waiver-stripe-link" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-full" style="text-decoration:none;font-size:.9rem;justify-content:center;">💳 Pay $25 →</a>
-              <p style="font-size:.72rem;color:var(--text-muted);margin-top:.6rem;line-height:1.5;">Only click once. Check your inbox for a Stripe receipt if you've already paid.</p>
+              <p style="font-size:.82rem;color:#3d322a;line-height:1.6;margin:0;">Check all 19 clauses and sign your name below. Payment opens automatically after signing — $25 to confirm your spot.</p>
             </div>
           </div>
 
@@ -1640,7 +1638,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('waiver-summary-session').textContent = sess.label;
     document.getElementById('waiver-summary-arrival').textContent = sess.arrival;
     document.getElementById('waiver-summary-start').textContent   = sess.start;
-    document.getElementById('waiver-stripe-link').href            = sess.stripeUrl;
     buildClauses();
     showStep('step-waiver');
     document.querySelector('.page-layout').classList.add('waiver-active');
