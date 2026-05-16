@@ -37,8 +37,71 @@
     .hidden { display:none !important; }
 
     /* Hero */
-    .hero { background:var(--cream-light); border-bottom:1px solid var(--border); text-align:center; padding:1.25rem 1.5rem; }
-    .hero-title { font-family:'Playfair Display',serif; font-style:italic; font-weight:700; font-size:1.2rem; color:var(--brown); letter-spacing:.02em; }
+    .hero {
+      background: linear-gradient(135deg, #fdfbf7 0%, #f5e6d3 35%, #ebe4d8 70%, #f5e6d3 100%);
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+      padding: 2rem 1.5rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before, .hero::after {
+      content: '';
+      position: absolute;
+      width: 280px; height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(176,120,64,.12) 0%, rgba(176,120,64,0) 70%);
+      pointer-events: none;
+    }
+    .hero::before { top: -120px; left: -100px; }
+    .hero::after  { bottom: -120px; right: -100px; }
+    .hero-flourish {
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+      color: var(--gold);
+      font-size: .8rem;
+      letter-spacing: .3em;
+      margin-bottom: .5rem;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-flourish::before, .hero-flourish::after {
+      content: '';
+      width: 30px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-weight: 700;
+      font-size: clamp(1.6rem, 4vw, 2.3rem);
+      color: var(--brown);
+      letter-spacing: .02em;
+      margin: 0;
+      line-height: 1.15;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-tagline {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      color: var(--gold);
+      font-size: clamp(.85rem, 1.6vw, .98rem);
+      letter-spacing: .08em;
+      margin-top: .35rem;
+      position: relative;
+      z-index: 1;
+    }
+    .hero p {
+      position: relative;
+      z-index: 1;
+    }
+    @media (max-width: 600px) {
+      .hero { padding: 1.5rem 1rem 1.25rem; }
+      .hero::before, .hero::after { width: 180px; height: 180px; }
+    }
 
     /* Layout */
     .page-layout { max-width:1100px; margin:0 auto; padding:2rem 1.25rem 4rem; display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:start; }
@@ -220,9 +283,11 @@
 <div id="sr-announce" aria-live="polite" aria-atomic="true" class="sr-only" role="status"></div>
 
 <section class="hero" role="banner">
-  <div class="hero-title">Auric Movement</div>
-  <p style="font-size:clamp(.8rem,1.5vw,.9rem);color:var(--text-muted);margin-top:.5rem;max-width:560px;margin-left:auto;margin-right:auto;line-height:1.7;font-family:'Jost',sans-serif;">An intentional movement experience where wellness meets community. At Auric Movement, we move with purpose, set intentions, reconnect with our bodies, and create space for meaningful connection.</p>
-  <a href="https://auric-movement.printify.me/" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:.35rem;margin-top:.85rem;padding:.4rem 1rem;background:var(--cream-mid);color:var(--brown);border-radius:20px;font-size:.78rem;font-weight:600;letter-spacing:.05em;text-decoration:none;border:1px solid var(--border);transition:all .2s;" onmouseover="this.style.background='var(--gold)';this.style.color='#fff';this.style.borderColor='var(--gold)';" onmouseout="this.style.background='var(--cream-mid)';this.style.color='var(--brown)';this.style.borderColor='var(--border)';">Shop Merch ✦</a>
+  <div class="hero-flourish" aria-hidden="true"><span>✦</span></div>
+  <h1 class="hero-title">Auric Movement</h1>
+  <p class="hero-tagline">Align · Unwind · Recharge · Intend · Connect</p>
+  <p style="font-size:clamp(.82rem,1.55vw,.92rem);color:#3d322a;margin-top:.85rem;max-width:580px;margin-left:auto;margin-right:auto;line-height:1.7;font-family:'Jost',sans-serif;">An intentional movement experience. We move with purpose, set intentions, reconnect with our bodies, and create space for meaningful connection.</p>
+  <a href="https://auric-movement.printify.me/" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:.35rem;margin-top:1.1rem;padding:.5rem 1.25rem;background:#fff;color:var(--brown);border-radius:24px;font-size:.8rem;font-weight:600;letter-spacing:.05em;text-decoration:none;border:1.5px solid var(--gold);box-shadow:0 2px 8px rgba(176,120,64,.15);transition:all .2s;position:relative;z-index:1;" onmouseover="this.style.background='var(--gold)';this.style.color='#fff';" onmouseout="this.style.background='#fff';this.style.color='var(--brown)';">Shop Merch ✦</a>
 </section>
 
 <nav class="tabs-nav" role="tablist" aria-label="Navigation">
@@ -425,11 +490,13 @@
             </div>
           </div>
 
-          <!-- Right: Sticky info box (payment opens automatically after signing) -->
+          <!-- Right: Sticky payment box -->
           <div style="position:sticky;top:1.5rem;">
             <div style="background:#faf5ee;border:1px solid var(--border);border-radius:12px;padding:1.25rem;text-align:center;">
               <p style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--brown);margin-bottom:.5rem;">Complete Your Booking</p>
-              <p style="font-size:.82rem;color:#3d322a;line-height:1.6;margin:0;">Check all 19 clauses and sign your name below. Payment opens automatically after signing to confirm your spot.</p>
+              <p style="font-size:.82rem;color:#3d322a;line-height:1.6;margin-bottom:.75rem;">Check all 19 clauses, sign your name, then pay $25 to confirm your spot.</p>
+              <a id="waiver-stripe-link" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-full" style="text-decoration:none;font-size:.9rem;justify-content:center;">💳 Pay $25 →</a>
+              <p style="font-size:.72rem;color:var(--text-muted);margin-top:.6rem;line-height:1.5;">Only click once. Check your inbox for a Stripe receipt if you've already paid.</p>
             </div>
           </div>
 
@@ -773,11 +840,16 @@
             </div>
           </div>
 
-          <!-- Right: Sticky info box (payment opens automatically after signing) -->
-          <div style="position:sticky;top:1.5rem;">
+          <!-- Right: Sticky payment (hidden when pair $55 is selected) -->
+          <div id="mc-sticky-payment" style="position:sticky;top:1.5rem;">
             <div style="background:#faf5ee;border:1px solid var(--border);border-radius:12px;padding:1.25rem;text-align:center;">
               <p style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--brown);margin-bottom:.5rem;">Complete Your Booking</p>
-              <p style="font-size:.82rem;color:#3d322a;line-height:1.6;margin:0;">Check all 19 clauses and sign your name below. Payment opens automatically after signing — <span data-mc-price>$30</span> to confirm your spot.</p>
+              <p style="font-size:.82rem;color:#3d322a;line-height:1.6;margin-bottom:.75rem;">Check all 19 clauses, sign your name, then pay <span data-mc-price>$30</span> to confirm your spot.</p>
+              <stripe-buy-button
+                buy-button-id="buy_btn_1TW4cqCyx5PIptEioWrQzOT8"
+                publishable-key="pk_live_51TSmNuCyx5PIptEi8SCgMFB3I7ECVFeAzDOwjj1ZLrVZX1scB6cH8wAjNor3SFilMwMuqo0aFsbsckjYLU33iSAp00tmUxBVlK"
+              ></stripe-buy-button>
+              <p style="font-size:.72rem;color:var(--text-muted);margin-top:.6rem;line-height:1.5;">Clicking will open Stripe in a new tab to complete payment. Return here after paying. Check your inbox for a receipt if you've already paid.</p>
             </div>
           </div>
         </div>
@@ -2414,6 +2486,9 @@ document.addEventListener('DOMContentLoaded', function() {
     priceLabels.forEach(function(el){ el.textContent = '$' + price; });
     var pairLabel = document.getElementById('mc-pair-summary-label');
     if (pairLabel) pairLabel.textContent = isPair ? 'Pair (you + ' + friendName.split(' ')[0] + ')' : 'Solo';
+    // Hide the sticky right-column Stripe button when pair ($55) is selected
+    var stickyPay = document.getElementById('mc-sticky-payment');
+    if (stickyPay) stickyPay.style.display = isPair ? 'none' : '';
     // Replace Stripe buttons with the right ID
     document.querySelectorAll('#mc-step-waiver stripe-buy-button, #mc-step-confirmed stripe-buy-button').forEach(function(el){
       el.setAttribute('buy-button-id', btnId);
