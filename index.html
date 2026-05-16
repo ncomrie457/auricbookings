@@ -273,8 +273,22 @@
     }
 
     /* Stripe Buy Button: keep within container on all screens */
-    stripe-buy-button { display:inline-block; max-width:100%; }
-    stripe-buy-button > * { max-width:100% !important; }
+    stripe-buy-button {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+    stripe-buy-button > *,
+    stripe-buy-button iframe {
+      max-width: 100% !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    /* Ensure parent containers don't squeeze the button on narrow screens */
+    @media (max-width: 600px) {
+      stripe-buy-button { min-width: 0; }
+    }
   </style>
 </head>
 <body>
@@ -865,7 +879,7 @@
         <p class="detail"><strong>Arrival:</strong> 11:25 AM · Class starts 11:30 AM</p>
         <p class="detail"><strong>Waiver signed at:</strong> <span id="mc-conf-time"></span></p>
         <div id="mc-email-status"></div>
-        <div style="margin-top:1.25rem;padding:1rem 1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:10px;text-align:left;">
+        <div id="mc-confirmed-payment-box" style="margin-top:1.25rem;padding:1rem 1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:10px;text-align:left;">
           <p style="font-size:.9rem;color:var(--brown);font-weight:700;margin-bottom:.5rem;">What happens next?</p>
           <p style="font-size:.85rem;color:#3d322a;line-height:1.75;">Our team will verify your payment and send you a confirmation email once your spot is secured. If you have not yet completed payment, click below — it will open Stripe in a new tab.</p>
           <stripe-buy-button
@@ -873,6 +887,10 @@
             publishable-key="pk_live_51TSmNuCyx5PIptEi8SCgMFB3I7ECVFeAzDOwjj1ZLrVZX1scB6cH8wAjNor3SFilMwMuqo0aFsbsckjYLU33iSAp00tmUxBVlK"
           ></stripe-buy-button>
           <p style="font-size:.75rem;color:var(--text-muted);margin-top:.5rem;">Already paid? You're all set — watch for your confirmation email.</p>
+        </div>
+        <div id="mc-confirmed-pair-note" style="display:none;margin-top:1.25rem;padding:1rem 1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:10px;text-align:left;">
+          <p style="font-size:.9rem;color:var(--brown);font-weight:700;margin-bottom:.5rem;">What happens next?</p>
+          <p style="font-size:.85rem;color:#3d322a;line-height:1.75;">Once your $55 payment is received, we'll send you a final confirmation email. Your friend will also receive a link to sign their own waiver. You're all set — watch your inbox.</p>
         </div>
         <div style="margin-top:1rem;padding:.75rem 1rem;background:#fef9e7;border:1px solid #f0dca0;border-radius:10px;font-size:.82rem;color:#7a6320;line-height:1.6;">
           📬 <strong>Can't find your waiver email?</strong> Please check your <strong>spam or junk folder</strong> and mark it as "Not Spam".
@@ -1418,7 +1436,17 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // For Mat & Chat (uses Stripe Buy Button, not URL): shows a modal with the embedded buy button
-  function showMCPaymentOverlay(buyBtnId, publishableKey, price) {
+  // Releases a spot in Supabase (called when user clicks "Pay later — I'll lose my spot")
+  function releaseSpot(table, code, callback) {
+    if (!code) { if (callback) callback(); return; }
+    supabase.from(table).delete().eq('code', code).then(function(){
+      if (callback) callback();
+    }, function(){
+      if (callback) callback();
+    });
+  }
+
+  function showMCPaymentOverlay(buyBtnId, publishableKey, price, record) {
     var existing = document.getElementById('payment-countdown-overlay');
     if (existing) existing.remove();
     var overlay = document.createElement('div');
@@ -1437,11 +1465,17 @@ document.addEventListener('DOMContentLoaded', function() {
         '<button type="button" id="payment-cancel-mc" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.78rem;text-decoration:underline;font-family:\'Jost\',sans-serif;padding:.4rem;">Pay later (I\'ll lose my spot)</button>' +
       '</div>';
     document.body.appendChild(overlay);
-    document.getElementById('payment-cancel-mc').addEventListener('click', function(){ overlay.remove(); });
+    document.getElementById('payment-cancel-mc').addEventListener('click', function(){
+      if (!confirm('Are you sure? Your spot will be released and you will need to re-register if you change your mind.')) return;
+      this.disabled = true; this.textContent = 'Releasing your spot…';
+      releaseSpot('matchat_registrations', record && record.code, function(){
+        window.location.reload();
+      });
+    });
   }
 
   // Shows a 5-second countdown then redirects to Stripe (Option 2: force payment after waiver)
-  function showPaymentRedirectCountdown(stripeUrl) {
+  function showPaymentRedirectCountdown(stripeUrl, record) {
     var existing = document.getElementById('payment-countdown-overlay');
     if (existing) existing.remove();
     var overlay = document.createElement('div');
@@ -1469,7 +1503,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 1000);
     document.getElementById('payment-cancel-redirect').addEventListener('click', function(){
       clearInterval(timer);
-      overlay.remove();
+      if (!confirm('Are you sure? Your spot will be released and you will need to re-register if you change your mind.')) return;
+      this.disabled = true; this.textContent = 'Releasing your spot…';
+      releaseSpot('pilates_registrations', record && record.code, function(){
+        window.location.reload();
+      });
     });
     document.getElementById('payment-go-now-btn').addEventListener('click', function(){
       clearInterval(timer);
@@ -1703,7 +1741,7 @@ document.addEventListener('DOMContentLoaded', function() {
           announce('Waiver signed! Redirecting to payment...');
           sendConfirmEmail(record);
           // Auto-redirect to Stripe in same tab after a short delay (Option 2 — force payment after waiver)
-          showPaymentRedirectCountdown(sess.stripeUrl);
+          showPaymentRedirectCountdown(sess.stripeUrl, record);
         } else {
           document.getElementById('wl-name').textContent    = name;
           document.getElementById('wl-email').textContent   = email;
@@ -2489,7 +2527,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Hide the sticky right-column Stripe button when pair ($55) is selected
     var stickyPay = document.getElementById('mc-sticky-payment');
     if (stickyPay) stickyPay.style.display = isPair ? 'none' : '';
-    // Replace Stripe buttons with the right ID
+    // Thank-You page Stripe button stays visible — the buy-button-id swap below makes it show the right price ($30 solo or $55 pair)
+    var confBox  = document.getElementById('mc-confirmed-payment-box');
+    var pairNote = document.getElementById('mc-confirmed-pair-note');
+    if (confBox)  confBox.style.display  = '';
+    if (pairNote) pairNote.style.display = 'none';
+    // Replace Stripe buttons with the right ID ($30 solo or $55 pair)
     document.querySelectorAll('#mc-step-waiver stripe-buy-button, #mc-step-confirmed stripe-buy-button').forEach(function(el){
       el.setAttribute('buy-button-id', btnId);
     });
@@ -2598,7 +2641,7 @@ document.addEventListener('DOMContentLoaded', function() {
           document.getElementById('mc-step-confirmed').scrollIntoView({behavior:'smooth'});
           announce('Waiver signed! Complete payment to confirm your spot.');
           // Force payment after waiver (Option 2 — Mat & Chat overlay shows the Stripe Buy Button)
-          showMCPaymentOverlay(isPair ? MC_PAIR_BUY_BTN_ID : MC_SOLO_BUY_BTN_ID, MC_STRIPE_PUBLISHABLE, isPair ? MC_PAIR_PRICE : MC_SOLO_PRICE);
+          showMCPaymentOverlay(isPair ? MC_PAIR_BUY_BTN_ID : MC_SOLO_BUY_BTN_ID, MC_STRIPE_PUBLISHABLE, isPair ? MC_PAIR_PRICE : MC_SOLO_PRICE, record);
           if(typeof emailjs!=='undefined'){
             emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
               from_name:name, to_email:email, session_label:'Mat & Chat — August 1st' + (isPair?' (PAIR)':''),
