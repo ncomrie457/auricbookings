@@ -1889,6 +1889,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if((e.ctrlKey||e.metaKey)&&e.shiftKey&&(e.key==='A'||e.key==='a')){e.preventDefault();toggleAdmin();}
     if((e.ctrlKey||e.metaKey)&&e.shiftKey&&(e.key==='N'||e.key==='n')){e.preventDefault();SESSIONS.forEach(function(s){notifyWaitlist(s.id);});}
   });
+  // Phone-friendly admin access: visit book.auricmovement.com/#admin to open
+  if (window.location.hash === '#admin') {
+    setTimeout(toggleAdmin, 200);
+  }
   // Simple admin password gate — change ADMIN_PASSWORD below to your own
   // (anyone who views page source can technically find this — for stronger security, use Supabase Auth)
   var ADMIN_PASSWORD = 'AuricAdmin2026';
