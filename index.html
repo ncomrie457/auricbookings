@@ -1087,7 +1087,8 @@ document.addEventListener('DOMContentLoaded', function() {
       time: row.time_str, timestamp: row.timestamp_iso,
       code: row.code, type: row.type,
       wlPosition: row.wl_position, clausesAgreed: row.clauses_agreed,
-      adminNotes: row.admin_notes || ''
+      adminNotes: row.admin_notes || '',
+      isPaid: !!row.is_paid, paidAt: row.paid_at, expiresAt: row.expires_at
     };
   }
   function _pRecToRow(rec, sid) {
@@ -1166,7 +1167,8 @@ document.addEventListener('DOMContentLoaded', function() {
       adminNotes: row.admin_notes || '',
       isPair: !!row.is_pair,
       friendName: row.friend_name || '',
-      friendEmail: row.friend_email || ''
+      friendEmail: row.friend_email || '',
+      isPaid: !!row.is_paid, paidAt: row.paid_at, expiresAt: row.expires_at
     };
   }
   function _mcRecToRow(rec) {
@@ -1360,6 +1362,25 @@ document.addEventListener('DOMContentLoaded', function() {
   var PILATES_EVENT_DATE = '2026-06-19';
   var MC_EVENT_DATE      = '2026-08-01';
 
+  // Returns an HTML badge showing payment status for an admin row
+  function paymentBadge(rec) {
+    if (rec.type === 'waitlist' || rec.type === 'cancelled') return '';
+    if (rec.isPaid) {
+      return '<span style="display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.5px;padding:.15rem .5rem;border-radius:10px;background:#e8f5e9;color:#2e7d32;margin-left:.3rem;text-transform:uppercase;">💵 Paid</span>';
+    }
+    // Unpaid — show time-until-expiry if known
+    if (rec.expiresAt) {
+      var msLeft = new Date(rec.expiresAt).getTime() - Date.now();
+      if (msLeft <= 0) {
+        return '<span style="display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.5px;padding:.15rem .5rem;border-radius:10px;background:#fdecea;color:#c0392b;margin-left:.3rem;text-transform:uppercase;">⏰ Expired</span>';
+      }
+      var mins = Math.floor(msLeft / 60000);
+      var label = mins > 60 ? Math.floor(mins/60) + 'h ' + (mins%60) + 'm left' : mins + 'm left';
+      return '<span style="display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.5px;padding:.15rem .5rem;border-radius:10px;background:#fef9e7;color:#7a6320;margin-left:.3rem;text-transform:uppercase;">⏳ ' + label + '</span>';
+    }
+    return '<span style="display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.5px;padding:.15rem .5rem;border-radius:10px;background:#fef9e7;color:#7a6320;margin-left:.3rem;text-transform:uppercase;">⏳ Pending</span>';
+  }
+
   function adminNotesField(table, code, existingNote) {
     var safe = escapeHTML(existingNote || '');
     return '<textarea class="admin-note-input" data-table="'+table+'" data-code="'+code+'" placeholder="📝 Admin notes (auto-saves)…" style="width:100%;margin-top:.5rem;padding:.4rem .6rem;border:1px solid var(--border);border-radius:6px;font-family:\'Jost\',sans-serif;font-size:.78rem;background:#fdfbf7;resize:vertical;min-height:36px;box-sizing:border-box;color:#3d322a;">'+safe+'</textarea>';
@@ -1380,6 +1401,23 @@ document.addEventListener('DOMContentLoaded', function() {
       if (callback) callback();
     });
   }
+
+  // Sweep: mark unpaid 'confirmed' records as 'cancelled' once their 2-hour
+  // expiry has passed. Runs on every page load so the spot count stays accurate
+  // even if no admin action is taken.
+  function sweepExpiredSpots() {
+    var nowIso = new Date().toISOString();
+    ['pilates_registrations','matchat_registrations'].forEach(function(table){
+      supabase.from(table)
+        .update({ type: 'cancelled' })
+        .eq('is_paid', false)
+        .eq('type', 'confirmed')
+        .lt('expires_at', nowIso)
+        .then(function(){}, function(){});
+    });
+  }
+  // Run on page load
+  sweepExpiredSpots();
 
   function showMCPaymentOverlay(buyBtnId, publishableKey, price, record) {
     var existing = document.getElementById('payment-countdown-overlay');
@@ -1856,7 +1894,25 @@ document.addEventListener('DOMContentLoaded', function() {
     if((e.ctrlKey||e.metaKey)&&e.shiftKey&&(e.key==='A'||e.key==='a')){e.preventDefault();toggleAdmin();}
     if((e.ctrlKey||e.metaKey)&&e.shiftKey&&(e.key==='N'||e.key==='n')){e.preventDefault();SESSIONS.forEach(function(s){notifyWaitlist(s.id);});}
   });
+  // Simple admin password gate — change ADMIN_PASSWORD below to your own
+  // (anyone who views page source can technically find this — for stronger security, use Supabase Auth)
+  var ADMIN_PASSWORD = 'AuricAdmin2026';
+  function isAdminUnlocked(){ return sessionStorage.getItem('auric_admin_unlocked') === '1'; }
+  function unlockAdmin(){
+    if (isAdminUnlocked()) return true;
+    var pw = window.prompt('Admin password:');
+    if (pw === null) return false; // cancelled
+    if (pw === ADMIN_PASSWORD) {
+      sessionStorage.setItem('auric_admin_unlocked', '1');
+      return true;
+    }
+    alert('Incorrect password.');
+    return false;
+  }
   function toggleAdmin(){
+    if (!adminPanel.classList.contains('visible')) {
+      if (!unlockAdmin()) return; // require password before opening
+    }
     var v=adminPanel.classList.toggle('visible');
     if(v){renderAdmin();adminPanel.scrollIntoView({behavior:'smooth'});}
   }
@@ -1977,7 +2033,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var removeBtn='<button onclick="adminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">🗑 Remove</button>';
             var confirmBtn='<button onclick="adminConfirmPayment(\''+rec.code+'\')" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">✅ Confirmed</button>';
             var pendingBtn='<button onclick="adminPaymentPending(\''+rec.code+'\')" style="background:#fef9e7;border:1px solid #f0dca0;color:#7a6320;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">⏳ Pending</button>';
-            item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span><br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+adminNotesField('pilates_registrations', rec.code, rec.adminNotes)+'</div>'+
+            item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span>'+paymentBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+adminNotesField('pilates_registrations', rec.code, rec.adminNotes)+'</div>'+
               '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
               '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
               '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;">'+confirmBtn+pendingBtn+removeBtn+'</div></div>';
@@ -2021,7 +2077,7 @@ document.addEventListener('DOMContentLoaded', function() {
           var removeBtn='<button onclick="mcAdminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">🗑 Remove</button>';
           var notesHTML = rec.notes ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;"><strong style="color:var(--gold);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">📝 Notes for Instructor:</strong><br>'+escapeHTML(rec.notes)+'</div>' : '';
           var pairHTML = rec.isPair ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#f5e6d3;border-left:3px solid var(--brown);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;"><strong style="color:var(--brown);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">👯 Pair Booking ($55):</strong><br><strong>Friend:</strong> '+escapeHTML(rec.friendName||'?')+'<br><strong>Email:</strong> '+escapeHTML(rec.friendEmail||'?')+'</div>' : '';
-          item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span>'+(rec.isPair?' <span style="font-size:.7rem;background:var(--brown);color:#fff;padding:.1rem .4rem;border-radius:10px;font-weight:700;letter-spacing:.5px;">PAIR</span>':'')+'<br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+pairHTML+notesHTML+adminNotesField('matchat_registrations', rec.code, rec.adminNotes)+'</div>'+
+          item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span>'+(rec.isPair?' <span style="font-size:.7rem;background:var(--brown);color:#fff;padding:.1rem .4rem;border-radius:10px;font-weight:700;letter-spacing:.5px;">PAIR</span>':'')+paymentBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+pairHTML+notesHTML+adminNotesField('matchat_registrations', rec.code, rec.adminNotes)+'</div>'+
             '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
             '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
             '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;">'+confirmBtn+pendingBtn+removeBtn+'</div></div>';
@@ -2180,6 +2236,11 @@ document.addEventListener('DOMContentLoaded', function() {
         cancel_code:   foundPerson.code
       }).then(function(){ alert('✅ Payment confirmation sent to '+foundPerson.email); })
         .catch(function(){ alert('⚠️ Could not send. Check your EmailJS dashboard.'); });
+      // Also mark the record as paid in Supabase so it stops the auto-expiry
+      supabase.from('pilates_registrations')
+        .update({ is_paid: true, paid_at: new Date().toISOString() })
+        .eq('code', code)
+        .then(function(){ renderAdmin(); }, function(){});
     });
   };
 
@@ -2654,6 +2715,11 @@ document.addEventListener('DOMContentLoaded', function() {
         arrival_time:'11:25 AM', class_time:'11:30 AM'
       }).then(function(){ alert('✅ Payment confirmation sent to '+foundPerson.email); })
         .catch(function(){ alert('⚠️ Could not send. Check EmailJS dashboard.'); });
+      // Also mark the record as paid in Supabase so it stops the auto-expiry
+      supabase.from('matchat_registrations')
+        .update({ is_paid: true, paid_at: new Date().toISOString() })
+        .eq('code', code)
+        .then(function(){ renderAdmin(); }, function(){});
     });
   };
 
