@@ -1002,26 +1002,28 @@
     <div class="modal-body">
       <p><em>Effective Date: May 2026</em></p>
       <h4>1. Refund Policy</h4>
-      <p>Refunds are available if requested within <strong>24 hours of your original purchase</strong>. After 24 hours, all sales are final. To request a refund or a spot transfer to a friend, email <strong>auricmovement@outlook.com</strong> with your name, session, and reason.</p>
-      <h4>2. Cancellations &amp; Transfers</h4>
-      <p>To cancel your spot or transfer it to a friend, please email <strong>auricmovement@outlook.com</strong> directly. Include your full name, session, and the name and email of the person taking your spot if transferring. All requests must be received at least <strong>4 hours before your session start time</strong>. Auric Movement reserves the right to deny a transfer at its discretion.</p>
-      <h4>3. Arrival &amp; Lateness Policy</h4>
+      <p>Refunds are available if requested within <strong>24 hours of your original purchase</strong>. After 24 hours, all sales are final. To request a refund, email <strong>auricmovement@outlook.com</strong> with your name, session, and reason.</p>
+      <h4>2. Cancellations</h4>
+      <p>No cancellations will be accepted <strong>within 24 hours of your session start time</strong>. To cancel earlier than that, email <strong>auricmovement@outlook.com</strong> with your full name and session details.</p>
+      <h4>3. Spot Transfers</h4>
+      <p>You may transfer your spot to a friend by emailing <strong>auricmovement@outlook.com</strong> at least <strong>8 hours before your session start time</strong>. Include your full name, session, and the full name and email of the person taking your spot. Auric Movement LLC reserves the right to deny a transfer at its discretion.</p>
+      <h4>4. Arrival &amp; Lateness Policy</h4>
       <p>Please arrive at your session arrival time &#8212; <strong>1:00 PM for Session 1</strong> or <strong>2:00 PM for Session 2</strong>. The first 5 minutes are reserved for a reformer orientation. Class begins promptly at <strong>1:05 PM / 2:05 PM</strong>.</p>
       <p><strong>There is a 5-minute grace period only.</strong> Any participant arriving after 1:05 PM (Session 1) or 2:05 PM (Session 2) will not be admitted. This is strictly enforced. <strong>No refunds or transfers will be issued for late arrivals.</strong></p>
-      <h4>4. Event Cancellation by Auric Movement</h4>
-      <p>If Auric Movement cancels or postpones the event, all registered participants will receive a <strong>full refund</strong> within 5&#8211;10 business days via the original payment method. Auric Movement is not responsible for incidental costs such as travel or accommodation.</p>
-      <h4>5. Code of Conduct</h4>
-      <p>All attendees are expected to treat instructors, staff, and fellow participants with respect. Auric Movement is a welcoming, inclusive space. Disruptive, disrespectful, or unsafe behavior will result in removal from the session without refund.</p>
-      <h4>6. Right to Refuse Entry</h4>
-      <p>Auric Movement reserves the right to refuse entry to any individual who has not completed a signed liability waiver, arrives late, appears to be under the influence of alcohol or substances, or poses a safety risk. No refund will be issued in these circumstances.</p>
-      <h4>7. Photography &amp; Video</h4>
+      <h4>5. Event Cancellation by Auric Movement LLC</h4>
+      <p>If Auric Movement LLC cancels or postpones the event, all registered participants will receive a <strong>full refund</strong> within 5&#8211;10 business days via the original payment method. Auric Movement LLC is not responsible for incidental costs such as travel or accommodation.</p>
+      <h4>6. Code of Conduct</h4>
+      <p>All attendees are expected to treat instructors, staff, and fellow participants with respect. Auric Movement LLC is a welcoming, inclusive space. Disruptive, disrespectful, or unsafe behavior will result in removal from the session without refund.</p>
+      <h4>7. Right to Refuse Entry</h4>
+      <p>Auric Movement LLC reserves the right to refuse entry to any individual who has not completed a signed liability waiver, arrives late, appears to be under the influence of alcohol or substances, or poses a safety risk. No refund will be issued in these circumstances.</p>
+      <h4>8. Photography &amp; Video</h4>
       <p>Photography and video may be captured during the event for promotional purposes. A notice will be posted at the venue. To opt out, notify your instructor before the session or email auricmovement@outlook.com.</p>
-      <h4>8. Medical Disclaimer</h4>
-      <p>Pilates involves physical exertion and inherent risk. Please consult a physician before attending if you have any medical conditions or health concerns. Auric Movement instructors are not licensed medical professionals. Participation is at your own risk.</p>
-      <h4>9. Third-Party Payment</h4>
+      <h4>9. Medical Disclaimer</h4>
+      <p>Pilates involves physical exertion and inherent risk. Please consult a physician before attending if you have any medical conditions or health concerns. Auric Movement LLC instructors are not licensed medical professionals. Participation is at your own risk.</p>
+      <h4>10. Third-Party Payment</h4>
       <p>Payment processing is handled by a third-party provider. We do not store your payment details. Refer to your payment provider's privacy policy for information on how your financial data is handled.</p>
-      <h4>10. Contact</h4>
-      <p><strong>Auric Movement</strong><br>auricmovement@outlook.com</p>
+      <h4>11. Contact</h4>
+      <p><strong>Auric Movement LLC</strong><br>auricmovement@outlook.com</p>
     </div>
   </div>
 </div>
@@ -2414,7 +2416,8 @@ document.addEventListener('DOMContentLoaded', function() {
         arrival_time:  foundSess.arrival,
         class_time:    foundSess.start,
         sign_time:     foundPerson.time,
-        cancel_code:   foundPerson.code
+        cancel_code:   foundPerson.code,
+        calendar_url:  foundSess.calendarUrl || ''
       }).then(function(){ alert('\u2705 Payment confirmation sent to '+foundPerson.email); })
         .catch(function(){ alert('\u26a0\ufe0f Could not send. Check your EmailJS dashboard.'); });
       // Also mark the record as paid in Supabase so it stops the auto-expiry
@@ -2947,7 +2950,9 @@ document.addEventListener('DOMContentLoaded', function() {
       if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
       emailjs.send(EMAILJS_SERVICE_ID, MC_TMPL_PAYMENT_CONFIRM, {
         from_name:foundPerson.name, to_email:foundPerson.email,
-        arrival_time:'11:25 AM', class_time:'11:30 AM'
+        session_label: MC_EVENT.label,
+        arrival_time:'11:25 AM', class_time:'11:30 AM',
+        calendar_url: MC_EVENT.calendarUrl || ''
       }).then(function(){ alert('\u2705 Payment confirmation sent to '+foundPerson.email); })
         .catch(function(){ alert('\u26a0\ufe0f Could not send. Check EmailJS dashboard.'); });
       // Also mark the record as paid in Supabase so it stops the auto-expiry
