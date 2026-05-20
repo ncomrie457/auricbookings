@@ -2114,33 +2114,61 @@ document.addEventListener('DOMContentLoaded', function() {
 
     status.innerHTML='<span style="color:var(--text-muted);">Saving...</span>';
 
-    var now = new Date(); var timeStr = now.toLocaleString(); var code = genCode();
-    var record = { name:name, email:email, session:event, time:timeStr, timestamp:now.toISOString(), code:code, type:type, clausesAgreed:19, manuallyAdded:true };
+    var now = new Date();
+    var timeStr = now.toLocaleString();
+    var code = genCode();
+    var nowIso = now.toISOString();
 
+    // Build the row directly (skipping the diff-based saveData) so we can mark it paid and surface real errors
+    var row, table, label;
     if (event === 'mc1') {
-      record.sessionLabel = 'Mat & Chat'; record.arrival = '11:25 AM'; record.classStart = '11:30 AM';
-      getMCData(function(data){
-        data.mc1.push(record);
-        saveMCData(data, function(){
-          status.innerHTML='<span style="color:#2e7d32;">\u2705 Added '+name+' to Mat & Chat!</span>';
-          document.getElementById('admin-add-name').value='';
-          document.getElementById('admin-add-email').value='';
-          renderAdmin(); buildMCSpots();
-        });
-      });
+      table = 'matchat_registrations';
+      label = 'Mat & Chat';
+      row = {
+        name: name, email: email, signature: null,
+        time_str: timeStr, timestamp_iso: nowIso,
+        code: code, type: type,
+        wl_position: null,
+        clauses_agreed: 19,
+        notes: null,
+        is_pair: false,
+        friend_name: null, friend_email: null,
+        is_paid: true, paid_at: nowIso
+      };
     } else {
+      table = 'pilates_registrations';
       var sess = SESSIONS.find(function(s){ return s.id===event; });
-      record.sessionLabel = sess.label; record.arrival = sess.arrival; record.classStart = sess.start;
-      getData(function(data){
-        data[event].push(record);
-        saveData(data, function(){
-          status.innerHTML='<span style="color:#2e7d32;">\u2705 Added '+name+' to '+sess.label+'!</span>';
-          document.getElementById('admin-add-name').value='';
-          document.getElementById('admin-add-email').value='';
-          renderAdmin(); buildSessionCards();
-        });
-      });
+      label = sess.label;
+      row = {
+        session_id: event,
+        name: name, email: email, signature: null,
+        session_label: sess.label, arrival: sess.arrival, class_start: sess.start,
+        time_str: timeStr, timestamp_iso: nowIso,
+        code: code, type: type,
+        wl_position: null,
+        clauses_agreed: 19,
+        notes: null,
+        is_paid: true, paid_at: nowIso
+      };
     }
+
+    supabase.from(table).insert([row]).select().then(function(res){
+      if (res.error) {
+        status.innerHTML='<span style="color:var(--red);">\u274c Failed: ' + res.error.message + '</span>';
+        return;
+      }
+      if (!res.data || !res.data.length) {
+        status.innerHTML='<span style="color:var(--red);">\u274c Insert returned no rows. Check Supabase RLS policies.</span>';
+        return;
+      }
+      status.innerHTML='<span style="color:#2e7d32;">\u2705 Added ' + escapeHTML(name) + ' to ' + label + ' (marked as paid).</span>';
+      document.getElementById('admin-add-name').value='';
+      document.getElementById('admin-add-email').value='';
+      renderAdmin();
+      if (event === 'mc1') buildMCSpots(); else buildSessionCards();
+    }, function(err){
+      status.innerHTML='<span style="color:var(--red);">\u274c Network error: ' + (err && err.message || 'unknown') + '</span>';
+    });
   });
 
   document.getElementById('admin-close-btn').addEventListener('click',function(){adminPanel.classList.remove('visible');});
