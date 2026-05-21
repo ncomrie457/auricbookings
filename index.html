@@ -173,7 +173,7 @@
     "@type": "FAQPage",
     "mainEntity": [
       { "@type": "Question", "name": "I've never done Pilates before — is this for me?", "acceptedAnswer": { "@type": "Answer", "text": "Absolutely. All Auric Movement events are open to every level. Niara will guide you through every movement with clear cues, modifications, and zero judgment." } },
-      { "@type": "Question", "name": "What should I wear and bring?", "acceptedAnswer": { "@type": "Answer", "text": "Comfortable, fitted activewear and grip socks. For Mat & Chat, bring your own mat if you have one. Water is encouraged. Everything else is provided." } },
+      { "@type": "Question", "name": "What should I wear and bring?", "acceptedAnswer": { "@type": "Answer", "text": "It is advised to wear comfortable workout attire. If you need to bring a mat and/or grip socks for a certain location, it will be disclosed in your confirmation email." } },
       { "@type": "Question", "name": "Can the class be modified for an injury, pregnancy, or postpartum?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The health disclosure on the booking form lets you share what's going on so modifications can be prepared in advance. For specific situations, email auricmovement@outlook.com beforehand." } },
       { "@type": "Question", "name": "Where are the events held?", "acceptedAnswer": { "@type": "Answer", "text": "Auric Movement events are hosted at carefully sourced venues across New York City — the location varies by event. The specific address and arrival instructions are included in your registration confirmation and reminder emails." } },
       { "@type": "Question", "name": "What if I arrive late?", "acceptedAnswer": { "@type": "Answer", "text": "There is a 5-minute grace period only. Out of respect for the group and the practice, late arrivals cannot be admitted and refunds are not issued." } },
@@ -220,7 +220,17 @@
       --ivory:#f8f4ec; --stone:#ddd2c1; --fog:#e8e1d4; --ink:#1a1410;
       --warm-shadow: 44,26,14;
     }
-    body { font-family:'Jost',sans-serif; background:var(--cream); color:var(--text); min-height:100vh; line-height:1.6; }
+    body {
+      font-family: 'Jost', sans-serif;
+      background:
+        radial-gradient(ellipse at top left, rgba(176,120,64,.025), transparent 50%),
+        radial-gradient(ellipse at bottom right, rgba(176,120,64,.02), transparent 55%),
+        linear-gradient(180deg, var(--cream) 0%, var(--ivory) 50%, var(--cream) 100%);
+      background-attachment: fixed;
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
     /* ── Phase 1: UI polish ─────────────────────────────────────────────── */
     /* Smooth global transitions */
     * { transition: background-color .2s ease, border-color .2s ease, color .2s ease, box-shadow .25s ease, transform .25s ease; }
@@ -531,6 +541,17 @@
       background: radial-gradient(circle, rgba(176,120,64,.05), transparent 65%);
       pointer-events: none;
       will-change: transform;
+    }
+    /* Warm vignette — soft darker edges, draws eye to center */
+    .bq-hero-vignette {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at center, transparent 45%, rgba(44,26,14,.06) 100%),
+        radial-gradient(ellipse at center, transparent 60%, rgba(44,26,14,.08) 100%);
+      mix-blend-mode: multiply;
+      z-index: 0;
     }
     .bq-hero-inner { position: relative; z-index: 1; max-width: 880px; margin: 0 auto; will-change: transform; }
     .bq-eyebrow {
@@ -922,6 +943,47 @@
     }
     .bq-footer-email:hover { color: var(--gold); border-bottom-color: var(--gold); }
 
+    /* Social — Instagram + TikTok */
+    .bq-footer-social-eyebrow {
+      font-family: 'Jost', sans-serif;
+      font-size: .62rem;
+      font-weight: 500;
+      letter-spacing: .32em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin: 1.5rem 0 .85rem;
+    }
+    .bq-footer-social {
+      display: flex;
+      gap: 1.25rem;
+      margin-bottom: .5rem;
+    }
+    .bq-footer-social a {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      color: rgba(240,230,214,.75);
+      text-decoration: none;
+      font-family: 'Jost', sans-serif;
+      font-size: .82rem;
+      letter-spacing: .04em;
+      transition: color .2s ease, gap .2s ease;
+    }
+    .bq-footer-social a svg {
+      width: 17px;
+      height: 17px;
+      transition: transform .25s ease;
+    }
+    .bq-footer-social a:hover { color: var(--gold); gap: .65rem; }
+    .bq-footer-social a:hover svg { transform: translateY(-1px); }
+    .bq-footer-handle {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1rem;
+      color: rgba(240,230,214,.55);
+      margin-bottom: 1.75rem;
+    }
+
     .bq-footer-links {
       display: flex;
       flex-direction: column;
@@ -1110,6 +1172,86 @@
       }
     }
 
+    /* ============================
+       A Note from Niara — editorial founder's letter
+       ============================ */
+    .bq-note {
+      position: relative;
+      padding: clamp(5rem, 10vw, 8rem) 1.5rem;
+      background: linear-gradient(180deg, var(--cream-light) 0%, var(--ivory) 100%);
+      overflow: hidden;
+    }
+    .bq-note::before {
+      content: '';
+      position: absolute;
+      top: -20%; right: -15%;
+      width: 50%; height: 70%;
+      background: radial-gradient(circle, rgba(176,120,64,.04), transparent 60%);
+      pointer-events: none;
+    }
+    .bq-note-inner {
+      max-width: 640px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    .bq-note-rule {
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+      margin: 0 auto 2rem;
+      opacity: .6;
+    }
+    .bq-note-eyebrow {
+      font-family: 'Jost', sans-serif;
+      font-size: .68rem;
+      font-weight: 500;
+      letter-spacing: .48em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 2.5rem;
+    }
+    .bq-note-body {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: clamp(1.15rem, 1.8vw, 1.4rem);
+      line-height: 1.75;
+      color: #3d322a;
+      letter-spacing: .005em;
+    }
+    .bq-note-body p {
+      margin-bottom: 1.5rem;
+    }
+    .bq-note-body p:last-child { margin-bottom: 0; }
+    .bq-note-body .bq-note-quote {
+      font-size: clamp(1.3rem, 2.2vw, 1.7rem);
+      color: var(--ink);
+      line-height: 1.6;
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+    }
+    .bq-note-body .bq-note-quote em {
+      font-style: italic;
+      color: var(--brown);
+    }
+    .bq-note-signature {
+      margin-top: 2.5rem;
+      display: inline-flex;
+      align-items: baseline;
+      gap: .5rem;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.35rem;
+      color: var(--gold);
+    }
+    .bq-note-dash { font-weight: 300; }
+    .bq-note-name { letter-spacing: .02em; }
+
+    @media (max-width: 640px) {
+      .bq-note-eyebrow { letter-spacing: .35em; }
+    }
+
     /* Notify Me / Stay In The Loop section */
     .bq-notify-section {
       margin: 4rem auto 0;
@@ -1221,7 +1363,7 @@
       overflow: hidden;
       border-radius: 2px;
       background: var(--cream-mid);
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.75rem;
       position: relative;
     }
     .bq-event-photo img {
@@ -1834,23 +1976,13 @@
 <div class="bq-grain" aria-hidden="true"></div>
 
 <section class="bq-hero hero" role="banner">
+  <div class="bq-hero-vignette" aria-hidden="true"></div>
   <div class="bq-hero-inner">
-    <div class="bq-eyebrow">NYC &#183; Wellness &#183; Movement</div>
+    <div class="bq-eyebrow">Wellness</div>
     <h1 class="bq-mast">Auric <em>Movement</em></h1>
-    <p class="bq-tagline">An intentional movement experience where wellness meets community.</p>
+    <p class="bq-tagline">A practice of returning to yourself.</p>
     <div class="bq-cta-row">
       <a href="https://auric-movement.printify.me/" target="_blank" rel="noopener noreferrer" class="bq-btn bq-btn-ghost">Shop <span aria-hidden="true">&#8594;</span></a>
-    </div>
-    <div class="bq-auric-acronym" aria-label="AURIC stands for Align, Unwind, Recharge, Intend, Connect">
-      <span><span class="bq-auric-letter">A</span>lign</span>
-      <span class="bq-auric-dot" aria-hidden="true">&middot;</span>
-      <span><span class="bq-auric-letter">U</span>nwind</span>
-      <span class="bq-auric-dot" aria-hidden="true">&middot;</span>
-      <span><span class="bq-auric-letter">R</span>echarge</span>
-      <span class="bq-auric-dot" aria-hidden="true">&middot;</span>
-      <span><span class="bq-auric-letter">I</span>ntend</span>
-      <span class="bq-auric-dot" aria-hidden="true">&middot;</span>
-      <span><span class="bq-auric-letter">C</span>onnect</span>
     </div>
   </div>
 </section>
@@ -1968,16 +2100,37 @@
       <div class="bq-videos-row" id="homepage-videos-row"></div>
     </section>
 
-    <!-- Stay In The Loop — inline subscribe -->
+    <!-- ────────────────────────────────────────────────────────
+         A Note from Niara — editorial founder's letter
+    ──────────────────────────────────────────────────────── -->
+    <section class="bq-note" aria-labelledby="bq-note-title">
+      <div class="bq-note-inner">
+        <div class="bq-note-rule" aria-hidden="true"></div>
+        <div class="bq-note-eyebrow">A Note</div>
+        <h2 id="bq-note-title" class="sr-only">A note from Niara</h2>
+        <div class="bq-note-body">
+          <p>Living in this city, you&rsquo;re always in motion. Always next. Always rushing.</p>
+          <p class="bq-note-quote"><em>Pilates is the one practice that pulls me back.</em> It reminds me to breathe. To align. To unwind. To recharge. To intend. To connect &mdash; to my body, to my breath, to the people moving next to me.</p>
+          <p>As women, we so often give. This is something I do for me. It leaves me strong, accomplished, challenged.</p>
+          <p>That&rsquo;s what I hope you find when you come to a session. What started as a personal practice has become a community.</p>
+        </div>
+        <div class="bq-note-signature">
+          <span class="bq-note-dash" aria-hidden="true">&mdash;</span>
+          <span class="bq-note-name">Niara</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Join Auric Mvmt — inline subscribe -->
     <section class="bq-notify-section">
       <div class="bq-notify-inner">
-        <div class="bq-section-eyebrow">On The Horizon</div>
-        <h2 class="bq-section-title">Stay <em>In The Loop</em></h2>
+        <div class="bq-section-eyebrow">An Invitation</div>
+        <h2 class="bq-section-title">Join Auric <em>Mvmt.</em></h2>
         <p class="bq-notify-desc">Be the first to know when new sessions, collaborations, and gatherings open. No spam &#8212; just intention.</p>
         <form id="bq-loop-form" class="bq-loop-form" novalidate>
           <label class="sr-only" for="bq-loop-email">Email address</label>
           <input type="email" id="bq-loop-email" required placeholder="your@email.com" autocomplete="email">
-          <button type="submit" id="bq-loop-submit" class="bq-btn bq-btn-primary">Subscribe <span aria-hidden="true">&#8594;</span></button>
+          <button type="submit" id="bq-loop-submit" class="bq-btn bq-btn-primary">Join <span aria-hidden="true">&#8594;</span></button>
         </form>
         <div id="bq-loop-status" class="bq-loop-status" role="status" aria-live="polite"></div>
       </div>
@@ -2031,7 +2184,7 @@
       <details class="bq-faq-item">
         <summary>What should I wear and bring?</summary>
         <div class="bq-faq-body">
-          <p>Comfortable, fitted activewear and grip socks. For Mat &amp; Chat, bring your own mat if you have one. Water is encouraged. Everything else is provided.</p>
+          <p>It is advised to wear comfortable workout attire. If you need to bring a mat and/or grip socks for a certain location, it will be disclosed in your confirmation email.</p>
         </div>
       </details>
 
@@ -2333,7 +2486,7 @@
   <div style="max-width:600px;margin:2rem auto 0;padding:0 1.25rem 4rem;">
     <button type="button" id="back-to-events-coming" class="btn btn-secondary" style="font-size:.82rem;margin-bottom:1rem;">&#8592; Back to Events</button>
     <div class="notify-card">
-      <h2>Stay in the Loop &#10022;</h2>
+      <h2>Join Auric Mvmt. &#10022;</h2>
       <p class="subtitle">Sign up to get notified regarding upcoming events.</p>
       <div class="field">
         <label for="notify-name">Full Name <span class="required" aria-hidden="true">*</span></label>
@@ -2790,6 +2943,27 @@
       <div class="bq-footer-meta">
         <div class="bq-footer-eyebrow">Contact</div>
         <a href="mailto:auricmovement@outlook.com" class="bq-footer-email">auricmovement@outlook.com</a>
+
+        <div class="bq-footer-social-eyebrow">Follow Along</div>
+        <div class="bq-footer-social">
+          <a href="https://www.instagram.com/auricmovement" target="_blank" rel="noopener noreferrer" aria-label="Follow Auric Movement on Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="5"/>
+              <circle cx="12" cy="12" r="4"/>
+              <circle cx="17.5" cy="6.5" r=".9" fill="currentColor" stroke="none"/>
+            </svg>
+            <span>Instagram</span>
+          </a>
+          <a href="https://www.tiktok.com/@auricmovement" target="_blank" rel="noopener noreferrer" aria-label="Follow Auric Movement on TikTok">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path d="M14 4v9.5a3.5 3.5 0 1 1-3.5-3.5"/>
+              <path d="M14 4c0 2.5 2 4.5 4.5 4.5"/>
+            </svg>
+            <span>TikTok</span>
+          </a>
+        </div>
+        <div class="bq-footer-handle">@auricmovement</div>
+
         <nav class="bq-footer-links" aria-label="Footer">
           <button type="button" id="open-privacy-btn">Privacy Policy</button>
           <button type="button" id="open-terms-btn">Terms &amp; Refund</button>
