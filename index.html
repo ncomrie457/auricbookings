@@ -516,9 +516,13 @@
     /* Boutique masthead — editorial luxury scale w/ optional photo background */
     .bq-hero {
       background-color: var(--ivory);
+      /* JPG fallback for older browsers; image-set serves WebP to modern ones */
       background-image:
         linear-gradient(180deg, rgba(248,244,236,0.42), rgba(248,244,236,0.55)),
         url('hero.jpg');
+      background-image:
+        linear-gradient(180deg, rgba(248,244,236,0.42), rgba(248,244,236,0.55)),
+        image-set(url('hero.webp') type('image/webp'), url('hero.jpg') type('image/jpeg'));
       background-size: cover;
       background-position: center center;
       background-repeat: no-repeat;
