@@ -1606,6 +1606,45 @@
       pointer-events: none;
     }
 
+    /* Chained "next" navigation — editorial bottom-of-tab link */
+    .bq-tab-next {
+      max-width: 1180px;
+      margin: clamp(3rem, 6vw, 5rem) auto clamp(2rem, 4vw, 3.5rem);
+      padding: 0 1.5rem;
+      text-align: right;
+    }
+    .bq-tab-next-rule {
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--border) 30%, var(--border) 100%);
+      margin-bottom: 1.5rem;
+    }
+    .bq-tab-next-link {
+      display: inline-flex;
+      align-items: center;
+      gap: .65rem;
+      font-family: 'Jost', sans-serif;
+      font-size: .72rem;
+      font-weight: 500;
+      letter-spacing: .26em;
+      text-transform: uppercase;
+      color: var(--brown);
+      text-decoration: none;
+      padding: .5rem 0;
+      transition: color .25s ease, gap .25s ease;
+    }
+    .bq-tab-next-link span {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2em;
+      font-style: italic;
+      color: var(--gold);
+      transition: transform .3s ease;
+    }
+    .bq-tab-next-link:hover { color: var(--gold); gap: 1.1rem; }
+    .bq-tab-next-link:hover span { transform: translateX(4px); }
+    @media (max-width: 640px) {
+      .bq-tab-next-link { font-size: .65rem; letter-spacing: .22em; }
+    }
+
     /* Sold Out badge — corner pill on event flyers, hidden by default */
     .bq-event-status {
       position: absolute;
@@ -2311,6 +2350,11 @@
     </div>
 
   </div>
+
+  <nav class="bq-tab-next" aria-label="Continue to next section">
+    <div class="bq-tab-next-rule" aria-hidden="true"></div>
+    <a class="bq-tab-next-link" href="#tab-past" data-nav-tab="btn-past">Past Events <span aria-hidden="true">&rarr;</span></a>
+  </nav>
 </div><!-- /tab-events -->
 
 <!-- TAB: Home (brand storytelling — default landing) -->
@@ -2415,6 +2459,11 @@
 
   </div>
 
+  <nav class="bq-tab-next" aria-label="Continue to next section">
+    <div class="bq-tab-next-rule" aria-hidden="true"></div>
+    <a class="bq-tab-next-link" href="#tab-events" data-nav-tab="btn-events">Upcoming Events <span aria-hidden="true">&rarr;</span></a>
+  </nav>
+
 </div><!-- /tab-home -->
 
 <!-- TAB: Past Events -->
@@ -2435,6 +2484,11 @@
     </div>
 
   </div>
+
+  <nav class="bq-tab-next" aria-label="Continue to next section">
+    <div class="bq-tab-next-rule" aria-hidden="true"></div>
+    <a class="bq-tab-next-link" href="#tab-faq" data-nav-tab="btn-faq">FAQ <span aria-hidden="true">&rarr;</span></a>
+  </nav>
 </div><!-- /tab-past -->
 
 <!-- TAB: FAQ -->
@@ -2549,6 +2603,11 @@
     </div>
 
   </div>
+
+  <nav class="bq-tab-next" aria-label="Continue to next section">
+    <div class="bq-tab-next-rule" aria-hidden="true"></div>
+    <a class="bq-tab-next-link" href="#tab-corporate" data-nav-tab="btn-corporate">Corporate Inquiries <span aria-hidden="true">&rarr;</span></a>
+  </nav>
 </div><!-- /tab-faq -->
 
 <!-- TAB: Pilates x Niara -->
@@ -6326,6 +6385,17 @@ document.addEventListener('DOMContentLoaded', function() {
   } else {
     document.querySelectorAll('.scroll-reveal').forEach(function(el){ el.classList.add('in'); });
   }
+
+  // Chained "next" links at the bottom of each tab \u2014 switch to the next tab + scroll
+  document.querySelectorAll('.bq-tab-next-link[data-nav-tab]').forEach(function(link){
+    link.addEventListener('click', function(e){
+      e.preventDefault();
+      var tabId = link.getAttribute('data-nav-tab');
+      var btn = document.getElementById(tabId);
+      if (btn) btn.click();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
 
   // Top navigation \u2014 wire up tab switches + smooth scroll to sections
   (function wireTopNav(){
