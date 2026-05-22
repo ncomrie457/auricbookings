@@ -15,21 +15,22 @@
   <link rel="shortcut icon" href="favicon.ico">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 
-  <!-- Open Graph / Link Preview -->
+  <!-- Open Graph / Link Preview — landing page -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Auric Movement">
   <meta property="og:url" content="https://book.auricmovement.com">
-  <meta property="og:title" content="Auric Movement &#10022; Pilates Events in NYC">
-  <meta property="og:description" content="An intentional movement experience in NYC. Pilates classes and wellness events hosted by Niara &#8212; where movement meets community.">
-  <meta property="og:image" content="https://book.auricmovement.com/flyer.jpg">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
+  <meta property="og:title" content="Auric Movement &#10022; A Practice of Returning to Yourself">
+  <meta property="og:description" content="A practice of returning to yourself. Pilates events hosted with intention in NYC.">
+  <meta property="og:image" content="https://book.auricmovement.com/hero.jpg">
+  <meta property="og:image:width" content="1024">
+  <meta property="og:image:height" content="1536">
+  <meta property="og:image:alt" content="Warm beige plaster wall with an olive tree in a textured ochre vase, soft dappled light across a concrete floor">
 
   <!-- Twitter/iMessage card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Auric Movement &#10022; Pilates Events in NYC">
-  <meta name="twitter:description" content="An intentional movement experience in NYC. Pilates and wellness events where movement meets community.">
-  <meta name="twitter:image" content="https://book.auricmovement.com/flyer.jpg">
+  <meta name="twitter:title" content="Auric Movement &#10022; A Practice of Returning to Yourself">
+  <meta name="twitter:description" content="A practice of returning to yourself. Pilates events hosted with intention in NYC.">
+  <meta name="twitter:image" content="https://book.auricmovement.com/hero.jpg">
 
   <!-- JSON-LD: Organization -->
   <script type="application/ld+json">
@@ -5898,7 +5899,8 @@ document.addEventListener('DOMContentLoaded', function() {
   var eventParam = urlParams.get('event');
   if (eventParam) {
     setTimeout(function(){
-      if (eventParam === 'matchat') { switchTab('btn-events'); showAllPanels('tab-matchat'); }
+      if (eventParam === 'pilates' || eventParam === 'juneteenth') { switchTab('btn-events'); showAllPanels('tab-current'); }
+      else if (eventParam === 'matchat') { switchTab('btn-events'); showAllPanels('tab-matchat'); }
       else if (eventParam === 'coming') { switchTab('btn-events'); showAllPanels('tab-coming'); }
       else if (eventParam === 'corporate') switchTab('tab-corporate');
     }, 100);
