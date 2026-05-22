@@ -902,6 +902,9 @@
       margin: 0 auto;
       padding: 0 1.5rem 5rem;
     }
+    /* FAQ tab — extra breathing room above "Good to Know" eyebrow */
+    #tab-faq .bq-events-wrap { padding-top: 4rem; }
+    #tab-faq .bq-section-head { margin-bottom: 4rem; }
     .bq-section-head {
       text-align: center;
       margin-bottom: 3rem;
@@ -1737,7 +1740,7 @@
     .bq-videos-wrap {
       max-width: 1180px;
       margin: 0 auto;
-      padding: 1rem 1.5rem 5rem;
+      padding: 5rem 1.5rem 5rem;
     }
     .bq-videos-head {
       display: flex;
@@ -1746,7 +1749,7 @@
       gap: 1.5rem;
       flex-wrap: wrap;
       margin-bottom: 2.25rem;
-      padding-top: 3rem;
+      padding-top: 4rem;
       border-top: 1px solid var(--border);
     }
     .bq-videos-head-left { text-align: left; }
@@ -5705,6 +5708,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // \u2500\u2500 Events Hub \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
+  // ──────────────────────────────────────────────────────────
+  // Browser History — wires the device back button to tab/panel
+  // navigation. State: { panel: 'tab-id' }. Set _isPopState during
+  // popstate-driven navigations so we don't re-push to history.
+  // ──────────────────────────────────────────────────────────
+  var _historyLastPanel = null;
+  var _historyIsPopState = false;
+  function _pushHistoryPanel(panelId) {
+    if (!window.history || !window.history.pushState) return;
+    if (_historyIsPopState) return;
+    if (panelId === _historyLastPanel) return;
+    history.pushState({ panel: panelId }, '', '#' + panelId);
+    _historyLastPanel = panelId;
+  }
+
   function showAllPanels(activeId) {
     var allPanels = ['tab-events','tab-current','tab-matchat','tab-coming','tab-past','tab-faq','tab-corporate'];
     allPanels.forEach(function(id){
@@ -5713,6 +5731,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (id === activeId) { el.classList.add('active'); el.style.display = 'block'; }
       else { el.classList.remove('active'); el.style.display = 'none'; }
     });
+    _pushHistoryPanel(activeId);
   }
 
   // Load spot counts for event cards
@@ -5824,8 +5843,36 @@ document.addEventListener('DOMContentLoaded', function() {
         if (id === target) { el.classList.add('active'); el.style.display = 'block'; }
         else { el.classList.remove('active'); el.style.display = 'none'; }
       });
+      _pushHistoryPanel(target);
     });
   });
+
+  // Browser back/forward — restore the previously active panel
+  window.addEventListener('popstate', function(e){
+    _historyIsPopState = true;
+    var panelId = (e.state && e.state.panel) || 'tab-events';
+    // For sub-panels (form views), use showAllPanels directly
+    if (panelId === 'tab-current' || panelId === 'tab-matchat' || panelId === 'tab-coming') {
+      showAllPanels(panelId);
+    } else {
+      // For main tabs, click the corresponding tab button so aria states stay in sync
+      var btn = document.querySelector('[aria-controls="'+panelId+'"]');
+      if (btn) btn.click();
+      else {
+        var fallback = document.getElementById('btn-events');
+        if (fallback) fallback.click();
+      }
+    }
+    _historyLastPanel = panelId;
+    _historyIsPopState = false;
+  });
+
+  // Initial history state — so first back press behaves correctly
+  if (window.history && window.history.replaceState) {
+    var _initialPanel = location.hash ? location.hash.replace('#','') : 'tab-events';
+    history.replaceState({ panel: _initialPanel }, '', location.hash || '');
+    _historyLastPanel = _initialPanel;
+  }
 
   function switchTab(tabId) {
     document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
