@@ -173,6 +173,7 @@
     "@type": "FAQPage",
     "mainEntity": [
       { "@type": "Question", "name": "I've never done Pilates before — is this for me?", "acceptedAnswer": { "@type": "Answer", "text": "Absolutely. All Auric Movement events are open to every level. Niara will guide you through every movement with clear cues, modifications, and zero judgment." } },
+      { "@type": "Question", "name": "Is the instructor certified?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Niara is completing a Comprehensive Pilates Instructor program — 500+ hours of in-depth study in anatomy, the full Pilates repertoire (mat, reformer, cadillac, chair, barrels), and teaching methodology. Comprehensive training is widely considered the gold standard of Pilates certification." } },
       { "@type": "Question", "name": "What should I wear and bring?", "acceptedAnswer": { "@type": "Answer", "text": "It is advised to wear comfortable workout attire. If you need to bring a mat and/or grip socks for a certain location, it will be disclosed in your confirmation email." } },
       { "@type": "Question", "name": "Can the class be modified for an injury, pregnancy, or postpartum?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The health disclosure on the booking form lets you share what's going on so modifications can be prepared in advance. For specific situations, email auricmovement@outlook.com beforehand." } },
       { "@type": "Question", "name": "Where are the events held?", "acceptedAnswer": { "@type": "Answer", "text": "Auric Movement events are hosted at carefully sourced venues across New York City — the location varies by event. The specific address and arrival instructions are included in your registration confirmation and reminder emails." } },
@@ -180,7 +181,7 @@
       { "@type": "Question", "name": "What is the cancellation and transfer policy?", "acceptedAnswer": { "@type": "Answer", "text": "Refunds are available within 24 hours of purchase only. Spot transfers to a friend can be arranged up to 4 hours before your session by emailing auricmovement@outlook.com." } },
       { "@type": "Question", "name": "How do I know my spot is confirmed?", "acceptedAnswer": { "@type": "Answer", "text": "You receive a confirmation email immediately after registering, and a separate payment-confirmed email once your Stripe payment processes. A reminder email goes out the day before your session. If you don't see it, check your spam or promotions folder. Still missing? Email auricmovement@outlook.com and we'll resend." } },
       { "@type": "Question", "name": "Is there a waitlist if an event is full?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. If a session is sold out, you can join the waitlist on the booking page. If a spot opens, you'll get an email with a window to claim it before it rolls to the next person." } },
-      { "@type": "Question", "name": "Do I need to sign a waiver?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. You sign the Auric Movement waiver as part of the booking flow. For Pilates x Niara, The Space Pilates Studio also requires their own waiver, signed through the link in your confirmation email." } },
+      { "@type": "Question", "name": "Do I need to sign a waiver?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. You sign the Auric Movement waiver as part of the booking flow." } },
       { "@type": "Question", "name": "Are the venues accessible?", "acceptedAnswer": { "@type": "Answer", "text": "For specific accessibility needs (mobility, hearing, vision, sensory), email auricmovement@outlook.com before booking to confirm what each venue can support." } },
       { "@type": "Question", "name": "How can I host a corporate or private event?", "acceptedAnswer": { "@type": "Answer", "text": "Auric Movement hosts private and corporate Pilates and wellness sessions for groups. See the Corporate Event Inquiries tab on book.auricmovement.com to send details." } }
     ]
@@ -511,15 +512,15 @@
        Cream + warm taupe + soft gold. Clean. Studio-grade.
        =========================================================== */
 
-    /* Boutique masthead — editorial luxury scale */
+    /* Boutique masthead — editorial luxury scale (refined: less dominant) */
     .bq-hero {
       background: linear-gradient(180deg, var(--ivory) 0%, var(--cream-light) 100%);
       border-bottom: 1px solid var(--border);
-      padding: clamp(5rem, 11vw, 9rem) 1.5rem clamp(4.5rem, 9vw, 7rem);
+      padding: clamp(3.5rem, 7vw, 5.5rem) 1.5rem clamp(3rem, 6vw, 4.5rem);
       text-align: center;
       position: relative;
       overflow: hidden;
-      min-height: clamp(560px, 88vh, 880px);
+      min-height: clamp(440px, 70vh, 680px);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -569,10 +570,10 @@
       font-family: 'Cormorant Garamond', serif;
       font-weight: 400;
       color: var(--ink);
-      font-size: clamp(3.5rem, 12vw, 9rem);
-      line-height: .95;
-      letter-spacing: -.02em;
-      margin: 0 0 clamp(1.75rem, 3vw, 2.5rem);
+      font-size: clamp(2.75rem, 8.5vw, 6.5rem);
+      line-height: .96;
+      letter-spacing: -.015em;
+      margin: 0 0 clamp(1.25rem, 2.5vw, 1.75rem);
     }
     .bq-mast em {
       font-style: italic;
@@ -1348,18 +1349,22 @@
       border: 0;
       padding: 0;
       cursor: pointer;
-      text-align: left;
+      text-align: center;
       font-family: inherit;
       width: 100%;
       transition: transform .35s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
+    .bq-event > *:not(.bq-event-photo) { width: 100%; }
     .bq-event:hover { transform: translateY(-4px); }
     .bq-event:hover .bq-event-photo img { transform: scale(1.04); }
     .bq-event:hover .bq-event-link { gap: .85rem; color: var(--gold); }
 
     .bq-event-photo {
       width: 100%;
-      aspect-ratio: 4 / 5;
+      aspect-ratio: 2 / 3;
       overflow: hidden;
       border-radius: 2px;
       background: var(--cream-mid);
@@ -1370,7 +1375,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: top;
+      object-position: center;
       display: block;
       transition: transform .6s ease;
     }
@@ -1400,28 +1405,24 @@
       margin-bottom: .85rem;
       line-height: 1.5;
     }
+    /* Spots indicator — quieter, just colored text with a dot. Not a competing pill. */
     .bq-event-spots {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: .5rem;
       font-family: 'Jost', sans-serif;
-      font-size: .74rem;
-      font-weight: 600;
-      letter-spacing: .14em;
+      font-size: .68rem;
+      font-weight: 500;
+      letter-spacing: .22em;
       text-transform: uppercase;
-      margin-bottom: 1rem;
-      min-height: 1.7rem;
-      padding: 0;
-      border-radius: 999px;
-      background: transparent;
-      border: 1px solid transparent;
+      margin-bottom: 1.1rem;
+      min-height: 1.1rem;
       color: var(--text-muted);
-      transition: background .25s ease, border-color .25s ease;
     }
-    .bq-event-spots:not(:empty) { padding: .35rem .8rem; }
     .bq-event-spots::before {
       content: '';
-      width: 6px; height: 6px;
+      width: 5px; height: 5px;
       border-radius: 50%;
       background: currentColor;
       flex-shrink: 0;
@@ -1429,32 +1430,13 @@
       transition: opacity .2s ease;
     }
     .bq-event-spots:not(:empty)::before { opacity: 1; }
-    .bq-event-spots.bq-spots-available {
-      background: rgba(74,124,89,.08);
-      border-color: rgba(74,124,89,.22);
-      color: #4a7c59;
-    }
-    .bq-event-spots.bq-spots-low {
-      background: rgba(176,120,64,.15);
-      border-color: rgba(176,120,64,.4);
-      color: var(--gold);
-      animation: bq-spot-pulse 2.2s ease-in-out infinite;
-    }
-    .bq-event-spots.bq-spots-sold-out {
-      background: rgba(192,57,43,.08);
-      border-color: rgba(192,57,43,.25);
-      color: var(--red);
-    }
-    @keyframes bq-spot-pulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(176,120,64,.35); }
-      50%      { box-shadow: 0 0 0 6px rgba(176,120,64,0); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .bq-event-spots.bq-spots-low { animation: none; }
-    }
+    .bq-event-spots.bq-spots-available { color: #4a7c59; }
+    .bq-event-spots.bq-spots-low       { color: var(--gold); }
+    .bq-event-spots.bq-spots-sold-out  { color: var(--red); }
     .bq-event-link {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: .5rem;
       font-family: 'Jost', sans-serif;
       font-size: .68rem;
@@ -1462,7 +1444,18 @@
       letter-spacing: .26em;
       text-transform: uppercase;
       color: var(--brown);
-      transition: gap .25s ease, color .2s;
+      border: 1px solid var(--brown);
+      border-radius: 999px;
+      padding: .55rem 1.5rem;
+      margin: 0 auto;
+      transition: background .25s ease, color .25s ease, gap .25s ease, border-color .25s ease;
+      background: transparent;
+    }
+    .bq-event:hover .bq-event-link {
+      background: var(--brown);
+      color: #fff;
+      border-color: var(--brown);
+      gap: .85rem;
     }
 
     /* Coming soon variant */
@@ -2109,8 +2102,8 @@
         <div class="bq-note-eyebrow">A Note</div>
         <h2 id="bq-note-title" class="sr-only">A note from Niara</h2>
         <div class="bq-note-body">
-          <p>Living in this city, you&rsquo;re always in motion. Always next. Always rushing.</p>
-          <p class="bq-note-quote"><em>Pilates is the one practice that pulls me back.</em> It reminds me to breathe. To align. To unwind. To recharge. To intend. To connect &mdash; to my body, to my breath, to the people moving next to me.</p>
+          <p class="bq-note-quote"><em>A practice of returning to yourself.</em></p>
+          <p>That&rsquo;s what Pilates has become for me. It pulls me back. It reminds me to breathe. To align. To unwind. To recharge. To intend. To connect &mdash; to my body, to my breath, to the people moving next to me.</p>
           <p>As women, we so often give. This is something I do for me. It leaves me strong, accomplished, challenged.</p>
           <p>That&rsquo;s what I hope you find when you come to a session. What started as a personal practice has become a community.</p>
         </div>
@@ -2182,6 +2175,13 @@
       </details>
 
       <details class="bq-faq-item">
+        <summary>Is the instructor certified?</summary>
+        <div class="bq-faq-body">
+          <p>Yes. Niara is completing a Comprehensive Pilates Instructor program &#8212; <strong>500+ hours</strong> of in-depth study in anatomy, the full Pilates repertoire (mat, reformer, cadillac, chair, barrels), and teaching methodology. Comprehensive training is widely considered the gold standard of Pilates certification.</p>
+        </div>
+      </details>
+
+      <details class="bq-faq-item">
         <summary>What should I wear and bring?</summary>
         <div class="bq-faq-body">
           <p>It is advised to wear comfortable workout attire. If you need to bring a mat and/or grip socks for a certain location, it will be disclosed in your confirmation email.</p>
@@ -2236,7 +2236,7 @@
       <details class="bq-faq-item">
         <summary>Do I need to sign a waiver?</summary>
         <div class="bq-faq-body">
-          <p>Yes &#8212; you'll sign the Auric Movement waiver as part of the booking flow. For Pilates x Niara, The Space Pilates Studio also requires their own waiver, which you can sign through the link in your confirmation email.</p>
+          <p>Yes &#8212; you'll sign the Auric Movement waiver as part of the booking flow.</p>
         </div>
       </details>
 
@@ -6083,31 +6083,31 @@ document.addEventListener('DOMContentLoaded', function() {
           scrollTrigger: {
             trigger: manifesto,
             start: 'top top',
-            end: '+=180%',   // scroll distance the pin lasts (~1.8x viewport)
+            end: '+=90%',    // shorter pin (was 180%) — quicker scroll-through
             pin: true,
             pinSpacing: true,
-            scrub: 1.2,
+            scrub: 0.6,      // tighter scrub (was 1.2) — more responsive
             anticipatePin: 1
           }
         });
         manifestoTl
-          .to('.bq-manifesto-head', { opacity: 1, y: 0, duration: .5 })
+          .to('.bq-manifesto-head', { opacity: 1, y: 0, duration: .3 })
           .to('.bq-manifesto-word[data-word-idx="0"]', {
-            opacity: 1, y: 0, filter: 'blur(0px)', duration: 1
-          }, '+=.05')
+            opacity: 1, y: 0, filter: 'blur(0px)', duration: .55
+          }, '+=.02')
           .to('.bq-manifesto-word[data-word-idx="1"]', {
-            opacity: 1, y: 0, filter: 'blur(0px)', duration: 1
-          }, '+=.25')
+            opacity: 1, y: 0, filter: 'blur(0px)', duration: .55
+          }, '+=.08')
           .to('.bq-manifesto-word[data-word-idx="2"]', {
-            opacity: 1, y: 0, filter: 'blur(0px)', duration: 1
-          }, '+=.25')
+            opacity: 1, y: 0, filter: 'blur(0px)', duration: .55
+          }, '+=.08')
           .to('.bq-manifesto-word[data-word-idx="3"]', {
-            opacity: 1, y: 0, filter: 'blur(0px)', duration: 1
-          }, '+=.25')
+            opacity: 1, y: 0, filter: 'blur(0px)', duration: .55
+          }, '+=.08')
           .to('.bq-manifesto-word[data-word-idx="4"]', {
-            opacity: 1, y: 0, filter: 'blur(0px)', duration: 1
-          }, '+=.25')
-          .to('.bq-manifesto-foot', { opacity: 1, y: 0, duration: .8 }, '+=.2');
+            opacity: 1, y: 0, filter: 'blur(0px)', duration: .55
+          }, '+=.08')
+          .to('.bq-manifesto-foot', { opacity: 1, y: 0, duration: .45 }, '+=.1');
       }
     } else {
       gsap.set('.bq-manifesto-head, .bq-manifesto-word, .bq-manifesto-foot', {
