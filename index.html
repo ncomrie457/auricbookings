@@ -1533,6 +1533,41 @@
       display: block;
       transition: transform .6s ease;
     }
+
+    /* Wrapper around the larger booking-page flyer (so the Sold Out badge can position absolutely) */
+    .bq-flyer-wrap {
+      position: relative;
+      display: block;
+      width: 100%;
+    }
+    .bq-flyer-wrap > picture { display: block; }
+
+    /* Sold Out badge — corner pill on event flyers, hidden by default */
+    .bq-event-status {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      display: none;
+      padding: .5rem 1.05rem;
+      background: rgba(26, 20, 16, 0.88);
+      color: #f5f0e8;
+      border: 1px solid rgba(245, 240, 232, .25);
+      border-radius: 999px;
+      font-family: 'Jost', sans-serif;
+      font-size: .65rem;
+      font-weight: 600;
+      letter-spacing: .26em;
+      text-transform: uppercase;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 2;
+      box-shadow: 0 4px 14px rgba(44, 26, 14, .15);
+    }
+    .bq-event.is-sold-out .bq-event-status,
+    .bq-flyer-wrap.is-sold-out .bq-event-status { display: inline-block; }
+    /* When sold out, dim the flyer subtly */
+    .bq-event.is-sold-out .bq-event-photo img,
+    .bq-flyer-wrap.is-sold-out .flyer-img { filter: brightness(.85) saturate(.85); }
     .bq-event-date {
       font-family: 'Jost', sans-serif;
       font-size: .68rem;
@@ -2178,6 +2213,7 @@
             <source srcset="flyer.jpg" type="image/jpeg">
             <img src="flyer.png" alt="Pilates x Niara &#8212; June 19th" loading="lazy" decoding="async">
           </picture>
+          <div class="bq-event-status" aria-hidden="true">Sold Out</div>
         </div>
         <div class="bq-event-date">06.19.26 &#183; Pilates</div>
         <div class="bq-event-name">Pilates <em>x</em> Niara</div>
@@ -2194,6 +2230,7 @@
             <source srcset="flyer2.jpg" type="image/jpeg">
             <img src="flyer2.png" alt="Mat and Chat &#8212; August 1st" loading="lazy" decoding="async">
           </picture>
+          <div class="bq-event-status" aria-hidden="true">Sold Out</div>
         </div>
         <div class="bq-event-date">08.01.26 &#183; Mat &amp; Chat</div>
         <div class="bq-event-name">Mat <em>&amp;</em> Chat</div>
@@ -2448,14 +2485,17 @@
 
     <!-- LEFT: Flyer -->
     <div class="flyer-col">
-      <picture>
-        <source srcset="flyer.webp" type="image/webp">
-        <source srcset="flyer.jpg" type="image/jpeg">
-        <img src="flyer.png"
-             alt="Pilates x Niara &#8212; June 19th. Two sessions: 1pm and 2pm. The Space Pilates Studio, 36 West 20th Street 2nd Floor, New York NY. Reformer, All Levels, ADA Accessible."
-             class="flyer-img"
-             loading="lazy" decoding="async">
-      </picture>
+      <div class="bq-flyer-wrap" id="pilates-flyer-wrap">
+        <picture>
+          <source srcset="flyer.webp" type="image/webp">
+          <source srcset="flyer.jpg" type="image/jpeg">
+          <img src="flyer.png"
+               alt="Pilates x Niara &#8212; June 19th. Two sessions: 1pm and 2pm. The Space Pilates Studio, 36 West 20th Street 2nd Floor, New York NY. Reformer, All Levels, ADA Accessible."
+               class="flyer-img"
+               loading="lazy" decoding="async">
+        </picture>
+        <div class="bq-event-status" aria-hidden="true">Sold Out</div>
+      </div>
       <div class="event-details-box" role="complementary" aria-label="Event details">
         <strong>The Space Pilates Studio</strong>
         <p>36 West 20th Street, 2nd Floor<br>New York, NY 10011</p>
@@ -2811,11 +2851,14 @@
 
     <!-- Left: Flyer -->
     <div class="flyer-col" id="mc-flyer-col">
-      <picture>
-        <source srcset="flyer2.webp" type="image/webp">
-        <source srcset="flyer2.jpg" type="image/jpeg">
-        <img src="flyer2.png" alt="Mat and Chat &#8212; August 1st, 11:30 AM at The Fitin, 297 7th Ave Floor 3 New York NY" class="flyer-img" loading="lazy" decoding="async">
-      </picture>
+      <div class="bq-flyer-wrap" id="matchat-flyer-wrap">
+        <picture>
+          <source srcset="flyer2.webp" type="image/webp">
+          <source srcset="flyer2.jpg" type="image/jpeg">
+          <img src="flyer2.png" alt="Mat and Chat &#8212; August 1st, 11:30 AM at The Fitin, 297 7th Ave Floor 3 New York NY" class="flyer-img" loading="lazy" decoding="async">
+        </picture>
+        <div class="bq-event-status" aria-hidden="true">Sold Out</div>
+      </div>
       <div class="event-details-box">
         <strong>The Fitin</strong>
         <p>297 7th Ave, Floor 3<br>New York, NY 10001</p>
@@ -5743,27 +5786,37 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!el) return;
     el.textContent = text;
     el.className = 'bq-event-spots' + (state ? ' bq-spots-' + state : '');
+    // Also flag the parent event card so the "Sold Out" badge appears on the flyer
+    var card = el.closest('.bq-event');
+    if (card) card.classList.toggle('is-sold-out', state === 'sold-out');
   }
   function updateEventCardSpots() {
     getData(function(data) {
       var s1remaining = MAX_PER_SESSION - data.s1.filter(function(r){ return r.type==='confirmed'; }).length;
       var s2remaining = MAX_PER_SESSION - data.s2.filter(function(r){ return r.type==='confirmed'; }).length;
       var pilatesEl = document.getElementById('pilates-card-spots');
+      var pilatesIsSoldOut = false;
       if (pilatesEl) {
         var total = s1remaining + s2remaining;
-        if (total <= 0) setSpotsBadge(pilatesEl, 'Waitlist only', 'sold-out');
+        if (total <= 0) { setSpotsBadge(pilatesEl, 'Waitlist only', 'sold-out'); pilatesIsSoldOut = true; }
         else if (total <= 4) setSpotsBadge(pilatesEl, 'Only ' + total + ' spots left!', 'low');
         else setSpotsBadge(pilatesEl, total + ' spots available', 'available');
       }
+      // Mirror sold-out state onto the larger booking-page flyer
+      var pFlyer = document.getElementById('pilates-flyer-wrap');
+      if (pFlyer) pFlyer.classList.toggle('is-sold-out', pilatesIsSoldOut);
     });
     getMCData(function(data) {
       var mcRemaining = MC_MAX_SPOTS - data.mc1.filter(function(r){ return r.type==='confirmed'; }).length;
       var mcEl = document.getElementById('matchat-card-spots');
+      var mcIsSoldOut = false;
       if (mcEl) {
-        if (mcRemaining <= 0) setSpotsBadge(mcEl, 'Waitlist only', 'sold-out');
+        if (mcRemaining <= 0) { setSpotsBadge(mcEl, 'Waitlist only', 'sold-out'); mcIsSoldOut = true; }
         else if (mcRemaining <= 5) setSpotsBadge(mcEl, 'Only ' + mcRemaining + ' spots left!', 'low');
         else setSpotsBadge(mcEl, mcRemaining + ' spots available', 'available');
       }
+      var mFlyer = document.getElementById('matchat-flyer-wrap');
+      if (mFlyer) mFlyer.classList.toggle('is-sold-out', mcIsSoldOut);
     });
   }
   updateEventCardSpots();
