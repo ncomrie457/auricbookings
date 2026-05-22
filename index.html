@@ -513,6 +513,109 @@
        Cream + warm taupe + soft gold. Clean. Studio-grade.
        =========================================================== */
 
+    /* ============================
+       Top Navigation Header — editorial luxury
+       Fixed, with subtle cream-backdrop blur. Becomes more opaque on scroll.
+       ============================ */
+    .bq-topnav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 60;
+      background: rgba(253, 251, 247, 0.75);
+      backdrop-filter: blur(14px) saturate(120%);
+      -webkit-backdrop-filter: blur(14px) saturate(120%);
+      border-bottom: 1px solid rgba(232, 224, 213, 0.5);
+      padding: 1rem 1.5rem;
+      transition: background .3s ease, border-color .3s ease, box-shadow .3s ease;
+    }
+    .bq-topnav.scrolled {
+      background: rgba(253, 251, 247, 0.92);
+      box-shadow: 0 1px 12px rgba(44, 26, 14, 0.06);
+    }
+    .bq-topnav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+    .bq-topnav-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: .65rem;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 500;
+      font-size: 1.1rem;
+      letter-spacing: .02em;
+      color: var(--brown);
+      text-decoration: none;
+      transition: color .2s ease;
+    }
+    .bq-topnav-brand:hover { color: var(--gold); }
+    .bq-topnav-brand:hover .bq-topnav-mark { transform: rotate(45deg); }
+    .bq-topnav-mark {
+      color: var(--gold);
+      font-style: normal;
+      font-size: 1.1rem;
+      transition: transform .4s ease;
+      display: inline-block;
+    }
+
+    .bq-topnav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+    .bq-topnav-links a {
+      font-family: 'Jost', sans-serif;
+      font-size: .72rem;
+      font-weight: 500;
+      letter-spacing: .26em;
+      text-transform: uppercase;
+      color: var(--brown);
+      text-decoration: none;
+      transition: color .2s ease;
+      position: relative;
+    }
+    .bq-topnav-links a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -4px;
+      height: 1px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform .25s ease;
+    }
+    .bq-topnav-links a:hover { color: var(--gold); }
+    .bq-topnav-links a:hover::after { transform: scaleX(1); }
+    .bq-nav-short { display: none; }
+    @media (max-width: 980px) {
+      .bq-nav-long  { display: none; }
+      .bq-nav-short { display: inline; }
+    }
+
+    /* Reserve space for the fixed header */
+    body { padding-top: 0; }
+    .bq-hero { padding-top: clamp(6rem, 11vw, 8.5rem); }
+
+    @media (max-width: 720px) {
+      .bq-topnav { padding: .85rem 1rem; }
+      .bq-topnav-inner { gap: 1rem; }
+      .bq-topnav-links { gap: 1.1rem; }
+      .bq-topnav-links a { font-size: .62rem; letter-spacing: .18em; }
+      .bq-topnav-name { display: none; }
+      .bq-topnav-mark { font-size: 1.4rem; }
+    }
+    @media (max-width: 380px) {
+      .bq-topnav-links { gap: .85rem; }
+      .bq-topnav-links a { font-size: .58rem; letter-spacing: .14em; }
+    }
+
     /* Boutique masthead — editorial luxury scale w/ optional photo background */
     .bq-hero {
       background-color: var(--ivory);
@@ -749,19 +852,21 @@
       gap: .85rem;
     }
     .bq-btn-ghost {
-      background: var(--brown);
-      color: #fff;
-      border-color: var(--brown);
-    }
-    .bq-btn-ghost:hover {
       background: transparent;
       color: var(--brown);
       border-color: var(--brown);
+    }
+    .bq-btn-ghost:hover {
+      background: var(--brown);
+      color: #fff;
       gap: .85rem;
     }
 
-    /* Boutique tab nav — pill highlight, no underline */
+    /* Boutique tab nav — hidden; top navigation now handles tab switching */
     .bq-tabs {
+      display: none;
+    }
+    .bq-tabs-visible {
       display: flex;
       gap: .35rem;
       justify-content: center;
@@ -1267,6 +1372,16 @@
     .bq-note-body .bq-note-quote em {
       font-style: italic;
       color: var(--brown);
+    }
+    .bq-note-body .bq-note-close {
+      font-size: clamp(1.15rem, 1.9vw, 1.4rem);
+      color: var(--brown);
+      line-height: 1.55;
+      margin-top: 2rem;
+    }
+    .bq-note-body .bq-note-close em {
+      font-style: italic;
+      color: var(--gold);
     }
     .bq-note-signature {
       margin-top: 2.5rem;
@@ -1997,8 +2112,27 @@
 
 <a href="#main-content" class="skip-link">Skip to main content</a>
 <div id="sr-announce" aria-live="polite" aria-atomic="true" class="sr-only" role="status"></div>
-<div id="sticky-mini-header" aria-hidden="true">Auric Movement</div>
 <div class="bq-grain" aria-hidden="true"></div>
+
+<!-- Top navigation -->
+<header class="bq-topnav" role="banner">
+  <div class="bq-topnav-inner">
+    <a href="#" class="bq-topnav-brand" data-nav-tab="btn-events" aria-label="Auric Movement — back to top">
+      <span class="bq-topnav-mark" aria-hidden="true">&#10022;</span>
+      <span class="bq-topnav-name">Auric Movement</span>
+    </a>
+    <nav class="bq-topnav-links" aria-label="Primary">
+      <a href="#tab-events" data-nav-tab="btn-events">Events</a>
+      <a href="#tab-past" data-nav-tab="btn-past">Past Events</a>
+      <a href="#tab-faq" data-nav-tab="btn-faq">FAQ</a>
+      <a href="#tab-corporate" data-nav-tab="btn-corporate">
+        <span class="bq-nav-long">Corporate Event Inquiries</span>
+        <span class="bq-nav-short">Corporate</span>
+      </a>
+      <a href="https://auric-movement.printify.me/" target="_blank" rel="noopener noreferrer">Shop</a>
+    </nav>
+  </div>
+</header>
 
 <section class="bq-hero hero" role="banner">
   <div class="bq-hero-vignette" aria-hidden="true"></div>
@@ -2007,9 +2141,6 @@
     <h1 class="bq-mast">Auric <em>Movement</em></h1>
     <p class="bq-tagline">A practice of returning to yourself.</p>
     <hr class="bq-hero-rule" aria-hidden="true">
-    <div class="bq-cta-row">
-      <a href="https://auric-movement.printify.me/" target="_blank" rel="noopener noreferrer" class="bq-btn bq-btn-ghost">Shop <span aria-hidden="true">&#8594;</span></a>
-    </div>
   </div>
 </section>
 
@@ -2126,16 +2257,16 @@
     <!-- ────────────────────────────────────────────────────────
          A Note from Niara — editorial founder's letter
     ──────────────────────────────────────────────────────── -->
-    <section class="bq-note" aria-labelledby="bq-note-title">
+    <section class="bq-note" id="bq-note" aria-labelledby="bq-note-title">
       <div class="bq-note-inner">
         <div class="bq-note-rule" aria-hidden="true"></div>
         <div class="bq-note-eyebrow">A Note</div>
         <h2 id="bq-note-title" class="sr-only">A note from Niara</h2>
         <div class="bq-note-body">
-          <p class="bq-note-quote"><em>A practice of returning to yourself.</em></p>
-          <p>That&rsquo;s what Pilates has become for me. It pulls me back. It reminds me to breathe. To align. To unwind. To recharge. To intend. To connect &mdash; to my body, to my breath, to the people moving next to me.</p>
-          <p>As women, we so often give. This is something I do for me. It leaves me strong, accomplished, challenged.</p>
-          <p>That&rsquo;s what I hope you find when you come to a session. What started as a personal practice has become a community.</p>
+          <p class="bq-note-quote"><em>Every body is different. Be kind to yourself.</em></p>
+          <p>You showed up today &mdash; and that is enough.</p>
+          <p>Your intention doesn&rsquo;t need to be big. It can simply be to pause, to unwind, to recharge, to align, to reconnect with yourself.</p>
+          <p class="bq-note-close"><em>Let your practice be guided by intention.</em></p>
         </div>
         <div class="bq-note-signature">
           <span class="bq-note-dash" aria-hidden="true">&mdash;</span>
@@ -5970,23 +6101,52 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.scroll-reveal').forEach(function(el){ el.classList.add('in'); });
   }
 
-  // 6. Phase 1 UI polish \u2014 sticky mini-header on scroll past hero
-  var miniHeader = document.getElementById('sticky-mini-header');
-  var heroEl = document.querySelector('.hero');
-  if (miniHeader && heroEl) {
-    var revealAt = heroEl.offsetHeight - 20;
-    var ticking = false;
+  // Top navigation \u2014 wire up tab switches + smooth scroll to sections
+  (function wireTopNav(){
+    var topnav = document.querySelector('.bq-topnav');
+    if (!topnav) return;
+
+    // Click handler: switch tab (for tab links) or scroll to section
+    topnav.querySelectorAll('a[data-nav-tab], a[data-nav-scroll], .bq-topnav-brand').forEach(function(link){
+      link.addEventListener('click', function(e){
+        var tabId = link.getAttribute('data-nav-tab');
+        var scrollId = link.getAttribute('data-nav-scroll');
+
+        if (tabId) {
+          e.preventDefault();
+          var tabBtn = document.getElementById(tabId);
+          if (tabBtn) tabBtn.click();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (scrollId) {
+          e.preventDefault();
+          // Ensure we're on the Events tab if the target lives there
+          var btnEvents = document.getElementById('btn-events');
+          if (btnEvents && !btnEvents.classList.contains('active')) btnEvents.click();
+          // Then scroll to the section
+          setTimeout(function(){
+            var target = document.getElementById(scrollId);
+            if (target) {
+              if (window.__lenis) {
+                window.__lenis.scrollTo(target, { offset: -90, duration: 1.2 });
+              } else {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }
+          }, 50);
+        }
+      });
+    });
+
+    // Scrolled state: stronger background once user scrolls past 40px
+    var lastScrolled = false;
     window.addEventListener('scroll', function(){
-      if (!ticking) {
-        window.requestAnimationFrame(function(){
-          if (window.scrollY > revealAt) miniHeader.classList.add('visible');
-          else miniHeader.classList.remove('visible');
-          ticking = false;
-        });
-        ticking = true;
+      var nowScrolled = window.scrollY > 40;
+      if (nowScrolled !== lastScrolled) {
+        topnav.classList.toggle('scrolled', nowScrolled);
+        lastScrolled = nowScrolled;
       }
     }, { passive: true });
-  }
+  })();
 
   // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
   // PHASE 1 \u2014 Editorial Luxury Choreography
@@ -6071,10 +6231,9 @@ document.addEventListener('DOMContentLoaded', function() {
           duration: 1.4, stagger: 0.045, ease: 'power3.out'
         }, '-=.85')
         .to('.bq-tagline',     { opacity: 1, y: 0, duration: 1.2 }, '-=.7')
-        .add(function(){ var r = document.querySelector('.bq-hero-rule'); if (r) r.classList.add('in'); }, '-=.85')
-        .to('.bq-cta-row',     { opacity: 1, y: 0, duration: 1.0 }, '-=.85');
+        .add(function(){ var r = document.querySelector('.bq-hero-rule'); if (r) r.classList.add('in'); }, '-=.5');
     } else {
-      gsap.set(['.bq-eyebrow', '.bq-mast-letter', '.bq-tagline', '.bq-cta-row'], {
+      gsap.set(['.bq-eyebrow', '.bq-mast-letter', '.bq-tagline'], {
         opacity: 1, y: 0, filter: 'blur(0)', clearProps: 'all'
       });
       var rule = document.querySelector('.bq-hero-rule');
@@ -6131,31 +6290,31 @@ document.addEventListener('DOMContentLoaded', function() {
           scrollTrigger: {
             trigger: manifesto,
             start: 'top top',
-            end: '+=90%',    // shorter pin (was 180%) — quicker scroll-through
+            end: '+=55%',    // shorter pin — quicker scroll-through
             pin: true,
             pinSpacing: true,
-            scrub: 0.6,      // tighter scrub (was 1.2) — more responsive
+            scrub: 0.25,     // tighter scrub — words snap in fast
             anticipatePin: 1
           }
         });
         manifestoTl
-          .to('.bq-manifesto-head', { opacity: 1, y: 0, duration: .3 })
+          .to('.bq-manifesto-head', { opacity: 1, y: 0, duration: .2 })
           .to('.bq-manifesto-word[data-word-idx="0"]', {
-            opacity: 1, y: 0, filter: 'blur(0px)', duration: .55
-          }, '+=.02')
+            opacity: 1, y: 0, filter: 'blur(0px)', duration: .3
+          }, '+=.01')
           .to('.bq-manifesto-word[data-word-idx="1"]', {
-            opacity: 1, y: 0, filter: 'blur(0px)', duration: .55
-          }, '+=.08')
+            opacity: 1, y: 0, filter: 'blur(0px)', duration: .3
+          }, '+=.03')
           .to('.bq-manifesto-word[data-word-idx="2"]', {
-            opacity: 1, y: 0, filter: 'blur(0px)', duration: .55
-          }, '+=.08')
+            opacity: 1, y: 0, filter: 'blur(0px)', duration: .3
+          }, '+=.03')
           .to('.bq-manifesto-word[data-word-idx="3"]', {
-            opacity: 1, y: 0, filter: 'blur(0px)', duration: .55
-          }, '+=.08')
+            opacity: 1, y: 0, filter: 'blur(0px)', duration: .3
+          }, '+=.03')
           .to('.bq-manifesto-word[data-word-idx="4"]', {
-            opacity: 1, y: 0, filter: 'blur(0px)', duration: .55
-          }, '+=.08')
-          .to('.bq-manifesto-foot', { opacity: 1, y: 0, duration: .45 }, '+=.1');
+            opacity: 1, y: 0, filter: 'blur(0px)', duration: .3
+          }, '+=.03')
+          .to('.bq-manifesto-foot', { opacity: 1, y: 0, duration: .25 }, '+=.05');
       }
     } else {
       gsap.set('.bq-manifesto-head, .bq-manifesto-word, .bq-manifesto-foot', {
