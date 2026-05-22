@@ -174,6 +174,7 @@
     "mainEntity": [
       { "@type": "Question", "name": "I've never done Pilates before — is this for me?", "acceptedAnswer": { "@type": "Answer", "text": "Absolutely. All Auric Movement events are open to every level. Niara will guide you through every movement with clear cues, modifications, and zero judgment." } },
       { "@type": "Question", "name": "Is the instructor certified?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Niara is completing a Comprehensive Pilates Instructor program — 500+ hours of in-depth study in anatomy, the full Pilates repertoire (mat, reformer, cadillac, chair, barrels), and teaching methodology. Comprehensive training is widely considered the gold standard of Pilates certification." } },
+      { "@type": "Question", "name": "What kind of Pilates can I expect?", "acceptedAnswer": { "@type": "Answer", "text": "Auric Movement classes are rooted in contemporary Pilates with deep respect for the classical method. Expect the foundational Pilates repertoire — mat and reformer work, breath-led movement, controlled flow — refined with modern principles of biomechanics so the practice meets your body where it is. Classes are intentional, mindful, and build strength, mobility, and presence over time." } },
       { "@type": "Question", "name": "What should I wear and bring?", "acceptedAnswer": { "@type": "Answer", "text": "It is advised to wear comfortable workout attire. If you need to bring a mat and/or grip socks for a certain location, it will be disclosed in your confirmation email." } },
       { "@type": "Question", "name": "Can the class be modified for an injury, pregnancy, or postpartum?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The health disclosure on the booking form lets you share what's going on so modifications can be prepared in advance. For specific situations, email auricmovement@outlook.com beforehand." } },
       { "@type": "Question", "name": "Where are the events held?", "acceptedAnswer": { "@type": "Answer", "text": "Auric Movement events are hosted at carefully sourced venues across New York City — the location varies by event. The specific address and arrival instructions are included in your registration confirmation and reminder emails." } },
@@ -512,9 +513,15 @@
        Cream + warm taupe + soft gold. Clean. Studio-grade.
        =========================================================== */
 
-    /* Boutique masthead — editorial luxury scale (refined: less dominant) */
+    /* Boutique masthead — editorial luxury scale w/ optional photo background */
     .bq-hero {
-      background: linear-gradient(180deg, var(--ivory) 0%, var(--cream-light) 100%);
+      background-color: var(--ivory);
+      background-image:
+        linear-gradient(180deg, rgba(248,244,236,0.42), rgba(248,244,236,0.55)),
+        url('hero.jpg');
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
       border-bottom: 1px solid var(--border);
       padding: clamp(3.5rem, 7vw, 5.5rem) 1.5rem clamp(3rem, 6vw, 4.5rem);
       text-align: center;
@@ -524,6 +531,10 @@
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+    /* If hero.jpg isn't there, fall back gracefully */
+    .bq-hero.no-photo {
+      background-image: linear-gradient(180deg, var(--ivory) 0%, var(--cream-light) 100%);
     }
     .bq-hero::before {
       content: '';
@@ -570,15 +581,19 @@
       font-family: 'Cormorant Garamond', serif;
       font-weight: 400;
       color: var(--ink);
-      font-size: clamp(2.75rem, 8.5vw, 6.5rem);
-      line-height: .96;
-      letter-spacing: -.015em;
-      margin: 0 0 clamp(1.25rem, 2.5vw, 1.75rem);
+      font-size: clamp(2rem, 6.5vw, 4.75rem);
+      line-height: 1.05;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      margin: 0 0 clamp(1rem, 2vw, 1.4rem);
     }
     .bq-mast em {
-      font-style: italic;
-      font-weight: 300;
-      color: var(--gold);
+      font-style: normal;
+      font-weight: 400;
+      color: var(--ink);
+    }
+    @media (max-width: 420px) {
+      .bq-mast { letter-spacing: .1em; }
     }
     /* Letter-reveal containers — each word becomes inline-block so letters can stagger */
     .bq-mast-word {
@@ -601,10 +616,23 @@
       font-size: clamp(1.15rem, 2.1vw, 1.55rem);
       color: #6b594a;
       max-width: 540px;
-      margin: 0 auto clamp(2rem, 4vw, 3rem);
+      margin: 0 auto clamp(1.25rem, 2.5vw, 1.75rem);
       line-height: 1.55;
       opacity: 0;
       transform: translateY(12px);
+    }
+    .bq-hero-rule {
+      width: 64px;
+      height: 1px;
+      background: var(--gold);
+      border: 0;
+      margin: 0 auto clamp(1.75rem, 3.5vw, 2.5rem);
+      opacity: 0;
+      transition: opacity 1.2s cubic-bezier(.22,.61,.36,1);
+    }
+    .bq-hero-rule.in { opacity: .7; }
+    @media (prefers-reduced-motion: reduce) {
+      .bq-hero-rule { opacity: .7 !important; }
     }
     .bq-cta-row { opacity: 0; transform: translateY(12px); }
 
@@ -727,21 +755,20 @@
       gap: .85rem;
     }
 
-    /* Boutique tab nav */
+    /* Boutique tab nav — pill highlight, no underline */
     .bq-tabs {
       display: flex;
-      gap: 0;
+      gap: .35rem;
       justify-content: center;
-      border-bottom: 1px solid var(--border);
       margin: 0 auto 3rem;
       max-width: 1100px;
-      padding: 1.25rem 1.25rem 0;
+      padding: 1.5rem 1rem 0;
       flex-wrap: wrap;
     }
     .bq-tabs .tab-btn {
-      background: none;
+      background: transparent;
       border: 0;
-      padding: 0 1.5rem 1.1rem;
+      padding: .7rem 1.25rem;
       font-family: 'Jost', sans-serif;
       font-size: .7rem;
       font-weight: 500;
@@ -750,13 +777,13 @@
       color: var(--text-muted);
       cursor: pointer;
       position: relative;
-      margin-bottom: -1px;
-      transition: color .2s;
+      border-radius: 999px;
+      transition: background .25s ease, color .2s;
     }
-    .bq-tabs .tab-btn:hover { color: var(--brown); }
+    .bq-tabs .tab-btn:hover { color: var(--brown); background: rgba(176,120,64,.06); }
     .bq-tabs .tab-btn.active {
       color: var(--brown);
-      border-bottom: 1px solid var(--brown);
+      background: rgba(176,120,64,.12);
     }
 
     /* Events section */
@@ -1974,6 +2001,7 @@
     <div class="bq-eyebrow">Wellness</div>
     <h1 class="bq-mast">Auric <em>Movement</em></h1>
     <p class="bq-tagline">A practice of returning to yourself.</p>
+    <hr class="bq-hero-rule" aria-hidden="true">
     <div class="bq-cta-row">
       <a href="https://auric-movement.printify.me/" target="_blank" rel="noopener noreferrer" class="bq-btn bq-btn-ghost">Shop <span aria-hidden="true">&#8594;</span></a>
     </div>
@@ -1995,9 +2023,6 @@
     <div class="bq-section-head" id="upcoming-events-anchor">
       <div class="bq-section-eyebrow">Hosted by Niara</div>
       <h2 class="bq-section-title">Upcoming <em>Events</em></h2>
-      <div class="bq-events-cta">
-        <button type="button" id="bq-reserve-next" class="bq-btn bq-btn-primary">Reserve A Spot <span aria-hidden="true">&#8594;</span></button>
-      </div>
     </div>
 
     <div class="bq-events">
@@ -2178,6 +2203,13 @@
         <summary>Is the instructor certified?</summary>
         <div class="bq-faq-body">
           <p>Yes. Niara is completing a Comprehensive Pilates Instructor program &#8212; <strong>500+ hours</strong> of in-depth study in anatomy, the full Pilates repertoire (mat, reformer, cadillac, chair, barrels), and teaching methodology. Comprehensive training is widely considered the gold standard of Pilates certification.</p>
+        </div>
+      </details>
+
+      <details class="bq-faq-item">
+        <summary>What kind of Pilates can I expect?</summary>
+        <div class="bq-faq-body">
+          <p>Auric Movement classes are rooted in <strong>contemporary Pilates</strong> with deep respect for the classical method. Expect the foundational Pilates repertoire &#8212; mat and reformer work, breath-led movement, controlled flow &#8212; refined with modern principles of biomechanics so the practice meets your body where it is. Classes are intentional, mindful, and build strength, mobility, and presence over time.</p>
         </div>
       </details>
 
@@ -6034,13 +6066,24 @@ document.addEventListener('DOMContentLoaded', function() {
           duration: 1.4, stagger: 0.045, ease: 'power3.out'
         }, '-=.85')
         .to('.bq-tagline',     { opacity: 1, y: 0, duration: 1.2 }, '-=.7')
-        .to('.bq-cta-row',     { opacity: 1, y: 0, duration: 1.0 }, '-=.85')
-        .to('.bq-auric-acronym', { opacity: 1, y: 0, duration: 1.4, ease: 'power2.out' }, '-=.5');
+        .add(function(){ var r = document.querySelector('.bq-hero-rule'); if (r) r.classList.add('in'); }, '-=.85')
+        .to('.bq-cta-row',     { opacity: 1, y: 0, duration: 1.0 }, '-=.85');
     } else {
-      gsap.set(['.bq-eyebrow', '.bq-mast-letter', '.bq-tagline', '.bq-cta-row', '.bq-auric-acronym'], {
+      gsap.set(['.bq-eyebrow', '.bq-mast-letter', '.bq-tagline', '.bq-cta-row'], {
         opacity: 1, y: 0, filter: 'blur(0)', clearProps: 'all'
       });
+      var rule = document.querySelector('.bq-hero-rule');
+      if (rule) rule.classList.add('in');
     }
+
+    // ---- Hero photo detection — fall back to gradient if hero.jpg is missing ----
+    (function detectHeroPhoto(){
+      var hero = document.querySelector('.bq-hero');
+      if (!hero) return;
+      var probe = new Image();
+      probe.onerror = function(){ hero.classList.add('no-photo'); };
+      probe.src = 'hero.jpg';
+    })();
 
     // ---- Hero scroll parallax: layered depth ----
     if (typeof ScrollTrigger !== 'undefined' && !prefersReducedMotion) {
