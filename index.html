@@ -573,10 +573,10 @@
     .bq-eyebrow {
       font-family: 'Jost', sans-serif;
       font-size: clamp(.65rem, 1vw, .72rem);
-      font-weight: 500;
+      font-weight: 600;
       letter-spacing: .48em;
       text-transform: uppercase;
-      color: var(--gold);
+      color: var(--brown);
       margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
       opacity: 0;
       transform: translateY(8px);
@@ -616,9 +616,9 @@
     .bq-tagline {
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
-      font-weight: 300;
+      font-weight: 400;
       font-size: clamp(1.15rem, 2.1vw, 1.55rem);
-      color: #6b594a;
+      color: var(--brown);
       max-width: 540px;
       margin: 0 auto clamp(1.25rem, 2.5vw, 1.75rem);
       line-height: 1.55;
@@ -749,13 +749,14 @@
       gap: .85rem;
     }
     .bq-btn-ghost {
-      background: transparent;
-      color: var(--brown);
+      background: var(--brown);
+      color: #fff;
       border-color: var(--brown);
     }
     .bq-btn-ghost:hover {
-      background: var(--brown);
-      color: #fff;
+      background: transparent;
+      color: var(--brown);
+      border-color: var(--brown);
       gap: .85rem;
     }
 
