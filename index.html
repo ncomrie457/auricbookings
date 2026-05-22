@@ -703,6 +703,7 @@
     @media (max-width: 420px) {
       .bq-mast { letter-spacing: .1em; }
     }
+
     /* Letter-reveal containers — each word becomes inline-block so letters can stagger */
     .bq-mast-word {
       display: inline-block;
@@ -2251,6 +2252,60 @@
     @media (max-width: 600px) {
       stripe-buy-button { min-width: 0; }
     }
+    /* ════════════════════════════════════════════════════════════
+       Mobile-only spacing pass (≤ 640px)
+       Placed LAST in the stylesheet so it overrides all earlier rules
+       via cascade order. Tightens vertical gaps that feel oversized
+       on small screens.
+       ════════════════════════════════════════════════════════════ */
+    @media (max-width: 640px) {
+      /* Hero — shorter, more compact, with breathing room on either side of the mast */
+      .bq-hero {
+        min-height: 58vh;
+        padding: 2.75rem 1.5rem 2.25rem;
+      }
+      .bq-hero-inner { padding: 0 .25rem; }
+      .bq-eyebrow { margin-bottom: 1.1rem !important; }
+      .bq-mast {
+        font-size: clamp(1.5rem, 7vw, 2.2rem) !important;
+        letter-spacing: .08em !important;
+        margin: 0 0 .85rem !important;
+      }
+      .bq-tagline {
+        margin: 0 auto .9rem !important;
+        font-size: 1.05rem !important;
+        line-height: 1.5 !important;
+      }
+      .bq-hero-rule { margin: 0 auto 1.25rem !important; width: 48px !important; }
+
+      /* Manifesto — less dramatic vertical space on phones */
+      .bq-manifesto-track {
+        min-height: auto !important;
+        padding: 4rem 1.25rem !important;
+        gap: 1.5rem !important;
+      }
+      .bq-manifesto { margin: 1.5rem 0 !important; }
+
+      /* A Note — tight bottom (signature flows into next section) */
+      .bq-note { padding: 3.5rem 1.25rem 1.5rem !important; }
+      .bq-note-signature { margin-top: 1.75rem !important; }
+
+      /* Join Auric Mvmt — close the gap after the Note */
+      .bq-notify-section {
+        margin-top: 0 !important;
+        padding: 2.25rem 1.25rem 2.75rem !important;
+      }
+
+      /* Videos / Past Events on homepage — tighten */
+      .bq-videos-wrap { padding: 3.5rem 1.25rem 3.5rem !important; }
+      .bq-videos-head { padding-top: 2.5rem !important; margin-bottom: 1.5rem !important; }
+
+      /* Upcoming Events tab — bigger, higher-up section title on mobile */
+      #tab-events .bq-events-wrap { padding-top: 1.75rem !important; }
+      #tab-events .bq-section-head { margin-bottom: 2.5rem !important; }
+      #tab-events .bq-section-eyebrow { margin-bottom: .85rem !important; }
+      #tab-events .bq-section-title { font-size: 2.7rem !important; line-height: 1.05 !important; }
+    }
   </style>
 </head>
 <body>
@@ -2267,8 +2322,14 @@
       <span class="bq-topnav-name">Auric Movement</span>
     </a>
     <nav class="bq-topnav-links" aria-label="Primary">
-      <a href="#tab-events" data-nav-tab="btn-events">Upcoming Events</a>
-      <a href="#tab-past" data-nav-tab="btn-past">Past Events</a>
+      <a href="#tab-events" data-nav-tab="btn-events">
+        <span class="bq-nav-long">Upcoming Events</span>
+        <span class="bq-nav-short">Events</span>
+      </a>
+      <a href="#tab-past" data-nav-tab="btn-past">
+        <span class="bq-nav-long">Past Events</span>
+        <span class="bq-nav-short">Past</span>
+      </a>
       <a href="#tab-faq" data-nav-tab="btn-faq">FAQ</a>
       <a href="#tab-corporate" data-nav-tab="btn-corporate">
         <span class="bq-nav-long">Corporate Event Inquiries</span>
