@@ -907,6 +907,8 @@
     #tab-events .bq-events-wrap,
     #tab-faq    .bq-events-wrap,
     #tab-past   .bq-events-wrap { padding-top: 4rem; }
+    /* Home tab — manifesto already provides its own top spacing; no extra padding needed */
+    #tab-home .bq-events-wrap { padding: 0 1.5rem 5rem; }
     #tab-faq  .bq-section-head,
     #tab-past .bq-section-head { margin-bottom: 4rem; }
     .bq-section-head {
@@ -984,7 +986,7 @@
       letter-spacing: .32em;
       text-transform: uppercase;
       color: var(--gold);
-      margin-bottom: 1rem;
+      margin-bottom: .45rem;
     }
     .bq-footer-brand .bq-footer-mark {
       font-family: 'Cormorant Garamond', serif;
@@ -1096,7 +1098,7 @@
       letter-spacing: .32em;
       text-transform: uppercase;
       color: var(--gold);
-      margin: 1.5rem 0 .85rem;
+      margin: 1.25rem 0 .45rem;
     }
     .bq-footer-social {
       display: flex;
@@ -2159,7 +2161,7 @@
 <!-- Top navigation -->
 <header class="bq-topnav" role="banner">
   <div class="bq-topnav-inner">
-    <a href="#" class="bq-topnav-brand" data-nav-tab="btn-events" aria-label="Auric Movement — back to top">
+    <a href="#" class="bq-topnav-brand" data-nav-home="true" aria-label="Auric Movement — back to home">
       <span class="bq-topnav-mark" aria-hidden="true">&#10022;</span>
       <span class="bq-topnav-name">Auric Movement</span>
     </a>
@@ -2187,14 +2189,14 @@
 </section>
 
 <nav class="tabs-nav bq-tabs" role="tablist" aria-label="Navigation">
-  <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-events" id="btn-events">Events</button>
+  <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-events" id="btn-events">Events</button>
   <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-past" id="btn-past">Past Events</button>
   <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-faq" id="btn-faq">FAQ</button>
   <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-corporate" id="btn-corporate">Corporate Event Inquiries</button>
 </nav>
 
-<!-- TAB: Events Hub -->
-<div id="tab-events" class="tab-panel active" role="tabpanel" aria-labelledby="btn-events">
+<!-- TAB: Events (Upcoming Events grid only) -->
+<div id="tab-events" class="tab-panel" role="tabpanel" aria-labelledby="btn-events">
 
   <div class="bq-events-wrap">
 
@@ -2240,6 +2242,13 @@
       </button>
 
     </div>
+
+  </div>
+</div><!-- /tab-events -->
+
+<!-- TAB: Home (brand storytelling — default landing) -->
+<div id="tab-home" class="tab-panel active" role="tabpanel" aria-label="Home">
+  <div class="bq-events-wrap">
 
     <!-- ────────────────────────────────────────────────────────
          AURIC Manifesto — pinned editorial section
@@ -2309,7 +2318,7 @@
         <div class="bq-note-body">
           <p class="bq-note-quote"><em>Every body is different. Be kind to yourself.</em></p>
           <p>You showed up today &mdash; and that is enough.</p>
-          <p>Your intention doesn&rsquo;t need to be big. It can simply be to pause, to unwind, to recharge, to align, to reconnect with yourself.</p>
+          <p>Your intention doesn&rsquo;t need to be big. It can simply be to pause, to unwind, to recharge, to align, and to reconnect with yourself.</p>
           <p class="bq-note-close"><em>Let your practice be guided by intention.</em></p>
         </div>
         <div class="bq-note-signature">
@@ -2339,7 +2348,7 @@
 
   </div>
 
-</div><!-- /tab-events -->
+</div><!-- /tab-home -->
 
 <!-- TAB: Past Events -->
 <div id="tab-past" class="tab-panel" role="tabpanel" aria-labelledby="btn-past">
@@ -5771,7 +5780,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function showAllPanels(activeId) {
-    var allPanels = ['tab-events','tab-current','tab-matchat','tab-coming','tab-past','tab-faq','tab-corporate'];
+    var allPanels = ['tab-home','tab-events','tab-current','tab-matchat','tab-coming','tab-past','tab-faq','tab-corporate'];
     allPanels.forEach(function(id){
       var el = document.getElementById(id);
       if (!el) return;
@@ -5893,7 +5902,7 @@ document.addEventListener('DOMContentLoaded', function() {
       btn.classList.add('active');
       btn.setAttribute('aria-selected','true');
       var target = btn.getAttribute('aria-controls');
-      var allPanels = ['tab-events','tab-current','tab-matchat','tab-coming','tab-past','tab-faq','tab-corporate'];
+      var allPanels = ['tab-home','tab-events','tab-current','tab-matchat','tab-coming','tab-past','tab-faq','tab-corporate'];
       allPanels.forEach(function(id){
         var el = document.getElementById(id);
         if (!el) return;
@@ -5907,33 +5916,37 @@ document.addEventListener('DOMContentLoaded', function() {
   // Browser back/forward — restore the previously active panel
   window.addEventListener('popstate', function(e){
     _historyIsPopState = true;
-    var panelId = (e.state && e.state.panel) || 'tab-events';
-    // For sub-panels (form views), use showAllPanels directly
-    if (panelId === 'tab-current' || panelId === 'tab-matchat' || panelId === 'tab-coming') {
+    var panelId = (e.state && e.state.panel) || 'tab-home';
+    // For sub-panels & home (no tab button), use showAllPanels directly
+    if (panelId === 'tab-current' || panelId === 'tab-matchat' || panelId === 'tab-coming' || panelId === 'tab-home') {
+      // Also clear active states from tab buttons when going home
+      if (panelId === 'tab-home') {
+        document.querySelectorAll('.tab-btn').forEach(function(b){
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
+      }
       showAllPanels(panelId);
     } else {
       // For main tabs, click the corresponding tab button so aria states stay in sync
       var btn = document.querySelector('[aria-controls="'+panelId+'"]');
       if (btn) btn.click();
-      else {
-        var fallback = document.getElementById('btn-events');
-        if (fallback) fallback.click();
-      }
+      else showAllPanels('tab-home');
     }
     _historyLastPanel = panelId;
     _historyIsPopState = false;
   });
 
-  // Initial history state — so first back press behaves correctly
+  // Initial history state — default to home unless URL has a hash
   if (window.history && window.history.replaceState) {
-    var _initialPanel = location.hash ? location.hash.replace('#','') : 'tab-events';
+    var _initialPanel = location.hash ? location.hash.replace('#','') : 'tab-home';
     history.replaceState({ panel: _initialPanel }, '', location.hash || '');
     _historyLastPanel = _initialPanel;
   }
 
   function switchTab(tabId) {
     document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
-    var allPanels = ['tab-events','tab-current','tab-matchat','tab-coming','tab-past','tab-faq','tab-corporate'];
+    var allPanels = ['tab-home','tab-events','tab-current','tab-matchat','tab-coming','tab-past','tab-faq','tab-corporate'];
     allPanels.forEach(function(id){
       var el = document.getElementById(id);
       if (el) el.classList.toggle('active', id === tabId);
@@ -6212,12 +6225,22 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!topnav) return;
 
     // Click handler: switch tab (for tab links) or scroll to section
-    topnav.querySelectorAll('a[data-nav-tab], a[data-nav-scroll], .bq-topnav-brand').forEach(function(link){
+    topnav.querySelectorAll('a[data-nav-tab], a[data-nav-scroll], a[data-nav-home], .bq-topnav-brand').forEach(function(link){
       link.addEventListener('click', function(e){
         var tabId = link.getAttribute('data-nav-tab');
         var scrollId = link.getAttribute('data-nav-scroll');
+        var goHome = link.hasAttribute('data-nav-home');
 
-        if (tabId) {
+        if (goHome) {
+          e.preventDefault();
+          // Deactivate any active tab buttons and show tab-home
+          document.querySelectorAll('.tab-btn').forEach(function(b){
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+          });
+          showAllPanels('tab-home');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (tabId) {
           e.preventDefault();
           var tabBtn = document.getElementById(tabId);
           if (tabBtn) tabBtn.click();
