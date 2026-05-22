@@ -1544,6 +1544,68 @@
     }
     .bq-flyer-wrap > picture { display: block; }
 
+    /* Registration-not-open lock overlay — for events whose registration hasn't opened yet */
+    .bq-event-lock {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      background: linear-gradient(180deg, rgba(26,20,16,0.42), rgba(26,20,16,0.6));
+      padding: 1.5rem;
+      z-index: 3;
+    }
+    .bq-event.is-locked .bq-event-lock,
+    .bq-flyer-wrap.is-locked .bq-event-lock { display: flex; }
+    .bq-event.is-locked .bq-event-photo img,
+    .bq-flyer-wrap.is-locked .flyer-img {
+      filter: blur(10px) saturate(.7) brightness(.9);
+      transform: scale(1.05); /* slight zoom prevents blurred edges showing */
+    }
+    .bq-event.is-locked,
+    .bq-event.is-locked:hover {
+      cursor: not-allowed;
+    }
+    .bq-event-lock-eyebrow {
+      font-family: 'Jost', sans-serif;
+      font-size: .62rem;
+      font-weight: 600;
+      letter-spacing: .36em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.25rem;
+    }
+    .bq-event-lock-msg {
+      font-family: 'Jost', sans-serif;
+      font-size: .8rem;
+      font-weight: 400;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: #f5f0e8;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+    .bq-event-lock-date {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 500;
+      font-size: clamp(2rem, 4vw, 2.6rem);
+      color: #f5f0e8;
+      line-height: 1.1;
+    }
+    .bq-event-lock-ord {
+      font-size: .5em;
+      vertical-align: super;
+      letter-spacing: 0;
+    }
+    /* When locked, dim the bottom info area to signal it's not actionable yet */
+    .bq-event.is-locked .bq-event-link {
+      opacity: .5;
+      pointer-events: none;
+    }
+
     /* Sold Out badge — corner pill on event flyers, hidden by default */
     .bq-event-status {
       position: absolute;
@@ -2183,7 +2245,7 @@
   <div class="bq-hero-inner">
     <div class="bq-eyebrow">Wellness</div>
     <h1 class="bq-mast">Auric <em>Movement</em></h1>
-    <p class="bq-tagline">a practice of moving with awareness of your energy, presence, and inner state&#8212;where physical movement and personal energy are connected.</p>
+    <p class="bq-tagline">A practice of returning to yourself.</p>
     <hr class="bq-hero-rule" aria-hidden="true">
   </div>
 </section>
@@ -2225,7 +2287,7 @@
       </button>
 
       <!-- Mat & Chat -->
-      <button type="button" id="event-card-matchat" class="bq-event scroll-reveal" data-event-date="2026-08-01" data-event-name="Mat &amp; Chat">
+      <button type="button" id="event-card-matchat" class="bq-event scroll-reveal" data-event-date="2026-08-01" data-event-name="Mat &amp; Chat" data-reg-opens="2026-07-01">
         <div class="bq-event-photo">
           <picture>
             <source srcset="flyer2.webp" type="image/webp">
@@ -2233,6 +2295,11 @@
             <img src="flyer2.png" alt="Mat and Chat &#8212; August 1st" loading="lazy" decoding="async">
           </picture>
           <div class="bq-event-status" aria-hidden="true">Sold Out</div>
+          <div class="bq-event-lock" aria-hidden="true">
+            <div class="bq-event-lock-eyebrow">Coming Soon</div>
+            <div class="bq-event-lock-msg">Registration for<br>Mat &amp; Chat with Niara<br>opens</div>
+            <div class="bq-event-lock-date">July 1<span class="bq-event-lock-ord">st</span></div>
+          </div>
         </div>
         <div class="bq-event-date">08.01.26 &#183; Mat &amp; Chat</div>
         <div class="bq-event-name">Mat <em>&amp;</em> Chat</div>
@@ -5845,11 +5912,42 @@ document.addEventListener('DOMContentLoaded', function() {
   })();
 
   // Event card clicks
+  // ───────────────────────────────────────────
+  // Event registration-open gating
+  // Reads data-reg-opens="YYYY-MM-DD" off each event card. If today is before
+  // that date, the card gets the .is-locked class (blurs flyer + shows
+  // "Registration opens..." overlay) and clicks/registration are blocked.
+  // ───────────────────────────────────────────
+  function applyRegistrationLocks(){
+    var now = new Date();
+    document.querySelectorAll('.bq-event[data-reg-opens]').forEach(function(card){
+      var openDateStr = card.getAttribute('data-reg-opens');
+      if (!openDateStr) return;
+      var openDate = new Date(openDateStr + 'T00:00:00');
+      var locked = now < openDate;
+      card.classList.toggle('is-locked', locked);
+      if (locked) {
+        card.setAttribute('aria-disabled', 'true');
+        // Update Reserve link text to reflect locked state
+        var link = card.querySelector('.bq-event-link');
+        if (link) {
+          var monthDay = openDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          link.textContent = 'Opens ' + monthDay;
+        }
+      } else {
+        card.removeAttribute('aria-disabled');
+      }
+    });
+  }
+  applyRegistrationLocks();
+
   document.getElementById('event-card-pilates').addEventListener('click', function(){
     showAllPanels('tab-current');
     window.scrollTo({top:0,behavior:'smooth'});
   });
-  document.getElementById('event-card-matchat').addEventListener('click', function(){
+  document.getElementById('event-card-matchat').addEventListener('click', function(e){
+    // If registration hasn't opened, do nothing (locked state visible on card)
+    if (this.classList.contains('is-locked')) { e.preventDefault(); return false; }
     showAllPanels('tab-matchat');
     window.scrollTo({top:0,behavior:'smooth'});
   });
@@ -5966,7 +6064,17 @@ document.addEventListener('DOMContentLoaded', function() {
   if (eventParam) {
     setTimeout(function(){
       if (eventParam === 'pilates' || eventParam === 'juneteenth') { switchTab('btn-events'); showAllPanels('tab-current'); }
-      else if (eventParam === 'matchat') { switchTab('btn-events'); showAllPanels('tab-matchat'); }
+      else if (eventParam === 'matchat') {
+        // Respect Mat & Chat registration lock — if registration hasn't opened,
+        // bounce to the Events tab so the visitor sees the "Opens July 1" card.
+        var mcCard = document.getElementById('event-card-matchat');
+        if (mcCard && mcCard.classList.contains('is-locked')) {
+          var btnEvents = document.getElementById('btn-events');
+          if (btnEvents) btnEvents.click();
+        } else {
+          switchTab('btn-events'); showAllPanels('tab-matchat');
+        }
+      }
       else if (eventParam === 'coming') { switchTab('btn-events'); showAllPanels('tab-coming'); }
       else if (eventParam === 'corporate') switchTab('tab-corporate');
     }, 100);
@@ -6409,40 +6517,24 @@ document.addEventListener('DOMContentLoaded', function() {
       gsap.set('.bq-hero-inner', { yPercent: 0, clearProps: 'transform' });
     }
 
-    // ---- AURIC Manifesto: pinned, word-by-word editorial reveal ----
+    // ---- AURIC Manifesto: in-view reveal — same pace as the hero ----
     if (typeof ScrollTrigger !== 'undefined' && !prefersReducedMotion) {
       var manifesto = document.getElementById('bq-manifesto');
       if (manifesto) {
-        var manifestoTl = gsap.timeline({
+        gsap.timeline({
           defaults: { ease: 'power3.out' },
           scrollTrigger: {
             trigger: manifesto,
-            start: 'top top',
-            end: '+=55%',    // shorter pin — quicker scroll-through
-            pin: true,
-            pinSpacing: true,
-            scrub: 0.25,     // tighter scrub — words snap in fast
-            anticipatePin: 1
+            start: 'top 75%',
+            toggleActions: 'play none none reverse'
           }
-        });
-        manifestoTl
-          .to('.bq-manifesto-head', { opacity: 1, y: 0, duration: .2 })
-          .to('.bq-manifesto-word[data-word-idx="0"]', {
-            opacity: 1, y: 0, filter: 'blur(0px)', duration: .3
-          }, '+=.01')
-          .to('.bq-manifesto-word[data-word-idx="1"]', {
-            opacity: 1, y: 0, filter: 'blur(0px)', duration: .3
-          }, '+=.03')
-          .to('.bq-manifesto-word[data-word-idx="2"]', {
-            opacity: 1, y: 0, filter: 'blur(0px)', duration: .3
-          }, '+=.03')
-          .to('.bq-manifesto-word[data-word-idx="3"]', {
-            opacity: 1, y: 0, filter: 'blur(0px)', duration: .3
-          }, '+=.03')
-          .to('.bq-manifesto-word[data-word-idx="4"]', {
-            opacity: 1, y: 0, filter: 'blur(0px)', duration: .3
-          }, '+=.03')
-          .to('.bq-manifesto-foot', { opacity: 1, y: 0, duration: .25 }, '+=.05');
+        })
+          .to('.bq-manifesto-head', { opacity: 1, y: 0, duration: 1.2 })
+          .to('.bq-manifesto-word', {
+            opacity: 1, y: 0, filter: 'blur(0px)',
+            duration: 1.4, stagger: 0.045, ease: 'power3.out'
+          }, '-=.85')
+          .to('.bq-manifesto-foot', { opacity: 1, y: 0, duration: 1.0 }, '-=.85');
       }
     } else {
       gsap.set('.bq-manifesto-head, .bq-manifesto-word, .bq-manifesto-foot', {
