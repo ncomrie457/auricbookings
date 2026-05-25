@@ -2794,29 +2794,34 @@
           <!-- Waiver -->
           <div>
 
-            <!-- Health Disclosure -->
+            <!-- Health Disclosure — Section 1: Clearance required -->
             <div class="field" style="margin-bottom:1.1rem;">
               <label style="display:block;font-size:.85rem;color:var(--brown);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;">Health Disclosure</label>
-              <p style="font-size:.78rem;color:var(--text-muted);margin:0 0 .65rem;line-height:1.5;">Please check all conditions that apply to you. This helps us ensure your safety during sessions.</p>
+              <p style="font-size:.82rem;color:#3d322a;margin:0 0 .85rem;line-height:1.55;">For your safety, please share anything your instructor should know. This information is reviewed for class preparation and <strong>permanently deleted within 48 hours</strong>.</p>
+              <p style="font-size:.78rem;color:var(--text-muted);margin:0 0 .65rem;line-height:1.5;"><strong style="color:#3d322a;">Have you had any of the following in the past 3 months?</strong><br><em>Physician clearance required if yes.</em></p>
 
-              <label class="mc-health-row"><input type="checkbox" id="p-h-surgery"><span>Recent surgery (within 6 months)</span></label>
-              <label class="mc-health-row"><input type="checkbox" id="p-h-injury"><span>Current injuries or pain</span></label>
-              <label class="mc-health-row"><input type="checkbox" id="p-h-postpartum"><span>Post-partum (within 12 months)</span></label>
-              <label class="mc-health-row"><input type="checkbox" id="p-h-chronic"><span>Chronic conditions (back, knee, arthritis, etc.)</span></label>
-              <label class="mc-health-row"><input type="checkbox" id="p-h-pregnant"><span>Currently pregnant</span></label>
-              <label class="mc-health-row"><input type="checkbox" id="p-h-meds"><span>Current medications that may affect exercise</span></label>
-              <label class="mc-health-row"><input type="checkbox" id="p-h-heart"><span>Heart or cardiovascular conditions</span></label>
-              <label class="mc-health-row"><input type="checkbox" id="p-h-diabetes"><span>Diabetes or blood sugar management issues</span></label>
-              <label class="mc-health-row"><input type="checkbox" id="p-h-neuro"><span>Seizure disorder, dizziness, balance issues, or neurological conditions</span></label>
-              <label class="mc-health-row"><input type="checkbox" id="p-h-other"><span>Other health concerns or recent medical procedures</span></label>
+              <label class="mc-health-row"><input type="checkbox" id="p-h-spine"><span>Spine, neck, or back surgery or injury</span></label>
+              <label class="mc-health-row"><input type="checkbox" id="p-h-joint"><span>Recent joint surgery or significant injury</span></label>
+              <label class="mc-health-row"><input type="checkbox" id="p-h-pregnant"><span>Pregnancy</span></label>
+              <label class="mc-health-row"><input type="checkbox" id="p-h-osteo"><span>Severe osteoporosis or bone density issues</span></label>
             </div>
 
-            <!-- Physician Clearance -->
-            <div class="field" style="margin-bottom:1.5rem;">
-              <label style="display:block;font-size:.85rem;color:var(--brown);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;">Physician Clearance</label>
-              <p style="font-size:.78rem;color:var(--text-muted);margin:0 0 .65rem;line-height:1.5;">If you checked any boxes above:</p>
-              <label class="mc-health-row"><input type="radio" name="p-physician-clearance" value="Yes, I have physician clearance to participate"><span>Yes, I have physician clearance to participate</span></label>
-              <label class="mc-health-row"><input type="radio" name="p-physician-clearance" value="No, I need to obtain physician clearance first"><span>No, I need to obtain physician clearance first</span></label>
+            <!-- Health Disclosure — Section 2: Disclosure only -->
+            <div class="field" style="margin-bottom:1.1rem;">
+              <p style="font-size:.78rem;color:var(--text-muted);margin:0 0 .55rem;line-height:1.5;"><strong style="color:#3d322a;">Do you experience any of the following?</strong><br><em>Disclosure only.</em></p>
+              <label class="mc-health-row"><input type="checkbox" id="p-h-dizzy"><span>Dizziness, balance problems, or vertigo</span></label>
+            </div>
+
+            <!-- Health Disclosure — Section 3: Free text -->
+            <div class="field" style="margin-bottom:1rem;">
+              <label for="p-h-notes" style="display:block;font-size:.78rem;color:var(--text-muted);margin:0 0 .4rem;line-height:1.5;"><strong style="color:#3d322a;">Is there anything else about your body or fitness that would help me plan the class for you?</strong><br><em>e.g., chronic issues, areas to avoid, modifications you typically use.</em></label>
+              <textarea id="p-h-notes" rows="3" style="width:100%;padding:.65rem .85rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.88rem;background:var(--cream-light);color:#3d322a;resize:vertical;box-sizing:border-box;line-height:1.5;" placeholder="Optional — share anything you'd like the instructor to know."></textarea>
+            </div>
+
+            <!-- Policy footer -->
+            <div style="margin-bottom:1.5rem;padding:.7rem .85rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.75rem;color:#3d322a;line-height:1.55;">
+              <strong style="color:var(--gold);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">Policy</strong><br>
+              If you checked any item in the first section, you must provide written physician clearance before attending. This information will be reviewed for class preparation and <strong>deleted within 48 hours</strong>.
             </div>
 
             <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.5rem;margin-bottom:.4rem;">
@@ -3167,28 +3172,34 @@
           <div>
 
             <!-- Health Disclosure -->
+            <!-- Health Disclosure — Section 1: Clearance required -->
             <div class="field" style="margin-bottom:1.1rem;">
               <label style="display:block;font-size:.85rem;color:var(--brown);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;">Health Disclosure</label>
-              <p style="font-size:.78rem;color:var(--text-muted);margin:0 0 .65rem;line-height:1.5;">Please check all conditions that apply to you. This helps us ensure your safety during sessions.</p>
+              <p style="font-size:.82rem;color:#3d322a;margin:0 0 .85rem;line-height:1.55;">For your safety, please share anything your instructor should know. This information is reviewed for class preparation and <strong>permanently deleted within 48 hours</strong>.</p>
+              <p style="font-size:.78rem;color:var(--text-muted);margin:0 0 .65rem;line-height:1.5;"><strong style="color:#3d322a;">Have you had any of the following in the past 3 months?</strong><br><em>Physician clearance required if yes.</em></p>
 
-              <label class="mc-health-row"><input type="checkbox" id="mc-h-surgery"><span>Recent surgery (within 6 months)</span></label>
-              <label class="mc-health-row"><input type="checkbox" id="mc-h-injury"><span>Current injuries or pain</span></label>
-              <label class="mc-health-row"><input type="checkbox" id="mc-h-postpartum"><span>Post-partum (within 12 months)</span></label>
-              <label class="mc-health-row"><input type="checkbox" id="mc-h-chronic"><span>Chronic conditions (back, knee, arthritis, etc.)</span></label>
-              <label class="mc-health-row"><input type="checkbox" id="mc-h-pregnant"><span>Currently pregnant</span></label>
-              <label class="mc-health-row"><input type="checkbox" id="mc-h-meds"><span>Current medications that may affect exercise</span></label>
-              <label class="mc-health-row"><input type="checkbox" id="mc-h-heart"><span>Heart or cardiovascular conditions</span></label>
-              <label class="mc-health-row"><input type="checkbox" id="mc-h-diabetes"><span>Diabetes or blood sugar management issues</span></label>
-              <label class="mc-health-row"><input type="checkbox" id="mc-h-neuro"><span>Seizure disorder, dizziness, balance issues, or neurological conditions</span></label>
-              <label class="mc-health-row"><input type="checkbox" id="mc-h-other"><span>Other health concerns or recent medical procedures</span></label>
+              <label class="mc-health-row"><input type="checkbox" id="mc-h-spine"><span>Spine, neck, or back surgery or injury</span></label>
+              <label class="mc-health-row"><input type="checkbox" id="mc-h-joint"><span>Recent joint surgery or significant injury</span></label>
+              <label class="mc-health-row"><input type="checkbox" id="mc-h-pregnant"><span>Pregnancy</span></label>
+              <label class="mc-health-row"><input type="checkbox" id="mc-h-osteo"><span>Severe osteoporosis or bone density issues</span></label>
             </div>
 
-            <!-- Physician Clearance -->
+            <!-- Health Disclosure — Section 2: Disclosure only -->
             <div class="field" style="margin-bottom:1.1rem;">
-              <label style="display:block;font-size:.85rem;color:var(--brown);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;">Physician Clearance</label>
-              <p style="font-size:.78rem;color:var(--text-muted);margin:0 0 .65rem;line-height:1.5;">If you checked any boxes above:</p>
-              <label class="mc-health-row"><input type="radio" name="mc-physician-clearance" value="Yes, I have physician clearance to participate"><span>Yes, I have physician clearance to participate</span></label>
-              <label class="mc-health-row"><input type="radio" name="mc-physician-clearance" value="No, I need to obtain physician clearance first"><span>No, I need to obtain physician clearance first</span></label>
+              <p style="font-size:.78rem;color:var(--text-muted);margin:0 0 .55rem;line-height:1.5;"><strong style="color:#3d322a;">Do you experience any of the following?</strong><br><em>Disclosure only.</em></p>
+              <label class="mc-health-row"><input type="checkbox" id="mc-h-dizzy"><span>Dizziness, balance problems, or vertigo</span></label>
+            </div>
+
+            <!-- Health Disclosure — Section 3: Free text -->
+            <div class="field" style="margin-bottom:1rem;">
+              <label for="mc-h-notes" style="display:block;font-size:.78rem;color:var(--text-muted);margin:0 0 .4rem;line-height:1.5;"><strong style="color:#3d322a;">Is there anything else about your body or fitness that would help me plan the class for you?</strong><br><em>e.g., chronic issues, areas to avoid, modifications you typically use.</em></label>
+              <textarea id="mc-h-notes" rows="3" style="width:100%;padding:.65rem .85rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.88rem;background:var(--cream-light);color:#3d322a;resize:vertical;box-sizing:border-box;line-height:1.5;" placeholder="Optional — share anything you'd like the instructor to know."></textarea>
+            </div>
+
+            <!-- Policy footer -->
+            <div style="margin-bottom:1.5rem;padding:.7rem .85rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.75rem;color:#3d322a;line-height:1.55;">
+              <strong style="color:var(--gold);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">Policy</strong><br>
+              If you checked any item in the first section, you must provide written physician clearance before attending. This information will be reviewed for class preparation and <strong>deleted within 48 hours</strong>.
             </div>
 
             <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.5rem;margin-bottom:.4rem;">
@@ -5378,54 +5389,58 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('mc-friend-fields').style.display = this.checked ? 'block' : 'none';
   });
 
-  // Health disclosure conditions
-  var MC_HEALTH_CONDITIONS = [
-    ['mc-h-surgery',    'Recent surgery (within 6 months)'],
-    ['mc-h-injury',     'Current injuries or pain'],
-    ['mc-h-postpartum', 'Post-partum (within 12 months)'],
-    ['mc-h-chronic',    'Chronic conditions (back, knee, arthritis, etc.)'],
-    ['mc-h-pregnant',   'Currently pregnant'],
-    ['mc-h-meds',       'Current medications that may affect exercise'],
-    ['mc-h-heart',      'Heart or cardiovascular conditions'],
-    ['mc-h-diabetes',   'Diabetes or blood sugar management issues'],
-    ['mc-h-neuro',      'Seizure disorder, dizziness, balance issues, or neurological conditions'],
-    ['mc-h-other',      'Other health concerns or recent medical procedures']
+  // ─── Health disclosure — refined two-tier structure ─────────────────────
+  // Section 1: items requiring physician clearance
+  // Section 2: disclosure-only items
+  // Section 3: free-text notes
+  var MC_CLEARANCE_CONDITIONS = [
+    ['mc-h-spine',    'Spine, neck, or back surgery or injury'],
+    ['mc-h-joint',    'Recent joint surgery or significant injury'],
+    ['mc-h-pregnant', 'Pregnancy'],
+    ['mc-h-osteo',    'Severe osteoporosis or bone density issues']
+  ];
+  var MC_DISCLOSURE_CONDITIONS = [
+    ['mc-h-dizzy',    'Dizziness, balance problems, or vertigo']
   ];
 
   function composeMCNotes() {
-    return composeHealthNotes('mc', MC_HEALTH_CONDITIONS);
+    return composeHealthNotes('mc', MC_CLEARANCE_CONDITIONS, MC_DISCLOSURE_CONDITIONS);
   }
 
   // Generic health-disclosure composer shared between Pilates and Mat & Chat
-  function composeHealthNotes(prefix, conditions) {
-    var checked = conditions.filter(function(c){
+  function composeHealthNotes(prefix, clearanceConds, disclosureConds) {
+    var clearance = clearanceConds.filter(function(c){
       var el = document.getElementById(c[0]);
       return el && el.checked;
     }).map(function(c){ return '• ' + c[1]; });
-    var clearanceEl = document.querySelector('input[name="' + prefix + '-physician-clearance"]:checked');
-    var clearance = clearanceEl ? clearanceEl.value : '';
+
+    var disclosure = disclosureConds.filter(function(c){
+      var el = document.getElementById(c[0]);
+      return el && el.checked;
+    }).map(function(c){ return '• ' + c[1]; });
+
+    var notesEl = document.getElementById(prefix + '-h-notes');
+    var notes = notesEl ? notesEl.value.trim() : '';
 
     var out = '';
-    if (checked.length) out += 'HEALTH DISCLOSURE:\n' + checked.join('\n');
-    if (clearance)      out += (out ? '\n\n' : '') + 'PHYSICIAN CLEARANCE: ' + clearance;
+    if (clearance.length) out += '⚠ PHYSICIAN CLEARANCE REQUIRED:\n' + clearance.join('\n');
+    if (disclosure.length) out += (out ? '\n\n' : '') + 'DISCLOSURE:\n' + disclosure.join('\n');
+    if (notes) out += (out ? '\n\n' : '') + 'ADDITIONAL NOTES:\n' + notes;
     return out;
   }
 
-  // Pilates health conditions (same structure as Mat & Chat, different IDs)
-  var P_HEALTH_CONDITIONS = [
-    ['p-h-surgery',    'Recent surgery (within 6 months)'],
-    ['p-h-injury',     'Current injuries or pain'],
-    ['p-h-postpartum', 'Post-partum (within 12 months)'],
-    ['p-h-chronic',    'Chronic conditions (back, knee, arthritis, etc.)'],
-    ['p-h-pregnant',   'Currently pregnant'],
-    ['p-h-meds',       'Current medications that may affect exercise'],
-    ['p-h-heart',      'Heart or cardiovascular conditions'],
-    ['p-h-diabetes',   'Diabetes or blood sugar management issues'],
-    ['p-h-neuro',      'Seizure disorder, dizziness, balance issues, or neurological conditions'],
-    ['p-h-other',      'Other health concerns or recent medical procedures']
+  // Pilates (Juneteenth) — same two-tier structure, different IDs
+  var P_CLEARANCE_CONDITIONS = [
+    ['p-h-spine',    'Spine, neck, or back surgery or injury'],
+    ['p-h-joint',    'Recent joint surgery or significant injury'],
+    ['p-h-pregnant', 'Pregnancy'],
+    ['p-h-osteo',    'Severe osteoporosis or bone density issues']
+  ];
+  var P_DISCLOSURE_CONDITIONS = [
+    ['p-h-dizzy',    'Dizziness, balance problems, or vertigo']
   ];
   function composePilatesNotes() {
-    return composeHealthNotes('p', P_HEALTH_CONDITIONS);
+    return composeHealthNotes('p', P_CLEARANCE_CONDITIONS, P_DISCLOSURE_CONDITIONS);
   }
 
   function buildMCSpots() {
