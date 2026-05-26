@@ -4197,7 +4197,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function paymentBadge(rec) {
     if (rec.type === 'waitlist' || rec.type === 'cancelled') return '';
     if (rec.isPaid) {
-      return '<span style="display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.5px;padding:.15rem .5rem;border-radius:10px;background:#e8f5e9;color:#2e7d32;margin-left:.3rem;text-transform:uppercase;">\u1f4b5 Paid</span>';
+      return '<span style="display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.5px;padding:.15rem .5rem;border-radius:10px;background:#e8f5e9;color:#2e7d32;margin-left:.3rem;text-transform:uppercase;">&#128181; Paid</span>';
     }
     // Unpaid \u2014 show time-until-expiry if known
     if (rec.expiresAt) {
@@ -4214,7 +4214,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function adminNotesField(table, code, existingNote) {
     var safe = escapeHTML(existingNote || '');
-    return '<textarea class="admin-note-input" data-table="'+table+'" data-code="'+code+'" placeholder="\u1f4dd Admin notes (auto-saves)\u2026" style="width:100%;margin-top:.5rem;padding:.4rem .6rem;border:1px solid var(--border);border-radius:6px;font-family:\'Jost\',sans-serif;font-size:.78rem;background:#fdfbf7;resize:vertical;min-height:36px;box-sizing:border-box;color:#3d322a;">'+safe+'</textarea>';
+    return '<textarea class="admin-note-input" data-table="'+table+'" data-code="'+code+'" placeholder="&#128221; Admin notes (auto-saves)\u2026" style="width:100%;margin-top:.5rem;padding:.4rem .6rem;border:1px solid var(--border);border-radius:6px;font-family:\'Jost\',sans-serif;font-size:.78rem;background:#fdfbf7;resize:vertical;min-height:36px;box-sizing:border-box;color:#3d322a;">'+safe+'</textarea>';
   }
 
   var steps = ['step-register','step-waiver','step-confirmed','step-waitlist'];
@@ -4291,7 +4291,7 @@ document.addEventListener('DOMContentLoaded', function() {
         '<h2 style="font-family:\'Playfair Display\',serif;color:var(--brown);font-size:1.4rem;margin-bottom:.5rem;">Waiver signed!</h2>' +
         '<p style="color:#3d322a;font-size:.95rem;margin-bottom:.4rem;">Your spot is held. Redirecting you to secure payment in <strong id="payment-countdown-num">5</strong>\u2026</p>' +
         '<p style="color:var(--text-muted);font-size:.8rem;margin-bottom:1.25rem;">Payment is required to confirm your spot.</p>' +
-        '<a id="payment-go-now-btn" href="' + stripeUrl + '" class="btn btn-primary" style="text-decoration:none;width:100%;justify-content:center;margin-bottom:.5rem;">\u1f4b3 Pay now \u2192</a>' +
+        '<a id="payment-go-now-btn" href="' + stripeUrl + '" class="btn btn-primary" style="text-decoration:none;width:100%;justify-content:center;margin-bottom:.5rem;">&#128179; Pay now \u2192</a>' +
         '<button type="button" id="payment-cancel-redirect" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.78rem;text-decoration:underline;font-family:\'Jost\',sans-serif;padding:.4rem;">Pay later (I\'ll lose my spot)</button>' +
       '</div>';
     document.body.appendChild(overlay);
@@ -4926,10 +4926,10 @@ document.addEventListener('DOMContentLoaded', function() {
         else {
           data[sess.id].forEach(function(rec){
             var item=document.createElement('div'); item.className='admin-sub-item';
-            var removeBtn='<button onclick="adminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u1f5d1 Remove</button>';
+            var removeBtn='<button onclick="adminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128465; Remove</button>';
             var confirmBtn='<button onclick="adminConfirmPayment(\''+rec.code+'\')" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u2705 Confirmed</button>';
             var pendingBtn='<button onclick="adminPaymentPending(\''+rec.code+'\')" style="background:#fef9e7;border:1px solid #f0dca0;color:#7a6320;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u23f3 Pending</button>';
-            var pNotesHTML = rec.notes ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;white-space:pre-line;"><strong style="color:var(--gold);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">\u1f9fe Health Notes:</strong><br>'+escapeHTML(rec.notes)+'</div>' : '';
+            var pNotesHTML = rec.notes ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;white-space:pre-line;"><strong style="color:var(--gold);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">&#129534; Health Notes:</strong><br>'+escapeHTML(rec.notes)+'</div>' : '';
             item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span>'+paymentBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+pNotesHTML+adminNotesField('pilates_registrations', rec.code, rec.adminNotes)+'</div>'+
               '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
               '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
@@ -4972,9 +4972,9 @@ document.addEventListener('DOMContentLoaded', function() {
           var item=document.createElement('div'); item.className='admin-sub-item';
           var confirmBtn='<button onclick="mcAdminConfirmPayment(\''+rec.code+'\')" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u2705 Confirmed</button>';
           var pendingBtn='<button onclick="mcAdminPaymentPending(\''+rec.code+'\')" style="background:#fff8e1;border:1px solid #ffe082;color:#f57f17;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u23f3 Pending</button>';
-          var removeBtn='<button onclick="mcAdminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u1f5d1 Remove</button>';
-          var notesHTML = rec.notes ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;"><strong style="color:var(--gold);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">\u1f4dd Notes for Instructor:</strong><br>'+escapeHTML(rec.notes)+'<div style="margin-top:.5rem;text-align:right;"><button onclick="mcAdminClearHealth(\''+rec.code+'\',\''+(rec.name||'').replace(/\'/g,"\\\'").replace(/"/g,'&quot;')+'\')" style="background:#fff;border:1px solid var(--gold);color:var(--brown);border-radius:6px;padding:.25rem .65rem;font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;font-weight:500;letter-spacing:.5px;">&#128465; Clear Health Notes</button></div></div>' : '';
-          var pairHTML = rec.isPair ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#f5e6d3;border-left:3px solid var(--brown);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;"><strong style="color:var(--brown);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">\u1f46f Pair Booking ($55):</strong><br><strong>Friend:</strong> '+escapeHTML(rec.friendName||'?')+'<br><strong>Email:</strong> '+escapeHTML(rec.friendEmail||'?')+'</div>' : '';
+          var removeBtn='<button onclick="mcAdminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128465; Remove</button>';
+          var notesHTML = rec.notes ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;"><strong style="color:var(--gold);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">&#128221; Notes for Instructor:</strong><br>'+escapeHTML(rec.notes)+'<div style="margin-top:.5rem;text-align:right;"><button onclick="mcAdminClearHealth(\''+rec.code+'\',\''+(rec.name||'').replace(/\'/g,"\\\'").replace(/"/g,'&quot;')+'\')" style="background:#fff;border:1px solid var(--gold);color:var(--brown);border-radius:6px;padding:.25rem .65rem;font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;font-weight:500;letter-spacing:.5px;">&#128465; Clear Health Notes</button></div></div>' : '';
+          var pairHTML = rec.isPair ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#f5e6d3;border-left:3px solid var(--brown);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;"><strong style="color:var(--brown);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">&#128111; Pair Booking ($55):</strong><br><strong>Friend:</strong> '+escapeHTML(rec.friendName||'?')+'<br><strong>Email:</strong> '+escapeHTML(rec.friendEmail||'?')+'</div>' : '';
           item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span>'+(rec.isPair?' <span style="font-size:.7rem;background:var(--brown);color:#fff;padding:.1rem .4rem;border-radius:10px;font-weight:700;letter-spacing:.5px;">PAIR</span>':'')+paymentBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+pairHTML+notesHTML+adminNotesField('matchat_registrations', rec.code, rec.adminNotes)+'</div>'+
             '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
             '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
@@ -5018,7 +5018,7 @@ document.addEventListener('DOMContentLoaded', function() {
             '<strong>Injuries:</strong> ' + escapeHTML(rec.injuries || 'None') + '<br>' +
             '<strong>Notes:</strong> ' + escapeHTML(rec.additional_notes || 'None') +
             '</div></details>';
-          var removeBtn = '<button onclick="corpRemoveInquiry(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u1f5d1 Remove</button>';
+          var removeBtn = '<button onclick="corpRemoveInquiry(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128465; Remove</button>';
           // Show Clear Health button only if there's actual sensitive data
           var hasInjuryData = (rec.injuries && rec.injuries !== 'None' && rec.injuries !== 'None provided' && rec.injuries.trim() !== '');
           var hasNotesData  = (rec.additional_notes && rec.additional_notes !== 'None' && rec.additional_notes.trim() !== '');
@@ -5058,7 +5058,7 @@ document.addEventListener('DOMContentLoaded', function() {
             '<strong>Signed by:</strong> ' + escapeHTML(rec.signature || '\u2014') + '<br>' +
             '<strong>Clauses:</strong> ' + (rec.clauses_agreed || 19) + ' of 19' +
             '</div></details>';
-          var removeBtn = '<button onclick="corpRemoveBooking(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u1f5d1 Remove</button>';
+          var removeBtn = '<button onclick="corpRemoveBooking(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128465; Remove</button>';
           var hasInjuryData = (rec.injuries && rec.injuries !== 'None' && rec.injuries !== 'None provided' && rec.injuries.trim() !== '');
           var clearHealthBtn = hasInjuryData
             ? '<button onclick="corpAdminClearBookingHealth(\''+rec.code+'\',\''+(rec.company_name||'').replace(/\'/g,"\\\'").replace(/"/g,'&quot;')+'\')" style="background:#fff;border:1px solid var(--gold);color:var(--brown);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;font-weight:500;">&#128465; Clear Health</button>'
