@@ -180,7 +180,7 @@
       { "@type": "Question", "name": "Can the class be modified for an injury, pregnancy, or postpartum?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The health disclosure on the booking form lets you share what's going on so modifications can be prepared in advance. For specific situations, email auricmovement@outlook.com beforehand." } },
       { "@type": "Question", "name": "Where are the events held?", "acceptedAnswer": { "@type": "Answer", "text": "Auric Movement events are hosted at carefully sourced venues across New York City — the location varies by event. The specific address and arrival instructions are included in your registration confirmation and reminder emails." } },
       { "@type": "Question", "name": "What if I arrive late?", "acceptedAnswer": { "@type": "Answer", "text": "There is a 5-minute grace period only. Out of respect for the group and the practice, late arrivals cannot be admitted and refunds are not issued." } },
-      { "@type": "Question", "name": "What is the cancellation and transfer policy?", "acceptedAnswer": { "@type": "Answer", "text": "Refunds are available within 24 hours of purchase only. Spot transfers to a friend can be arranged up to 4 hours before your session by emailing auricmovement@outlook.com." } },
+      { "@type": "Question", "name": "What is the cancellation and transfer policy?", "acceptedAnswer": { "@type": "Answer", "text": "Pilates x Niara (June 19, 2026): Refunds are available within 24 hours of purchase only. Spot transfers to a friend can be arranged up to 4 hours before your session. Mat & Chat and all future events: Cancellations are accepted up to 24 hours before the session. A $10 administrative fee is non-refundable; the remaining balance is refunded within 5-10 business days. Spot transfers are not available. Email auricmovement@outlook.com to cancel." } },
       { "@type": "Question", "name": "How do I know my spot is confirmed?", "acceptedAnswer": { "@type": "Answer", "text": "You receive a confirmation email immediately after registering, and a separate payment-confirmed email once your Stripe payment processes. A reminder email goes out the day before your session. If you don't see it, check your spam or promotions folder. Still missing? Email auricmovement@outlook.com and we'll resend." } },
       { "@type": "Question", "name": "Is there a waitlist if an event is full?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. If a session is sold out, you can join the waitlist on the booking page. If a spot opens, you'll get an email with a window to claim it before it rolls to the next person." } },
       { "@type": "Question", "name": "Do I need to sign a waiver?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. You sign the Auric Movement waiver as part of the booking flow." } },
@@ -1575,7 +1575,7 @@
       font-weight: 600;
       letter-spacing: .36em;
       text-transform: uppercase;
-      color: var(--gold);
+      color: #ffffff;
       margin-bottom: 1.25rem;
     }
     .bq-event-lock-msg {
@@ -2629,8 +2629,9 @@
       <details class="bq-faq-item">
         <summary>What's the cancellation and transfer policy?</summary>
         <div class="bq-faq-body">
-          <p><strong>Refunds:</strong> available within 24 hours of purchase only.</p>
-          <p><strong>Transfers:</strong> you can transfer your spot to a friend up to 4 hours before your session. Email <a href="mailto:auricmovement@outlook.com">auricmovement@outlook.com</a> with your friend's name and email to arrange.</p>
+          <p><strong>Pilates x Niara (June 19, 2026):</strong> Refunds are available within 24 hours of purchase only. Spot transfers to a friend can be arranged up to 4 hours before your session.</p>
+          <p><strong>Mat &amp; Chat and all future events:</strong> Cancellations are accepted up to 24 hours before the session. A $10 administrative fee is non-refundable; the remaining balance is refunded within 5&#8211;10 business days. Spot transfers are not available.</p>
+          <p>To cancel, email <a href="mailto:auricmovement@outlook.com">auricmovement@outlook.com</a> with your full name and session details.</p>
         </div>
       </details>
 
@@ -3238,6 +3239,24 @@
               <button type="button" id="mc-select-all-btn" class="btn btn-secondary" style="font-size:.82rem;padding:.5rem 1rem;width:100%;justify-content:center;">&#10003; Select All Clauses</button>
             </div>
             <div id="mc-clauses-container" role="group" aria-label="Waiver clauses"></div>
+
+            <!-- Refund Policy Acknowledgment — Mat & Chat-specific -->
+            <div style="margin:1.25rem 0;padding:1rem 1.25rem;background:#faf5ee;border:2px solid var(--gold);border-radius:10px;">
+              <h3 style="font-size:.85rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brown);margin-bottom:.6rem;">&#9888; Refund Policy &mdash; Mat &amp; Chat</h3>
+              <p style="font-size:.85rem;color:#3d322a;line-height:1.6;margin:0 0 .5rem;">By booking this session, you agree to the following:</p>
+              <ul style="font-size:.85rem;color:#3d322a;line-height:1.7;margin:0 0 .75rem;padding-left:1.25rem;">
+                <li>Cancellations are accepted up to <strong>24 hours before</strong> the session start time.</li>
+                <li>A <strong>$10 administrative fee is non-refundable</strong>. The remaining $20 will be refunded within 5&#8211;10 business days via the original payment method.</li>
+                <li>Cancellations within 24 hours of the session are <strong>not eligible for any refund</strong>.</li>
+                <li><strong>Spot transfers to a friend are not available</strong> for Mat &amp; Chat.</li>
+              </ul>
+              <label style="display:flex;align-items:flex-start;gap:.6rem;padding:.65rem .75rem;background:#fff;border:1px solid var(--gold);border-radius:8px;cursor:pointer;font-size:.85rem;color:#3d322a;">
+                <input type="checkbox" id="mc-refund-policy-agree" style="margin-top:.15rem;accent-color:var(--gold);width:18px;height:18px;flex-shrink:0;">
+                <span>I have read and agree to the Mat &amp; Chat refund policy above. <span style="color:var(--red);">*</span></span>
+              </label>
+              <div id="mc-refund-policy-err" class="err-msg" role="alert"></div>
+            </div>
+
             <div class="sig-section">
               <div class="statement">
                 I, <strong id="mc-waiver-name-stmt"></strong>, acknowledge that I have carefully read and fully understand this Liability Waiver &amp; Release. I understand that I am giving up substantial legal rights, including the right to sue. I sign this agreement freely and voluntarily, without any inducement.
@@ -3448,11 +3467,15 @@
     <div class="modal-body">
       <p><em>Effective Date: May 2026</em></p>
       <h4>1. Refund Policy</h4>
-      <p>Refunds are available if requested within <strong>24 hours of your original purchase</strong>. After 24 hours, all sales are final. To request a refund, email <strong>auricmovement@outlook.com</strong> with your name, session, and reason.</p>
+      <p><strong>Pilates x Niara (June 19, 2026):</strong> Refunds are available if requested within <strong>24 hours of your original purchase</strong>. After 24 hours, all sales are final. <em>(Policy in effect at time of booking.)</em></p>
+      <p><strong>Mat &amp; Chat and all events from May 24, 2026 onward:</strong> Cancellations are accepted up to <strong>24 hours before your session start time</strong>. A <strong>$10 administrative fee is non-refundable</strong>; the remaining balance will be refunded within 5&#8211;10 business days via the original payment method. Cancellations within 24 hours of the session are not eligible for any refund.</p>
+      <p>To request a refund, email <strong>auricmovement@outlook.com</strong> with your name, session, and reason.</p>
       <h4>2. Cancellations</h4>
-      <p>No cancellations will be accepted <strong>within 24 hours of your session start time</strong>. To cancel earlier than that, email <strong>auricmovement@outlook.com</strong> with your full name and session details.</p>
+      <p><strong>Pilates x Niara (June 19, 2026):</strong> No cancellations will be accepted within 24 hours of your session start time. To cancel earlier than that, email <strong>auricmovement@outlook.com</strong> with your full name and session details.</p>
+      <p><strong>Mat &amp; Chat and all future events:</strong> See Section 1 above &#8212; cancellations follow the partial-refund policy.</p>
       <h4>3. Spot Transfers</h4>
-      <p>You may transfer your spot to a friend by emailing <strong>auricmovement@outlook.com</strong> at least <strong>4 hours before your session start time</strong>. Include your full name, session, and the full name and email of the person taking your spot. Auric Movement LLC reserves the right to deny a transfer at its discretion.</p>
+      <p><strong>Pilates x Niara (June 19, 2026):</strong> You may transfer your spot to a friend by emailing <strong>auricmovement@outlook.com</strong> at least <strong>4 hours before your session start time</strong>. Include your full name, session, and the full name and email of the person taking your spot. Auric Movement LLC reserves the right to deny a transfer at its discretion.</p>
+      <p><strong>Mat &amp; Chat and all future events:</strong> <strong>Spot transfers are not available.</strong> If you can no longer attend, please follow the cancellation policy in Section 1 for a partial refund.</p>
       <h4>4. Arrival &amp; Lateness Policy</h4>
       <p>Please arrive at your scheduled session arrival time. The first 5 minutes are reserved for orientation. Class begins promptly 5 minutes after your arrival time.</p>
       <p><strong>There is a 5-minute grace period only.</strong> Late arrivals will not be admitted. This is strictly enforced. <strong>No refunds or transfers will be issued for late arrivals.</strong></p>
@@ -3832,6 +3855,16 @@ document.addEventListener('DOMContentLoaded', function() {
   var STORAGE_KEY         = 'auric_june19';
   var MC_STORAGE_KEY      = 'auric_aug01';
   var TOTAL_CLAUSES       = 19;
+
+  // Refund policy text shown to Mat & Chat bookers + included in their receipt email.
+  // If you ever update this policy, the version each customer agreed to is
+  // captured in their record (so historical receipts reflect what THEY signed).
+  var MC_REFUND_POLICY_TEXT =
+    'Cancellations are accepted up to 24 hours before the session start time. ' +
+    'A $10 administrative fee is non-refundable; the remaining $20 will be refunded ' +
+    'within 5–10 business days via the original payment method. Cancellations within ' +
+    '24 hours of the session are not eligible for any refund. Spot transfers to a friend ' +
+    'are not available for Mat & Chat.';
 
   // Mat & Chat event config
   var MC_EVENT = {
@@ -5623,8 +5656,18 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   document.getElementById('mc-sig-input').addEventListener('input', function(){
-    document.getElementById('mc-submit-btn').disabled = this.value.trim().length < 2;
+    var refundOk = document.getElementById('mc-refund-policy-agree').checked;
+    var sigOk    = this.value.trim().length >= 2;
+    document.getElementById('mc-submit-btn').disabled = !(refundOk && sigOk);
     document.getElementById('mc-sig-err').textContent = '';
+  });
+
+  // Refund policy acknowledgment must be checked before submit can fire
+  document.getElementById('mc-refund-policy-agree').addEventListener('change', function(){
+    var sigOk    = (document.getElementById('mc-sig-input').value || '').trim().length >= 2;
+    var refundOk = this.checked;
+    document.getElementById('mc-submit-btn').disabled = !(refundOk && sigOk);
+    if (refundOk) document.getElementById('mc-refund-policy-err').textContent = '';
   });
 
   // MC Submit
@@ -5632,6 +5675,14 @@ document.addEventListener('DOMContentLoaded', function() {
     var name  = document.getElementById('mc-reg-name').value.trim();
     var email = document.getElementById('mc-reg-email').value.trim();
     var sig   = document.getElementById('mc-sig-input').value.trim();
+    // Server-side gate: refund policy must be acknowledged
+    var refundChk = document.getElementById('mc-refund-policy-agree');
+    if (!refundChk || !refundChk.checked) {
+      document.getElementById('mc-refund-policy-err').textContent = 'You must acknowledge the refund policy before booking.';
+      refundChk.focus();
+      refundChk.scrollIntoView({behavior:'smooth', block:'center'});
+      return;
+    }
     if(sig.toLowerCase()!==name.toLowerCase()){
       document.getElementById('mc-sig-err').textContent = 'Signature must match your name: "'+name+'"';
       document.getElementById('mc-sig-input').setAttribute('aria-invalid','true');
@@ -5662,7 +5713,14 @@ document.addEventListener('DOMContentLoaded', function() {
       var wlPos = type==='waitlist' ? data.mc1.filter(function(r){ return r.type==='waitlist'; }).length+1 : null;
       var now=new Date(); var timeStr=now.toLocaleString(); var code=genCode();
       var notes = composeMCNotes();
-      var record={ name:name, email:email, signature:sig, session:'mc1', sessionLabel:'Mat & Chat', arrival:'11:25 AM', classStart:'11:30 AM', time:timeStr, timestamp:now.toISOString(), code:code, type:type, wlPosition:wlPos, clausesAgreed:19, notes:notes, isPair:isPair, friendName:isPair?friendName:'', friendEmail:isPair?friendEmail:'' };
+      // Capture refund-policy acknowledgment for legal record + receipt
+      var refundChk = document.getElementById('mc-refund-policy-agree');
+      var refundAckTime = (refundChk && refundChk.checked) ? now.toLocaleString() : '';
+      // Prepend the acknowledgment to the notes field so it lives with the
+      // booking record (visible in admin + CSV export).
+      var ackLine = 'REFUND POLICY ACKNOWLEDGED: ' + refundAckTime + '\nText agreed to: ' + MC_REFUND_POLICY_TEXT;
+      var notesWithAck = ackLine + (notes ? '\n\n' + notes : '');
+      var record={ name:name, email:email, signature:sig, session:'mc1', sessionLabel:'Mat & Chat', arrival:'11:25 AM', classStart:'11:30 AM', time:timeStr, timestamp:now.toISOString(), code:code, type:type, wlPosition:wlPos, clausesAgreed:19, notes:notesWithAck, isPair:isPair, friendName:isPair?friendName:'', friendEmail:isPair?friendEmail:'', refundPolicyAck:refundAckTime, refundPolicyText:MC_REFUND_POLICY_TEXT };
       data.mc1.push(record); mcLastSubmission=record;
 
       saveMCData(data, function() {
@@ -5753,11 +5811,22 @@ document.addEventListener('DOMContentLoaded', function() {
       if(!foundPerson){ alert('Could not find registration.'); return; }
       if(!confirm('Send payment confirmation to '+foundPerson.name+' ('+foundPerson.email+')?')) return;
       if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
+      // Pull refund policy info from the record (or fall back to current text if missing)
+      var paidAmount = foundPerson.isPair ? '$55.00' : '$30.00';
+      var refundAck  = foundPerson.refundPolicyAck || foundPerson.time || '';
+      var refundText = foundPerson.refundPolicyText || MC_REFUND_POLICY_TEXT;
       emailjs.send(EMAILJS_SERVICE_ID, MC_TMPL_PAYMENT_CONFIRM, {
         from_name:foundPerson.name, to_email:foundPerson.email,
         session_label: MC_EVENT.label,
         arrival_time:'11:25 AM', class_time:'11:30 AM',
-        calendar_url: MC_EVENT.calendarUrl || ''
+        calendar_url: MC_EVENT.calendarUrl || '',
+        // Receipt data
+        receipt_amount:       paidAmount,
+        receipt_signed_as:    foundPerson.signature || foundPerson.name,
+        receipt_code:         foundPerson.code,
+        receipt_signed_at:    foundPerson.time || '',
+        refund_policy_text:   refundText,
+        refund_policy_ack_at: refundAck
       }).then(function(){ alert('\u2705 Payment confirmation sent to '+foundPerson.email); })
         .catch(function(){ alert('\u26a0\ufe0f Could not send. Check EmailJS dashboard.'); });
       // Also mark the record as paid in Supabase so it stops the auto-expiry
@@ -6118,6 +6187,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   function updateEventCardSpots() {
     getData(function(data) {
+      // Pilates x Niara (Juneteenth) — original logic preserved
       var s1remaining = MAX_PER_SESSION - data.s1.filter(function(r){ return r.type==='confirmed'; }).length;
       var s2remaining = MAX_PER_SESSION - data.s2.filter(function(r){ return r.type==='confirmed'; }).length;
       var pilatesEl = document.getElementById('pilates-card-spots');
@@ -6133,11 +6203,13 @@ document.addEventListener('DOMContentLoaded', function() {
       if (pFlyer) pFlyer.classList.toggle('is-sold-out', pilatesIsSoldOut);
     });
     getMCData(function(data) {
+      // Mat & Chat — accurate sold-out detection + correct grammar for singular
       var mcRemaining = MC_MAX_SPOTS - data.mc1.filter(function(r){ return r.type==='confirmed'; }).length;
       var mcEl = document.getElementById('matchat-card-spots');
       var mcIsSoldOut = false;
       if (mcEl) {
         if (mcRemaining <= 0) { setSpotsBadge(mcEl, 'Waitlist only', 'sold-out'); mcIsSoldOut = true; }
+        else if (mcRemaining === 1) setSpotsBadge(mcEl, 'Only 1 spot left!', 'low');
         else if (mcRemaining <= 5) setSpotsBadge(mcEl, 'Only ' + mcRemaining + ' spots left!', 'low');
         else setSpotsBadge(mcEl, mcRemaining + ' spots available', 'available');
       }
@@ -6146,6 +6218,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   updateEventCardSpots();
+
+  // ─── Auto-refresh spot counts ──────────────────────────────────────────
+  // 1. Re-check every 60 seconds while the page is visible
+  // 2. Re-check immediately when the user returns to the tab (e.g. after
+  //    booking on another device or refreshing from another window)
+  setInterval(function(){
+    if (document.visibilityState === 'visible') updateEventCardSpots();
+  }, 60000);
+  document.addEventListener('visibilitychange', function(){
+    if (document.visibilityState === 'visible') updateEventCardSpots();
+  });
 
   // Hide past upcoming-event cards from the Events Hub.
   // The Past Events display is rendered by renderVideoSections() (videos +
