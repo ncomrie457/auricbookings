@@ -400,7 +400,7 @@
     .clause.checked { border-color:var(--gold); background:#faf5ee; }
     .clause input[type="checkbox"] { width:20px; height:20px; min-width:20px; margin-top:2px; accent-color:var(--gold); cursor:pointer; }
     .clause-text { font-size:.88rem; color:#3d322a; line-height:1.55; }
-    .clause-num { font-weight:700; color:var(--gold); margin-right:.2rem; }
+    .clause-num { font-weight:700; color:var(--gold-text); margin-right:.2rem; }
 
     /* Sig section */
     .sig-section { margin-top:1.25rem; padding-top:1.25rem; border-top:2px solid var(--border); }
@@ -441,7 +441,7 @@
 
     /* Privacy bar */
     .privacy-bar { text-align:center; font-size:.8rem; color:var(--text-muted); margin-top:.5rem; }
-    .privacy-bar a { color:var(--gold); text-decoration:underline; font-size:.8rem; }
+    .privacy-bar a { color:var(--gold-text); text-decoration:underline; font-size:.8rem; }
 
     /* Admin */
     .admin-panel { display:none; background:var(--white); border:2px solid var(--gold); border-radius:16px; padding:1.75rem; margin-bottom:1.5rem; box-shadow:0 4px 20px rgba(92,74,58,.12); }
@@ -451,7 +451,7 @@
     .admin-header h2 { font-size:1.1rem; color:var(--brown); font-family:'Playfair Display',serif; }
     .admin-actions { display:flex; gap:.5rem; flex-wrap:wrap; }
     .admin-session-block { margin-bottom:1.5rem; }
-    .admin-session-block h3 { font-size:.85rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--gold); margin-bottom:.6rem; border-bottom:1px solid var(--border); padding-bottom:.4rem; cursor:pointer; user-select:none; display:flex; align-items:center; gap:.5rem; }
+    .admin-session-block h3 { font-size:.85rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--gold-text); margin-bottom:.6rem; border-bottom:1px solid var(--border); padding-bottom:.4rem; cursor:pointer; user-select:none; display:flex; align-items:center; gap:.5rem; }
     .admin-session-block h3::before { content:'\25BE '; font-size:.7rem; transition:transform .2s; display:inline-block; flex-shrink:0; }
     .admin-session-block.collapsed h3::before { transform:rotate(-90deg); }
     .admin-session-block.collapsed > *:not(h3) { display:none; }
@@ -464,13 +464,13 @@
     .admin-sub-item .aemail { color:var(--text-muted); font-size:.8rem; }
     .admin-sub-item .atype { font-size:.7rem; font-weight:700; letter-spacing:.5px; text-transform:uppercase; padding:.15rem .5rem; border-radius:10px; }
     .type-confirmed { background:#e8f5e9; color:var(--green); } .type-waitlist { background:#fef9e7; color:#7a6320; }
-    .admin-hint { font-size:.75rem; color:#a89e94; margin-top:1rem; text-align:center; font-style:italic; }
-    .empty-state { text-align:center; padding:1.5rem; color:#a89e94; font-style:italic; font-size:.9rem; }
+    .admin-hint { font-size:.75rem; color:#6f6457; margin-top:1rem; text-align:center; font-style:italic; }
+    .empty-state { text-align:center; padding:1.5rem; color:#6f6457; font-style:italic; font-size:.9rem; }
 
-    footer { text-align:center; padding:1.5rem; font-size:.78rem; color:#a89e94; border-top:1px solid var(--border); letter-spacing:1px; }
-    footer button { background:none; border:none; color:var(--gold); cursor:pointer; font-size:.78rem; text-decoration:underline; font-family:'Jost',sans-serif; }
+    footer { text-align:center; padding:1.5rem; font-size:.78rem; color:#6f6457; border-top:1px solid var(--border); letter-spacing:1px; }
+    footer button { background:none; border:none; color:var(--gold-text); cursor:pointer; font-size:.78rem; text-decoration:underline; font-family:'Jost',sans-serif; }
     .privacy-bar { text-align:center; font-size:.8rem; color:var(--text-muted); margin-top:.5rem; }
-    .privacy-bar button { background:none; border:none; color:var(--gold); cursor:pointer; font-size:.8rem; text-decoration:underline; font-family:'Jost',sans-serif; padding:0; }
+    .privacy-bar button { background:none; border:none; color:var(--gold-text); cursor:pointer; font-size:.8rem; text-decoration:underline; font-family:'Jost',sans-serif; padding:0; }
 
     /* Tabs */
     .tabs-nav { display:flex; gap:0; border-bottom:2px solid var(--border); margin-bottom:2rem; max-width:1100px; margin-left:auto; margin-right:auto; padding:0 1.25rem; }
@@ -556,7 +556,7 @@
       text-decoration: none;
       transition: color .2s ease;
     }
-    .bq-topnav-brand:hover { color: var(--gold); }
+    .bq-topnav-brand:hover { color: var(--gold-text); }
     .bq-topnav-brand:hover .bq-topnav-mark { transform: rotate(45deg); }
     .bq-topnav-mark {
       color: var(--gold-text);
@@ -594,7 +594,7 @@
       transform-origin: center;
       transition: transform .25s ease;
     }
-    .bq-topnav-links a:hover { color: var(--gold); }
+    .bq-topnav-links a:hover { color: var(--gold-text); }
     .bq-topnav-links a:hover::after { transform: scaleX(1); }
     .bq-nav-short { display: none; }
     @media (max-width: 980px) {
@@ -765,11 +765,11 @@
       transform: translateY(10px);
     }
     .bq-auric-acronym .bq-auric-letter {
-      color: var(--gold);
+      color: var(--gold-text);
       font-weight: 600;
     }
     .bq-auric-acronym .bq-auric-dot {
-      color: var(--gold);
+      color: var(--gold-text);
       opacity: .45;
       font-weight: 400;
       letter-spacing: 0;
@@ -818,7 +818,7 @@
       font-weight: 600;
       color: var(--brown);
     }
-    .bq-hero-dot { color: var(--gold); opacity: .6; }
+    .bq-hero-dot { color: var(--gold-text); opacity: .6; }
     @media (max-width: 480px) {
       .bq-hero-pricing { font-size: .75rem; padding: .5rem .9rem; gap: .6rem; }
     }
@@ -936,7 +936,7 @@
       letter-spacing: -.005em;
       margin: 0;
     }
-    .bq-section-title em { font-style: italic; color: var(--gold); }
+    .bq-section-title em { font-style: italic; color: var(--gold-text); }
 
     /* Event cards grid */
     .bq-events {
@@ -1092,7 +1092,7 @@
       padding-bottom: .35rem;
       width: fit-content;
     }
-    .bq-footer-email:hover { color: var(--gold); border-bottom-color: var(--gold); }
+    .bq-footer-email:hover { color: var(--gold-text); border-bottom-color: var(--gold); }
 
     /* Social — Instagram + TikTok */
     .bq-footer-social-eyebrow {
@@ -1125,7 +1125,7 @@
       height: 17px;
       transition: transform .25s ease;
     }
-    .bq-footer-social a:hover { color: var(--gold); gap: .65rem; }
+    .bq-footer-social a:hover { color: var(--gold-text); gap: .65rem; }
     .bq-footer-social a:hover svg { transform: translateY(-1px); }
     .bq-footer-handle {
       font-family: 'Cormorant Garamond', serif;
@@ -1154,7 +1154,7 @@
       transition: color .2s ease;
       letter-spacing: .04em;
     }
-    .bq-footer-links button:hover { color: var(--gold); }
+    .bq-footer-links button:hover { color: var(--gold-text); }
 
     .bq-footer-fine {
       border-top: 1px solid rgba(240,230,214,.15);
@@ -1520,7 +1520,7 @@
     .bq-event > *:not(.bq-event-photo) { width: 100%; }
     .bq-event:hover { transform: translateY(-4px); }
     .bq-event:hover .bq-event-photo img { transform: scale(1.04); }
-    .bq-event:hover .bq-event-link { gap: .85rem; color: var(--gold); }
+    .bq-event:hover .bq-event-link { gap: .85rem; color: var(--gold-text); }
 
     .bq-event-photo {
       width: 100%;
@@ -1681,7 +1681,7 @@
       font-weight: 500;
       letter-spacing: .32em;
       text-transform: uppercase;
-      color: var(--gold);
+      color: var(--gold-text);
       margin-bottom: .65rem;
     }
     .bq-event-name {
@@ -1726,9 +1726,10 @@
       transition: opacity .2s ease;
     }
     .bq-event-spots:not(:empty)::before { opacity: 1; }
-    .bq-event-spots.bq-spots-available { color: #4a7c59; }
-    .bq-event-spots.bq-spots-low       { color: var(--gold); }
-    .bq-event-spots.bq-spots-sold-out  { color: var(--red); }
+    /* Accessible spot indicators — all pass WCAG AA contrast on cream */
+    .bq-event-spots.bq-spots-available { color: #3d6b4c; }
+    .bq-event-spots.bq-spots-low       { color: var(--gold-text); }
+    .bq-event-spots.bq-spots-sold-out  { color: #a8281f; }
     .bq-event-link {
       display: inline-flex;
       align-items: center;
@@ -1773,7 +1774,7 @@
     .bq-coming-mark .bq-coming-star {
       display: block;
       font-size: 1.4rem;
-      color: var(--gold);
+      color: var(--gold-text);
       margin-top: .5rem;
       opacity: .85;
     }
@@ -1817,7 +1818,7 @@
       line-height: 1.35;
       transition: color .2s ease;
     }
-    .bq-faq-item > summary:hover { color: var(--gold); }
+    .bq-faq-item > summary:hover { color: var(--gold-text); }
     .bq-faq-item > summary::-webkit-details-marker { display: none; }
     .bq-faq-item > summary::after {
       content: '';
@@ -1864,9 +1865,9 @@
       transition: color .2s ease;
     }
     .bq-faq-body .bq-faq-link:hover {
-      color: var(--gold);
+      color: var(--gold-text);
     }
-    .bq-faq-body a:hover { color: var(--gold); }
+    .bq-faq-body a:hover { color: var(--gold-text); }
     .bq-faq-body strong { color: var(--brown); font-weight: 600; }
 
     .bq-faq-foot {
@@ -1933,7 +1934,7 @@
       cursor: pointer;
       font-family: 'Jost', sans-serif;
     }
-    .bq-videos-link:hover { gap: .85rem; color: var(--gold); }
+    .bq-videos-link:hover { gap: .85rem; color: var(--gold-text); }
 
     /* Featured row (homepage) — horizontal scroll on mobile, grid on desktop */
     .bq-videos-row {
@@ -2045,7 +2046,7 @@
       font-weight: 500;
       letter-spacing: .32em;
       text-transform: uppercase;
-      color: var(--gold);
+      color: var(--gold-text);
       margin-bottom: .35rem;
     }
     .bq-video-title {
@@ -2176,7 +2177,7 @@
       font-weight: 500;
       letter-spacing: .32em;
       text-transform: uppercase;
-      color: var(--gold);
+      color: var(--gold-text);
       margin-bottom: .35rem;
     }
     .bq-lightbox-title {
@@ -2206,7 +2207,7 @@
     }
     .bq-video-empty .bq-empty-mark {
       font-size: 1.4rem;
-      color: var(--gold);
+      color: var(--gold-text);
       display: block;
       margin-bottom: .35rem;
     }
@@ -2231,7 +2232,7 @@
     .bq-recap-mark {
       font-family: 'Cormorant Garamond', serif;
       font-size: 1.6rem;
-      color: var(--gold);
+      color: var(--gold-text);
       opacity: .9;
     }
     .bq-recap-text {
@@ -2722,10 +2723,10 @@
           <strong>Parking:</strong> Alternate side parking is suspended on June 19th (Juneteenth) &#8212; street parking may be available. Nearby parking garages also available.
         </p>
         <p style="margin-top:.5rem;">
-          <a href="https://maps.google.com/?q=36+West+20th+Street+New+York+NY+10011" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:.35rem;color:var(--gold);font-weight:600;font-size:.85rem;text-decoration:none;margin-right:.75rem;">
+          <a href="https://maps.google.com/?q=36+West+20th+Street+New+York+NY+10011" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:.35rem;color:var(--gold-text);font-weight:600;font-size:.85rem;text-decoration:none;margin-right:.75rem;">
             &#128506; Google Maps
           </a>
-          <a href="https://maps.apple.com/?q=36+West+20th+Street+New+York+NY+10011" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:.35rem;color:var(--gold);font-weight:600;font-size:.85rem;text-decoration:none;">
+          <a href="https://maps.apple.com/?q=36+West+20th+Street+New+York+NY+10011" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:.35rem;color:var(--gold-text);font-weight:600;font-size:.85rem;text-decoration:none;">
             &#127822; Apple Maps
           </a>
         </p>
@@ -2765,7 +2766,7 @@
           &#9877;&#65039; <strong>Medical Disclaimer:</strong> Pilates involves physical activity. Please consult your physician before participating if you have any medical conditions, injuries, or health concerns. By continuing, you confirm you are physically able to participate.
         </div>
         <p style="margin-top:.75rem;font-size:.82rem;color:var(--text-muted);line-height:1.6;">
-          &#128203; <strong style="color:#3d322a;">Studio Waiver Required:</strong> As per The Space Pilates Studio's policy, all participants must also sign the studio's own waiver. You will receive the link in your confirmation email, or <a href="https://app.waiversign.com/e/5dea878fd3241f001981567e/doc/5dea8941d3241f001981582c?event=none" target="_blank" rel="noopener noreferrer" style="color:var(--gold);font-weight:600;">sign it here now</a>.
+          &#128203; <strong style="color:#3d322a;">Studio Waiver Required:</strong> As per The Space Pilates Studio's policy, all participants must also sign the studio's own waiver. You will receive the link in your confirmation email, or <a href="https://app.waiversign.com/e/5dea878fd3241f001981567e/doc/5dea8941d3241f001981582c?event=none" target="_blank" rel="noopener noreferrer" style="color:var(--gold-text);font-weight:600;">sign it here now</a>.
         </p>
         <div style="margin-top:1.25rem;display:flex;justify-content:flex-end;gap:.75rem;">
           <button type="button" id="join-waitlist-btn" class="btn btn-secondary hidden">Join Waitlist &#8594;</button>
@@ -2833,7 +2834,7 @@
 
             <!-- Policy footer -->
             <div style="margin-bottom:1.5rem;padding:.7rem .85rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.75rem;color:#3d322a;line-height:1.55;">
-              <strong style="color:var(--gold);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">Policy</strong><br>
+              <strong style="color:var(--gold-text);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">Policy</strong><br>
               If you checked any item in the first section, you must provide written physician clearance before attending. This information will be reviewed for class preparation and <strong>deleted within 48 hours</strong>.
             </div>
 
@@ -2942,7 +2943,7 @@
       </div>
       <button type="button" id="notify-btn" class="btn btn-primary btn-full">Notify Me When Registration Opens &#8594;</button>
       <div id="notify-status" class="notify-status"></div>
-      <p style="font-size:.78rem;color:var(--text-muted);margin-top:.75rem;line-height:1.6;">By signing up you agree to our <button type="button" id="open-privacy-btn2" style="background:none;border:none;color:var(--gold);cursor:pointer;font-size:.78rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Privacy Policy</button>. We'll only email you about this event.</p>
+      <p style="font-size:.78rem;color:var(--text-muted);margin-top:.75rem;line-height:1.6;">By signing up you agree to our <button type="button" id="open-privacy-btn2" style="background:none;border:none;color:var(--gold-text);cursor:pointer;font-size:.78rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Privacy Policy</button>. We'll only email you about this event.</p>
     </div>
   </div>
 </div><!-- /tab-coming -->
@@ -2963,7 +2964,7 @@
       <h2>Request a Quote</h2>
       <p class="subtitle">Tell us about your team and what you're looking for. Fields marked * are required.</p>
 
-      <p class="section-label" style="font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);border-bottom:1px solid var(--border);padding-bottom:.5rem;margin:1.5rem 0 1rem;">Contact Information</p>
+      <p class="section-label" style="font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold-text);border-bottom:1px solid var(--border);padding-bottom:.5rem;margin:1.5rem 0 1rem;">Contact Information</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
         <div class="field"><label for="corp-company-name">Company Name <span class="required" aria-hidden="true">*</span></label><input type="text" id="corp-company-name" placeholder="Your company name"><div id="corp-company-name-err" class="err-msg" role="alert"></div></div>
         <div class="field"><label for="corp-contact-name">Your Full Name <span class="required" aria-hidden="true">*</span></label><input type="text" id="corp-contact-name" placeholder="Your full name"><div id="corp-contact-name-err" class="err-msg" role="alert"></div></div>
@@ -2973,7 +2974,7 @@
         <div class="field"><label for="corp-referral">How did you hear about us?</label><select id="corp-referral"><option value="">Select one</option><option>Instagram</option><option>Word of mouth</option><option>Google search</option><option>LinkedIn</option><option>Other</option></select></div>
       </div>
 
-      <p class="section-label" style="font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);border-bottom:1px solid var(--border);padding-bottom:.5rem;margin:1.5rem 0 1rem;">Class Details</p>
+      <p class="section-label" style="font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold-text);border-bottom:1px solid var(--border);padding-bottom:.5rem;margin:1.5rem 0 1rem;">Class Details</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
         <div class="field"><label for="corp-class-type">Class Type <span class="required" aria-hidden="true">*</span></label><select id="corp-class-type"><option value="">Select one</option><option>Mat Pilates</option><option>Reformer Pilates</option><option>Both / Open to suggestions</option></select><div id="corp-class-type-err" class="err-msg" role="alert"></div></div>
         <div class="field"><label for="corp-class-level">Level</label><select id="corp-class-level"><option value="">Select one</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option><option>Mixed / All levels</option></select></div>
@@ -2983,7 +2984,7 @@
         <div class="field"><label for="corp-experience">Prior Pilates Experience</label><select id="corp-experience"><option value="">Select one</option><option>None &#8212; complete beginners</option><option>Some experience</option><option>Regular practitioners</option><option>Mixed group</option></select></div>
       </div>
 
-      <p class="section-label" style="font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);border-bottom:1px solid var(--border);padding-bottom:.5rem;margin:1.5rem 0 1rem;">Logistics</p>
+      <p class="section-label" style="font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold-text);border-bottom:1px solid var(--border);padding-bottom:.5rem;margin:1.5rem 0 1rem;">Logistics</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
         <div class="field"><label for="corp-location">Preferred Location <span class="required" aria-hidden="true">*</span></label><select id="corp-location"><option value="">Select one</option><option>A studio (you arrange)</option><option>A studio (we arrange)</option><option>Outdoor space</option><option>Open to suggestions</option></select><div id="corp-location-err" class="err-msg" role="alert"></div></div>
         <div class="field"><label for="corp-space-status">Do you already have a space?</label><select id="corp-space-status"><option value="">Select one</option><option>Yes &#8212; we have a space, just need an instructor</option><option>No &#8212; open to suggestions</option><option>No &#8212; need help finding a space</option></select></div>
@@ -2992,14 +2993,14 @@
       </div>
       <div class="field"><label for="corp-theme">Theme or intention? <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label><input type="text" id="corp-theme" placeholder="e.g. stress relief, team energizer, mindfulness"></div>
 
-      <p class="section-label" style="font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);border-bottom:1px solid var(--border);padding-bottom:.5rem;margin:1.5rem 0 1rem;">Budget & Health</p>
+      <p class="section-label" style="font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold-text);border-bottom:1px solid var(--border);padding-bottom:.5rem;margin:1.5rem 0 1rem;">Budget & Health</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
         <div class="field"><label for="corp-budget">Budget Range</label><select id="corp-budget"><option value="">Select one</option><option>Under $500</option><option>$500 &#8211; $1,000</option><option>$1,000 &#8211; $2,500</option><option>$2,500 &#8211; $5,000</option><option>$5,000+</option><option>Open / TBD</option></select></div>
       </div>
       <div class="field"><label for="corp-injuries">Injuries or Physical Considerations</label><textarea id="corp-injuries" placeholder="List any injuries or health considerations the instructor should be aware of."></textarea></div>
       <div class="field"><label for="corp-notes">Additional Notes</label><textarea id="corp-notes" placeholder="Anything else we should know?"></textarea></div>
 
-      <div style="margin-top:.75rem;font-size:.8rem;color:var(--text-muted);">By submitting you agree to our <button type="button" id="corp-open-privacy-btn" style="background:none;border:none;color:var(--gold);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Privacy Policy</button>.</div>
+      <div style="margin-top:.75rem;font-size:.8rem;color:var(--text-muted);">By submitting you agree to our <button type="button" id="corp-open-privacy-btn" style="background:none;border:none;color:var(--gold-text);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Privacy Policy</button>.</div>
       <button type="button" id="corp-inquiry-submit-btn" class="btn btn-primary btn-full" style="margin-top:1.25rem;">Submit Inquiry &#8594;</button>
       <div id="corp-inquiry-status" style="margin-top:.75rem;font-size:.85rem;"></div>
     </div>
@@ -3009,7 +3010,7 @@
       <div class="checkmark" aria-hidden="true">&#10022;</div>
       <h2 style="color:var(--brown);">Thank You!</h2>
       <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:1rem;">Your inquiry has been received. We'll be in touch within <strong>48 hours</strong> with availability and a custom quote.</p>
-      <p style="font-size:.85rem;color:var(--text-muted);">Questions? Email us at <a href="mailto:auricmovement@outlook.com" style="color:var(--gold);">auricmovement@outlook.com</a></p>
+      <p style="font-size:.85rem;color:var(--text-muted);">Questions? Email us at <a href="mailto:auricmovement@outlook.com" style="color:var(--gold-text);">auricmovement@outlook.com</a></p>
       <div style="margin-top:1.25rem;"><button type="button" id="corp-inquiry-new-btn" class="btn btn-secondary">Submit Another Inquiry</button></div>
     </div>
 
@@ -3062,7 +3063,7 @@
       <div id="corp-booking-email-status"></div>
       <div style="margin-top:1.25rem;padding:1rem 1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:10px;text-align:left;">
         <p style="font-size:.9rem;color:var(--brown);font-weight:700;margin-bottom:.5rem;">What happens next?</p>
-        <p style="font-size:.85rem;color:#3d322a;line-height:1.75;">We'll send you an invoice and confirm all final details via email. Questions? Reach us at <a href="mailto:auricmovement@outlook.com" style="color:var(--gold);">auricmovement@outlook.com</a></p>
+        <p style="font-size:.85rem;color:#3d322a;line-height:1.75;">We'll send you an invoice and confirm all final details via email. Questions? Reach us at <a href="mailto:auricmovement@outlook.com" style="color:var(--gold-text);">auricmovement@outlook.com</a></p>
       </div>
     </div>
 
@@ -3098,8 +3099,8 @@
           <strong>Parking:</strong> Nearby parking garages available
         </p>
         <p style="margin-top:.5rem;">
-          <a href="https://maps.google.com/?q=297+7th+Ave+Floor+3+New+York+NY+10001" target="_blank" rel="noopener noreferrer" style="color:var(--gold);font-weight:600;font-size:.85rem;text-decoration:none;margin-right:.75rem;">&#128506; Google Maps</a>
-          <a href="https://maps.apple.com/?q=297+7th+Ave+New+York+NY+10001" target="_blank" rel="noopener noreferrer" style="color:var(--gold);font-weight:600;font-size:.85rem;text-decoration:none;">&#127822; Apple Maps</a>
+          <a href="https://maps.google.com/?q=297+7th+Ave+Floor+3+New+York+NY+10001" target="_blank" rel="noopener noreferrer" style="color:var(--gold-text);font-weight:600;font-size:.85rem;text-decoration:none;margin-right:.75rem;">&#128506; Google Maps</a>
+          <a href="https://maps.apple.com/?q=297+7th+Ave+New+York+NY+10001" target="_blank" rel="noopener noreferrer" style="color:var(--gold-text);font-weight:600;font-size:.85rem;text-decoration:none;">&#127822; Apple Maps</a>
         </p>
       </div>
     </div>
@@ -3148,7 +3149,7 @@
 
         <div id="mc-spots-display" style="margin-bottom:1rem;padding:.75rem 1rem;background:#faf5ee;border-radius:10px;font-size:.85rem;color:#3d322a;text-align:center;"></div>
         <div class="privacy-bar">
-          By registering you agree to our <button type="button" id="mc-open-privacy-btn" style="background:none;border:none;color:var(--gold);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Privacy Policy</button> and <button type="button" id="mc-open-terms-btn" style="background:none;border:none;color:var(--gold);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Terms &amp; Refund Policy</button>.
+          By registering you agree to our <button type="button" id="mc-open-privacy-btn" style="background:none;border:none;color:var(--gold-text);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Privacy Policy</button> and <button type="button" id="mc-open-terms-btn" style="background:none;border:none;color:var(--gold-text);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Terms &amp; Refund Policy</button>.
         </div>
         <div style="margin-top:.75rem;padding:.75rem 1rem;background:#fdecea;border-left:3px solid var(--red);border-radius:0 8px 8px 0;font-size:.82rem;color:#3d322a;line-height:1.6;">
           &#9200; <strong>Lateness Policy:</strong> Please arrive at 11:25 AM. Class starts at 11:30 AM &#8212; 5-minute grace period only. Late arrivals will not be admitted. No exceptions.
@@ -3220,7 +3221,7 @@
 
             <!-- Policy footer -->
             <div style="margin-bottom:1.5rem;padding:.7rem .85rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.75rem;color:#3d322a;line-height:1.55;">
-              <strong style="color:var(--gold);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">Policy</strong><br>
+              <strong style="color:var(--gold-text);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">Policy</strong><br>
               If you checked any item in the first section, you must provide written physician clearance before attending. This information will be reviewed for class preparation and <strong>deleted within 48 hours</strong>.
             </div>
 
@@ -3348,7 +3349,7 @@
     </div>
     <div id="admin-body"></div>
     <div id="admin-notify-list-section" style="margin-top:1.5rem;">
-      <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem;border-bottom:1px solid var(--border);padding-bottom:.4rem;">Coming Soon &#8212; Notify List</h3>
+      <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold-text);margin-bottom:.6rem;border-bottom:1px solid var(--border);padding-bottom:.4rem;">Coming Soon &#8212; Notify List</h3>
       <div id="admin-notify-list-body"></div>
     </div>
 
@@ -4308,7 +4309,7 @@ document.addEventListener('DOMContentLoaded', function() {
     overlay.style.cssText = 'position:fixed;inset:0;background:rgba(44,26,14,.85);backdrop-filter:blur(8px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;animation:fadeIn .3s;';
     overlay.innerHTML =
       '<div style="background:#fff;border-radius:16px;padding:2rem;max-width:420px;width:100%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.4);">' +
-        '<div style="font-size:3rem;color:var(--gold);margin-bottom:.5rem;">\u2726</div>' +
+        '<div style="font-size:3rem;color:var(--gold-text);margin-bottom:.5rem;">\u2726</div>' +
         '<h2 style="font-family:\'Playfair Display\',serif;color:var(--brown);font-size:1.4rem;margin-bottom:.5rem;">Waiver signed!</h2>' +
         '<p style="color:#3d322a;font-size:.95rem;margin-bottom:.4rem;">Your spot is held. Complete payment now to confirm.</p>' +
         '<p style="color:var(--text-muted);font-size:.8rem;margin-bottom:1rem;">Payment is required to confirm your spot.</p>' +
@@ -4337,7 +4338,7 @@ document.addEventListener('DOMContentLoaded', function() {
     overlay.style.cssText = 'position:fixed;inset:0;background:rgba(44,26,14,.85);backdrop-filter:blur(8px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;animation:fadeIn .3s;';
     overlay.innerHTML =
       '<div style="background:#fff;border-radius:16px;padding:2rem 2rem;max-width:420px;width:100%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.4);">' +
-        '<div style="font-size:3rem;color:var(--gold);margin-bottom:.5rem;">\u2726</div>' +
+        '<div style="font-size:3rem;color:var(--gold-text);margin-bottom:.5rem;">\u2726</div>' +
         '<h2 style="font-family:\'Playfair Display\',serif;color:var(--brown);font-size:1.4rem;margin-bottom:.5rem;">Waiver signed!</h2>' +
         '<p style="color:#3d322a;font-size:.95rem;margin-bottom:.4rem;">Your spot is held. Redirecting you to secure payment in <strong id="payment-countdown-num">5</strong>\u2026</p>' +
         '<p style="color:var(--text-muted);font-size:.8rem;margin-bottom:1.25rem;">Payment is required to confirm your spot.</p>' +
@@ -4979,7 +4980,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var removeBtn='<button onclick="adminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128465; Remove</button>';
             var confirmBtn='<button onclick="adminConfirmPayment(\''+rec.code+'\')" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u2705 Confirmed</button>';
             var pendingBtn='<button onclick="adminPaymentPending(\''+rec.code+'\')" style="background:#fef9e7;border:1px solid #f0dca0;color:#7a6320;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u23f3 Pending</button>';
-            var pNotesHTML = rec.notes ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;white-space:pre-line;"><strong style="color:var(--gold);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">&#129534; Health Notes:</strong><br>'+escapeHTML(rec.notes)+'</div>' : '';
+            var pNotesHTML = rec.notes ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;white-space:pre-line;"><strong style="color:var(--gold-text);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">&#129534; Health Notes:</strong><br>'+escapeHTML(rec.notes)+'</div>' : '';
             item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span>'+paymentBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+pNotesHTML+adminNotesField('pilates_registrations', rec.code, rec.adminNotes)+'</div>'+
               '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
               '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
@@ -5015,7 +5016,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var mcConfirmed = mcData.mc1.filter(function(r){ return r.type==='confirmed'; });
       var mcWaitlist  = mcData.mc1.filter(function(r){ return r.type==='waitlist'; });
       var mcConfirmedSpots = mcConfirmed.reduce(function(sum,r){ return sum + (r.isPair?2:1); }, 0);
-      mcBlock.innerHTML='<h3 style="color:var(--gold);">Mat &amp; Chat \u2014 Aug 1st \u00b7 '+mcConfirmedSpots+'/'+MC_MAX_SPOTS+' spots \u00b7 '+mcConfirmed.length+' bookings \u00b7 '+mcWaitlist.length+' waitlisted</h3>';
+      mcBlock.innerHTML='<h3 style="color:var(--gold-text);">Mat &amp; Chat \u2014 Aug 1st \u00b7 '+mcConfirmedSpots+'/'+MC_MAX_SPOTS+' spots \u00b7 '+mcConfirmed.length+' bookings \u00b7 '+mcWaitlist.length+' waitlisted</h3>';
       if(!mcData.mc1.length){ mcBlock.innerHTML+='<div class="empty-state">No registrations yet.</div>'; }
       else {
         mcData.mc1.forEach(function(rec){
@@ -5023,7 +5024,7 @@ document.addEventListener('DOMContentLoaded', function() {
           var confirmBtn='<button onclick="mcAdminConfirmPayment(\''+rec.code+'\')" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u2705 Confirmed</button>';
           var pendingBtn='<button onclick="mcAdminPaymentPending(\''+rec.code+'\')" style="background:#fff8e1;border:1px solid #ffe082;color:#f57f17;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u23f3 Pending</button>';
           var removeBtn='<button onclick="mcAdminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128465; Remove</button>';
-          var notesHTML = rec.notes ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;"><strong style="color:var(--gold);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">&#128221; Notes for Instructor:</strong><br>'+escapeHTML(rec.notes)+'<div style="margin-top:.5rem;text-align:right;"><button onclick="mcAdminClearHealth(\''+rec.code+'\',\''+(rec.name||'').replace(/\'/g,"\\\'").replace(/"/g,'&quot;')+'\')" style="background:#fff;border:1px solid var(--gold);color:var(--brown);border-radius:6px;padding:.25rem .65rem;font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;font-weight:500;letter-spacing:.5px;">&#128465; Clear Health Notes</button></div></div>' : '';
+          var notesHTML = rec.notes ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;"><strong style="color:var(--gold-text);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">&#128221; Notes for Instructor:</strong><br>'+escapeHTML(rec.notes)+'<div style="margin-top:.5rem;text-align:right;"><button onclick="mcAdminClearHealth(\''+rec.code+'\',\''+(rec.name||'').replace(/\'/g,"\\\'").replace(/"/g,'&quot;')+'\')" style="background:#fff;border:1px solid var(--gold);color:var(--brown);border-radius:6px;padding:.25rem .65rem;font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;font-weight:500;letter-spacing:.5px;">&#128465; Clear Health Notes</button></div></div>' : '';
           var pairHTML = rec.isPair ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#f5e6d3;border-left:3px solid var(--brown);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;"><strong style="color:var(--brown);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">&#128111; Pair Booking ($55):</strong><br><strong>Friend:</strong> '+escapeHTML(rec.friendName||'?')+'<br><strong>Email:</strong> '+escapeHTML(rec.friendEmail||'?')+'</div>' : '';
           item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span>'+(rec.isPair?' <span style="font-size:.7rem;background:var(--brown);color:#fff;padding:.1rem .4rem;border-radius:10px;font-weight:700;letter-spacing:.5px;">PAIR</span>':'')+paymentBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+pairHTML+notesHTML+adminNotesField('matchat_registrations', rec.code, rec.adminNotes)+'</div>'+
             '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
@@ -5043,12 +5044,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // Inquiries block
       var inqBlock = document.createElement('div'); inqBlock.className = 'admin-session-block';
-      inqBlock.innerHTML = '<h3 style="color:var(--gold);">Corporate Inquiries \u00b7 '+inquiries.length+'</h3>';
+      inqBlock.innerHTML = '<h3 style="color:var(--gold-text);">Corporate Inquiries \u00b7 '+inquiries.length+'</h3>';
       if (!inquiries.length) { inqBlock.innerHTML += '<div class="empty-state">No inquiries yet.</div>'; }
       else {
         inquiries.slice().reverse().forEach(function(rec){
           var item = document.createElement('div'); item.className = 'admin-sub-item';
-          var details = '<details style="margin-top:.4rem;"><summary style="cursor:pointer;font-size:.78rem;color:var(--gold);">View details</summary>' +
+          var details = '<details style="margin-top:.4rem;"><summary style="cursor:pointer;font-size:.78rem;color:var(--gold-text);">View details</summary>' +
             '<div style="font-size:.78rem;color:#3d322a;margin-top:.4rem;line-height:1.6;">' +
             '<strong>Phone:</strong> ' + escapeHTML(rec.contact_phone || 'Not provided') + '<br>' +
             '<strong>Industry:</strong> ' + escapeHTML(rec.industry || 'Not provided') + '<br>' +
@@ -5094,12 +5095,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // Bookings block
       var bookBlock = document.createElement('div'); bookBlock.className = 'admin-session-block';
-      bookBlock.innerHTML = '<h3 style="color:var(--gold);">Corporate Bookings (Signed Waivers) \u00b7 '+bookings.length+'</h3>';
+      bookBlock.innerHTML = '<h3 style="color:var(--gold-text);">Corporate Bookings (Signed Waivers) \u00b7 '+bookings.length+'</h3>';
       if (!bookings.length) { bookBlock.innerHTML += '<div class="empty-state">No signed bookings yet.</div>'; }
       else {
         bookings.slice().reverse().forEach(function(rec){
           var item = document.createElement('div'); item.className = 'admin-sub-item';
-          var details = '<details style="margin-top:.4rem;"><summary style="cursor:pointer;font-size:.78rem;color:var(--gold);">View details</summary>' +
+          var details = '<details style="margin-top:.4rem;"><summary style="cursor:pointer;font-size:.78rem;color:var(--gold-text);">View details</summary>' +
             '<div style="font-size:.78rem;color:#3d322a;margin-top:.4rem;line-height:1.6;">' +
             '<strong>Date:</strong> ' + escapeHTML(rec.session_date || '\u2014') + '<br>' +
             '<strong>Location:</strong> ' + escapeHTML(rec.location || '\u2014') + '<br>' +
@@ -5509,11 +5510,11 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('mc-join-waitlist-btn').classList.remove('hidden');
         document.getElementById('mc-to-waiver-btn').classList.add('hidden');
       } else if (remaining <= 5) {
-        el.innerHTML = '<span style="color:#b07840;font-weight:600;">Only '+remaining+' spot'+(remaining===1?'':'s')+' left!</span>';
+        el.innerHTML = '<span style="color:#9a6535;font-weight:600;">Only '+remaining+' spot'+(remaining===1?'':'s')+' left!</span>';
         document.getElementById('mc-join-waitlist-btn').classList.add('hidden');
         document.getElementById('mc-to-waiver-btn').classList.remove('hidden');
       } else {
-        el.innerHTML = '<span style="color:#4a7c59;font-weight:600;">'+remaining+' spots available</span>';
+        el.innerHTML = '<span style="color:#3d6b4c;font-weight:600;">'+remaining+' spots available</span>';
         document.getElementById('mc-join-waitlist-btn').classList.add('hidden');
         document.getElementById('mc-to-waiver-btn').classList.remove('hidden');
       }
