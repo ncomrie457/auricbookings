@@ -217,6 +217,8 @@
     :root {
       --cream:#f5f0e8; --cream-light:#fdfbf7; --cream-mid:#ebe4d8;
       --brown:#5A3A1A; --gold:#b07840; --gold-light:#c8956c;
+      /* Accessible gold for text on light backgrounds (WCAG AA on white: 4.91:1) */
+      --gold-text:#9a6535;
       --text:#2c2420; --text-muted:#7a6e63; --border:#e8e0d5; --white:#ffffff;
       --green:#2e7d32; --red:#c0392b;
       /* Editorial luxury palette additions */
@@ -557,7 +559,7 @@
     .bq-topnav-brand:hover { color: var(--gold); }
     .bq-topnav-brand:hover .bq-topnav-mark { transform: rotate(45deg); }
     .bq-topnav-mark {
-      color: var(--gold);
+      color: var(--gold-text);
       font-style: normal;
       font-size: 1.1rem;
       transition: transform .4s ease;
@@ -922,7 +924,7 @@
       font-weight: 500;
       letter-spacing: .32em;
       text-transform: uppercase;
-      color: var(--gold);
+      color: var(--gold-text);
       margin-bottom: .85rem;
     }
     .bq-section-title {
@@ -986,13 +988,14 @@
       font-weight: 500;
       letter-spacing: .32em;
       text-transform: uppercase;
-      color: var(--gold);
+      /* Lighter gold for adequate contrast on the dark brown footer (WCAG AA: 4.62:1) */
+      color: #d4a370;
       margin-bottom: .45rem;
     }
     .bq-footer-brand .bq-footer-mark {
       font-family: 'Cormorant Garamond', serif;
       font-size: 1.8rem;
-      color: var(--gold);
+      color: var(--gold-light);
       line-height: 1;
       margin-bottom: .75rem;
     }
@@ -1098,7 +1101,7 @@
       font-weight: 500;
       letter-spacing: .32em;
       text-transform: uppercase;
-      color: var(--gold);
+      color: #d4a370;
       margin: 1.25rem 0 .45rem;
     }
     .bq-footer-social {
@@ -1224,7 +1227,7 @@
     .bq-manifesto-mark {
       font-family: 'Cormorant Garamond', serif;
       font-size: 1.3rem;
-      color: var(--gold);
+      color: var(--gold-text);
     }
     .bq-manifesto-eyebrow {
       font-family: 'Jost', sans-serif;
@@ -1269,8 +1272,8 @@
       font-weight: 400;
       letter-spacing: .24em;
       text-transform: uppercase;
-      color: var(--gold);
-      opacity: .8;
+      color: var(--gold-text);
+      opacity: .85;
       align-self: center;
       transform: translateY(-.25em);
     }
@@ -1302,7 +1305,7 @@
       font-weight: 500;
       letter-spacing: .55em;
       text-transform: uppercase;
-      color: var(--gold);
+      color: var(--gold-text);
       white-space: nowrap;
     }
 
@@ -1357,7 +1360,7 @@
       font-weight: 500;
       letter-spacing: .48em;
       text-transform: uppercase;
-      color: var(--gold);
+      color: var(--gold-text);
       margin-bottom: 2.5rem;
     }
     .bq-note-body {
@@ -1391,7 +1394,7 @@
     }
     .bq-note-body .bq-note-close em {
       font-style: italic;
-      color: var(--gold);
+      color: var(--gold-text);
     }
     .bq-note-signature {
       margin-top: 2.5rem;
@@ -1401,7 +1404,7 @@
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
       font-size: 1.35rem;
-      color: var(--gold);
+      color: var(--gold-text);
     }
     .bq-note-dash { font-weight: 300; }
     .bq-note-name { letter-spacing: .02em; }
@@ -1637,10 +1640,10 @@
       font-family: 'Cormorant Garamond', serif;
       font-size: 1.2em;
       font-style: italic;
-      color: var(--gold);
+      color: var(--gold-text);
       transition: transform .3s ease;
     }
-    .bq-tab-next-link:hover { color: var(--gold); gap: 1.1rem; }
+    .bq-tab-next-link:hover { color: var(--gold-text); gap: 1.1rem; }
     .bq-tab-next-link:hover span { transform: translateX(4px); }
     @media (max-width: 640px) {
       .bq-tab-next-link { font-size: .65rem; letter-spacing: .22em; }
@@ -3354,15 +3357,15 @@
       <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--brown);margin-bottom:1rem;">&#10133; Manually Add Registration</h3>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
         <div>
-          <label style="font-size:.78rem;font-weight:600;color:var(--brown);display:block;margin-bottom:.3rem;">Full Name</label>
+          <label for="admin-add-name" style="font-size:.78rem;font-weight:600;color:var(--brown);display:block;margin-bottom:.3rem;">Full Name</label>
           <input type="text" id="admin-add-name" placeholder="Full name" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;">
         </div>
         <div>
-          <label style="font-size:.78rem;font-weight:600;color:var(--brown);display:block;margin-bottom:.3rem;">Email</label>
+          <label for="admin-add-email" style="font-size:.78rem;font-weight:600;color:var(--brown);display:block;margin-bottom:.3rem;">Email</label>
           <input type="email" id="admin-add-email" placeholder="email@example.com" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;">
         </div>
         <div>
-          <label style="font-size:.78rem;font-weight:600;color:var(--brown);display:block;margin-bottom:.3rem;">Event</label>
+          <label for="admin-add-event" style="font-size:.78rem;font-weight:600;color:var(--brown);display:block;margin-bottom:.3rem;">Event</label>
           <select id="admin-add-event" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;">
             <option value="s1">Pilates x Niara &#8212; Session 1 (1:00 PM)</option>
             <option value="s2">Pilates x Niara &#8212; Session 2 (2:00 PM)</option>
@@ -3370,7 +3373,7 @@
           </select>
         </div>
         <div>
-          <label style="font-size:.78rem;font-weight:600;color:var(--brown);display:block;margin-bottom:.3rem;">Type</label>
+          <label for="admin-add-type" style="font-size:.78rem;font-weight:600;color:var(--brown);display:block;margin-bottom:.3rem;">Type</label>
           <select id="admin-add-type" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;">
             <option value="confirmed">Confirmed</option>
             <option value="waitlist">Waitlist</option>
@@ -6640,10 +6643,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (el) el.setAttribute('aria-live','polite');
   });
 
-  // 4. Final-agree and transfer-final-agree labels \u2014 ensure association
-  var fa = document.getElementById('final-agree');
-  var faLabel = document.querySelector('label[for="final-agree"]');
-  if (fa && faLabel) fa.setAttribute('aria-describedby', 'final-agree-label');
+  // 4. Final-agree label: the <label for="final-agree"> association is
+  // sufficient \u2014 no aria-describedby needed. Previous attempt referenced
+  // a non-existent ID ("final-agree-label") and triggered a WAVE error.
 
   // 5. Phase 1 UI polish \u2014 scroll-reveal IntersectionObserver
   if ('IntersectionObserver' in window) {
