@@ -3837,6 +3837,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   var EMAILJS_PUBLIC_KEY  = 'xr1kT3l8rFhNodudq';
   var EMAILJS_SERVICE_ID  = 'service_9n4adla';
+  var ADMIN_EMAIL         = 'auricmovement@outlook.com'; // where admin notifications go
   var TMPL_CONFIRM    = 'template_6i1srps'; // Pilates \u2014 Participant Confirmation
   var TMPL_WAITLIST   = 'template_y50ixp4'; // Pilates \u2014 Participant Waitlist
   var TMPL_TRANSFER   = 'template_ep23jwi'; // Pilates \u2014 Transfer Confirmation
@@ -4575,16 +4576,38 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       var now=new Date(); var timeStr=now.toLocaleString(); var code=genCode();
       var sess=SESSIONS.find(function(s){return s.id===selectedSession;});
-      var confirmed=data[selectedSession].filter(function(r){return r.type==='confirmed';}).length;
-      var type=confirmed<MAX_PER_SESSION?'confirmed':'waitlist';
-      var wlPos=type==='waitlist'?data[selectedSession].filter(function(r){return r.type==='waitlist';}).length+1:null;
-      var record={ name:name, email:email, signature:sig, session:selectedSession, sessionLabel:sess.label, arrival:sess.arrival, classStart:sess.start, time:timeStr, timestamp:now.toISOString(), code:code, type:type, wlPosition:wlPos, clausesAgreed:TOTAL_CLAUSES, notes:composePilatesNotes() };
-      data[selectedSession].push(record);
-      lastSubmission=record;
 
-      saveData(data, function() {
+      // ATOMIC BOOKING (race-condition-safe): Postgres function does
+      // capacity check + insert in one transaction. Even if N people submit
+      // simultaneously, only MAX_PER_SESSION can land as 'confirmed'.
+      supabase.rpc('book_pilates_session', {
+        p_session_id:      selectedSession,
+        p_name:            name,
+        p_email:           email,
+        p_signature:       sig,
+        p_session_label:   sess.label,
+        p_arrival:         sess.arrival,
+        p_class_start:     sess.start,
+        p_time_str:        timeStr,
+        p_timestamp_iso:   now.toISOString(),
+        p_code:            code,
+        p_clauses_agreed:  TOTAL_CLAUSES,
+        p_notes:           composePilatesNotes(),
+        p_max_per_session: MAX_PER_SESSION
+      }).then(function(res){
         submitBtn.disabled = false;
         submitBtn.textContent = 'Submit & Reserve My Spot \u2726';
+        if (res.error || !res.data || !res.data.length) {
+          console.error('[book_pilates_session] RPC failed', res.error);
+          alert('Something went wrong saving your registration. Please try again, or email auricmovement@outlook.com.');
+          return;
+        }
+        var row = res.data[0];
+        var type  = row.out_type;
+        var wlPos = row.out_wl_position;
+        var record={ name:name, email:email, signature:sig, session:selectedSession, sessionLabel:sess.label, arrival:sess.arrival, classStart:sess.start, time:timeStr, timestamp:now.toISOString(), code:code, type:type, wlPosition:wlPos, clausesAgreed:TOTAL_CLAUSES, notes:composePilatesNotes() };
+        lastSubmission=record;
+
         if (type==='confirmed') {
           document.getElementById('conf-name').textContent    = name;
           document.getElementById('conf-session').textContent = sess.label+' \u00b7 Arrival '+sess.arrival+' \u00b7 Class '+sess.start;
@@ -4594,7 +4617,6 @@ document.addEventListener('DOMContentLoaded', function() {
           document.getElementById('step-confirmed').scrollIntoView({behavior:'smooth'});
           announce('Waiver signed! Redirecting to payment...');
           sendConfirmEmail(record);
-          // Auto-redirect to Stripe in same tab after a short delay (Option 2 \u2014 force payment after waiver)
           showPaymentRedirectCountdown(sess.stripeUrl, record);
         } else {
           document.getElementById('wl-name').textContent    = name;
@@ -4606,7 +4628,13 @@ document.addEventListener('DOMContentLoaded', function() {
           announce('Session full. Added to waitlist at position '+wlPos+'.');
           sendWaitlistEmail(record);
         }
-        buildSessionCards();
+        // Refresh local cache from server so UI shows correct counts next time
+        getData(function(fresh){ data = fresh; buildSessionCards(); });
+      }, function(err){
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit & Reserve My Spot \u2726';
+        console.error('[book_pilates_session] RPC error', err);
+        alert('Something went wrong saving your registration. Please try again, or email auricmovement@outlook.com.');
       });
     });
   });
@@ -4627,11 +4655,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }).then(function(){ el.innerHTML='<div class="email-status email-sent">\u2705 Waiver confirmation sent to '+escapeHTML(rec.email)+'</div>'; })
       .catch(function(){ el.innerHTML='<div class="email-status email-failed">\u26a0\ufe0f Could not send email. Your waiver is still saved.</div>'; });
     emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
-      from_name:rec.name, to_email:rec.email, session_label:rec.sessionLabel,
+      admin_email: ADMIN_EMAIL,
+      from_name:rec.name, participant_email:rec.email, to_email:rec.email,
+      session_label:rec.sessionLabel,
       arrival_time:rec.arrival, registration_type:'Waiver signed \u2014 payment pending',
       sign_time:rec.time, clauses_agreed:TOTAL_CLAUSES+' of '+TOTAL_CLAUSES,
       cancel_code:rec.code
-    });
+    }).then(function(){ console.log('[admin notif] confirm sent for', rec.code); })
+      .catch(function(err){ console.error('[admin notif] FAILED for', rec.code, err); });
   }
 
   function sendWaitlistEmail(rec) {
@@ -4646,11 +4677,14 @@ document.addEventListener('DOMContentLoaded', function() {
       .catch(function(){ el.innerHTML='<div class="email-status email-failed">\u26a0\ufe0f Could not send email. You are still on the waitlist.</div>'; });
     // Send admin notification
     emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
-      from_name:rec.name, to_email:rec.email, session_label:rec.sessionLabel,
+      admin_email: ADMIN_EMAIL,
+      from_name:rec.name, participant_email:rec.email, to_email:rec.email,
+      session_label:rec.sessionLabel,
       arrival_time:rec.arrival, registration_type:'Waitlist #'+rec.wlPosition,
       sign_time:rec.time, clauses_agreed:TOTAL_CLAUSES+' of '+TOTAL_CLAUSES,
       cancel_code:rec.code
-    });
+    }).then(function(){ console.log('[admin notif] waitlist sent for', rec.code); })
+      .catch(function(err){ console.error('[admin notif] FAILED for', rec.code, err); });
   }
 
   function notifyWaitlist(sessionId) {
@@ -5707,28 +5741,47 @@ document.addEventListener('DOMContentLoaded', function() {
         alert(msg);
         return;
       }
-      var confirmed = data.mc1.filter(function(r){ return r.type==='confirmed'; }).length;
       var isPair = document.getElementById('mc-pair-toggle').checked;
       var friendName = document.getElementById('mc-friend-name').value.trim();
       var friendEmail = document.getElementById('mc-friend-email').value.trim();
-      // A pair takes 2 spots, solo takes 1
-      var spotsNeeded = isPair ? 2 : 1;
-      var type = (confirmed + spotsNeeded) <= MC_MAX_SPOTS ? 'confirmed' : 'waitlist';
-      var wlPos = type==='waitlist' ? data.mc1.filter(function(r){ return r.type==='waitlist'; }).length+1 : null;
       var now=new Date(); var timeStr=now.toLocaleString(); var code=genCode();
       var notes = composeMCNotes();
       // Capture refund-policy acknowledgment for legal record + receipt
       var refundChk = document.getElementById('mc-refund-policy-agree');
       var refundAckTime = (refundChk && refundChk.checked) ? now.toLocaleString() : '';
-      // Prepend the acknowledgment to the notes field so it lives with the
-      // booking record (visible in admin + CSV export).
       var ackLine = 'REFUND POLICY ACKNOWLEDGED: ' + refundAckTime + '\nText agreed to: ' + MC_REFUND_POLICY_TEXT;
       var notesWithAck = ackLine + (notes ? '\n\n' + notes : '');
-      var record={ name:name, email:email, signature:sig, session:'mc1', sessionLabel:'Mat & Chat', arrival:'11:25 AM', classStart:'11:30 AM', time:timeStr, timestamp:now.toISOString(), code:code, type:type, wlPosition:wlPos, clausesAgreed:19, notes:notesWithAck, isPair:isPair, friendName:isPair?friendName:'', friendEmail:isPair?friendEmail:'', refundPolicyAck:refundAckTime, refundPolicyText:MC_REFUND_POLICY_TEXT };
-      data.mc1.push(record); mcLastSubmission=record;
 
-      saveMCData(data, function() {
+      // ATOMIC BOOKING (race-condition-safe): single Postgres transaction
+      // does the capacity check (handling pair = 2 spots) + insert. Even if
+      // multiple people submit simultaneously, only MC_MAX_SPOTS can land
+      // as 'confirmed'.
+      supabase.rpc('book_matchat_session', {
+        p_name:           name,
+        p_email:          email,
+        p_signature:      sig,
+        p_time_str:       timeStr,
+        p_timestamp_iso:  now.toISOString(),
+        p_code:           code,
+        p_clauses_agreed: 19,
+        p_notes:          notesWithAck,
+        p_is_pair:        isPair,
+        p_friend_name:    isPair ? friendName : null,
+        p_friend_email:   isPair ? friendEmail : null,
+        p_max_spots:      MC_MAX_SPOTS
+      }).then(function(res){
         submitBtn.disabled=false; submitBtn.textContent = 'Submit & Reserve My Spot \u2726';
+        if (res.error || !res.data || !res.data.length) {
+          console.error('[book_matchat_session] RPC failed', res.error);
+          alert('Something went wrong saving your registration. Please try again, or email auricmovement@outlook.com.');
+          return;
+        }
+        var row = res.data[0];
+        var type  = row.out_type;
+        var wlPos = row.out_wl_position;
+        var record={ name:name, email:email, signature:sig, session:'mc1', sessionLabel:'Mat & Chat', arrival:'11:25 AM', classStart:'11:30 AM', time:timeStr, timestamp:now.toISOString(), code:code, type:type, wlPosition:wlPos, clausesAgreed:19, notes:notesWithAck, isPair:isPair, friendName:isPair?friendName:'', friendEmail:isPair?friendEmail:'', refundPolicyAck:refundAckTime, refundPolicyText:MC_REFUND_POLICY_TEXT };
+        mcLastSubmission=record;
+
         if(type==='confirmed'){
           document.getElementById('mc-conf-name').textContent = name;
           document.getElementById('mc-conf-time').textContent = timeStr;
@@ -5740,10 +5793,13 @@ document.addEventListener('DOMContentLoaded', function() {
           showMCPaymentOverlay(isPair ? MC_PAIR_BUY_BTN_ID : MC_SOLO_BUY_BTN_ID, MC_STRIPE_PUBLISHABLE, isPair ? MC_PAIR_PRICE : MC_SOLO_PRICE, record);
           if(typeof emailjs!=='undefined'){
             emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
-              from_name:name, to_email:email, session_label:'Mat & Chat \u2014 August 1st' + (isPair?' (PAIR)':''),
+              admin_email: ADMIN_EMAIL,
+              from_name:name, participant_email:email, to_email:email,
+              session_label:'Mat & Chat \u2014 August 1st' + (isPair?' (PAIR)':''),
               arrival_time:'11:25 AM', registration_type:'Waiver signed \u2014 payment pending' + (isPair?' \u00b7 Pair booking':''),
               sign_time:timeStr, clauses_agreed:'19 of 19', cancel_code:code
-            });
+            }).then(function(){ console.log('[admin notif] mat&chat sent for', code); })
+              .catch(function(err){ console.error('[admin notif] mat&chat FAILED for', code, err); });
             // If pair, email the friend a prefilled waiver link
             if (isPair && friendName && friendEmail) {
               var waiverUrl = 'https://waiver.auricmovement.com/?' +
@@ -5767,7 +5823,12 @@ document.addEventListener('DOMContentLoaded', function() {
           document.getElementById('mc-page-layout').classList.remove('waiver-active');
           announce('Session full. Added to waitlist at position '+wlPos+'.');
         }
-        buildMCSpots();
+        // Refresh local data + UI from server so spot counts are accurate
+        getMCData(function(fresh){ data = fresh; buildMCSpots(); });
+      }, function(err){
+        submitBtn.disabled=false; submitBtn.textContent = 'Submit & Reserve My Spot ✦';
+        console.error('[book_matchat_session] RPC error', err);
+        alert('Something went wrong saving your registration. Please try again, or email auricmovement@outlook.com.');
       });
     });
   });
@@ -6489,13 +6550,15 @@ document.addEventListener('DOMContentLoaded', function() {
         // Send admin notification
         if (typeof emailjs !== 'undefined') {
           emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
-            from_name: name, to_email: email,
+            admin_email: ADMIN_EMAIL,
+            from_name: name, participant_email: email, to_email: email,
             session_label: 'Mat & Chat \u2014 August 1st Notify List',
             arrival_time: '11:30 AM',
             registration_type: 'Notify Me signup',
             sign_time: new Date().toLocaleString(),
             clauses_agreed: 'N/A', cancel_code: 'N/A'
-          });
+          }).then(function(){ console.log('[admin notif] notify-list sent'); })
+            .catch(function(err){ console.error('[admin notif] notify-list FAILED', err); });
         }
         document.getElementById('notify-status').innerHTML = '<div class="email-status email-sent">\u2705 You\'re on the list! We\'ll email you when registration opens.</div>';
         document.getElementById('notify-name').value = '';
