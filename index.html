@@ -3203,7 +3203,16 @@
             <!-- Health Disclosure — Section 3: Free text -->
             <div class="field" style="margin-bottom:1rem;">
               <label for="mc-h-notes" style="display:block;font-size:.78rem;color:var(--text-muted);margin:0 0 .4rem;line-height:1.5;"><strong style="color:#3d322a;">Is there anything else about your body or fitness that would help me plan the class for you?</strong><br><em>e.g., chronic issues, areas to avoid, modifications you typically use.</em></label>
-              <textarea id="mc-h-notes" rows="3" style="width:100%;padding:.65rem .85rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.88rem;background:var(--cream-light);color:#3d322a;resize:vertical;box-sizing:border-box;line-height:1.5;" placeholder="Optional — share anything you'd like the instructor to know."></textarea>
+              <textarea id="mc-h-notes" rows="3" style="width:100%;padding:.65rem .85rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.88rem;background:var(--cream-light);color:#3d322a;resize:vertical;box-sizing:border-box;line-height:1.5;" placeholder="Optional &mdash; share anything you'd like the instructor to know."></textarea>
+            </div>
+
+            <!-- Health Disclosure — Section 4: Food allergies (post-class snacks) -->
+            <div class="field" style="margin-bottom:1.1rem;padding:.85rem 1rem;background:#faf5ee;border-left:3px solid var(--gold);border-radius:0 8px 8px 0;">
+              <label for="mc-h-allergies" style="display:block;font-size:.78rem;color:#3d322a;margin:0 0 .55rem;line-height:1.5;">
+                <strong>&#x1F36A; Light snacks &amp; soft drinks will be offered after class.</strong><br>
+                <em style="color:var(--text-muted);">Please disclose any food allergies &mdash; including <strong>airborne sensitivities</strong> (peanuts, tree nuts, sesame, shellfish, etc.) &mdash; so Auric Movement can choose safe snacks and accommodate everyone.</em>
+              </label>
+              <textarea id="mc-h-allergies" rows="2" style="width:100%;padding:.65rem .85rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.88rem;background:var(--white);color:#3d322a;resize:vertical;box-sizing:border-box;line-height:1.5;" placeholder="e.g., peanut allergy (airborne sensitivity), gluten intolerance, dairy-free, none"></textarea>
             </div>
 
             <!-- Policy footer -->
@@ -3894,7 +3903,7 @@ document.addEventListener('DOMContentLoaded', function() {
     "I confirm that I am at least 18 years of age, or that I have obtained parental or guardian consent if I am a minor.",
     "I agree that this waiver remains in effect for all future sessions and activities with Auric Movement LLC unless I submit a written revocation.",
     "I acknowledge that I have had sufficient opportunity to read this waiver, ask questions, and seek independent legal advice before signing.",
-    "I understand that a complimentary gift bag may be provided as a courtesy. I acknowledge that I assume full responsibility for any items received and their use. I release the Released Parties from any liability arising from the receipt or use of gift bag contents."
+    "I understand that complimentary items — which may include a gift bag, light snacks, and/or soft drinks — may be provided as a courtesy. I acknowledge that I am responsible for disclosing any food allergies or dietary restrictions in advance, and I assume full responsibility for any items I receive, consume, or use, including any allergic reactions or adverse effects. I release the Released Parties from any liability arising from the receipt, consumption, or use of these complimentary items."
   ];
 
   if (typeof emailjs !== 'undefined') emailjs.init(EMAILJS_PUBLIC_KEY);
@@ -5476,7 +5485,14 @@ document.addEventListener('DOMContentLoaded', function() {
   ];
 
   function composeMCNotes() {
-    return composeHealthNotes('mc', MC_CLEARANCE_CONDITIONS, MC_DISCLOSURE_CONDITIONS);
+    var base = composeHealthNotes('mc', MC_CLEARANCE_CONDITIONS, MC_DISCLOSURE_CONDITIONS);
+    // Mat & Chat-specific: food allergy disclosure (snacks served post-class)
+    var allergyEl = document.getElementById('mc-h-allergies');
+    var allergies = allergyEl ? allergyEl.value.trim() : '';
+    if (allergies && allergies.toLowerCase() !== 'none' && allergies.toLowerCase() !== 'n/a') {
+      base += (base ? '\n\n' : '') + '⚠ FOOD ALLERGIES (post-class snacks):\n' + allergies;
+    }
+    return base;
   }
 
   // Generic health-disclosure composer shared between Pilates and Mat & Chat
@@ -5836,6 +5852,8 @@ document.addEventListener('DOMContentLoaded', function() {
       var cb = document.getElementById(c[0]); if (cb) cb.checked = false;
     });
     document.querySelectorAll('input[name="mc-physician-clearance"]').forEach(function(r){ r.checked = false; });
+    var mcAllergyEl = document.getElementById('mc-h-allergies'); if (mcAllergyEl) mcAllergyEl.value = '';
+    var mcNotesEl = document.getElementById('mc-h-notes'); if (mcNotesEl) mcNotesEl.value = '';
     document.getElementById('mc-sig-input').value='';
     document.getElementById('mc-sig-input').disabled=true;
     document.getElementById('mc-final-agree').checked=false;
