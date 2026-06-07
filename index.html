@@ -2927,6 +2927,11 @@
           <a id="stripe-pay-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="text-decoration:none;margin-top:.75rem;font-size:.85rem;">&#128179; Complete Payment &#8594;</a>
           <p style="font-size:.75rem;color:var(--text-muted);margin-top:.5rem;">Already paid? You're all set &#8212; watch for your confirmation email.</p>
         </div>
+        <div style="margin-top:1rem;padding:1rem 1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:10px;text-align:center;">
+          <p style="font-size:.85rem;color:var(--brown);font-weight:700;margin-bottom:.5rem;">&#128197; Add to Your Calendar</p>
+          <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:.75rem;">Works with Apple Calendar, Outlook, Google Calendar &mdash; any calendar app.</p>
+          <button type="button" id="add-to-cal-btn" class="btn btn-secondary" style="font-size:.85rem;">&#128197; Add to Calendar (.ics)</button>
+        </div>
         <div style="margin-top:1rem;padding:.75rem 1rem;background:#fef9e7;border:1px solid #f0dca0;border-radius:10px;font-size:.82rem;color:#7a6320;line-height:1.6;">
           &#128236; <strong>Can't find your confirmation email?</strong> Please check your <strong>spam or junk folder</strong> and mark it as "Not Spam". The studio waiver link will be inside.
         </div>
@@ -3157,6 +3162,11 @@
           <input type="email" id="mc-reg-email" placeholder="your@email.com" aria-required="true">
           <div id="mc-reg-email-err" class="err-msg" role="alert"></div>
         </div>
+        <div class="field">
+          <label for="mc-reg-phone">Phone Number <span style="font-weight:400;color:var(--text-muted);font-size:.78rem;">(optional)</span></label>
+          <input type="tel" id="mc-reg-phone" placeholder="(555) 123-4567" autocomplete="tel">
+          <p style="font-size:.75rem;color:var(--text-muted);margin-top:.3rem;line-height:1.5;">For class day reminders &mdash; we&rsquo;ll text you 24 hours before class. Never shared, opt-out anytime.</p>
+        </div>
 
         <!-- Pair pricing toggle (REMOVED — kept as hidden inputs for JS safety) -->
         <div style="display:none;" aria-hidden="true">
@@ -3335,6 +3345,11 @@
         <div id="mc-confirmed-pair-note" style="display:none;margin-top:1.25rem;padding:1rem 1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:10px;text-align:left;">
           <p style="font-size:.9rem;color:var(--brown);font-weight:700;margin-bottom:.5rem;">What happens next?</p>
           <p style="font-size:.85rem;color:#3d322a;line-height:1.75;">Once your $55 payment is received, we'll send you a final confirmation email. Your friend will also receive a link to sign their own waiver. You're all set &#8212; watch your inbox.</p>
+        </div>
+        <div style="margin-top:1rem;padding:1rem 1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:10px;text-align:center;">
+          <p style="font-size:.85rem;color:var(--brown);font-weight:700;margin-bottom:.5rem;">&#128197; Add to Your Calendar</p>
+          <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:.75rem;">Works with Apple Calendar, Outlook, Google Calendar &mdash; any calendar app.</p>
+          <button type="button" id="mc-add-to-cal-btn" class="btn btn-secondary" style="font-size:.85rem;">&#128197; Add to Calendar (.ics)</button>
         </div>
         <div style="margin-top:1rem;padding:.75rem 1rem;background:#fef9e7;border:1px solid #f0dca0;border-radius:10px;font-size:.82rem;color:#7a6320;line-height:1.6;">
           &#128236; <strong>Can't find your waiver email?</strong> Please check your <strong>spam or junk folder</strong> and mark it as "Not Spam".
@@ -4038,7 +4053,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function _mcRowToRec(row) {
     return {
-      name: row.name, email: row.email, signature: row.signature || '',
+      name: row.name, email: row.email, phone: row.phone || '', signature: row.signature || '',
       session: 'mc1', sessionLabel: 'Mat & Chat',
       arrival: '11:25 AM', classStart: '11:30 AM',
       time: row.time_str, timestamp: row.timestamp_iso,
@@ -4227,6 +4242,116 @@ document.addEventListener('DOMContentLoaded', function() {
       .reduce(function(sum, r){ return sum + (r.isPair ? 2 : 1); }, 0);
   }
   function genCode() { return 'AUR-' + Math.random().toString(36).substr(2,6).toUpperCase(); }
+
+  // ────────────────────────────────────────────────────────
+  // .ics calendar file generator (works for any calendar app)
+  // Usage: downloadICSFile({
+  //   title: 'Pilates x Niara',
+  //   description: 'See you Friday',
+  //   location: '36 West 20th Street, 2nd Floor, NY, NY 10011',
+  //   startISO: '2026-06-19T18:00:00Z',   // UTC
+  //   endISO:   '2026-06-19T19:00:00Z'    // UTC
+  // })
+  // ────────────────────────────────────────────────────────
+  function generateICS(opts) {
+    var pad = function(n){ return n < 10 ? '0' + n : '' + n; };
+    var toICSDate = function(iso){
+      var d = new Date(iso);
+      return d.getUTCFullYear() +
+        pad(d.getUTCMonth()+1) +
+        pad(d.getUTCDate()) + 'T' +
+        pad(d.getUTCHours()) +
+        pad(d.getUTCMinutes()) +
+        pad(d.getUTCSeconds()) + 'Z';
+    };
+    var escape = function(s){ return (s||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n'); };
+    var uid = 'auric-' + Date.now() + '@auricmovement.com';
+    return [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Auric Movement//Booking//EN',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'BEGIN:VEVENT',
+      'UID:' + uid,
+      'DTSTAMP:' + toICSDate(new Date().toISOString()),
+      'DTSTART:' + toICSDate(opts.startISO),
+      'DTEND:' + toICSDate(opts.endISO),
+      'SUMMARY:' + escape(opts.title),
+      'DESCRIPTION:' + escape(opts.description || ''),
+      'LOCATION:' + escape(opts.location || ''),
+      'STATUS:CONFIRMED',
+      'BEGIN:VALARM',
+      'ACTION:DISPLAY',
+      'DESCRIPTION:Reminder',
+      'TRIGGER:-PT24H',
+      'END:VALARM',
+      'BEGIN:VALARM',
+      'ACTION:DISPLAY',
+      'DESCRIPTION:Class starting soon',
+      'TRIGGER:-PT2H',
+      'END:VALARM',
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\r\n');
+  }
+
+  function downloadICSFile(opts) {
+    var icsContent = generateICS(opts);
+    var blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    var filename = (opts.title || 'auric-event').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') + '.ics';
+    // iOS Safari + most browsers: download via link
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    setTimeout(function(){
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }, 100);
+  }
+
+  // Wire up the "Add to Calendar" buttons (Pilates + Mat & Chat)
+  document.addEventListener('DOMContentLoaded', function(){
+    var pilatesBtn = document.getElementById('add-to-cal-btn');
+    if (pilatesBtn) {
+      pilatesBtn.addEventListener('click', function(){
+        if (!lastSubmission) return;
+        var sess = SESSIONS.find(function(s){ return s.id === lastSubmission.session; });
+        if (!sess) return;
+        // Pilates: June 19, 2026. s1=1pm-2pm, s2=2pm-3pm. ET = UTC-4 (EDT in June)
+        var dateMap = {
+          's1': { start: '2026-06-19T17:00:00Z', end: '2026-06-19T18:00:00Z' },
+          's2': { start: '2026-06-19T18:00:00Z', end: '2026-06-19T19:00:00Z' }
+        };
+        var times = dateMap[lastSubmission.session];
+        if (!times) return;
+        downloadICSFile({
+          title: 'Pilates x Niara — Auric Movement (' + sess.label + ')',
+          description: 'Arrival ' + sess.arrival + '\nClass starts ' + sess.start + '\n\nPress # then 3539 to be buzzed in.\n\nConfirmation code: ' + lastSubmission.code,
+          location: 'The Space Pilates Studio, 36 West 20th Street, 2nd Floor, New York, NY 10011',
+          startISO: times.start,
+          endISO:   times.end
+        });
+      });
+    }
+    var mcBtn = document.getElementById('mc-add-to-cal-btn');
+    if (mcBtn) {
+      mcBtn.addEventListener('click', function(){
+        if (!mcLastSubmission) return;
+        // Mat & Chat: August 1, 2026, 11:30 AM ET (= 15:30 UTC during EDT)
+        downloadICSFile({
+          title: 'Mat & Chat — Auric Movement',
+          description: 'Arrival 11:25 AM\nClass starts 11:30 AM\n\nConfirmation code: ' + mcLastSubmission.code,
+          location: 'The Fitin, 297 7th Ave, Floor 3, New York, NY 10001',
+          startISO: '2026-08-01T15:30:00Z',
+          endISO:   '2026-08-01T16:30:00Z'
+        });
+      });
+    }
+  });
 
   function announce(msg) {
     var el = document.getElementById('sr-announce');
@@ -5750,6 +5875,8 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('mc-submit-btn').addEventListener('click', function(){
     var name  = document.getElementById('mc-reg-name').value.trim();
     var email = document.getElementById('mc-reg-email').value.trim();
+    var phoneEl = document.getElementById('mc-reg-phone');
+    var phone = phoneEl ? phoneEl.value.trim() : '';
     var sig   = document.getElementById('mc-sig-input').value.trim();
     // Server-side gate: refund policy must be acknowledged
     var refundChk = document.getElementById('mc-refund-policy-agree');
@@ -5788,7 +5915,10 @@ document.addEventListener('DOMContentLoaded', function() {
       var refundChk = document.getElementById('mc-refund-policy-agree');
       var refundAckTime = (refundChk && refundChk.checked) ? now.toLocaleString() : '';
       var ackLine = 'REFUND POLICY ACKNOWLEDGED: ' + refundAckTime + '\nText agreed to: ' + MC_REFUND_POLICY_TEXT;
-      var notesWithAck = ackLine + (notes ? '\n\n' + notes : '');
+      // Embed phone in notes so we don't require a schema change yet
+      // (Future: when SMS reminders are deployed, migrate phone to its own column)
+      var phoneLine = phone ? 'PHONE (for class reminders): ' + phone : '';
+      var notesWithAck = ackLine + (phoneLine ? '\n\n' + phoneLine : '') + (notes ? '\n\n' + notes : '');
 
       // ATOMIC BOOKING (race-condition-safe): single Postgres transaction
       // does the capacity check (handling pair = 2 spots) + insert. Even if
@@ -5817,7 +5947,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var row = res.data[0];
         var type  = row.out_type;
         var wlPos = row.out_wl_position;
-        var record={ name:name, email:email, signature:sig, session:'mc1', sessionLabel:'Mat & Chat', arrival:'11:25 AM', classStart:'11:30 AM', time:timeStr, timestamp:now.toISOString(), code:code, type:type, wlPosition:wlPos, clausesAgreed:19, notes:notesWithAck, isPair:isPair, friendName:isPair?friendName:'', friendEmail:isPair?friendEmail:'', refundPolicyAck:refundAckTime, refundPolicyText:MC_REFUND_POLICY_TEXT };
+        var record={ name:name, email:email, phone:phone, signature:sig, session:'mc1', sessionLabel:'Mat & Chat', arrival:'11:25 AM', classStart:'11:30 AM', time:timeStr, timestamp:now.toISOString(), code:code, type:type, wlPosition:wlPos, clausesAgreed:19, notes:notesWithAck, isPair:isPair, friendName:isPair?friendName:'', friendEmail:isPair?friendEmail:'', refundPolicyAck:refundAckTime, refundPolicyText:MC_REFUND_POLICY_TEXT };
         mcLastSubmission=record;
 
         if(type==='confirmed'){
@@ -5878,6 +6008,7 @@ document.addEventListener('DOMContentLoaded', function() {
     mcCheckedClauses={}; mcCheckedCount=0; mcLastSubmission=null;
     document.getElementById('mc-reg-name').value='';
     document.getElementById('mc-reg-email').value='';
+    var mcPhoneEl = document.getElementById('mc-reg-phone'); if (mcPhoneEl) mcPhoneEl.value='';
     document.getElementById('mc-pair-toggle').checked = false;
     document.getElementById('mc-friend-fields').style.display = 'none';
     document.getElementById('mc-friend-name').value = '';
