@@ -3458,6 +3458,22 @@
       <div id="admin-event-badges-status" style="margin-top:.5rem;font-size:.78rem;color:var(--text-muted);"></div>
     </div>
 
+    <!-- Donor / Sponsor Recognition -->
+    <div style="margin-top:1rem;padding:1.25rem;background:#fdf5f4;border:1px solid #f0d4d0;border-radius:12px;">
+      <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--brown);margin-bottom:.5rem;">&#127873; Donor Recognition</h3>
+      <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:.85rem;line-height:1.5;">Add companies/sponsors to display a <strong>&#127873; Donor Supported</strong> badge and a "With thanks to..." line on the event card. Comma-separated. Leave blank for no badge.</p>
+
+      <div style="margin-bottom:.85rem;">
+        <label for="admin-donor-pilates" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Pilates x Niara &mdash; Donors</label>
+        <input type="text" id="admin-donor-pilates" data-event-donors="pilates" placeholder="e.g., Costco, LMNT" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
+      </div>
+      <div>
+        <label for="admin-donor-matchat" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Mat &amp; Chat &mdash; Donors</label>
+        <input type="text" id="admin-donor-matchat" data-event-donors="matchat" placeholder="e.g., Sweetgreen, Erewhon" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
+      </div>
+      <div id="admin-event-donors-status" style="margin-top:.5rem;font-size:.78rem;color:var(--text-muted);"></div>
+    </div>
+
     <p class="admin-hint">Ctrl+Shift+A to toggle &#183; Ctrl+Shift+N to notify waitlists</p>
   </div>
 </div>
@@ -4385,18 +4401,49 @@ document.addEventListener('DOMContentLoaded', function() {
   function collabBadgeHTML() {
     return '<span style="position:absolute;top:.75rem;right:.75rem;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#fff;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:.25rem .55rem;border-radius:20px;box-shadow:0 2px 6px rgba(176,120,64,.35);z-index:2;">\u{1F91D} Collab</span>';
   }
+  function donorBadgeHTML() {
+    // Rose/blush gradient — visually distinct from gold Collab badge
+    return '<span style="position:absolute;top:.75rem;left:.75rem;background:linear-gradient(135deg,#d4716e,#e8a294);color:#fff;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:.25rem .55rem;border-radius:20px;box-shadow:0 2px 6px rgba(212,113,110,.35);z-index:2;">\u{1F381} Donor Supported</span>';
+  }
+
+  // Parse donor string (comma-separated) into trimmed array of company names
+  function parseDonors(donorStr) {
+    if (!donorStr) return [];
+    return donorStr.split(',').map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 0; });
+  }
+
   function applyEventBadges() {
     getEventConfig(function(cfg){
       var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat' };
       Object.keys(cards).forEach(function(key){
         var card = document.getElementById(cards[key]);
         if (!card) return;
-        // Remove any existing collab badge
-        var existing = card.querySelector('span[data-collab-badge]');
-        if (existing) existing.remove();
+        // Remove any existing badges
+        var existingCollab = card.querySelector('span[data-collab-badge]');
+        if (existingCollab) existingCollab.remove();
+        var existingDonor = card.querySelector('span[data-donor-badge]');
+        if (existingDonor) existingDonor.remove();
+        var existingThanks = card.querySelector('div[data-donor-thanks]');
+        if (existingThanks) existingThanks.remove();
+
+        // Collab badge (top-right)
         if (cfg[key] && cfg[key].is_collab) {
-          var badgeHTML = collabBadgeHTML().replace('<span ', '<span data-collab-badge="1" ');
-          card.insertAdjacentHTML('afterbegin', badgeHTML);
+          var collabHTML = collabBadgeHTML().replace('<span ', '<span data-collab-badge="1" ');
+          card.insertAdjacentHTML('afterbegin', collabHTML);
+        }
+        // Donor badge (top-left) + "With thanks to" line — driven by event_config.donors
+        var donors = parseDonors(cfg[key] && cfg[key].donors);
+        if (donors.length) {
+          var donorHTML = donorBadgeHTML().replace('<span ', '<span data-donor-badge="1" ');
+          card.insertAdjacentHTML('afterbegin', donorHTML);
+          var sub = card.querySelector('.bq-event-sub');
+          if (sub) {
+            var thanks = document.createElement('div');
+            thanks.setAttribute('data-donor-thanks', '1');
+            thanks.style.cssText = 'font-family:Cormorant Garamond,serif;font-style:italic;font-size:.78rem;color:var(--gold-text);margin-top:.35rem;letter-spacing:.02em;';
+            thanks.innerHTML = 'With thanks to <strong style="font-weight:600;">' + donors.join('</strong> &middot; <strong style="font-weight:600;">') + '</strong>';
+            sub.parentNode.insertBefore(thanks, sub.nextSibling);
+          }
         }
       });
     });
@@ -5055,6 +5102,11 @@ document.addEventListener('DOMContentLoaded', function() {
         var field = cb.getAttribute('data-field');
         cb.checked = !!(cfg[key] && cfg[key][field]);
       });
+      // Also refresh donor text inputs
+      document.querySelectorAll('input[data-event-donors]').forEach(function(input){
+        var key = input.getAttribute('data-event-donors');
+        input.value = (cfg[key] && cfg[key].donors) || '';
+      });
     });
   }
   document.querySelectorAll('input[data-event-badge]').forEach(function(cb){
@@ -5071,6 +5123,26 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         applyEventBadges();
       });
+    });
+  });
+  // Wire up donor text inputs — save 800ms after user stops typing
+  var donorSaveTimers = {};
+  document.querySelectorAll('input[data-event-donors]').forEach(function(input){
+    input.addEventListener('input', function(){
+      var key = this.getAttribute('data-event-donors');
+      var val = this.value.trim();
+      var status = document.getElementById('admin-event-donors-status');
+      if (status) status.textContent = 'Saving…';
+      clearTimeout(donorSaveTimers[key]);
+      donorSaveTimers[key] = setTimeout(function(){
+        setEventConfig(key, { donors: val }, function(){
+          if (status) {
+            status.textContent = '✓ Saved';
+            setTimeout(function(){ status.textContent = ''; }, 1200);
+          }
+          applyEventBadges();
+        });
+      }, 800);
     });
   });
   refreshAdminBadgeToggles();
