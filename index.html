@@ -3800,6 +3800,17 @@ document.addEventListener('DOMContentLoaded', function() {
     var wrapper = document.createElement('div');
     wrapper.className = 'bq-video-wrap';
 
+    // Check if this event had donors (from cached event_config)
+    var cfg = _eventConfigCache[p.eventId];
+    var donorList = cfg && cfg.donors ? cfg.donors.split(',').map(function(s){ return s.trim(); }).filter(function(s){ return s.length; }) : [];
+    var donorLine = '';
+    if (donorList.length) {
+      donorLine =
+        '<div class="bq-video-donors" style="margin-top:.4rem;font-family:Cormorant Garamond,serif;font-style:italic;font-size:.82rem;color:var(--gold-text);line-height:1.5;letter-spacing:.02em;">' +
+          '🎁 Donor Supported &mdash; <strong style="font-weight:600;">' + donorList.join('</strong> &middot; <strong style="font-weight:600;">') + '</strong>' +
+        '</div>';
+    }
+
     var card = document.createElement('div');
     card.className = 'bq-video-card bq-recap-pending';
     card.innerHTML =
@@ -3813,7 +3824,8 @@ document.addEventListener('DOMContentLoaded', function() {
       '</div>' +
       (p.date ? '<div class="bq-video-date">' + p.date + '</div>' : '') +
       (p.title ? '<div class="bq-video-title">' + p.title + '</div>' : '') +
-      '<div class="bq-video-sub">Watch this space.</div>';
+      '<div class="bq-video-sub">Watch this space.</div>' +
+      donorLine;
     wrapper.appendChild(card);
 
     if (p.flyer) {
@@ -4391,12 +4403,22 @@ document.addEventListener('DOMContentLoaded', function() {
     supabase.from('event_config').select('*').then(function(res){
       var map = {};
       (res.data || []).forEach(function(row){ map[row.event_id] = row; });
+      _eventConfigCache = map;  // cache for sync access (used by past-events render)
       callback(map);
     }, function(){ callback({}); });
   }
+  // Global cache so synchronous renderers (e.g. past-events recap cards) can
+  // read donor info without awaiting Supabase. Populated by getEventConfig().
+  var _eventConfigCache = {};
+
   function setEventConfig(eventId, fields, callback) {
     supabase.from('event_config').upsert(Object.assign({ event_id: eventId, updated_at: new Date().toISOString() }, fields), { onConflict: 'event_id' })
-      .then(function(){ if (callback) callback(); }, function(){ if (callback) callback(); });
+      .then(function(){
+        // Refresh cache after update so past-events render stays in sync
+        if (_eventConfigCache[eventId]) Object.assign(_eventConfigCache[eventId], fields);
+        else _eventConfigCache[eventId] = Object.assign({ event_id: eventId }, fields);
+        if (callback) callback();
+      }, function(){ if (callback) callback(); });
   }
   function collabBadgeHTML() {
     return '<span style="position:absolute;top:.75rem;right:.75rem;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#fff;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:.25rem .55rem;border-radius:20px;box-shadow:0 2px 6px rgba(176,120,64,.35);z-index:2;">\u{1F91D} Collab</span>';
@@ -4459,6 +4481,9 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         }
       });
+      // Re-render past events recap cards now that event_config is cached
+      // (so donor info shows up on Pilates Juneteenth after it becomes a past event)
+      try { renderVideoSections(); } catch(e) {}
     });
   }
   applyEventBadges();
