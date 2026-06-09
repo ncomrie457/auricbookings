@@ -8,12 +8,12 @@
   <link rel="canonical" href="https://book.auricmovement.com">
   <meta name="theme-color" content="#5A3A1A">
 
-  <!-- Favicons -->
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-  <link rel="shortcut icon" href="favicon.ico">
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <!-- Favicons (AM monogram in brand brown) -->
+  <link rel="icon" type="image/png" sizes="32x32" href="logo-am-brown-32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="logo-am-brown-64.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="logo-am-brown-192.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="logo-am-brown-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="logo-am-brown-512.png">
 
   <!-- Open Graph / Link Preview — landing page -->
   <meta property="og:type" content="website">
@@ -41,7 +41,7 @@
     "alternateName": "Auric Movement LLC",
     "description": "Pilates and wellness events hosted by Auric Movement in New York City. An intentional movement experience where wellness meets community.",
     "url": "https://book.auricmovement.com",
-    "logo": "https://book.auricmovement.com/apple-touch-icon.png",
+    "logo": "https://book.auricmovement.com/logo-am-brown-512.png",
     "image": "https://book.auricmovement.com/flyer.jpg",
     "email": "auricmovement@outlook.com",
     "founder": { "@type": "Person", "name": "Niara", "jobTitle": "Pilates Instructor" },
@@ -539,37 +539,43 @@
       max-width: 1200px;
       margin: 0 auto;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      gap: 2rem;
+      justify-content: center;
+      gap: .7rem;
     }
     .bq-topnav-brand {
       display: inline-flex;
+      flex-direction: column;
       align-items: center;
-      gap: .65rem;
+      gap: .25rem;
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
       font-weight: 500;
-      font-size: 1.1rem;
-      letter-spacing: .02em;
+      font-size: 1.05rem;
+      letter-spacing: .04em;
       color: var(--brown);
       text-decoration: none;
-      transition: color .2s ease;
+      transition: opacity .2s ease;
     }
-    .bq-topnav-brand:hover { color: var(--gold-text); }
-    .bq-topnav-brand:hover .bq-topnav-mark { transform: rotate(45deg); }
-    .bq-topnav-mark {
-      color: var(--gold-text);
-      font-style: normal;
-      font-size: 1.1rem;
+    .bq-topnav-brand:hover { opacity: .75; }
+    .bq-topnav-logo {
+      height: 36px;
+      width: auto;
+      display: block;
       transition: transform .4s ease;
-      display: inline-block;
+    }
+    .bq-topnav-brand:hover .bq-topnav-logo { transform: scale(1.05); }
+    .bq-topnav-mark {
+      /* legacy sparkle — hidden in the new layout */
+      display: none;
     }
 
     .bq-topnav-links {
       display: flex;
-      gap: 2rem;
+      gap: 1.75rem;
       align-items: center;
+      justify-content: center;
     }
     .bq-topnav-links a {
       font-family: 'Jost', sans-serif;
@@ -2335,7 +2341,7 @@
 <header class="bq-topnav" role="banner">
   <div class="bq-topnav-inner">
     <a href="#" class="bq-topnav-brand" data-nav-home="true" aria-label="Auric Movement — back to home">
-      <span class="bq-topnav-mark" aria-hidden="true">&#10022;</span>
+      <img class="bq-topnav-logo" src="logo-am-brown-192.png" alt="" aria-hidden="true" width="36" height="31">
       <span class="bq-topnav-name">Auric Movement</span>
     </a>
     <nav class="bq-topnav-links" aria-label="Primary">
@@ -3463,7 +3469,7 @@
 
       <!-- Brand -->
       <div class="bq-footer-brand">
-        <div class="bq-footer-mark" aria-hidden="true">&#10022;</div>
+        <img class="bq-footer-logo" src="logo-am-gold-192.png" alt="" aria-hidden="true" width="56" height="48" style="margin-bottom:.75rem;display:block;">
         <div class="bq-footer-name">Auric Movement</div>
         <div class="bq-footer-tag">Pilates events in NYC, hosted with intention by Auric Movement.</div>
       </div>
