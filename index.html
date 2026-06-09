@@ -4402,8 +4402,12 @@ document.addEventListener('DOMContentLoaded', function() {
     return '<span style="position:absolute;top:.75rem;right:.75rem;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#fff;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:.25rem .55rem;border-radius:20px;box-shadow:0 2px 6px rgba(176,120,64,.35);z-index:2;">\u{1F91D} Collab</span>';
   }
   function donorBadgeHTML() {
-    // Rose/blush gradient — visually distinct from gold Collab badge
-    return '<span style="position:absolute;top:.75rem;left:.75rem;background:linear-gradient(135deg,#d4716e,#e8a294);color:#fff;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:.25rem .55rem;border-radius:20px;box-shadow:0 2px 6px rgba(212,113,110,.35);z-index:2;">\u{1F381} Donor Supported</span>';
+    // Rose/blush gradient — sits ABOVE the flyer as a prominent banner
+    return '<span style="display:inline-block;background:linear-gradient(135deg,#d4716e,#e8a294);color:#fff;font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:.4rem .9rem;border-radius:20px;box-shadow:0 2px 8px rgba(212,113,110,.3);">\u{1F381} Donor Supported</span>';
+  }
+  function donorBadgeWrapperHTML(badgeHTML) {
+    // Wrapper centers the badge above the flyer with proper spacing
+    return '<div data-donor-badge-wrap="1" style="text-align:center;margin-bottom:1rem;">' + badgeHTML + '</div>';
   }
 
   // Parse donor string (comma-separated) into trimmed array of company names
@@ -4418,30 +4422,39 @@ document.addEventListener('DOMContentLoaded', function() {
       Object.keys(cards).forEach(function(key){
         var card = document.getElementById(cards[key]);
         if (!card) return;
+        // Badges go INSIDE the photo container so absolute positioning anchors to the image
+        var photo = card.querySelector('.bq-event-photo');
+
         // Remove any existing badges
         var existingCollab = card.querySelector('span[data-collab-badge]');
         if (existingCollab) existingCollab.remove();
         var existingDonor = card.querySelector('span[data-donor-badge]');
         if (existingDonor) existingDonor.remove();
+        var existingDonorWrap = card.querySelector('div[data-donor-badge-wrap]');
+        if (existingDonorWrap) existingDonorWrap.remove();
         var existingThanks = card.querySelector('div[data-donor-thanks]');
         if (existingThanks) existingThanks.remove();
 
-        // Collab badge (top-right)
-        if (cfg[key] && cfg[key].is_collab) {
+        // Collab badge (top-right of image — corner chip)
+        if (cfg[key] && cfg[key].is_collab && photo) {
           var collabHTML = collabBadgeHTML().replace('<span ', '<span data-collab-badge="1" ');
-          card.insertAdjacentHTML('afterbegin', collabHTML);
+          photo.insertAdjacentHTML('beforeend', collabHTML);
         }
-        // Donor badge (top-left) + "With thanks to" line — driven by event_config.donors
+        // Donor badge (ABOVE the flyer — centered banner) + "With thanks to" line
         var donors = parseDonors(cfg[key] && cfg[key].donors);
         if (donors.length) {
-          var donorHTML = donorBadgeHTML().replace('<span ', '<span data-donor-badge="1" ');
-          card.insertAdjacentHTML('afterbegin', donorHTML);
+          if (photo) {
+            var donorHTML = donorBadgeHTML().replace('<span ', '<span data-donor-badge="1" ');
+            // Insert wrapper BEFORE the photo (above the flyer)
+            photo.insertAdjacentHTML('beforebegin', donorBadgeWrapperHTML(donorHTML));
+          }
           var sub = card.querySelector('.bq-event-sub');
           if (sub) {
             var thanks = document.createElement('div');
             thanks.setAttribute('data-donor-thanks', '1');
-            thanks.style.cssText = 'font-family:Cormorant Garamond,serif;font-style:italic;font-size:.78rem;color:var(--gold-text);margin-top:.35rem;letter-spacing:.02em;';
-            thanks.innerHTML = 'With thanks to <strong style="font-weight:600;">' + donors.join('</strong> &middot; <strong style="font-weight:600;">') + '</strong>';
+            // Larger, more visible
+            thanks.style.cssText = 'font-family:Cormorant Garamond,serif;font-style:italic;font-size:1rem;color:var(--gold-text);margin-top:.5rem;letter-spacing:.02em;line-height:1.5;';
+            thanks.innerHTML = 'With thanks to <strong style="font-weight:600;font-size:1.05rem;">' + donors.join('</strong> &middot; <strong style="font-weight:600;font-size:1.05rem;">') + '</strong>';
             sub.parentNode.insertBefore(thanks, sub.nextSibling);
           }
         }
