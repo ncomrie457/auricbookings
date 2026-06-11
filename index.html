@@ -3398,7 +3398,8 @@
         <button type="button" id="admin-csv-btn" class="btn btn-secondary">&#128229; CSV</button>
         <button type="button" id="admin-notify-btn" class="btn btn-secondary">&#128227; Notify Waitlists</button>
         <button type="button" id="admin-blast-btn" class="btn btn-primary">&#128640; Blast Notify List</button>
-        <button type="button" id="admin-reminder-btn" class="btn btn-primary">&#128232; Send Reminders</button>
+        <button type="button" id="admin-reminder-btn" class="btn btn-primary">&#128232; Send Day-Before Reminders</button>
+        <button type="button" id="admin-week-reminder-btn" class="btn btn-secondary">&#128467; Send 1-Week Reminders (Pilates)</button>
         <button type="button" id="admin-clear-btn" class="btn btn-danger">&#128465; Clear All Data</button>
         <button type="button" id="admin-close-btn" class="btn btn-secondary">&#10005; Close</button>
       </div>
@@ -3927,7 +3928,8 @@ document.addEventListener('DOMContentLoaded', function() {
   var TMPL_TRANSFER   = 'template_ep23jwi'; // Pilates \u2014 Transfer Confirmation
   var TMPL_WL_OPEN    = 'template_upkcys7'; // Pilates \u2014 Waitlist Spot Opened
   var TMPL_ADMIN      = 'template_6qkcf8j'; // Admin Notification (shared)
-  var TMPL_REMINDER   = 'template_1fol3sf'; // Pilates \u2014 Reminder
+  var TMPL_REMINDER       = 'template_1fol3sf'; // Pilates \u2014 Day-Before Reminder
+  var TMPL_REMINDER_WEEK  = 'template_rvzyaff'; // Pilates \u2014 1-Week Reminder (branded HTML version)
   var TMPL_BLAST           = 'template_ncfk6or'; // Registration Open (shared)
   var TMPL_PAYMENT_CONFIRM = 'template_1lv10up'; // Pilates \u2014 Payment Confirmed
   var TMPL_PAYMENT_PENDING = 'template_kx1d3td'; // Pilates \u2014 Payment Pending
@@ -5650,6 +5652,34 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       }); // end getMCData
     }); // end getData
+  });
+
+  // 1-Week Pilates reminder button (manual trigger)
+  document.getElementById('admin-week-reminder-btn').addEventListener('click', function(){
+    getData(function(data){
+      var confirmed = [];
+      SESSIONS.forEach(function(sess){
+        data[sess.id].filter(function(r){ return r.type === 'confirmed'; }).forEach(function(rec){
+          confirmed.push({ rec: rec, sess: sess });
+        });
+      });
+      if (!confirmed.length) { alert('No confirmed Pilates registrants to remind.'); return; }
+      if (!confirm('Send 1-WEEK reminder emails to ' + confirmed.length + ' confirmed Pilates participant(s)?')) return;
+      if (typeof emailjs === 'undefined') { alert('EmailJS not loaded.'); return; }
+      var sent = 0;
+      confirmed.forEach(function(item){
+        emailjs.send(EMAILJS_SERVICE_ID, TMPL_REMINDER_WEEK, {
+          from_name:     item.rec.name,
+          to_email:      item.rec.email,
+          session_label: item.sess.label,
+          arrival_time:  item.sess.arrival,
+          class_time:    item.sess.start
+        }).then(function(){
+          sent++;
+          if (sent === confirmed.length) alert('✅ 1-Week reminder sent to ' + sent + ' Pilates participant(s)!');
+        }).catch(function(){ alert('⚠️ Some reminders may not have sent.'); });
+      });
+    });
   });
 
   document.getElementById('admin-clear-btn').addEventListener('click', function(){
