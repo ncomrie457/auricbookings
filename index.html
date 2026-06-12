@@ -5655,6 +5655,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // 1-Week Pilates reminder button (manual trigger)
+  // Staggered 600ms apart to avoid EmailJS rate-limiting on free tier.
   document.getElementById('admin-week-reminder-btn').addEventListener('click', function(){
     getData(function(data){
       var confirmed = [];
@@ -5666,8 +5667,27 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!confirmed.length) { alert('No confirmed Pilates registrants to remind.'); return; }
       if (!confirm('Send 1-WEEK reminder emails to ' + confirmed.length + ' confirmed Pilates participant(s)?')) return;
       if (typeof emailjs === 'undefined') { alert('EmailJS not loaded.'); return; }
-      var sent = 0;
-      confirmed.forEach(function(item){
+
+      var btn = document.getElementById('admin-week-reminder-btn');
+      btn.disabled = true;
+      var originalText = btn.textContent;
+      btn.textContent = 'Sending... (0/' + confirmed.length + ')';
+
+      var sent = 0, failed = 0, failedRecipients = [];
+
+      function sendNext(i){
+        if (i >= confirmed.length){
+          btn.disabled = false;
+          btn.textContent = originalText;
+          var msg = '✅ Sent ' + sent + ' reminder(s).';
+          if (failed > 0) {
+            msg += '\n\n⚠️ ' + failed + ' failed: ' + failedRecipients.join(', ');
+            msg += '\n\nCheck EmailJS Dashboard → History for details, or click again to retry the failed ones.';
+          }
+          alert(msg);
+          return;
+        }
+        var item = confirmed[i];
         emailjs.send(EMAILJS_SERVICE_ID, TMPL_REMINDER_WEEK, {
           from_name:     item.rec.name,
           to_email:      item.rec.email,
@@ -5676,9 +5696,17 @@ document.addEventListener('DOMContentLoaded', function() {
           class_time:    item.sess.start
         }).then(function(){
           sent++;
-          if (sent === confirmed.length) alert('✅ 1-Week reminder sent to ' + sent + ' Pilates participant(s)!');
-        }).catch(function(){ alert('⚠️ Some reminders may not have sent.'); });
-      });
+        }).catch(function(err){
+          failed++;
+          failedRecipients.push(item.rec.email);
+          console.error('[1-week reminder] FAILED for ' + item.rec.email, err);
+        }).then(function(){
+          btn.textContent = 'Sending... (' + (sent + failed) + '/' + confirmed.length + ')';
+          // 600ms delay between sends to respect EmailJS rate limits
+          setTimeout(function(){ sendNext(i + 1); }, 600);
+        });
+      }
+      sendNext(0);
     });
   });
 
