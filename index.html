@@ -3399,7 +3399,6 @@
         <button type="button" id="admin-notify-btn" class="btn btn-secondary">&#128227; Notify Waitlists</button>
         <button type="button" id="admin-blast-btn" class="btn btn-primary">&#128640; Blast Notify List</button>
         <button type="button" id="admin-reminder-btn" class="btn btn-primary">&#128232; Send Day-Before Reminders</button>
-        <button type="button" id="admin-week-reminder-btn" class="btn btn-secondary">&#128467; Send 1-Week Reminders (Pilates)</button>
         <button type="button" id="admin-clear-btn" class="btn btn-danger">&#128465; Clear All Data</button>
         <button type="button" id="admin-close-btn" class="btn btn-secondary">&#10005; Close</button>
       </div>
@@ -3473,6 +3472,35 @@
         <input type="text" id="admin-donor-matchat" data-event-donors="matchat" placeholder="e.g., Sweetgreen, Erewhon" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
       </div>
       <div id="admin-event-donors-status" style="margin-top:.5rem;font-size:.78rem;color:var(--text-muted);"></div>
+    </div>
+
+    <!-- Flexible Reminder Sender -->
+    <div style="margin-top:1rem;padding:1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:12px;">
+      <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--brown);margin-bottom:.5rem;">&#128232; Send Custom Reminder</h3>
+      <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:.85rem;line-height:1.5;">Send a beautifully branded reminder for any number of days out. The greeting auto-adapts (e.g., "See you next week!" for 7 days, "See you tomorrow!" for 1 day), or you can write your own.</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.85rem;">
+        <div>
+          <label for="admin-flex-reminder-event" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Event</label>
+          <select id="admin-flex-reminder-event" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
+            <option value="pilates">Pilates x Niara (both sessions)</option>
+            <option value="matchat">Mat &amp; Chat</option>
+          </select>
+        </div>
+        <div>
+          <label for="admin-flex-reminder-days" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Days until event</label>
+          <input type="number" id="admin-flex-reminder-days" value="7" min="0" max="60" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
+        </div>
+      </div>
+
+      <div style="margin-bottom:.85rem;">
+        <label for="admin-flex-reminder-greeting" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Greeting <span style="font-weight:400;color:var(--text-muted);">(auto-fills based on days &mdash; or write your own)</span></label>
+        <input type="text" id="admin-flex-reminder-greeting" placeholder="e.g., See you next week!" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
+        <p style="font-size:.7rem;color:var(--text-muted);margin-top:.2rem;font-style:italic;">Suggested: <span id="admin-flex-reminder-suggestion">See you next week!</span></p>
+      </div>
+
+      <button type="button" id="admin-flex-reminder-send" class="btn btn-primary" style="width:100%;">&#128232; Send Reminder &rarr;</button>
+      <div id="admin-flex-reminder-status" style="margin-top:.5rem;font-size:.78rem;color:var(--text-muted);"></div>
     </div>
 
     <p class="admin-hint">Ctrl+Shift+A to toggle &#183; Ctrl+Shift+N to notify waitlists</p>
@@ -5624,6 +5652,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   };
 
+  // Day-Before reminder button \u2014 staggered to avoid rate limiting
   document.getElementById('admin-reminder-btn').addEventListener('click', function(){
     getData(function(data){
       var confirmed=[];
@@ -5637,44 +5666,112 @@ document.addEventListener('DOMContentLoaded', function() {
           confirmed.push({ rec:rec, sess:{ label:'Mat & Chat', arrival:'11:25 AM', start:'11:30 AM' }, tmpl:MC_TMPL_REMINDER });
         });
         if (!confirmed.length){ alert('No confirmed registrants to remind.'); return; }
-        if (!confirm('Send reminder emails to '+confirmed.length+' confirmed participant(s)?')) return;
+        if (!confirm('Send DAY-BEFORE reminder emails to '+confirmed.length+' confirmed participant(s)?')) return;
         if (typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
-        var sent=0;
-        confirmed.forEach(function(item){
+
+        var btn = document.getElementById('admin-reminder-btn');
+        btn.disabled = true;
+        var originalText = btn.textContent;
+        btn.textContent = 'Sending... (0/' + confirmed.length + ')';
+
+        var sent=0, failed=0, failedRecipients=[];
+        function sendNext(i){
+          if (i >= confirmed.length){
+            btn.disabled = false;
+            btn.textContent = originalText;
+            var msg = '\u2705 Sent ' + sent + ' reminder(s).';
+            if (failed > 0) {
+              msg += '\n\n\u26a0\ufe0f ' + failed + ' failed: ' + failedRecipients.join(', ');
+              msg += '\n\nCheck EmailJS Dashboard \u2192 History for details.';
+            }
+            alert(msg);
+            return;
+          }
+          var item = confirmed[i];
           emailjs.send(EMAILJS_SERVICE_ID, item.tmpl || TMPL_REMINDER, {
-            from_name:    item.rec.name,
-            to_email:     item.rec.email,
+            from_name:     item.rec.name,
+            to_email:      item.rec.email,
             session_label: item.sess.label,
             arrival_time:  item.sess.arrival,
             class_time:    item.sess.start
-          }).then(function(){ sent++; if(sent===confirmed.length) alert('\u2705 Reminder sent to '+sent+' participant(s)!'); })
-            .catch(function(){ alert('\u26a0\ufe0f Some reminders may not have sent.'); });
-        });
-      }); // end getMCData
-    }); // end getData
+          }).then(function(){
+            sent++;
+          }).catch(function(err){
+            failed++;
+            failedRecipients.push(item.rec.email);
+            console.error('[day-before reminder] FAILED for ' + item.rec.email, err);
+          }).then(function(){
+            btn.textContent = 'Sending... (' + (sent + failed) + '/' + confirmed.length + ')';
+            setTimeout(function(){ sendNext(i + 1); }, 600);
+          });
+        }
+        sendNext(0);
+      });
+    });
   });
 
-  // 1-Week Pilates reminder button (manual trigger)
-  // Staggered 600ms apart to avoid EmailJS rate-limiting on free tier.
-  document.getElementById('admin-week-reminder-btn').addEventListener('click', function(){
-    getData(function(data){
-      var confirmed = [];
-      SESSIONS.forEach(function(sess){
-        data[sess.id].filter(function(r){ return r.type === 'confirmed'; }).forEach(function(rec){
-          confirmed.push({ rec: rec, sess: sess });
+  // FLEXIBLE REMINDER SYSTEM
+  // Auto-generates personable greetings based on days out, or accepts custom override.
+  function getReminderPhrasing(days) {
+    if (days >= 21) {
+      var weeks = Math.round(days / 7);
+      return { greeting: 'See you in ' + weeks + ' weeks!', days_text: weeks + ' weeks away' };
+    }
+    if (days >= 14) return { greeting: 'See you in two weeks!', days_text: 'two weeks away' };
+    if (days >= 7)  return { greeting: 'See you next week!', days_text: days === 7 ? 'one week away' : days + ' days away' };
+    if (days >= 4)  return { greeting: 'Almost there!', days_text: days + ' days away' };
+    if (days >= 2)  return { greeting: 'Just a few days to go!', days_text: days + ' days away' };
+    if (days === 1) return { greeting: 'See you tomorrow!', days_text: 'tomorrow' };
+    if (days === 0) return { greeting: 'See you today!', days_text: 'today' };
+    return { greeting: 'A reminder for you', days_text: days + ' days away' };
+  }
+
+  // Update the suggestion preview as user types days
+  document.getElementById('admin-flex-reminder-days').addEventListener('input', function(){
+    var days = parseInt(this.value, 10) || 0;
+    document.getElementById('admin-flex-reminder-suggestion').textContent = getReminderPhrasing(days).greeting;
+  });
+
+  document.getElementById('admin-flex-reminder-send').addEventListener('click', function(){
+    var eventType = document.getElementById('admin-flex-reminder-event').value;
+    var days = parseInt(document.getElementById('admin-flex-reminder-days').value, 10) || 0;
+    var customGreeting = document.getElementById('admin-flex-reminder-greeting').value.trim();
+    var phrasing = getReminderPhrasing(days);
+    var greeting = customGreeting || phrasing.greeting;
+    var daysText = phrasing.days_text;
+
+    function gatherConfirmed(callback){
+      if (eventType === 'pilates') {
+        getData(function(data){
+          var confirmed = [];
+          SESSIONS.forEach(function(sess){
+            data[sess.id].filter(function(r){ return r.type === 'confirmed'; }).forEach(function(rec){
+              confirmed.push({ rec: rec, sess: sess });
+            });
+          });
+          callback(confirmed);
         });
-      });
-      if (!confirmed.length) { alert('No confirmed Pilates registrants to remind.'); return; }
-      if (!confirm('Send 1-WEEK reminder emails to ' + confirmed.length + ' confirmed Pilates participant(s)?')) return;
+      } else if (eventType === 'matchat') {
+        getMCData(function(data){
+          var confirmed = (data.mc1 || []).filter(function(r){ return r.type === 'confirmed'; }).map(function(rec){
+            return { rec: rec, sess: { label: 'Mat & Chat', arrival: '11:25 AM', start: '11:30 AM' } };
+          });
+          callback(confirmed);
+        });
+      } else { callback([]); }
+    }
+
+    gatherConfirmed(function(confirmed){
+      if (!confirmed.length) { alert('No confirmed registrants for this event.'); return; }
+      if (!confirm('Send reminder to ' + confirmed.length + ' confirmed participant(s)?\n\nGreeting: "' + greeting + '"\nTiming: "' + daysText + '"')) return;
       if (typeof emailjs === 'undefined') { alert('EmailJS not loaded.'); return; }
 
-      var btn = document.getElementById('admin-week-reminder-btn');
+      var btn = document.getElementById('admin-flex-reminder-send');
       btn.disabled = true;
       var originalText = btn.textContent;
       btn.textContent = 'Sending... (0/' + confirmed.length + ')';
 
       var sent = 0, failed = 0, failedRecipients = [];
-
       function sendNext(i){
         if (i >= confirmed.length){
           btn.disabled = false;
@@ -5682,7 +5779,7 @@ document.addEventListener('DOMContentLoaded', function() {
           var msg = '✅ Sent ' + sent + ' reminder(s).';
           if (failed > 0) {
             msg += '\n\n⚠️ ' + failed + ' failed: ' + failedRecipients.join(', ');
-            msg += '\n\nCheck EmailJS Dashboard → History for details, or click again to retry the failed ones.';
+            msg += '\n\nCheck EmailJS Dashboard → History for details.';
           }
           alert(msg);
           return;
@@ -5693,16 +5790,17 @@ document.addEventListener('DOMContentLoaded', function() {
           to_email:      item.rec.email,
           session_label: item.sess.label,
           arrival_time:  item.sess.arrival,
-          class_time:    item.sess.start
+          class_time:    item.sess.start,
+          greeting:      greeting,
+          days_text:     daysText
         }).then(function(){
           sent++;
         }).catch(function(err){
           failed++;
           failedRecipients.push(item.rec.email);
-          console.error('[1-week reminder] FAILED for ' + item.rec.email, err);
+          console.error('[flex reminder] FAILED for ' + item.rec.email, err);
         }).then(function(){
           btn.textContent = 'Sending... (' + (sent + failed) + '/' + confirmed.length + ')';
-          // 600ms delay between sends to respect EmailJS rate limits
           setTimeout(function(){ sendNext(i + 1); }, 600);
         });
       }
