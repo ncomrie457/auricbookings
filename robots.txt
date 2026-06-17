@@ -1,0 +1,8 @@
+# robots.txt for book.auricmovement.com
+# Auric Movement — Pilates events in NYC
+
+User-agent: *
+Allow: /
+
+# Sitemap location for search engines
+Sitemap: https://book.auricmovement.com/sitemap.xml

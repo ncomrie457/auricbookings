@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.sitemaps.org/schemas/sitemap-image/0.9">
+
+  <!-- Main booking page (homepage) -->
+  <url>
+    <loc>https://book.auricmovement.com/</loc>
+    <lastmod>2026-06-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://book.auricmovement.com/flyer.jpg</image:loc>
+      <image:title>Pilates x Niara — June 19, 2026</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://book.auricmovement.com/flyer2.jpg</image:loc>
+      <image:title>Mat &amp; Chat — August 1, 2026</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://book.auricmovement.com/hero.jpg</image:loc>
+      <image:title>Auric Movement — Pilates events in NYC</image:title>
+    </image:image>
+  </url>
+
+  <!-- Juneteenth event link-preview page -->
+  <url>
+    <loc>https://book.auricmovement.com/juneteenth/</loc>
+    <lastmod>2026-06-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Mat & Chat event link-preview page -->
+  <url>
+    <loc>https://book.auricmovement.com/matchat/</loc>
+    <lastmod>2026-06-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Standalone waiver page (if it lives in the same repo) -->
+  <url>
+    <loc>https://book.auricmovement.com/waiver.html</loc>
+    <lastmod>2026-06-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+</urlset>

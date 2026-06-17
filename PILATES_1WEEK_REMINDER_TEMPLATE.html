@@ -1,0 +1,201 @@
+<!--
+  ════════════════════════════════════════════════════════════
+   Pilates — Flexible Reminder Email Template
+   ────────────────────────────────────────────────────────────
+   COPY THIS ENTIRE FILE (Cmd+A → Cmd+C) and paste into:
+     EmailJS Dashboard → Email Templates → your template →
+     Switch to HTML view → paste → Save.
+
+   IMPORTANT — Also update these EmailJS template settings:
+     • Subject:  ✦ {{greeting}}
+     • The variables {{greeting}} and {{days_text}} are NEW.
+       They get auto-filled by the admin panel based on how
+       many days out the event is.
+
+   EmailJS template variables used:
+     {{from_name}}      — Customer's name
+     {{to_email}}       — Their email (used as send-to)
+     {{session_label}}  — e.g., "Session 2 (2:00 PM)"
+     {{arrival_time}}   — e.g., "2:00 PM"
+     {{class_time}}     — e.g., "2:05 PM"
+     {{greeting}}       — e.g., "See you next week!" or "See you tomorrow!"
+     {{days_text}}      — e.g., "one week away" or "tomorrow"
+
+   REQUIRED IMAGES (already uploaded to your site):
+     • logo-am-gold-192.png
+     • location.png
+  ════════════════════════════════════════════════════════════
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>See you next week — Auric Movement</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f5f0e8;font-family:Georgia, 'Times New Roman', serif;color:#2c2420;">
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f0e8;padding:32px 16px;">
+  <tr>
+    <td align="center">
+
+      <!-- Outer container -->
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#fdfbf7;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(176,120,64,0.08);max-width:600px;width:100%;">
+
+        <!-- Header band — AM logo + brand name -->
+        <tr>
+          <td align="center" style="background-color:#5A3A1A;padding:36px 24px 28px;">
+            <img src="https://book.auricmovement.com/logo-am-gold-192.png" alt="" width="56" height="48" style="display:block;border:0;outline:none;margin-bottom:12px;">
+            <div style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:22px;color:#d4a370;letter-spacing:2px;">Auric Movement</div>
+            <div style="font-family:Georgia, serif;font-size:10px;color:#c8956c;letter-spacing:3px;text-transform:uppercase;margin-top:6px;">Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect</div>
+          </td>
+        </tr>
+
+        <!-- Eyebrow + Greeting -->
+        <tr>
+          <td style="padding:36px 40px 8px;">
+            <div style="font-family:Georgia, serif;font-size:10px;color:#9a6535;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">A Reminder</div>
+            <h1 style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:28px;line-height:1.2;color:#5A3A1A;margin:0 0 12px 0;font-weight:500;">
+              {{greeting}}
+            </h1>
+            <p style="font-family:Georgia, serif;font-size:15px;line-height:1.7;color:#2c2420;margin:0 0 20px 0;">
+              You&rsquo;re signed up for <strong>Pilates x Niara &mdash; {{session_label}}</strong> on Friday, June 19th &mdash; <em>{{days_text}}</em>.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Location & Entry image -->
+        <tr>
+          <td style="padding:0 40px 24px;" align="center">
+            <img src="https://book.auricmovement.com/location.png" alt="Location and entry — The Space Pilates Studio, 36 West 20th Street, 2nd Floor. Enter code #3539 to get in." width="520" style="display:block;width:100%;max-width:520px;height:auto;border:0;outline:none;border-radius:10px;">
+          </td>
+        </tr>
+
+        <!-- Session details box -->
+        <tr>
+          <td style="padding:0 40px 24px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border-left:3px solid #b07840;border-radius:0 8px 8px 0;">
+              <tr>
+                <td style="padding:18px 22px;">
+                  <div style="font-family:Georgia, serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">Session Details</div>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td style="padding:4px 0;font-family:Georgia, serif;font-size:14px;color:#3d322a;width:110px;"><strong>Arrival:</strong></td>
+                      <td style="padding:4px 0;font-family:Georgia, serif;font-size:14px;color:#3d322a;">{{arrival_time}}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:4px 0;font-family:Georgia, serif;font-size:14px;color:#3d322a;"><strong>Class starts:</strong></td>
+                      <td style="padding:4px 0;font-family:Georgia, serif;font-size:14px;color:#3d322a;">{{class_time}}</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Studio Waiver reminder box -->
+        <tr>
+          <td style="padding:0 40px 24px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fef9e7;border:1px solid #f0dca0;border-radius:8px;">
+              <tr>
+                <td style="padding:18px 22px;">
+                  <div style="font-family:Georgia, serif;font-size:10px;color:#7a6320;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">&#128203; Studio Waiver Required</div>
+                  <p style="font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.6;margin:0 0 12px 0;">
+                    As per The Space Pilates Studio&rsquo;s policy, all participants must also sign the studio&rsquo;s own waiver before class. If you haven&rsquo;t already, please complete it now.
+                  </p>
+                  <a href="https://app.waiversign.com/e/5dea878fd3241f001981567e/doc/5dea8941d3241f001981582c?event=none" style="display:inline-block;background-color:#5A3A1A;color:#ffffff;font-family:Georgia, serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:10px 20px;border-radius:6px;">Sign the Studio Waiver &rarr;</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- What to bring -->
+        <tr>
+          <td style="padding:0 40px 24px;">
+            <h2 style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:20px;color:#5A3A1A;margin:0 0 12px 0;font-weight:500;">What to bring</h2>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td style="padding:5px 0;font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.6;">&bull;&nbsp;&nbsp;Comfortable, fitted clothes (avoid loose tops on the reformer)</td></tr>
+              <tr><td style="padding:5px 0;font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.6;">&bull;&nbsp;&nbsp;Grippy socks</td></tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- A few things to know -->
+        <tr>
+          <td style="padding:0 40px 32px;">
+            <h2 style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:20px;color:#5A3A1A;margin:0 0 12px 0;font-weight:500;">A few things to know</h2>
+            <p style="font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0 0 12px 0;">
+              <strong>Private space, shared building.</strong> We&rsquo;re practicing in a private studio within a shared space. Out of respect for the other tenants and members, please keep photography limited to inside our studio &mdash; not in the building&rsquo;s common areas.
+            </p>
+            <p style="font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0 0 0 0;">
+              <strong>Please travel light.</strong> We&rsquo;ll be giving out complimentary gift bags as a thank-you, so you&rsquo;ll have something to carry on the way out.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Donor thank you -->
+        <tr>
+          <td style="padding:0 40px 32px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fdf5f4;border:1px solid #f0d4d0;border-radius:8px;">
+              <tr>
+                <td style="padding:20px 24px;" align="center">
+                  <div style="font-family:Georgia, serif;font-size:10px;color:#9a6535;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">&#127873; With Gratitude</div>
+                  <p style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:18px;line-height:1.55;color:#5A3A1A;margin:0 0 8px 0;">
+                    Hosted by <strong style="font-weight:600;">Auric Movement</strong>
+                  </p>
+                  <p style="font-family:Georgia, serif;font-size:14px;line-height:1.7;color:#3d322a;margin:0;">
+                    With thanks to our donors &mdash;<br>
+                    <strong>LMNT</strong> &middot; <strong>Costco</strong> &middot; <strong>4AM</strong> &middot; <strong>Lemon Water</strong><br>
+                    for their generous contributions.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Closing message -->
+        <tr>
+          <td style="padding:0 40px 32px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #e8e0d5;padding-top:24px;">
+              <tr>
+                <td align="center" style="padding:8px 0;">
+                  <p style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:18px;color:#5A3A1A;line-height:1.5;margin:0 0 6px 0;">
+                    I&rsquo;m really excited and looking forward to seeing everyone on Friday.
+                  </p>
+                  <p style="font-family:Georgia, serif;font-size:13px;color:#7a6e63;letter-spacing:1px;text-transform:uppercase;margin:8px 0 0 0;">
+                    &mdash; Niara
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background-color:#5A3A1A;padding:28px 40px;text-align:center;">
+            <div style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:16px;color:#d4a370;margin-bottom:6px;">Auric Movement</div>
+            <div style="font-family:Georgia, serif;font-size:12px;color:#c8956c;line-height:1.6;">
+              Pilates events in NYC, hosted with intention.<br>
+              <a href="mailto:auricmovement@outlook.com" style="color:#d4a370;text-decoration:none;">auricmovement@outlook.com</a>
+              <span style="color:#7a5a3a;"> &middot; </span>
+              <a href="https://book.auricmovement.com" style="color:#d4a370;text-decoration:none;">book.auricmovement.com</a>
+            </div>
+            <div style="font-family:Georgia, serif;font-size:10px;color:#c8956c;letter-spacing:2px;margin-top:14px;text-transform:uppercase;">
+              &#10022; Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect &#10022;
+            </div>
+          </td>
+        </tr>
+
+      </table>
+      <!-- /Outer container -->
+
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>
