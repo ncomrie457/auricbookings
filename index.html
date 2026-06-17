@@ -5833,18 +5833,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Pilates sessions
             csv += '=== Pilates x Niara (June 19) ===\n';
-            csv += 'Name,Email,Session,Arrival,Type,Waitlist Position,Time\n';
+            csv += 'Name,Email,Session,Arrival,Type,Waitlist Position,Waiver Signed,Time\n';
             SESSIONS.forEach(function(sess){
               (data[sess.id] || []).forEach(function(rec){
-                csv += [csvEscape(rec.name), csvEscape(rec.email), csvEscape(sess.label), csvEscape(sess.arrival), csvEscape(rec.type), csvEscape(rec.wlPosition||''), csvEscape(rec.time)].join(',') + '\n';
+                var waiverSigned = (rec.signature && String(rec.signature).trim().length > 0) ? 'Yes' : 'No';
+                csv += [csvEscape(rec.name), csvEscape(rec.email), csvEscape(sess.label), csvEscape(sess.arrival), csvEscape(rec.type), csvEscape(rec.wlPosition||''), csvEscape(waiverSigned), csvEscape(rec.time)].join(',') + '\n';
               });
             });
 
             // Mat & Chat
             csv += '\n=== Mat & Chat (Aug 1) ===\n';
-            csv += 'Name,Email,Type,Waitlist Position,Pair Booking,Friend Name,Friend Email,Notes for Instructor,Time\n';
+            csv += 'Name,Email,Type,Waitlist Position,Waiver Signed,Pair Booking,Friend Name,Friend Email,Notes for Instructor,Time\n';
             (mcData.mc1 || []).forEach(function(rec){
-              csv += [csvEscape(rec.name), csvEscape(rec.email), csvEscape(rec.type), csvEscape(rec.wlPosition||''), csvEscape(rec.isPair?'Yes ($55)':'No ($30)'), csvEscape(rec.friendName||''), csvEscape(rec.friendEmail||''), csvEscape(rec.notes||''), csvEscape(rec.time)].join(',') + '\n';
+              var waiverSigned = (rec.signature && String(rec.signature).trim().length > 0) ? 'Yes' : 'No';
+              csv += [csvEscape(rec.name), csvEscape(rec.email), csvEscape(rec.type), csvEscape(rec.wlPosition||''), csvEscape(waiverSigned), csvEscape(rec.isPair?'Yes ($55)':'No ($30)'), csvEscape(rec.friendName||''), csvEscape(rec.friendEmail||''), csvEscape(rec.notes||''), csvEscape(rec.time)].join(',') + '\n';
             });
 
             // Corporate Inquiries
