@@ -2351,11 +2351,11 @@
       <span class="bq-topnav-name">Auric Movement</span>
     </a>
     <nav class="bq-topnav-links" aria-label="Primary">
+      <a href="#tab-about" data-nav-tab="btn-about">About</a>
       <a href="#tab-events" data-nav-tab="btn-events">
         <span class="bq-nav-long">Upcoming Events</span>
         <span class="bq-nav-short">Events</span>
       </a>
-      <a href="#tab-about" data-nav-tab="btn-about">About</a>
       <a href="#tab-past" data-nav-tab="btn-past">
         <span class="bq-nav-long">Past Events</span>
         <span class="bq-nav-short">Past</span>
@@ -2381,8 +2381,8 @@
 </section>
 
 <nav class="tabs-nav bq-tabs" role="tablist" aria-label="Navigation">
-  <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-events" id="btn-events">Upcoming Events</button>
   <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-about" id="btn-about">About</button>
+  <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-events" id="btn-events">Upcoming Events</button>
   <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-past" id="btn-past">Past Events</button>
   <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-faq" id="btn-faq">FAQ</button>
   <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-corporate" id="btn-corporate">Corporate Event Inquiries</button>
@@ -6783,7 +6783,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function showAllPanels(activeId) {
-    var allPanels = ['tab-home','tab-events','tab-current','tab-matchat','tab-coming','tab-past','tab-faq','tab-corporate'];
+    var allPanels = ['tab-home','tab-events','tab-current','tab-matchat','tab-coming','tab-about','tab-past','tab-faq','tab-corporate'];
     allPanels.forEach(function(id){
       var el = document.getElementById(id);
       if (!el) return;
@@ -6950,7 +6950,7 @@ document.addEventListener('DOMContentLoaded', function() {
       btn.classList.add('active');
       btn.setAttribute('aria-selected','true');
       var target = btn.getAttribute('aria-controls');
-      var allPanels = ['tab-home','tab-events','tab-current','tab-matchat','tab-coming','tab-past','tab-faq','tab-corporate'];
+      var allPanels = ['tab-home','tab-events','tab-current','tab-matchat','tab-coming','tab-about','tab-past','tab-faq','tab-corporate'];
       allPanels.forEach(function(id){
         var el = document.getElementById(id);
         if (!el) return;
@@ -6994,7 +6994,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function switchTab(tabId) {
     document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
-    var allPanels = ['tab-home','tab-events','tab-current','tab-matchat','tab-coming','tab-past','tab-faq','tab-corporate'];
+    var allPanels = ['tab-home','tab-events','tab-current','tab-matchat','tab-coming','tab-about','tab-past','tab-faq','tab-corporate'];
     allPanels.forEach(function(id){
       var el = document.getElementById(id);
       if (el) el.classList.toggle('active', id === tabId);
