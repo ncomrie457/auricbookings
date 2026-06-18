@@ -2529,21 +2529,41 @@
          About Niara — founder bio
     ──────────────────────────────────────────────────────── -->
     <section class="bq-about" id="bq-about" aria-labelledby="bq-about-title" style="margin-top:4rem;padding:3.5rem 1.5rem;background:linear-gradient(180deg, transparent 0%, #faf5ee 30%, #faf5ee 70%, transparent 100%);">
-      <div style="max-width:780px;margin:0 auto;">
-        <div class="bq-section-head" style="text-align:center;margin-bottom:2rem;">
+      <div style="max-width:1080px;margin:0 auto;">
+        <div class="bq-section-head" style="text-align:center;margin-bottom:2.5rem;">
           <div class="bq-section-eyebrow">Meet the Founder</div>
           <h2 class="bq-section-title" id="bq-about-title">About <em>Niara</em></h2>
         </div>
-        <div style="font-family:Georgia, 'Times New Roman', serif;font-size:1.05rem;line-height:1.85;color:#2c2420;text-align:left;max-width:680px;margin:0 auto;">
-          <p style="margin:0 0 1.25rem;">I created <strong>Auric Movement</strong> to build a community where we move with intention, laugh together, and show up for ourselves. Pilates has been my greatest teacher &mdash; it&rsquo;s shown me that strength isn&rsquo;t about things getting easier; it&rsquo;s about continuing to grow even when the challenge stays the same. And it&rsquo;s taught me to be kind to myself through every movement.</p>
-          <p style="margin:0 0 1.25rem;">As a Pilates instructor, I believe in creating intimate spaces where you can truly connect with your body and mind. Every class is an opportunity to <em>align</em> yourself, <em>unwind</em> from the noise, <em>recharge</em> your energy, <em>intend</em> your next chapter, and <em>reconnect</em> with who you are.</p>
-          <p style="margin:0 0 1.5rem;">I&rsquo;m here to inspire you to move with purpose, build strength with grace, and remember that every shake, every breath, every moment on the mat is part of your journey.</p>
-        </div>
-        <div style="text-align:center;margin-top:2rem;">
-          <span style="font-family:'Cormorant Garamond', serif;font-style:italic;font-size:1.3rem;color:var(--brown);">&mdash; Niara</span>
-          <div style="font-family:'Jost',sans-serif;font-size:.72rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-text);margin-top:.5rem;">Founder &middot; Comprehensive Pilates Instructor</div>
+        <div class="bq-about-grid" style="display:grid;grid-template-columns:1fr 1.4fr;gap:3rem;align-items:center;">
+          <div class="bq-about-photo" style="position:relative;">
+            <img src="niara-portrait.jpeg" alt="Niara, founder of Auric Movement, in a Pilates studio" style="width:100%;height:auto;display:block;border-radius:8px;box-shadow:0 12px 32px rgba(90,58,26,.12);object-fit:cover;aspect-ratio:4/5;">
+            <div aria-hidden="true" style="position:absolute;inset:-12px;border:1px solid var(--gold);border-radius:10px;pointer-events:none;opacity:.4;"></div>
+          </div>
+          <div>
+            <div style="font-family:Georgia, 'Times New Roman', serif;font-size:1.02rem;line-height:1.85;color:#2c2420;text-align:left;">
+              <p style="margin:0 0 1.25rem;">I created <strong>Auric Movement</strong> to build a community where we move with intention, laugh together, and show up for ourselves. Pilates has been my greatest teacher &mdash; it&rsquo;s shown me that strength isn&rsquo;t about things getting easier; it&rsquo;s about continuing to grow even when the challenge stays the same. And it&rsquo;s taught me to be kind to myself through every movement.</p>
+              <p style="margin:0 0 1.25rem;">As a Pilates instructor, I believe in creating intimate spaces where you can truly connect with your body and mind. Every class is an opportunity to <em>align</em> yourself, <em>unwind</em> from the noise, <em>recharge</em> your energy, <em>intend</em> your next chapter, and <em>reconnect</em> with who you are.</p>
+              <p style="margin:0 0 1.5rem;">I&rsquo;m here to inspire you to move with purpose, build strength with grace, and remember that every shake, every breath, every moment on the mat is part of your journey.</p>
+            </div>
+            <div style="margin-top:1.5rem;">
+              <span style="font-family:'Cormorant Garamond', serif;font-style:italic;font-size:1.4rem;color:var(--brown);">&mdash; Niara</span>
+              <div style="font-family:'Jost',sans-serif;font-size:.72rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-text);margin-top:.4rem;">Founder &middot; Comprehensive Pilates Instructor</div>
+            </div>
+          </div>
         </div>
       </div>
+      <style>
+        @media (max-width: 720px) {
+          .bq-about-grid {
+            grid-template-columns: 1fr !important;
+            gap: 2rem !important;
+          }
+          .bq-about-photo {
+            max-width: 360px;
+            margin: 0 auto;
+          }
+        }
+      </style>
     </section>
 
     <!-- ────────────────────────────────────────────────────────
