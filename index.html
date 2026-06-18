@@ -2288,24 +2288,24 @@
        on small screens.
        ════════════════════════════════════════════════════════════ */
     @media (max-width: 640px) {
-      /* Hero — shorter, more compact, with breathing room on either side of the mast */
+      /* Hero — tighter on phones, background image ends at the rule */
       .bq-hero {
-        min-height: 58vh;
-        padding: 2.75rem 1.5rem 2.25rem;
+        min-height: auto;
+        padding: 2.25rem 1.5rem .9rem;
       }
       .bq-hero-inner { padding: 0 .25rem; }
-      .bq-eyebrow { margin-bottom: 1.1rem !important; }
+      .bq-eyebrow { margin-bottom: .9rem !important; }
       .bq-mast {
         font-size: clamp(1.5rem, 7vw, 2.2rem) !important;
         letter-spacing: .08em !important;
-        margin: 0 0 .85rem !important;
+        margin: 0 0 .7rem !important;
       }
       .bq-tagline {
-        margin: 0 auto .9rem !important;
+        margin: 0 auto .7rem !important;
         font-size: 1.05rem !important;
         line-height: 1.5 !important;
       }
-      .bq-hero-rule { margin: 0 auto 1.25rem !important; width: 48px !important; }
+      .bq-hero-rule { margin: 0 auto 0 !important; width: 48px !important; }
 
       /* Manifesto — less dramatic vertical space on phones */
       .bq-manifesto-track {
@@ -2355,6 +2355,7 @@
         <span class="bq-nav-long">Upcoming Events</span>
         <span class="bq-nav-short">Events</span>
       </a>
+      <a href="#tab-about" data-nav-tab="btn-about">About</a>
       <a href="#tab-past" data-nav-tab="btn-past">
         <span class="bq-nav-long">Past Events</span>
         <span class="bq-nav-short">Past</span>
@@ -2381,6 +2382,7 @@
 
 <nav class="tabs-nav bq-tabs" role="tablist" aria-label="Navigation">
   <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-events" id="btn-events">Upcoming Events</button>
+  <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-about" id="btn-about">About</button>
   <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-past" id="btn-past">Past Events</button>
   <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-faq" id="btn-faq">FAQ</button>
   <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-corporate" id="btn-corporate">Corporate Event Inquiries</button>
@@ -2528,63 +2530,34 @@
     <!-- ────────────────────────────────────────────────────────
          About Niara — founder bio
     ──────────────────────────────────────────────────────── -->
-    <section class="bq-about" id="bq-about" aria-labelledby="bq-about-title" style="margin-top:4rem;padding:3.5rem 1.5rem;background:linear-gradient(180deg, transparent 0%, #faf5ee 30%, #faf5ee 70%, transparent 100%);">
-      <div style="max-width:1080px;margin:0 auto;">
-        <div class="bq-section-head" style="text-align:center;margin-bottom:2.5rem;">
-          <div class="bq-section-eyebrow">Meet the Founder</div>
-          <h2 class="bq-section-title" id="bq-about-title">About <em>Niara</em></h2>
-        </div>
-        <div class="bq-about-grid" style="display:grid;grid-template-columns:1fr 1.4fr;gap:3rem;align-items:center;">
-          <div class="bq-about-photo" style="position:relative;">
+    <section class="bq-about-teaser" id="bq-about-teaser" aria-labelledby="bq-about-teaser-title" style="margin-top:4rem;padding:3rem 1.5rem;background:linear-gradient(180deg, transparent 0%, #faf5ee 30%, #faf5ee 70%, transparent 100%);">
+      <div style="max-width:900px;margin:0 auto;">
+        <div class="bq-about-teaser-grid" style="display:grid;grid-template-columns:1fr 1.5fr;gap:2.5rem;align-items:center;">
+          <div class="bq-about-teaser-photo" style="position:relative;">
             <img src="niara-portrait.jpg" alt="Niara, founder of Auric Movement, in a Pilates studio" style="width:100%;height:auto;display:block;border-radius:8px;box-shadow:0 12px 32px rgba(90,58,26,.12);object-fit:cover;aspect-ratio:4/5;">
-            <div aria-hidden="true" style="position:absolute;inset:-12px;border:1px solid var(--gold);border-radius:10px;pointer-events:none;opacity:.4;"></div>
+            <div aria-hidden="true" style="position:absolute;inset:-10px;border:1px solid var(--gold);border-radius:10px;pointer-events:none;opacity:.4;"></div>
           </div>
           <div>
-            <div style="font-family:Georgia, 'Times New Roman', serif;font-size:1.02rem;line-height:1.85;color:#2c2420;text-align:left;">
-              <p style="margin:0 0 1.25rem;">I created <strong>Auric Movement</strong> to build a community where we move with intention, laugh together, and show up for ourselves. Pilates has been my greatest teacher &mdash; it&rsquo;s shown me that strength isn&rsquo;t about things getting easier; it&rsquo;s about continuing to grow even when the challenge stays the same. And it&rsquo;s taught me to be kind to myself through every movement.</p>
-              <p style="margin:0 0 1.25rem;">As a Pilates instructor, I believe in creating intimate spaces where you can truly connect with your body and mind. Every class is an opportunity to <em>align</em> yourself, <em>unwind</em> from the noise, <em>recharge</em> your energy, <em>intend</em> your next chapter, and <em>reconnect</em> with who you are.</p>
-              <p style="margin:0 0 1.5rem;">I&rsquo;m here to inspire you to move with purpose, build strength with grace, and remember that every shake, every breath, every moment on the mat is part of your journey.</p>
-            </div>
-            <div style="margin-top:1.5rem;">
-              <span style="font-family:'Cormorant Garamond', serif;font-style:italic;font-size:1.4rem;color:var(--brown);">&mdash; Niara</span>
-              <div style="font-family:'Jost',sans-serif;font-size:.72rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-text);margin-top:.4rem;">Founder &middot; Certified Instructor</div>
-            </div>
+            <div class="bq-section-eyebrow" style="margin-bottom:.5rem;">Meet the Founder</div>
+            <h2 class="bq-section-title" id="bq-about-teaser-title" style="margin:0 0 1rem;">About <em>Niara</em></h2>
+            <p style="font-family:Georgia, 'Times New Roman', serif;font-size:1rem;line-height:1.8;color:#2c2420;margin:0 0 1.25rem;">I created <strong>Auric Movement</strong> to build a community where we move with intention, laugh together, and show up for ourselves. I started this because Pilates gave me something I wanted to share &mdash; a space where you can be fully yourself, move intentionally, laugh, and feel that deep work.</p>
+            <a href="#tab-about" data-nav-tab="btn-about" class="bq-tab-next-link" style="display:inline-flex;align-items:center;gap:.5rem;font-family:'Jost',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-text);text-decoration:none;border-bottom:1px solid var(--gold);padding-bottom:.25rem;">Read My Full Story <span aria-hidden="true">&rarr;</span></a>
           </div>
         </div>
       </div>
       <style>
         @media (max-width: 720px) {
-          .bq-about-grid {
+          .bq-about-teaser-grid {
             grid-template-columns: 1fr !important;
             gap: 2rem !important;
+            text-align: center;
           }
-          .bq-about-photo {
-            max-width: 360px;
+          .bq-about-teaser-photo {
+            max-width: 320px;
             margin: 0 auto;
           }
         }
       </style>
-    </section>
-
-    <!-- ────────────────────────────────────────────────────────
-         A Note from Niara — editorial founder's letter
-    ──────────────────────────────────────────────────────── -->
-    <section class="bq-note" id="bq-note" aria-labelledby="bq-note-title">
-      <div class="bq-note-inner">
-        <div class="bq-note-rule" aria-hidden="true"></div>
-        <div class="bq-note-eyebrow">A Note</div>
-        <h2 id="bq-note-title" class="sr-only">A note from Niara</h2>
-        <div class="bq-note-body">
-          <p class="bq-note-quote"><em>Every body is different. Be kind to yourself.</em></p>
-          <p>You showed up today &mdash; and that is enough.</p>
-          <p>Your intention doesn&rsquo;t need to be big. It can simply be to pause, to unwind, to recharge, to align, and to reconnect with yourself.</p>
-          <p class="bq-note-close"><em>Let your practice be guided by intention.</em></p>
-        </div>
-        <div class="bq-note-signature">
-          <span class="bq-note-dash" aria-hidden="true">&mdash;</span>
-          <span class="bq-note-name">Auric Movement</span>
-        </div>
-      </div>
     </section>
 
     <!-- Join Auric Mvmt — inline subscribe -->
@@ -2613,6 +2586,78 @@
   </nav>
 
 </div><!-- /tab-home -->
+
+<!-- TAB: About Niara — full founder story -->
+<div id="tab-about" class="tab-panel" role="tabpanel" aria-labelledby="btn-about">
+  <div class="bq-events-wrap">
+
+    <div class="bq-section-head" style="text-align:center;">
+      <div class="bq-section-eyebrow">Meet the Founder</div>
+      <h2 class="bq-section-title">About <em>Niara</em></h2>
+    </div>
+
+    <!-- Full bio with photo -->
+    <section class="bq-about-full" style="margin-top:2.5rem;">
+      <div style="max-width:1080px;margin:0 auto;">
+        <div class="bq-about-full-grid" style="display:grid;grid-template-columns:1fr 1.4fr;gap:3.5rem;align-items:start;">
+          <div class="bq-about-full-photo" style="position:relative;">
+            <img src="niara-portrait.jpg" alt="Niara, founder of Auric Movement" style="width:100%;height:auto;display:block;border-radius:8px;box-shadow:0 12px 32px rgba(90,58,26,.12);object-fit:cover;aspect-ratio:4/5;">
+            <div aria-hidden="true" style="position:absolute;inset:-12px;border:1px solid var(--gold);border-radius:10px;pointer-events:none;opacity:.4;"></div>
+          </div>
+          <div>
+            <div style="font-family:Georgia, 'Times New Roman', serif;font-size:1.05rem;line-height:1.85;color:#2c2420;">
+              <p style="margin:0 0 1.25rem;">I created <strong>Auric Movement</strong> to build a community where we move with intention, laugh together, and show up for ourselves. I started this because Pilates gave me something I wanted to share: a space where you can be fully yourself, move intentionally, laugh, and feel that deep work&mdash;those shakes that mean you&rsquo;re really engaging.</p>
+              <p style="margin:0 0 1.25rem;">Pilates has been my greatest teacher. It&rsquo;s shown me that strength isn&rsquo;t about things getting easier; it&rsquo;s about continuing to grow even when the challenge stays the same. And it&rsquo;s taught me to be kind to myself through every movement.</p>
+              <p style="margin:0 0 1.25rem;">As a Pilates instructor, I believe in creating intimate spaces where you can truly connect with your body and mind. Every class and event is an opportunity to <em>align</em> yourself, <em>unwind</em> from the noise, <em>recharge</em> your energy, <em>intend</em> your next chapter, and <em>reconnect</em> with who you are. Most of you know that feeling from our classes, and I&rsquo;m excited to explore it together&mdash;because this is just the beginning. There will be many more.</p>
+              <p style="margin:0 0 1.5rem;">I&rsquo;m here to inspire you to move with purpose, build strength with grace, and remember that every shake, every breath, every moment on the mat is part of your journey. Plus, let&rsquo;s be honest &mdash; who doesn&rsquo;t love a goodie bag?</p>
+            </div>
+            <div style="margin-top:1.75rem;">
+              <span style="font-family:'Cormorant Garamond', serif;font-style:italic;font-size:1.4rem;color:var(--brown);">&mdash; Niara</span>
+              <div style="font-family:'Jost',sans-serif;font-size:.72rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-text);margin-top:.4rem;">Founder &middot; Certified Instructor</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <style>
+        @media (max-width: 720px) {
+          .bq-about-full-grid {
+            grid-template-columns: 1fr !important;
+            gap: 2rem !important;
+          }
+          .bq-about-full-photo {
+            max-width: 360px;
+            margin: 0 auto;
+          }
+        }
+      </style>
+    </section>
+
+    <!-- A Note from Niara — manifesto / intentional close -->
+    <section class="bq-note" id="bq-note" aria-labelledby="bq-note-title" style="margin-top:5rem;">
+      <div class="bq-note-inner">
+        <div class="bq-note-rule" aria-hidden="true"></div>
+        <div class="bq-note-eyebrow">A Note</div>
+        <h2 id="bq-note-title" class="sr-only">A note from Niara</h2>
+        <div class="bq-note-body">
+          <p class="bq-note-quote"><em>Every body is different. Be kind to yourself.</em></p>
+          <p>You showed up today &mdash; and that is enough.</p>
+          <p>Your intention doesn&rsquo;t need to be big. It can simply be to pause, to unwind, to recharge, to align, and to reconnect with yourself.</p>
+          <p class="bq-note-close"><em>Let your practice be guided by intention.</em></p>
+        </div>
+        <div class="bq-note-signature">
+          <span class="bq-note-dash" aria-hidden="true">&mdash;</span>
+          <span class="bq-note-name">Auric Movement</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <nav class="bq-tab-next" aria-label="Continue to next section">
+    <div class="bq-tab-next-rule" aria-hidden="true"></div>
+    <a class="bq-tab-next-link" href="#tab-events" data-nav-tab="btn-events">Upcoming Events <span aria-hidden="true">&rarr;</span></a>
+  </nav>
+</div><!-- /tab-about -->
 
 <!-- TAB: Past Events -->
 <div id="tab-past" class="tab-panel" role="tabpanel" aria-labelledby="btn-past">
