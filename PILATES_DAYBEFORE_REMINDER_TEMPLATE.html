@@ -1,25 +1,21 @@
 <!--
   ════════════════════════════════════════════════════════════
-   Pilates — Flexible Reminder Email Template
+   Pilates — Day-Before Reminder Email Template
    ────────────────────────────────────────────────────────────
    COPY THIS ENTIRE FILE (Cmd+A → Cmd+C) and paste into:
-     EmailJS Dashboard → Email Templates → your template →
+     EmailJS Dashboard → Email Templates → template_1fol3sf →
      Switch to HTML view → paste → Save.
 
    IMPORTANT — Also update these EmailJS template settings:
-     • Subject:  ✦ {{greeting}}
-     • The variables {{greeting}} and {{days_text}} are NEW.
-       They get auto-filled by the admin panel based on how
-       many days out the event is.
+     • Subject:  ✦ See you tomorrow at {{session_label}}
+     • From Name: Auric Movement : Pilates x Niara
 
    EmailJS template variables used:
      {{from_name}}      — Customer's name
      {{to_email}}       — Their email (used as send-to)
-     {{session_label}}  — e.g., "Session 2 (2:00 PM)"
+     {{session_label}}  — e.g., "Session 2"
      {{arrival_time}}   — e.g., "2:00 PM"
      {{class_time}}     — e.g., "2:05 PM"
-     {{greeting}}       — e.g., "See you next week!" or "See you tomorrow!"
-     {{days_text}}      — e.g., "one week away" or "tomorrow"
 
    REQUIRED IMAGES (already uploaded to your site):
      • logo-am-gold-192.png
@@ -31,7 +27,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>See you next week — Auric Movement</title>
+  <title>See you tomorrow — Auric Movement</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f5f0e8;font-family:Georgia, 'Times New Roman', serif;color:#2c2420;">
 
@@ -54,13 +50,36 @@
         <!-- Eyebrow + Greeting -->
         <tr>
           <td style="padding:36px 40px 8px;">
-            <div style="font-family:Georgia, serif;font-size:10px;color:#9a6535;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">A Reminder</div>
+            <div style="font-family:Georgia, serif;font-size:10px;color:#a8281f;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">&#10022; Tomorrow</div>
             <h1 style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:28px;line-height:1.2;color:#5A3A1A;margin:0 0 12px 0;font-weight:500;">
-              {{greeting}}
+              See you tomorrow, <span style="font-weight:600;">{{from_name}}</span>.
             </h1>
             <p style="font-family:Georgia, serif;font-size:15px;line-height:1.7;color:#2c2420;margin:0 0 20px 0;">
-              You&rsquo;re signed up for <strong>Pilates x Niara &mdash; {{session_label}}</strong> on Friday, June 19th &mdash; <em>{{days_text}}</em>.
+              Quick final reminder &mdash; <strong>Pilates x Niara &mdash; {{session_label}}</strong> is tomorrow. Here&rsquo;s everything you need.
             </p>
+          </td>
+        </tr>
+
+        <!-- Session details box (prominent) -->
+        <tr>
+          <td style="padding:0 40px 24px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border:2px solid #b07840;border-radius:10px;">
+              <tr>
+                <td style="padding:20px 24px;">
+                  <div style="font-family:Georgia, serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:12px;">When &amp; Where</div>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td style="padding:5px 0;font-family:Georgia, serif;font-size:15px;color:#3d322a;width:130px;"><strong>Arrival:</strong></td>
+                      <td style="padding:5px 0;font-family:Georgia, serif;font-size:15px;color:#3d322a;"><strong>{{arrival_time}}</strong></td>
+                    </tr>
+                    <tr>
+                      <td style="padding:5px 0;font-family:Georgia, serif;font-size:15px;color:#3d322a;"><strong>Class starts:</strong></td>
+                      <td style="padding:5px 0;font-family:Georgia, serif;font-size:15px;color:#3d322a;"><strong>{{class_time}}</strong></td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
           </td>
         </tr>
 
@@ -71,53 +90,32 @@
           </td>
         </tr>
 
-        <!-- Session details box -->
+        <!-- Studio Waiver — URGENT for day-before -->
         <tr>
           <td style="padding:0 40px 24px;">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border-left:3px solid #b07840;border-radius:0 8px 8px 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fdecea;border:1px solid #f5c6c2;border-radius:8px;">
               <tr>
                 <td style="padding:18px 22px;">
-                  <div style="font-family:Georgia, serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">Session Details</div>
-                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-                    <tr>
-                      <td style="padding:4px 0;font-family:Georgia, serif;font-size:14px;color:#3d322a;width:110px;"><strong>Arrival:</strong></td>
-                      <td style="padding:4px 0;font-family:Georgia, serif;font-size:14px;color:#3d322a;">{{arrival_time}}</td>
-                    </tr>
-                    <tr>
-                      <td style="padding:4px 0;font-family:Georgia, serif;font-size:14px;color:#3d322a;"><strong>Class starts:</strong></td>
-                      <td style="padding:4px 0;font-family:Georgia, serif;font-size:14px;color:#3d322a;">{{class_time}}</td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-
-        <!-- Studio Waiver reminder box -->
-        <tr>
-          <td style="padding:0 40px 24px;">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fef9e7;border:1px solid #f0dca0;border-radius:8px;">
-              <tr>
-                <td style="padding:18px 22px;">
-                  <div style="font-family:Georgia, serif;font-size:10px;color:#7a6320;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">&#128203; Studio Waiver Required</div>
+                  <div style="font-family:Georgia, serif;font-size:10px;color:#a8281f;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">&#9888; Studio Waiver &mdash; Do This Tonight</div>
                   <p style="font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.6;margin:0 0 12px 0;">
-                    As per The Space Pilates Studio&rsquo;s policy, all participants must also sign the studio&rsquo;s own waiver before class. If you haven&rsquo;t already, please complete it now.
+                    If you haven&rsquo;t signed The Space Pilates Studio&rsquo;s own waiver yet, please complete it <strong>before tomorrow</strong>. It only takes a minute.
                   </p>
-                  <a href="https://app.waiversign.com/e/5dea878fd3241f001981567e/doc/5dea8941d3241f001981582c?event=none" style="display:inline-block;background-color:#5A3A1A;color:#ffffff;font-family:Georgia, serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:10px 20px;border-radius:6px;">Sign the Studio Waiver &rarr;</a>
+                  <a href="https://app.waiversign.com/e/5dea878fd3241f001981567e/doc/5dea8941d3241f001981582c?event=none" style="display:inline-block;background-color:#a8281f;color:#ffffff;font-family:Georgia, serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:10px 20px;border-radius:6px;">Sign the Studio Waiver &rarr;</a>
                 </td>
               </tr>
             </table>
           </td>
         </tr>
 
-        <!-- What to bring -->
+        <!-- Final checklist: What to bring -->
         <tr>
           <td style="padding:0 40px 24px;">
-            <h2 style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:20px;color:#5A3A1A;margin:0 0 12px 0;font-weight:500;">What to bring</h2>
+            <h2 style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:20px;color:#5A3A1A;margin:0 0 12px 0;font-weight:500;">Final checklist</h2>
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-              <tr><td style="padding:5px 0;font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.6;">&bull;&nbsp;&nbsp;Comfortable, fitted clothes (avoid loose tops on the reformer)</td></tr>
-              <tr><td style="padding:5px 0;font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.6;">&bull;&nbsp;&nbsp;Grippy socks</td></tr>
+              <tr><td style="padding:5px 0;font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.6;">&#10003;&nbsp;&nbsp;Comfortable, fitted clothes (avoid loose tops on the reformer)</td></tr>
+              <tr><td style="padding:5px 0;font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.6;">&#10003;&nbsp;&nbsp;Grippy socks</td></tr>
+              <tr><td style="padding:5px 0;font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.6;">&#10003;&nbsp;&nbsp;Arrive by <strong>{{arrival_time}}</strong> &mdash; class starts promptly at <strong>{{class_time}}</strong></td></tr>
+              <tr><td style="padding:5px 0;font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.6;">&#10003;&nbsp;&nbsp;Press <strong>#3539</strong> at the building entry to get in</td></tr>
             </table>
           </td>
         </tr>
@@ -127,9 +125,12 @@
           <td style="padding:0 40px 32px;">
             <h2 style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:20px;color:#5A3A1A;margin:0 0 12px 0;font-weight:500;">A few things to know</h2>
             <p style="font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0 0 12px 0;">
-              <strong>Private space, shared building.</strong> We&rsquo;re practicing in a private studio within a shared space. Out of respect for the other tenants and members, please keep photography limited to inside our studio &mdash; not in the building&rsquo;s common areas.
+              <strong>Private space, shared building.</strong> We&rsquo;re practicing in a private studio within a shared space. Out of respect for the other tenants and members, please keep voices low in the hallways and common areas, and keep photography limited to inside our studio.
             </p>
-            <p style="font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0 0 0 0;">
+            <p style="font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0 0 12px 0;">
+              <strong>Photo &amp; video.</strong> Photos and short videos will be captured during the event for promotional and editorial use across the Auric Movement website, social channels, and marketing materials &mdash; you consented to this when you signed your waiver. If you&rsquo;d prefer to step out of frame for any portion of the class, just let me know when you arrive and I&rsquo;ll make sure to accommodate.
+            </p>
+            <p style="font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0;">
               <strong>Please travel light.</strong> We&rsquo;ll be giving out complimentary gift bags as a thank-you, so you&rsquo;ll have something to carry on the way out.
             </p>
           </td>
@@ -163,7 +164,7 @@
               <tr>
                 <td align="center" style="padding:8px 0;">
                   <p style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:18px;color:#5A3A1A;line-height:1.5;margin:0 0 6px 0;">
-                    I&rsquo;m really excited and looking forward to seeing everyone on Friday.
+                    Can&rsquo;t wait to move with you tomorrow.
                   </p>
                   <p style="font-family:Georgia, serif;font-size:13px;color:#7a6e63;letter-spacing:1px;text-transform:uppercase;margin:8px 0 0 0;">
                     &mdash; Niara
