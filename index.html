@@ -4141,8 +4141,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var wrapper = document.createElement('div');
     wrapper.className = 'bq-video-wrap';
 
-    // Check if this event had donors (from cached event_config)
-    var cfg = _eventConfigCache[p.eventId];
+    // Check if this event had donors (from cached event_config).
+    // Guard: this render can run during init BEFORE _eventConfigCache is
+    // initialized further down, so fall back to an empty object. Donor lines
+    // fill in on the later re-render once the config loads.
+    var cfg = (typeof _eventConfigCache !== 'undefined' && _eventConfigCache) ? _eventConfigCache[p.eventId] : null;
     var donorList = cfg && cfg.donors ? cfg.donors.split(',').map(function(s){ return s.trim(); }).filter(function(s){ return s.length; }) : [];
     var donorLine = '';
     if (donorList.length) {
