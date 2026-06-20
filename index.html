@@ -2264,6 +2264,187 @@
       line-height: 1.3;
     }
 
+    /* ──────────────────────────────────────────────────────
+       Photo Gallery Card (replaces "Recap Coming Soon" when photos exist)
+       ────────────────────────────────────────────────────── */
+    .bq-photo-gallery-cover {
+      position: relative;
+      display: block;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      padding: 0;
+      margin: 0;
+      border: 0;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      background: var(--cream-mid);
+    }
+    .bq-photo-gallery-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      transition: transform .6s ease, filter .3s ease;
+    }
+    .bq-photo-gallery-cover:hover img,
+    .bq-photo-gallery-cover:focus-visible img {
+      transform: scale(1.04);
+      filter: brightness(.92);
+    }
+    .bq-photo-gallery-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      background: linear-gradient(180deg, rgba(44,26,14,.18) 0%, rgba(44,26,14,.55) 100%);
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
+      transition: background .3s ease;
+    }
+    .bq-photo-gallery-cover:hover .bq-photo-gallery-overlay,
+    .bq-photo-gallery-cover:focus-visible .bq-photo-gallery-overlay {
+      background: linear-gradient(180deg, rgba(44,26,14,.28) 0%, rgba(44,26,14,.65) 100%);
+    }
+    .bq-photo-gallery-mark {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      color: var(--gold-light);
+      opacity: .95;
+    }
+    .bq-photo-gallery-count {
+      font-family: 'Jost', sans-serif;
+      font-size: .68rem;
+      font-weight: 500;
+      letter-spacing: .32em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+    .bq-photo-gallery-cta {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: rgba(255,255,255,.95);
+      margin-top: .25rem;
+    }
+
+    /* ──────────────────────────────────────────────────────
+       Photo Lightbox Modal — full screen photo viewer
+       ────────────────────────────────────────────────────── */
+    #photo-lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(20,12,4,0.94);
+      backdrop-filter: blur(10px) saturate(120%);
+      -webkit-backdrop-filter: blur(10px) saturate(120%);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      animation: lightboxFadeIn .3s ease;
+    }
+    #photo-lightbox.hidden { display: none; }
+    @keyframes lightboxFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    .lightbox-image-wrap {
+      position: relative;
+      max-width: 92vw;
+      max-height: 84vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .lightbox-image {
+      max-width: 92vw;
+      max-height: 84vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      border-radius: 6px;
+      box-shadow: 0 24px 64px rgba(0,0,0,.5);
+    }
+    .lightbox-close, .lightbox-prev, .lightbox-next {
+      position: absolute;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.20);
+      color: #fff;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .2s ease, transform .2s ease;
+      font-family: 'Jost', sans-serif;
+      z-index: 10001;
+      padding: 0;
+    }
+    .lightbox-close:hover, .lightbox-prev:hover, .lightbox-next:hover,
+    .lightbox-close:focus-visible, .lightbox-prev:focus-visible, .lightbox-next:focus-visible {
+      background: rgba(255,255,255,.25);
+      transform: scale(1.05);
+      outline: none;
+    }
+    .lightbox-close {
+      top: 1.5rem;
+      right: 1.5rem;
+      font-size: 1.4rem;
+      font-weight: 300;
+    }
+    .lightbox-prev, .lightbox-next {
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.8rem;
+      font-weight: 300;
+    }
+    .lightbox-prev { left: 1.5rem; }
+    .lightbox-next { right: 1.5rem; }
+    .lightbox-prev:hover, .lightbox-next:hover {
+      transform: translateY(-50%) scale(1.05);
+    }
+    .lightbox-caption {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #fff;
+      text-align: center;
+      pointer-events: none;
+    }
+    .lightbox-counter {
+      font-family: 'Jost', sans-serif;
+      font-size: .72rem;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.7);
+      display: block;
+      margin-bottom: .25rem;
+    }
+    .lightbox-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.15rem;
+      color: rgba(255,255,255,.95);
+    }
+    @media (max-width: 640px) {
+      #photo-lightbox { padding: 1rem; }
+      .lightbox-close { top: .75rem; right: .75rem; width: 40px; height: 40px; }
+      .lightbox-prev { left: .5rem; width: 40px; height: 40px; }
+      .lightbox-next { right: .5rem; width: 40px; height: 40px; }
+      .lightbox-caption { bottom: .75rem; }
+      .lightbox-title { font-size: 1rem; }
+    }
+
     /* Stripe Buy Button: keep within container on all screens */
     stripe-buy-button {
       display: block;
@@ -2542,7 +2723,7 @@
           <div>
             <div class="bq-section-eyebrow" style="margin-bottom:.5rem;">Meet the Founder</div>
             <h2 class="bq-section-title" id="bq-about-teaser-title" style="margin:0 0 1rem;">About <em>Niara</em></h2>
-            <p style="font-family:Georgia, 'Times New Roman', serif;font-size:1rem;line-height:1.8;color:#2c2420;margin:0 0 1.25rem;">I created <strong>Auric Movement</strong> to build a community where we move with intention, laugh together, and show up for ourselves. I started this because Pilates gave me something I wanted to share &mdash; a space where you can be fully yourself, move intentionally, laugh, and feel that deep work.</p>
+            <p style="font-family:Georgia, 'Times New Roman', serif;font-size:1rem;line-height:1.8;color:#2c2420;margin:0 0 1.25rem;">I created <strong>Auric Movement</strong> to build a community where we move with intention and show up for ourselves. I started this because Pilates gave me something I wanted to share &mdash; a space where you can be fully yourself, and leave class thinking: <em>I was challenged. I laughed. I got to experience the Pilates shakes. I moved. I felt welcomed. And maybe &mdash; I made some friends.</em></p>
             <a href="#tab-about" data-nav-tab="btn-about" class="bq-tab-next-link" style="display:inline-flex;align-items:center;gap:.5rem;font-family:'Jost',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-text);text-decoration:none;border-bottom:1px solid var(--gold);padding-bottom:.25rem;">Read My Full Story <span aria-hidden="true">&rarr;</span></a>
           </div>
         </div>
@@ -2608,7 +2789,7 @@
           </div>
           <div>
             <div style="font-family:Georgia, 'Times New Roman', serif;font-size:1.05rem;line-height:1.85;color:#2c2420;">
-              <p style="margin:0 0 1.25rem;">I created <strong>Auric Movement</strong> to build a community where we move with intention, laugh together, and show up for ourselves. I started this because Pilates gave me something I wanted to share: a space where you can be fully yourself, move intentionally, laugh, and feel that deep work&mdash;those shakes that mean you&rsquo;re really engaging.</p>
+              <p style="margin:0 0 1.25rem;">I created <strong>Auric Movement</strong> to build a community where we move with intention and show up for ourselves. I started this because Pilates gave me something I wanted to share: a space where you can be fully yourself, move intentionally and joyfully, and leave class thinking: <em>I was challenged. I laughed. I got to experience the Pilates shakes. I moved. I felt welcomed. And maybe &mdash; I made some friends.</em></p>
               <p style="margin:0 0 1.25rem;">Pilates has been my greatest teacher. It&rsquo;s shown me that strength isn&rsquo;t about things getting easier; it&rsquo;s about continuing to grow even when the challenge stays the same. And it&rsquo;s taught me to be kind to myself through every movement.</p>
               <p style="margin:0 0 1.25rem;">As a Pilates instructor, I believe in creating intimate spaces where you can truly connect with your body and mind. Every class and event is an opportunity to <em>align</em> yourself, <em>unwind</em> from the noise, <em>recharge</em> your energy, <em>intend</em> your next chapter, and <em>reconnect</em> with who you are. Most of you know that feeling from our classes, and I&rsquo;m excited to explore it together&mdash;because this is just the beginning. There will be many more.</p>
               <p style="margin:0 0 1.5rem;">I&rsquo;m here to inspire you to move with purpose, build strength with grace, and remember that every shake, every breath, every moment on the mat is part of your journey. Plus, let&rsquo;s be honest &mdash; who doesn&rsquo;t love a goodie bag?</p>
@@ -3823,6 +4004,32 @@ document.addEventListener('DOMContentLoaded', function() {
     // },
   ];
 
+  // ────────────────────────────────────────────────────────
+  // PHOTO GALLERIES — past events with photos (no video yet)
+  // Replaces the "Recap Coming Soon" placeholder with a clickable
+  // photo gallery card. Click → opens lightbox slideshow.
+  //
+  // To add photos for an event:
+  //   1. Save photos to the auricwaiver folder with the listed filenames
+  //   2. Upload them to GitHub along with index.html
+  //   3. Photos display in the order listed (first = cover)
+  // ────────────────────────────────────────────────────────
+  var EVENT_PHOTO_GALLERIES = {
+    pilates: {
+      title:  'Juneteenth Recap',
+      date:   'June 19, 2026',
+      cover:  'juneteenth-01.jpg',
+      photos: [
+        'juneteenth-01.jpg',  // Group photo with Pilates x Niara banner + LMNT (cover)
+        'juneteenth-02.jpg',  // Group photo with flowers
+        'juneteenth-03.jpg',  // Indoor group of three smiling
+        'juneteenth-04.jpg',  // Goodie bag spread
+        'juneteenth-05.jpg'   // Setup selfie outside
+        // Add more later — just append filenames like 'juneteenth-06.jpg' here
+      ]
+    }
+  };
+
   // Lite-embed renderer: shows poster image with play button.
   // Click swaps poster for a YouTube iframe (keeps page fast).
   function renderVideoCard(v){
@@ -3944,21 +4151,44 @@ document.addEventListener('DOMContentLoaded', function() {
         '</div>';
     }
 
+    // If a photo gallery exists for this event, show a clickable gallery card
+    var gallery = EVENT_PHOTO_GALLERIES[p.eventId];
     var card = document.createElement('div');
-    card.className = 'bq-video-card bq-recap-pending';
-    card.innerHTML =
-      '<div class="bq-video-poster">' +
-        '<img src="' + p.flyer + '" alt="">' +
-        '<div class="bq-recap-overlay">' +
-          '<span class="bq-recap-mark" aria-hidden="true">✦</span>' +
-          '<span class="bq-recap-text">Recap Coming Soon</span>' +
-          '<span class="bq-recap-sub">A video from this event is on the way.</span>' +
+
+    if (gallery && gallery.photos && gallery.photos.length) {
+      card.className = 'bq-video-card bq-photo-gallery-card';
+      card.innerHTML =
+        '<button type="button" class="bq-photo-gallery-cover" data-gallery="' + p.eventId + '" aria-label="View ' + gallery.photos.length + ' photos from ' + (p.title || gallery.title) + '">' +
+          '<img src="' + gallery.cover + '" alt="Cover from ' + (p.title || gallery.title) + '">' +
+          '<div class="bq-photo-gallery-overlay">' +
+            '<span class="bq-photo-gallery-mark" aria-hidden="true">&#10022;</span>' +
+            '<span class="bq-photo-gallery-count">' + gallery.photos.length + ' Photos</span>' +
+            '<span class="bq-photo-gallery-cta">View Gallery &rarr;</span>' +
+          '</div>' +
+        '</button>' +
+        (p.date ? '<div class="bq-video-date">' + p.date + '</div>' : '') +
+        (p.title ? '<div class="bq-video-title">' + p.title + '</div>' : '') +
+        '<div class="bq-video-sub">' + gallery.photos.length + ' photos from the event.</div>' +
+        donorLine;
+
+      var coverBtn = card.querySelector('.bq-photo-gallery-cover');
+      coverBtn.addEventListener('click', function(){ openPhotoLightbox(p.eventId, 0); });
+    } else {
+      card.className = 'bq-video-card bq-recap-pending';
+      card.innerHTML =
+        '<div class="bq-video-poster">' +
+          '<img src="' + p.flyer + '" alt="">' +
+          '<div class="bq-recap-overlay">' +
+            '<span class="bq-recap-mark" aria-hidden="true">✦</span>' +
+            '<span class="bq-recap-text">Recap Coming Soon</span>' +
+            '<span class="bq-recap-sub">A video from this event is on the way.</span>' +
+          '</div>' +
         '</div>' +
-      '</div>' +
-      (p.date ? '<div class="bq-video-date">' + p.date + '</div>' : '') +
-      (p.title ? '<div class="bq-video-title">' + p.title + '</div>' : '') +
-      '<div class="bq-video-sub">Watch this space.</div>' +
-      donorLine;
+        (p.date ? '<div class="bq-video-date">' + p.date + '</div>' : '') +
+        (p.title ? '<div class="bq-video-title">' + p.title + '</div>' : '') +
+        '<div class="bq-video-sub">Watch this space.</div>' +
+        donorLine;
+    }
     wrapper.appendChild(card);
 
     if (p.flyer) {
@@ -7566,7 +7796,103 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   })();
 
+  // ──────────────────────────────────────────────────────
+  // Photo Lightbox — opens a fullscreen slideshow modal
+  // Used by past-event photo gallery cards
+  // ──────────────────────────────────────────────────────
+  var _photoLightboxState = { gallery: null, index: 0, previouslyFocused: null };
+
+  function openPhotoLightbox(galleryKey, startIndex){
+    var gallery = EVENT_PHOTO_GALLERIES[galleryKey];
+    if (!gallery || !gallery.photos || !gallery.photos.length) return;
+    _photoLightboxState.gallery = gallery;
+    _photoLightboxState.index = startIndex || 0;
+    _photoLightboxState.previouslyFocused = document.activeElement;
+    var lb = document.getElementById('photo-lightbox');
+    lb.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    _updatePhotoLightbox();
+    var closeBtn = lb.querySelector('.lightbox-close');
+    if (closeBtn) closeBtn.focus();
+    announce && announce('Photo gallery opened. Use arrow keys to navigate, escape to close.');
+  }
+
+  function closePhotoLightbox(){
+    var lb = document.getElementById('photo-lightbox');
+    if (!lb) return;
+    lb.classList.add('hidden');
+    document.body.style.overflow = '';
+    _photoLightboxState.gallery = null;
+    if (_photoLightboxState.previouslyFocused && _photoLightboxState.previouslyFocused.focus) {
+      _photoLightboxState.previouslyFocused.focus();
+    }
+  }
+
+  function nextPhoto(){
+    var g = _photoLightboxState.gallery;
+    if (!g) return;
+    _photoLightboxState.index = (_photoLightboxState.index + 1) % g.photos.length;
+    _updatePhotoLightbox();
+  }
+  function prevPhoto(){
+    var g = _photoLightboxState.gallery;
+    if (!g) return;
+    _photoLightboxState.index = (_photoLightboxState.index - 1 + g.photos.length) % g.photos.length;
+    _updatePhotoLightbox();
+  }
+  function _updatePhotoLightbox(){
+    var g = _photoLightboxState.gallery;
+    if (!g) return;
+    var img = document.querySelector('#photo-lightbox .lightbox-image');
+    var counter = document.querySelector('#photo-lightbox .lightbox-counter');
+    var title = document.querySelector('#photo-lightbox .lightbox-title');
+    if (img) {
+      img.src = g.photos[_photoLightboxState.index];
+      img.alt = (g.title || 'Photo') + ' — image ' + (_photoLightboxState.index + 1) + ' of ' + g.photos.length;
+    }
+    if (counter) counter.textContent = (_photoLightboxState.index + 1) + ' / ' + g.photos.length;
+    if (title) title.textContent = g.title || '';
+  }
+
+  // Wire up controls + keyboard support after DOM ready
+  (function setupPhotoLightbox(){
+    var lb = document.getElementById('photo-lightbox');
+    if (!lb) return;
+    var prev  = lb.querySelector('.lightbox-prev');
+    var next  = lb.querySelector('.lightbox-next');
+    var close = lb.querySelector('.lightbox-close');
+    if (prev)  prev.addEventListener('click', prevPhoto);
+    if (next)  next.addEventListener('click', nextPhoto);
+    if (close) close.addEventListener('click', closePhotoLightbox);
+    // Click on backdrop (but not on image/controls) closes
+    lb.addEventListener('click', function(e){
+      if (e.target === lb) closePhotoLightbox();
+    });
+    // Keyboard: Esc closes, arrows navigate
+    document.addEventListener('keydown', function(e){
+      if (!_photoLightboxState.gallery) return;
+      if (e.key === 'Escape') { e.preventDefault(); closePhotoLightbox(); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); nextPhoto(); }
+      else if (e.key === 'ArrowLeft')  { e.preventDefault(); prevPhoto(); }
+    });
+  })();
+
 }); // end DOMContentLoaded
 </script>
+
+<!-- Photo lightbox modal — appended at end of body so it overlays everything -->
+<div id="photo-lightbox" class="hidden" role="dialog" aria-modal="true" aria-label="Photo gallery">
+  <button type="button" class="lightbox-close" aria-label="Close gallery">&#10005;</button>
+  <button type="button" class="lightbox-prev" aria-label="Previous photo">&lsaquo;</button>
+  <button type="button" class="lightbox-next" aria-label="Next photo">&rsaquo;</button>
+  <div class="lightbox-image-wrap">
+    <img class="lightbox-image" src="" alt="">
+  </div>
+  <div class="lightbox-caption">
+    <span class="lightbox-counter">1 / 1</span>
+    <span class="lightbox-title"></span>
+  </div>
+</div>
+
 </body>
 </html>
