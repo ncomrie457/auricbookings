@@ -3677,7 +3677,7 @@
         <button type="button" id="admin-csv-btn" class="btn btn-secondary">&#128229; CSV</button>
         <button type="button" id="admin-notify-btn" class="btn btn-secondary">&#128227; Notify Waitlists</button>
         <button type="button" id="admin-blast-btn" class="btn btn-primary">&#128640; Blast Notify List</button>
-        <button type="button" id="admin-reminder-btn" class="btn btn-primary">&#128232; Send Day-Before Reminders</button>
+        <button type="button" id="admin-thankyou-btn" class="btn btn-primary">&#10022; Send Thank-You Emails</button>
         <button type="button" id="admin-clear-btn" class="btn btn-danger">&#128465; Clear All Data</button>
         <button type="button" id="admin-close-btn" class="btn btn-secondary">&#10005; Close</button>
       </div>
@@ -4310,8 +4310,8 @@ document.addEventListener('DOMContentLoaded', function() {
   var TMPL_TRANSFER   = 'template_ep23jwi'; // Pilates \u2014 Transfer Confirmation
   var TMPL_WL_OPEN    = 'template_upkcys7'; // Pilates \u2014 Waitlist Spot Opened
   var TMPL_ADMIN      = 'template_6qkcf8j'; // Admin Notification (shared)
-  var TMPL_REMINDER       = 'template_1fol3sf'; // Pilates \u2014 Day-Before Reminder
   var TMPL_REMINDER_WEEK  = 'template_rvzyaff'; // Pilates \u2014 1-Week Reminder (branded HTML version)
+  var TMPL_THANKYOU       = 'template_5ji2rj6'; // Pilates \u2014 Post-Event Thank You
   var TMPL_BLAST           = 'template_ncfk6or'; // Registration Open (shared)
   var TMPL_PAYMENT_CONFIRM = 'template_1lv10up'; // Pilates \u2014 Payment Confirmed
   var TMPL_PAYMENT_PENDING = 'template_kx1d3td'; // Pilates \u2014 Payment Pending
@@ -4319,7 +4319,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // Mat & Chat templates
   var MC_TMPL_PAYMENT_CONFIRM = 'template_7pqeshj';
   var MC_TMPL_PAYMENT_PENDING = 'template_ijswvs3';
-  var MC_TMPL_REMINDER        = 'template_g04yhqt';
   var MC_TMPL_BLAST           = 'template_ncfk6or';
   var MC_TMPL_FRIEND_INVITE   = 'template_5rk24rx';
 
@@ -6007,61 +6006,55 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   };
 
-  // Day-Before reminder button \u2014 staggered to avoid rate limiting
-  document.getElementById('admin-reminder-btn').addEventListener('click', function(){
+  // POST-EVENT THANK-YOU BLAST
+  // Sends the branded thank-you email to every confirmed Pilates attendee.
+  document.getElementById('admin-thankyou-btn').addEventListener('click', function(){
     getData(function(data){
       var confirmed=[];
       SESSIONS.forEach(function(sess){
         data[sess.id].filter(function(r){ return r.type==='confirmed'; }).forEach(function(rec){
-          confirmed.push({ rec:rec, sess:sess, tmpl:TMPL_REMINDER });
+          confirmed.push({ rec:rec, sess:sess });
         });
       });
-      getMCData(function(mcData2){
-        mcData2.mc1.filter(function(r){ return r.type==='confirmed'; }).forEach(function(rec){
-          confirmed.push({ rec:rec, sess:{ label:'Mat & Chat', arrival:'11:25 AM', start:'11:30 AM' }, tmpl:MC_TMPL_REMINDER });
-        });
-        if (!confirmed.length){ alert('No confirmed registrants to remind.'); return; }
-        if (!confirm('Send DAY-BEFORE reminder emails to '+confirmed.length+' confirmed participant(s)?')) return;
-        if (typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
+      if (!confirmed.length){ alert('No confirmed Pilates attendees to thank.'); return; }
+      if (!confirm('Send THANK-YOU emails to '+confirmed.length+' confirmed Pilates attendee(s)?')) return;
+      if (typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
 
-        var btn = document.getElementById('admin-reminder-btn');
-        btn.disabled = true;
-        var originalText = btn.textContent;
-        btn.textContent = 'Sending... (0/' + confirmed.length + ')';
+      var btn = document.getElementById('admin-thankyou-btn');
+      btn.disabled = true;
+      var originalText = btn.textContent;
+      btn.textContent = 'Sending... (0/' + confirmed.length + ')';
 
-        var sent=0, failed=0, failedRecipients=[];
-        function sendNext(i){
-          if (i >= confirmed.length){
-            btn.disabled = false;
-            btn.textContent = originalText;
-            var msg = '\u2705 Sent ' + sent + ' reminder(s).';
-            if (failed > 0) {
-              msg += '\n\n\u26a0\ufe0f ' + failed + ' failed: ' + failedRecipients.join(', ');
-              msg += '\n\nCheck EmailJS Dashboard \u2192 History for details.';
-            }
-            alert(msg);
-            return;
+      var sent=0, failed=0, failedRecipients=[];
+      function sendNext(i){
+        if (i >= confirmed.length){
+          btn.disabled = false;
+          btn.textContent = originalText;
+          var msg = '✅ Sent ' + sent + ' thank-you email(s).';
+          if (failed > 0) {
+            msg += '\n\n⚠️ ' + failed + ' failed: ' + failedRecipients.join(', ');
+            msg += '\n\nCheck EmailJS Dashboard → History for details.';
           }
-          var item = confirmed[i];
-          emailjs.send(EMAILJS_SERVICE_ID, item.tmpl || TMPL_REMINDER, {
-            from_name:     item.rec.name,
-            to_email:      item.rec.email,
-            session_label: item.sess.label,
-            arrival_time:  item.sess.arrival,
-            class_time:    item.sess.start
-          }).then(function(){
-            sent++;
-          }).catch(function(err){
-            failed++;
-            failedRecipients.push(item.rec.email);
-            console.error('[day-before reminder] FAILED for ' + item.rec.email, err);
-          }).then(function(){
-            btn.textContent = 'Sending... (' + (sent + failed) + '/' + confirmed.length + ')';
-            setTimeout(function(){ sendNext(i + 1); }, 600);
-          });
+          alert(msg);
+          return;
         }
-        sendNext(0);
-      });
+        var item = confirmed[i];
+        emailjs.send(EMAILJS_SERVICE_ID, TMPL_THANKYOU, {
+          from_name:     item.rec.name,
+          to_email:      item.rec.email,
+          session_label: item.sess.label
+        }).then(function(){
+          sent++;
+        }).catch(function(err){
+          failed++;
+          failedRecipients.push(item.rec.email);
+          console.error('[thank-you] FAILED for ' + item.rec.email, err);
+        }).then(function(){
+          btn.textContent = 'Sending... (' + (sent + failed) + '/' + confirmed.length + ')';
+          setTimeout(function(){ sendNext(i + 1); }, 600);
+        });
+      }
+      sendNext(0);
     });
   });
 
