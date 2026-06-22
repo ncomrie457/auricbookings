@@ -165,7 +165,7 @@
     "offers": {
       "@type": "Offer",
       "url": "https://book.auricmovement.com",
-      "price": "30.00",
+      "price": "35.00",
       "priceCurrency": "USD",
       "availability": "https://schema.org/LimitedAvailability",
       "validFrom": "2026-05-01T00:00:00-04:00"
@@ -2621,7 +2621,7 @@
         </div>
         <div class="bq-event-date">08.01.26 &#183; Mat &amp; Chat</div>
         <div class="bq-event-name">Mat <em>&amp;</em> Chat</div>
-        <div class="bq-event-sub">One session &#183; 11:30 AM &#183; $30</div>
+        <div class="bq-event-sub">One session &#183; 11:30 AM &#183; from $35</div>
         <div id="matchat-card-spots" class="bq-event-spots"></div>
         <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
       </button>
@@ -3416,7 +3416,7 @@
         <strong>The Fitin</strong>
         <p>297 7th Ave, Floor 3<br>New York, NY 10001</p>
         <strong>August 1st &#8212; One Session</strong>
-        <p>Arrival 11:25 AM &#183; Class starts 11:30 AM &#183; $30</p>
+        <p>Arrival 11:25 AM &#183; Class starts 11:30 AM &#183; from $35</p>
         <strong>Getting There</strong>
         <p>
           <strong>Subway:</strong> <span style="background:#EE352E;color:#fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;font-size:11px;font-weight:700;vertical-align:middle;">1</span> to 28th St<br>
@@ -3489,12 +3489,12 @@
             <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Event</span><strong>Mat &amp; Chat</strong></div>
             <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Date</span><strong>August 1st</strong></div>
             <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Booking</span><strong id="mc-pair-summary-label">Solo</strong></div>
-            <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Price</span><strong data-mc-price>$30</strong></div>
+            <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Price</span><strong data-mc-price>$35</strong></div>
           </div>
           <p style="font-size:.8rem;color:#3d322a;margin-bottom:.75rem;">&#128205; The Fitin &#183; 297 7th Ave, Floor 3 &#183; New York, NY 10001</p>
           <div style="border-top:1px solid var(--border);padding-top:.75rem;">
             <p style="font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--brown);margin-bottom:.3rem;">Complete Your Booking</p>
-            <p style="font-size:.8rem;color:#3d322a;line-height:1.55;margin:0;">Check all 19 clauses and sign your name below. Payment opens automatically after signing &#8212; <span data-mc-price>$30</span> to confirm your spot.</p>
+            <p style="font-size:.8rem;color:#3d322a;line-height:1.55;margin:0;">Check all 19 clauses and sign your name below. Payment opens automatically after signing &#8212; <span data-mc-price>$35</span> to confirm your spot.</p>
           </div>
         </div>
 
@@ -3621,10 +3621,10 @@
         <div id="mc-confirmed-payment-box" style="margin-top:1.25rem;padding:1rem 1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:10px;text-align:left;">
           <p style="font-size:.9rem;color:var(--brown);font-weight:700;margin-bottom:.5rem;">What happens next?</p>
           <p style="font-size:.85rem;color:#3d322a;line-height:1.75;">Our team will verify your payment and send you a confirmation email once your spot is secured. If you have not yet completed payment, click below &#8212; it will open Stripe in a new tab.</p>
-          <stripe-buy-button
+          <div id="mc-confirmed-pay-slot"><stripe-buy-button
             buy-button-id="buy_btn_1TW4cqCyx5PIptEioWrQzOT8"
             publishable-key="pk_live_51TSmNuCyx5PIptEi8SCgMFB3I7ECVFeAzDOwjj1ZLrVZX1scB6cH8wAjNor3SFilMwMuqo0aFsbsckjYLU33iSAp00tmUxBVlK"
-          ></stripe-buy-button>
+          ></stripe-buy-button></div>
           <p style="font-size:.75rem;color:var(--text-muted);margin-top:.5rem;">Already paid? You're all set &#8212; watch for your confirmation email.</p>
         </div>
         <div id="mc-confirmed-pair-note" style="display:none;margin-top:1.25rem;padding:1rem 1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:10px;text-align:left;">
@@ -4346,7 +4346,7 @@ document.addEventListener('DOMContentLoaded', function() {
     date: 'August 1st',
     arrival: '11:25 AM',
     start: '11:30 AM',
-    price: '$30',
+    price: '$35',
     stripeUrl: 'https://buy.stripe.com/eVq6oG20W3epagscIO9sk02',
     calendarUrl: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Mat+%26+Chat+%E2%9C%A6+Auric+Movement&dates=20260801T153000Z/20260801T163000Z&details=Auric+Movement+%7C+Mat+%26+Chat&location=The+Fitin%2C+297+7th+Ave%2C+Floor+3%2C+New+York%2C+NY+10001',
     venue: 'The Fitin, 297 7th Ave, Floor 3, New York, NY 10001'
@@ -4937,7 +4937,18 @@ document.addEventListener('DOMContentLoaded', function() {
   // Run on page load
   sweepExpiredSpots();
 
-  function showMCPaymentOverlay(buyBtnId, publishableKey, price, record) {
+  // Returns the payment widget HTML for a tier: an embedded Stripe Buy Button
+  // when the tier has a buyBtnId (Founding), or a styled payment-link button
+  // that opens the tier's Stripe Payment Link (General Admission).
+  function mcPaymentHtml(tier, publishableKey, price) {
+    if (tier && tier.buyBtnId) {
+      return '<stripe-buy-button buy-button-id="' + tier.buyBtnId + '" publishable-key="' + publishableKey + '"></stripe-buy-button>';
+    }
+    var url = (tier && tier.stripeUrl) || '#';
+    return '<a href="' + url + '" target="_blank" rel="noopener" class="btn btn-primary" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-size:1rem;padding:.85rem 1.75rem;">Complete Payment &mdash; $' + price + ' &rarr;</a>';
+  }
+
+  function showMCPaymentOverlay(tier, publishableKey, price, record) {
     var existing = document.getElementById('payment-countdown-overlay');
     if (existing) existing.remove();
     var overlay = document.createElement('div');
@@ -4950,7 +4961,7 @@ document.addEventListener('DOMContentLoaded', function() {
         '<p style="color:#3d322a;font-size:.95rem;margin-bottom:.4rem;">Your spot is held. Complete payment now to confirm.</p>' +
         '<p style="color:var(--text-muted);font-size:.8rem;margin-bottom:1rem;">Payment is required to confirm your spot.</p>' +
         '<div style="margin:1.25rem 0;display:flex;justify-content:center;">' +
-          '<stripe-buy-button buy-button-id="' + buyBtnId + '" publishable-key="' + publishableKey + '"></stripe-buy-button>' +
+          mcPaymentHtml(tier, publishableKey, price) +
         '</div>' +
         '<p style="color:var(--text-muted);font-size:.72rem;margin-bottom:.75rem;">Stripe opens in a new tab. Return here after paying.</p>' +
         '<button type="button" id="payment-cancel-mc" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.78rem;text-decoration:underline;font-family:\'Jost\',sans-serif;padding:.4rem;">Pay later (I\'ll lose my spot)</button>' +
@@ -6194,7 +6205,7 @@ document.addEventListener('DOMContentLoaded', function() {
             csv += 'Name,Email,Type,Waitlist Position,Waiver Signed,Pair Booking,Friend Name,Friend Email,Notes for Instructor,Time\n';
             (mcData.mc1 || []).forEach(function(rec){
               var waiverSigned = (rec.signature && String(rec.signature).trim().length > 0) ? 'Yes' : 'No';
-              csv += [csvEscape(rec.name), csvEscape(rec.email), csvEscape(rec.type), csvEscape(rec.wlPosition||''), csvEscape(waiverSigned), csvEscape(rec.isPair?'Yes ($55)':'No ($30)'), csvEscape(rec.friendName||''), csvEscape(rec.friendEmail||''), csvEscape(rec.notes||''), csvEscape(rec.time)].join(',') + '\n';
+              csv += [csvEscape(rec.name), csvEscape(rec.email), csvEscape(rec.type), csvEscape(rec.wlPosition||''), csvEscape(waiverSigned), csvEscape(rec.isPair?'Yes ($55)':'No ($35)'), csvEscape(rec.friendName||''), csvEscape(rec.friendEmail||''), csvEscape(rec.notes||''), csvEscape(rec.time)].join(',') + '\n';
             });
 
             // Corporate Inquiries
@@ -6245,11 +6256,37 @@ document.addEventListener('DOMContentLoaded', function() {
   // \u2500\u2500 Mat & Chat JS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
   var mcCheckedClauses = {}; var mcCheckedCount = 0; var mcLastSubmission = null;
-  var MC_SOLO_PRICE = 30;
+  var MC_SOLO_PRICE = 35;
   var MC_PAIR_PRICE = 55;
   var MC_PAIR_BUY_BTN_ID = 'buy_btn_1TXWWCCyx5PIptEi6LoOURN6';
   var MC_SOLO_BUY_BTN_ID = 'buy_btn_1TW4cqCyx5PIptEioWrQzOT8';
   var MC_STRIPE_PUBLISHABLE = 'pk_live_51TSmNuCyx5PIptEi8SCgMFB3I7ECVFeAzDOwjj1ZLrVZX1scB6cH8wAjNor3SFilMwMuqo0aFsbsckjYLU33iSAp00tmUxBVlK';
+
+  // ─── Tiered (early-bird) pricing ─────────────────────────────────────────
+  // First MC_FOUNDING_LIMIT spots = Founding Ticket ($35). After they sell out,
+  // the site auto-switches to General Admission ($45) for the remaining spots
+  // (up to MC_MAX_SPOTS total). The active tier is chosen by how many spots are
+  // already taken, so no one can grab the Founding rate once it's gone.
+  //
+  // STRIPE SETUP:
+  //   • FOUNDING uses your existing $35 button (buy_btn_1TW4cqCyx5PIptEioWrQzOT8).
+  //   • GENERAL needs a NEW $45 Stripe buy button + payment link — paste them below.
+  var MC_FOUNDING_LIMIT = 10;
+  var MC_TIERS = {
+    founding: { key:'founding', name:'Founding Ticket', price:35,
+                buyBtnId: MC_SOLO_BUY_BTN_ID,
+                stripeUrl:'https://buy.stripe.com/eVq6oG20W3epagscIO9sk02' },
+    general:  { key:'general',  name:'General Admission', price:45,
+                buyBtnId:'', // payment-link tier (no embedded buy button) — uses stripeUrl below
+                stripeUrl:'https://buy.stripe.com/eVqcN48pkbKV74g4ci9sk04' }
+  };
+  // Returns the active tier for a given number of confirmed spots, or null if sold out.
+  function mcTierFor(confirmedCount){
+    if (confirmedCount < MC_FOUNDING_LIMIT) return MC_TIERS.founding;
+    if (confirmedCount < MC_MAX_SPOTS)      return MC_TIERS.general;
+    return null;
+  }
+  var mcActiveTier = MC_TIERS.founding; // refreshed from live spot count in buildMCSpots()
 
   // Show/hide friend fields based on toggle
   document.getElementById('mc-pair-toggle').addEventListener('change', function(){
@@ -6324,22 +6361,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function buildMCSpots() {
     getMCData(function(data) {
-      var remaining = MC_MAX_SPOTS - mcConfirmedCount(data);
-      var isFull = remaining <= 0;
+      var taken = mcConfirmedCount(data);
+      var remaining = MC_MAX_SPOTS - taken;
+      mcActiveTier = mcTierFor(taken);
       var el = document.getElementById('mc-spots-display');
       if (!el) return;
-      if (isFull) {
-        el.innerHTML = '<span style="color:var(--red);font-weight:700;">This session is full \u2014 you can join the waitlist below.</span>';
-        document.getElementById('mc-join-waitlist-btn').classList.remove('hidden');
-        document.getElementById('mc-to-waiver-btn').classList.add('hidden');
-      } else if (remaining <= 5) {
-        el.innerHTML = '<span style="color:#9a6535;font-weight:600;">Only '+remaining+' spot'+(remaining===1?'':'s')+' left!</span>';
-        document.getElementById('mc-join-waitlist-btn').classList.add('hidden');
-        document.getElementById('mc-to-waiver-btn').classList.remove('hidden');
+      var waitBtn = document.getElementById('mc-join-waitlist-btn');
+      var waiverBtn = document.getElementById('mc-to-waiver-btn');
+      if (remaining <= 0 || !mcActiveTier) {
+        el.innerHTML = '<span style="color:var(--red);font-weight:700;">This session is full — you can join the waitlist below.</span>';
+        waitBtn.classList.remove('hidden');
+        waiverBtn.classList.add('hidden');
+        return;
+      }
+      waitBtn.classList.add('hidden');
+      waiverBtn.classList.remove('hidden');
+      var priceStr = '$' + mcActiveTier.price;
+      if (mcActiveTier.key === 'founding') {
+        var fLeft = MC_FOUNDING_LIMIT - taken;
+        el.innerHTML = '<span style="color:#9a6535;font-weight:700;">✦ ' + mcActiveTier.name + ' — ' + priceStr + '</span>'
+          + '<br><span style="color:#3d6b4c;font-weight:600;font-size:.92em;">Only ' + fLeft + ' of ' + MC_FOUNDING_LIMIT + ' founding spot' + (fLeft===1?'':'s') + ' left at this price</span>';
       } else {
-        el.innerHTML = '<span style="color:#3d6b4c;font-weight:600;">'+remaining+' spots available</span>';
-        document.getElementById('mc-join-waitlist-btn').classList.add('hidden');
-        document.getElementById('mc-to-waiver-btn').classList.remove('hidden');
+        el.innerHTML = '<span style="color:#9a6535;font-weight:700;">' + mcActiveTier.name + ' — ' + priceStr + '</span>'
+          + '<br><span style="color:#3d6b4c;font-weight:600;font-size:.92em;">' + remaining + ' spot' + (remaining===1?'':'s') + ' left</span>';
       }
     });
   }
@@ -6411,9 +6455,11 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('mc-waiver-name-display').textContent = name;
     document.getElementById('mc-waiver-name-stmt').textContent    = name;
 
-    // Update waiver step summary + Stripe button based on pair toggle
-    var price = isPair ? MC_PAIR_PRICE : MC_SOLO_PRICE;
-    var btnId = isPair ? MC_PAIR_BUY_BTN_ID : MC_SOLO_BUY_BTN_ID;
+    // Update waiver step summary + Stripe button based on the active price tier
+    // (Founding $35 until sold out, then General $45). Pair path kept for safety.
+    var tier  = mcActiveTier || MC_TIERS.founding;
+    var price = isPair ? MC_PAIR_PRICE : tier.price;
+    var btnId = isPair ? MC_PAIR_BUY_BTN_ID : tier.buyBtnId;
     var priceLabels = document.querySelectorAll('#mc-step-waiver [data-mc-price]');
     priceLabels.forEach(function(el){ el.textContent = '$' + price; });
     var pairLabel = document.getElementById('mc-pair-summary-label');
@@ -6426,10 +6472,14 @@ document.addEventListener('DOMContentLoaded', function() {
     var pairNote = document.getElementById('mc-confirmed-pair-note');
     if (confBox)  confBox.style.display  = '';
     if (pairNote) pairNote.style.display = 'none';
-    // Replace Stripe buttons with the right ID ($30 solo or $55 pair)
-    document.querySelectorAll('#mc-step-waiver stripe-buy-button, #mc-step-confirmed stripe-buy-button').forEach(function(el){
-      el.setAttribute('buy-button-id', btnId);
-    });
+    // Fill the confirmation-screen payment slot for the active tier:
+    // embedded Buy Button (Founding) or payment-link button (General).
+    var paySlot = document.getElementById('mc-confirmed-pay-slot');
+    if (paySlot) {
+      paySlot.innerHTML = isPair
+        ? '<stripe-buy-button buy-button-id="' + MC_PAIR_BUY_BTN_ID + '" publishable-key="' + MC_STRIPE_PUBLISHABLE + '"></stripe-buy-button>'
+        : mcPaymentHtml(tier, MC_STRIPE_PUBLISHABLE, price);
+    }
 
     buildMCClauses();
     mcShowStep('mc-step-waiver');
@@ -6541,10 +6591,14 @@ document.addEventListener('DOMContentLoaded', function() {
       var refundChk = document.getElementById('mc-refund-policy-agree');
       var refundAckTime = (refundChk && refundChk.checked) ? now.toLocaleString() : '';
       var ackLine = 'REFUND POLICY ACKNOWLEDGED: ' + refundAckTime + '\nText agreed to: ' + MC_REFUND_POLICY_TEXT;
+      // Record which price tier they bought (persisted in notes — no schema change
+      // needed; read back by the admin "Confirm Payment" receipt + CSV export).
+      var bookedTier = mcActiveTier || MC_TIERS.founding;
+      var ticketLine = 'TICKET: ' + bookedTier.name + ' ($' + bookedTier.price + ')';
       // Embed phone in notes so we don't require a schema change yet
       // (Future: when SMS reminders are deployed, migrate phone to its own column)
       var phoneLine = phone ? 'PHONE (for class reminders): ' + phone : '';
-      var notesWithAck = ackLine + (phoneLine ? '\n\n' + phoneLine : '') + (notes ? '\n\n' + notes : '');
+      var notesWithAck = ticketLine + '\n\n' + ackLine + (phoneLine ? '\n\n' + phoneLine : '') + (notes ? '\n\n' + notes : '');
 
       // ATOMIC BOOKING (race-condition-safe): single Postgres transaction
       // does the capacity check (handling pair = 2 spots) + insert. Even if
@@ -6573,7 +6627,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var row = res.data[0];
         var type  = row.out_type;
         var wlPos = row.out_wl_position;
-        var record={ name:name, email:email, phone:phone, signature:sig, session:'mc1', sessionLabel:'Mat & Chat', arrival:'11:25 AM', classStart:'11:30 AM', time:timeStr, timestamp:now.toISOString(), code:code, type:type, wlPosition:wlPos, clausesAgreed:19, notes:notesWithAck, isPair:isPair, friendName:isPair?friendName:'', friendEmail:isPair?friendEmail:'', refundPolicyAck:refundAckTime, refundPolicyText:MC_REFUND_POLICY_TEXT };
+        var record={ name:name, email:email, phone:phone, signature:sig, session:'mc1', sessionLabel:'Mat & Chat', arrival:'11:25 AM', classStart:'11:30 AM', time:timeStr, timestamp:now.toISOString(), code:code, type:type, wlPosition:wlPos, clausesAgreed:19, notes:notesWithAck, isPair:isPair, friendName:isPair?friendName:'', friendEmail:isPair?friendEmail:'', refundPolicyAck:refundAckTime, refundPolicyText:MC_REFUND_POLICY_TEXT, tier:bookedTier.key, pricePaid:bookedTier.price };
         mcLastSubmission=record;
 
         if(type==='confirmed'){
@@ -6584,7 +6638,7 @@ document.addEventListener('DOMContentLoaded', function() {
           document.getElementById('mc-step-confirmed').scrollIntoView({behavior:'smooth'});
           announce('Waiver signed! Complete payment to confirm your spot.');
           // Force payment after waiver (Option 2 \u2014 Mat & Chat overlay shows the Stripe Buy Button)
-          showMCPaymentOverlay(isPair ? MC_PAIR_BUY_BTN_ID : MC_SOLO_BUY_BTN_ID, MC_STRIPE_PUBLISHABLE, isPair ? MC_PAIR_PRICE : MC_SOLO_PRICE, record);
+          showMCPaymentOverlay(isPair ? { buyBtnId: MC_PAIR_BUY_BTN_ID } : bookedTier, MC_STRIPE_PUBLISHABLE, isPair ? MC_PAIR_PRICE : bookedTier.price, record);
           if(typeof emailjs!=='undefined'){
             emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
               admin_email: ADMIN_EMAIL,
@@ -6674,7 +6728,15 @@ document.addEventListener('DOMContentLoaded', function() {
       if(!confirm('Send payment confirmation to '+foundPerson.name+' ('+foundPerson.email+')?')) return;
       if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
       // Pull refund policy info from the record (or fall back to current text if missing)
-      var paidAmount = foundPerson.isPair ? '$55.00' : '$30.00';
+      // Receipt amount = the tier they actually bought, read back from the notes
+      // ("TICKET: ... ($45)"). Falls back to the Founding price if not recorded.
+      var paidAmount;
+      if (foundPerson.isPair) {
+        paidAmount = '$55.00';
+      } else {
+        var tierMatch = (foundPerson.notes || '').match(/TICKET:[^\n]*\(\$(\d+)\)/);
+        paidAmount = tierMatch ? '$' + tierMatch[1] + '.00' : '$' + MC_TIERS.founding.price + '.00';
+      }
       var refundAck  = foundPerson.refundPolicyAck || foundPerson.time || '';
       var refundText = foundPerson.refundPolicyText || MC_REFUND_POLICY_TEXT;
       emailjs.send(EMAILJS_SERVICE_ID, MC_TMPL_PAYMENT_CONFIRM, {
