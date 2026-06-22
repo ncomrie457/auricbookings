@@ -6075,10 +6075,16 @@ document.addEventListener('DOMContentLoaded', function() {
   // getMCData returns rows ordered by created_at, so the first 4 confirmed = earliest bookers.
   document.getElementById('admin-founding-btn').addEventListener('click', function(){
     getMCData(function(data){
-      var four = (data.mc1 || []).filter(function(r){ return r.type === 'confirmed'; }).slice(0, 4);
-      if (!four.length){ alert('No confirmed Mat & Chat bookings yet.'); return; }
+      var confirmed = (data.mc1 || []).filter(function(r){ return r.type === 'confirmed'; });
+      // Skip anyone whose admin notes contain "#nobag" (e.g. already got a tote at a
+      // past event). The next eligible booker automatically rolls up to fill the four.
+      var eligible = confirmed.filter(function(r){ return !/#nobag/i.test(r.adminNotes || ''); });
+      var skipped  = confirmed.filter(function(r){ return  /#nobag/i.test(r.adminNotes || ''); });
+      var four = eligible.slice(0, 4);
+      if (!four.length){ alert('No eligible Mat & Chat bookings yet.'); return; }
       var roster = four.map(function(r, i){ return (i + 1) + '. ' + r.name + ' (' + r.email + ')'; }).join('\n');
-      if (!confirm('Send the FOUNDING FOUR email to your first ' + four.length + ' booker(s)?\n\n' + roster)) return;
+      var skipNote = skipped.length ? ('\n\n⏭️ Skipped (#nobag): ' + skipped.map(function(r){ return r.name; }).join(', ')) : '';
+      if (!confirm('Send the FOUNDING FOUR email to these ' + four.length + ' booker(s)?\n\n' + roster + skipNote)) return;
       if (typeof emailjs === 'undefined'){ alert('EmailJS not loaded.'); return; }
       if (MC_TMPL_FOUNDING.indexOf('REPLACE_ME') !== -1){ alert('Set MC_TMPL_FOUNDING to your real EmailJS template id first.'); return; }
 
