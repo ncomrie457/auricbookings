@@ -6268,16 +6268,18 @@ document.addEventListener('DOMContentLoaded', function() {
   // (up to MC_MAX_SPOTS total). The active tier is chosen by how many spots are
   // already taken, so no one can grab the Founding rate once it's gone.
   //
-  // STRIPE SETUP:
-  //   • FOUNDING uses your existing $35 button (buy_btn_1TW4cqCyx5PIptEioWrQzOT8).
-  //   • GENERAL needs a NEW $45 Stripe buy button + payment link — paste them below.
+  // STRIPE SETUP — both tiers use Stripe Payment Links (clean redirect to checkout):
+  //   • FOUNDING ($35): https://buy.stripe.com/eVq6oG20W3epagscIO9sk02
+  //   • GENERAL  ($45): https://buy.stripe.com/eVqcN48pkbKV74g4ci9sk04
+  // (buyBtnId left empty on both => mcPaymentHtml renders a payment-link button.
+  //  To switch a tier back to an embedded on-page Buy Button, set its buyBtnId.)
   var MC_FOUNDING_LIMIT = 10;
   var MC_TIERS = {
     founding: { key:'founding', name:'Founding Ticket', price:35,
-                buyBtnId: MC_SOLO_BUY_BTN_ID,
+                buyBtnId:'',
                 stripeUrl:'https://buy.stripe.com/eVq6oG20W3epagscIO9sk02' },
     general:  { key:'general',  name:'General Admission', price:45,
-                buyBtnId:'', // payment-link tier (no embedded buy button) — uses stripeUrl below
+                buyBtnId:'',
                 stripeUrl:'https://buy.stripe.com/eVqcN48pkbKV74g4ci9sk04' }
   };
   // Returns the active tier for a given number of confirmed spots, or null if sold out.
