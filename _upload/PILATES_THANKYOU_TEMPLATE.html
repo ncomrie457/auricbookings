@@ -1,0 +1,198 @@
+<!--
+  ════════════════════════════════════════════════════════════
+   Pilates — Thank You / Post-Class Email Template
+   ────────────────────────────────────────────────────────────
+   COPY THIS ENTIRE FILE (Cmd+A → Cmd+C) and paste into:
+     EmailJS Dashboard → Email Templates → Create New →
+     Switch to HTML view → paste → Save.
+
+   THIS TEMPLATE'S EmailJS ID: template_7oa2caj
+     (Wired into the admin panel's "✦ Send Thank-You Emails" button,
+      which blasts it to every confirmed Pilates attendee.)
+
+   IMPORTANT — Also update these EmailJS template settings:
+     • Subject:  ✦ Thank you for moving with us
+     • From Name: Auric Movement : Pilates x Niara
+     • To Email: {{to_email}}
+
+   EmailJS template variables used:
+     {{from_name}}      — Customer's name
+     {{to_email}}       — Their email (used as send-to)
+     {{session_label}}  — e.g., "Session 2 (2:00 PM)"
+
+   REQUIRED IMAGES (must be uploaded to your site):
+     • logo-am-gold-192.png   (already uploaded)
+     • juneteenth-recap.jpg   (the Juneteenth Recap graphic — upload this
+                               to GitHub alongside index.html before sending)
+  ════════════════════════════════════════════════════════════
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thank you — Auric Movement</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f5f0e8;font-family:Georgia, 'Times New Roman', serif;color:#2c2420;">
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f0e8;padding:32px 16px;">
+  <tr>
+    <td align="center">
+
+      <!-- Outer container -->
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#fdfbf7;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(176,120,64,0.08);max-width:600px;width:100%;">
+
+        <!-- Header band — AM logo + brand name -->
+        <tr>
+          <td align="center" style="background-color:#5A3A1A;padding:36px 24px 28px;">
+            <img src="https://book.auricmovement.com/logo-am-gold-192.png" alt="" width="56" height="48" style="display:block;border:0;outline:none;margin-bottom:12px;">
+            <div style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:22px;color:#d4a370;letter-spacing:2px;">Auric Movement</div>
+            <div style="font-family:Georgia, serif;font-size:10px;color:#c8956c;letter-spacing:3px;text-transform:uppercase;margin-top:6px;">Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect</div>
+          </td>
+        </tr>
+
+        <!-- Eyebrow + Greeting -->
+        <tr>
+          <td style="padding:36px 40px 8px;">
+            <div style="font-family:Georgia, serif;font-size:10px;color:#9a6535;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">&#10022; Until Next Time</div>
+            <h1 style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:28px;line-height:1.2;color:#5A3A1A;margin:0 0 12px 0;font-weight:500;">
+              Thank you, <span style="font-weight:600;">{{from_name}}</span>.
+            </h1>
+            <p style="font-family:Georgia, serif;font-size:15px;line-height:1.7;color:#2c2420;margin:0 0 16px 0;">
+              Thank you for showing up to <strong>Pilates x Niara &mdash; {{session_label}}</strong> yesterday. You brought your full self, you moved with intention, and you made the room feel alive. That&rsquo;s exactly what Auric Movement is about.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Juneteenth recap graphic -->
+        <tr>
+          <td style="padding:8px 40px 8px;" align="center">
+            <img src="https://book.auricmovement.com/juneteenth-recap.jpg" alt="A curated Juneteenth experience &mdash; movement, curated details, curated sounds, and community. Featured donors 4AM and LMNT. Freedom, community, wellness, together." width="520" style="display:block;width:100%;max-width:520px;height:auto;border:0;outline:none;border-radius:10px;">
+          </td>
+        </tr>
+
+        <!-- A reflective note -->
+        <tr>
+          <td style="padding:0 40px 24px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border-left:3px solid #b07840;border-radius:0 8px 8px 0;">
+              <tr>
+                <td style="padding:20px 22px;">
+                  <p style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:17px;line-height:1.6;color:#5A3A1A;margin:0;">
+                    &ldquo;Every shake, every laugh, every breath &mdash; that was the whole point.&rdquo;
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- A few things to know now -->
+        <tr>
+          <td style="padding:0 40px 24px;">
+            <h2 style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:20px;color:#5A3A1A;margin:0 0 12px 0;font-weight:500;">Before you go</h2>
+            <p style="font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0 0 14px 0;">
+              <strong>&#127873; Your goodie bag.</strong> A small thank-you for being there &mdash; everything inside was curated with intention. Made possible by our generous donors below.
+            </p>
+            <p style="font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0 0 14px 0;">
+              <strong>&#128247; Photos and videos.</strong> We captured some beautiful moments from the day. You&rsquo;ll see them across the Auric Movement website, social channels, and marketing materials in the coming days.
+            </p>
+            <p style="font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0;">
+              <strong>&#9874; Your body tomorrow.</strong> If you feel that good kind of sore, that&rsquo;s the reformer talking. Hydrate, rest, and be kind to yourself.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Share your experience CTA -->
+        <tr>
+          <td style="padding:0 40px 24px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fef9e7;border:1px solid #f0dca0;border-radius:8px;">
+              <tr>
+                <td style="padding:20px 24px;" align="center">
+                  <div style="font-family:Georgia, serif;font-size:10px;color:#7a6320;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">&#10022; A small ask</div>
+                  <p style="font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0 0 14px 0;">
+                    If yesterday meant something to you, would you share a few words about your experience? It helps the next person know what to expect &mdash; and it means the world to us.
+                  </p>
+                  <a href="https://senja.io/p/book-Zdx/r/LsB0Aj" style="display:inline-block;background-color:#5A3A1A;color:#ffffff;font-family:Georgia, serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:11px 22px;border-radius:6px;">Share Your Experience &rarr;</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Donor thank you -->
+        <tr>
+          <td style="padding:0 40px 32px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fdf5f4;border:1px solid #f0d4d0;border-radius:8px;">
+              <tr>
+                <td style="padding:20px 24px;" align="center">
+                  <div style="font-family:Georgia, serif;font-size:10px;color:#9a6535;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">&#127873; With Gratitude</div>
+                  <p style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:18px;line-height:1.55;color:#5A3A1A;margin:0 0 8px 0;">
+                    Hosted by <strong style="font-weight:600;">Auric Movement</strong>
+                  </p>
+                  <p style="font-family:Georgia, serif;font-size:14px;line-height:1.7;color:#3d322a;margin:0;">
+                    With deep thanks to our donors &mdash;<br>
+                    <strong>LMNT</strong> &middot; <strong>Costco</strong> &middot; <strong>4AM</strong><br>
+                    for making yesterday possible.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- What's next -->
+        <tr>
+          <td style="padding:0 40px 32px;">
+            <h2 style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:20px;color:#5A3A1A;margin:0 0 12px 0;font-weight:500;">What&rsquo;s next</h2>
+            <p style="font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0 0 12px 0;">
+              Our next gathering is <strong>Mat &amp; Chat &mdash; Friday, August 1st at 11:30 AM</strong>. A different format, the same intention &mdash; this time we have the space entirely to ourselves, with time to slow down and chat together afterward. Registration opens <strong>July 1st</strong> at <a href="https://book.auricmovement.com" style="color:#9a6535;text-decoration:underline;">book.auricmovement.com</a>.
+            </p>
+            <p style="font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0;">
+              In the meantime, follow along on Instagram <a href="https://www.instagram.com/auricmovement/" style="color:#9a6535;text-decoration:underline;">@auricmovement</a> for behind-the-scenes, recap content from yesterday, and the next time we move together.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Closing message -->
+        <tr>
+          <td style="padding:0 40px 32px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #e8e0d5;padding-top:24px;">
+              <tr>
+                <td align="center" style="padding:8px 0;">
+                  <p style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:18px;color:#5A3A1A;line-height:1.5;margin:0 0 6px 0;">
+                    Until next time &mdash; thank you for moving with me.
+                  </p>
+                  <p style="font-family:Georgia, serif;font-size:13px;color:#7a6e63;letter-spacing:1px;text-transform:uppercase;margin:8px 0 0 0;">
+                    &mdash; Niara
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background-color:#5A3A1A;padding:28px 40px;text-align:center;">
+            <div style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:16px;color:#d4a370;margin-bottom:6px;">Auric Movement</div>
+            <div style="font-family:Georgia, serif;font-size:12px;color:#c8956c;line-height:1.6;">
+              Pilates events in NYC, hosted with intention.<br>
+              <a href="mailto:auricmovement@outlook.com" style="color:#d4a370;text-decoration:none;">auricmovement@outlook.com</a>
+              <span style="color:#7a5a3a;"> &middot; </span>
+              <a href="https://book.auricmovement.com" style="color:#d4a370;text-decoration:none;">book.auricmovement.com</a>
+            </div>
+            <div style="font-family:Georgia, serif;font-size:10px;color:#c8956c;letter-spacing:2px;margin-top:14px;text-transform:uppercase;">
+              &#10022; Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect &#10022;
+            </div>
+          </td>
+        </tr>
+
+      </table>
+      <!-- /Outer container -->
+
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>
