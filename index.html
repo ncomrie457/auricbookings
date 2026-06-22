@@ -3678,6 +3678,7 @@
         <button type="button" id="admin-notify-btn" class="btn btn-secondary">&#128227; Notify Waitlists</button>
         <button type="button" id="admin-blast-btn" class="btn btn-primary">&#128640; Blast Notify List</button>
         <button type="button" id="admin-thankyou-btn" class="btn btn-primary">&#10022; Send Thank-You Emails</button>
+        <button type="button" id="admin-founding-btn" class="btn btn-primary">&#127873; Send Founding Four</button>
         <button type="button" id="admin-clear-btn" class="btn btn-danger">&#128465; Clear All Data</button>
         <button type="button" id="admin-close-btn" class="btn btn-secondary">&#10005; Close</button>
       </div>
@@ -4321,6 +4322,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var MC_TMPL_PAYMENT_PENDING = 'template_ijswvs3';
   var MC_TMPL_BLAST           = 'template_ncfk6or';
   var MC_TMPL_FRIEND_INVITE   = 'template_5rk24rx';
+  var MC_TMPL_FOUNDING        = 'template_zdlbyba'; // Mat & Chat — Founding Four gift
 
   var MAX_PER_SESSION     = 6;
   var MC_MAX_SPOTS        = 20;
@@ -6062,6 +6064,54 @@ document.addEventListener('DOMContentLoaded', function() {
           console.error('[thank-you] FAILED for ' + item.rec.email, err);
         }).then(function(){
           btn.textContent = 'Sending... (' + (sent + failed) + '/' + confirmed.length + ')';
+          setTimeout(function(){ sendNext(i + 1); }, 600);
+        });
+      }
+      sendNext(0);
+    });
+  });
+
+  // FOUNDING FOUR — emails the first 4 confirmed Mat & Chat bookers their free-tote note.
+  // getMCData returns rows ordered by created_at, so the first 4 confirmed = earliest bookers.
+  document.getElementById('admin-founding-btn').addEventListener('click', function(){
+    getMCData(function(data){
+      var four = (data.mc1 || []).filter(function(r){ return r.type === 'confirmed'; }).slice(0, 4);
+      if (!four.length){ alert('No confirmed Mat & Chat bookings yet.'); return; }
+      var roster = four.map(function(r, i){ return (i + 1) + '. ' + r.name + ' (' + r.email + ')'; }).join('\n');
+      if (!confirm('Send the FOUNDING FOUR email to your first ' + four.length + ' booker(s)?\n\n' + roster)) return;
+      if (typeof emailjs === 'undefined'){ alert('EmailJS not loaded.'); return; }
+      if (MC_TMPL_FOUNDING.indexOf('REPLACE_ME') !== -1){ alert('Set MC_TMPL_FOUNDING to your real EmailJS template id first.'); return; }
+
+      var btn = document.getElementById('admin-founding-btn');
+      btn.disabled = true;
+      var originalText = btn.textContent;
+      btn.textContent = 'Sending... (0/' + four.length + ')';
+
+      var sent = 0, failed = 0, failedRecipients = [];
+      function sendNext(i){
+        if (i >= four.length){
+          btn.disabled = false;
+          btn.textContent = originalText;
+          var msg = '✅ Sent ' + sent + ' Founding Four email(s).';
+          if (failed > 0) {
+            msg += '\n\n⚠️ ' + failed + ' failed: ' + failedRecipients.join(', ');
+            msg += '\n\nCheck EmailJS Dashboard → History for details.';
+          }
+          alert(msg);
+          return;
+        }
+        var p = four[i];
+        emailjs.send(EMAILJS_SERVICE_ID, MC_TMPL_FOUNDING, {
+          from_name: p.name,
+          to_email:  p.email
+        }).then(function(){
+          sent++;
+        }).catch(function(err){
+          failed++;
+          failedRecipients.push(p.email);
+          console.error('[founding four] FAILED for ' + p.email, err);
+        }).then(function(){
+          btn.textContent = 'Sending... (' + (sent + failed) + '/' + four.length + ')';
           setTimeout(function(){ sendNext(i + 1); }, 600);
         });
       }
