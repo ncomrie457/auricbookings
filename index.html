@@ -2549,7 +2549,7 @@
       <a href="#tab-faq" data-nav-tab="btn-faq">FAQ</a>
       <a href="#tab-corporate" data-nav-tab="btn-corporate">
         <span class="bq-nav-long">Private, Group &amp; Corporate Events</span>
-        <span class="bq-nav-short">Private Events</span>
+        <span class="bq-nav-short">Private</span>
       </a>
       <a href="https://auric-movement.printify.me/" target="_blank" rel="noopener noreferrer">Shop</a>
     </nav>
@@ -3479,13 +3479,7 @@
 
         <div id="mc-spots-display" style="margin-bottom:1rem;padding:.75rem 1rem;background:#faf5ee;border-radius:10px;font-size:.85rem;color:#3d322a;text-align:center;"></div>
         <div class="privacy-bar">
-          By registering you agree to our <button type="button" id="mc-open-privacy-btn" style="background:none;border:none;color:var(--gold-text);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Privacy Policy</button> and <button type="button" id="mc-open-terms-btn" style="background:none;border:none;color:var(--gold-text);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Terms &amp; Refund Policy</button>.
-        </div>
-        <div style="margin-top:.75rem;padding:.75rem 1rem;background:#fdecea;border-left:3px solid var(--red);border-radius:0 8px 8px 0;font-size:.82rem;color:#3d322a;line-height:1.6;">
-          &#9200; <strong>Lateness Policy:</strong> Please arrive at 11:25 AM. Class starts at 11:30 AM &#8212; 5-minute grace period only. Late arrivals will not be admitted. No exceptions.
-        </div>
-        <div style="margin-top:.75rem;padding:.75rem 1rem;background:#faf5ee;border-left:3px solid var(--gold);border-radius:0 8px 8px 0;font-size:.82rem;color:#3d322a;line-height:1.6;">
-          &#9877;&#65039; <strong>Medical Disclaimer:</strong> Pilates involves physical activity. Please consult your physician before participating if you have any medical conditions. By continuing, you confirm you are physically able to participate.
+          By registering you agree to our <button type="button" id="mc-open-privacy-btn" style="background:none;border:none;color:var(--gold-text);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Privacy Policy</button>, <button type="button" id="mc-open-terms-btn" style="background:none;border:none;color:var(--gold-text);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Terms &amp; Refund Policy</button>, and <button type="button" id="mc-open-policies-btn" style="background:none;border:none;color:var(--gold-text);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Class Policies</button> <span style="color:var(--text-muted);">(lateness &amp; medical)</span>.
         </div>
         <div style="margin-top:1.25rem;display:flex;justify-content:flex-end;gap:.75rem;">
           <button type="button" id="mc-join-waitlist-btn" class="btn btn-secondary hidden">Join Waitlist &#8594;</button>
@@ -3585,7 +3579,7 @@
 
             <!-- Refund Policy Acknowledgment — Mat & Chat-specific -->
             <div style="margin:1.25rem 0;padding:1rem 1.25rem;background:#faf5ee;border:2px solid var(--gold);border-radius:10px;">
-              <h3 style="font-size:.85rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brown);margin-bottom:.6rem;">&#9888; Refund Policy &mdash; Mat &amp; Chat</h3>
+              <h3 style="font-size:.85rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brown);margin-bottom:.6rem;">&#9888; Cancellation &amp; Credit Policy &mdash; Mat &amp; Chat</h3>
               <p style="font-size:.85rem;color:#3d322a;line-height:1.6;margin:0 0 .5rem;">By booking this session, you agree to the following:</p>
               <ul style="font-size:.85rem;color:#3d322a;line-height:1.7;margin:0 0 .75rem;padding-left:1.25rem;">
                 <li><strong>All sales are final</strong> &mdash; no cash refunds.</li>
@@ -3595,7 +3589,7 @@
               </ul>
               <label style="display:flex;align-items:flex-start;gap:.6rem;padding:.65rem .75rem;background:#fff;border:1px solid var(--gold);border-radius:8px;cursor:pointer;font-size:.85rem;color:#3d322a;">
                 <input type="checkbox" id="mc-refund-policy-agree" style="margin-top:.15rem;accent-color:var(--gold);width:18px;height:18px;flex-shrink:0;">
-                <span>I have read and agree to the Mat &amp; Chat refund policy above. <span style="color:var(--red);">*</span></span>
+                <span>I have read and agree to the Mat &amp; Chat cancellation &amp; credit policy above. <span style="color:var(--red);">*</span></span>
               </label>
               <div id="mc-refund-policy-err" class="err-msg" role="alert"></div>
             </div>
@@ -3688,7 +3682,8 @@
       <h2>Registrations</h2>
       <div class="admin-actions">
         <button type="button" id="admin-csv-btn" class="btn btn-secondary">&#128229; CSV</button>
-        <button type="button" id="admin-notify-btn" class="btn btn-secondary">&#128227; Notify Waitlists</button>
+        <button type="button" id="admin-notify-btn" class="btn btn-secondary">&#128227; Notify Pilates Waitlist</button>
+        <button type="button" id="admin-mc-notify-btn" class="btn btn-secondary">&#128227; Notify Mat &amp; Chat Waitlist</button>
         <button type="button" id="admin-blast-btn" class="btn btn-primary">&#128640; Blast Notify List</button>
         <button type="button" id="admin-thankyou-btn" class="btn btn-primary">&#10022; Send Thank-You Emails</button>
         <button type="button" id="admin-founding-btn" class="btn btn-primary">&#127873; Send Founding Four</button>
@@ -3867,7 +3862,7 @@
       <h4>1. Refund Policy</h4>
       <p><strong>Pilates x Niara (June 19, 2026):</strong> Refunds are available if requested within <strong>24 hours of your original purchase</strong>. After 24 hours, all sales are final. <em>(Policy in effect at time of booking.)</em></p>
       <p><strong>Mat &amp; Chat and all events held after June 19, 2026:</strong> All sales are final. To receive a credit, cancel at least <strong>48 hours before your session start time</strong> &mdash; we will issue a <strong>credit for the full amount you paid</strong>, valid toward any future Auric Movement event hosted by Niara (collaborations and partner events excluded) for <strong>6 months</strong> from the date of issue. Cancellations within 48 hours of the session, or no-shows, are not eligible for a credit.</p>
-      <p>To request a refund, email <strong>auricmovement@outlook.com</strong> with your name, session, and reason.</p>
+      <p>To request a credit or to cancel, email <strong>auricmovement@outlook.com</strong> with your name and session details.</p>
       <h4>2. Cancellations</h4>
       <p><strong>Pilates x Niara (June 19, 2026):</strong> No cancellations will be accepted within 24 hours of your session start time. To cancel earlier than that, email <strong>auricmovement@outlook.com</strong> with your full name and session details.</p>
       <p><strong>Mat &amp; Chat and all future events:</strong> See Section 1 above &#8212; cancellations follow the credit policy.</p>
@@ -3896,6 +3891,21 @@
 </div>
 
 <!-- Privacy Policy Modal -->
+<div id="policies-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="policies-title">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="policies-title">Class Policies</h3>
+      <button class="modal-close" id="close-policies-btn" aria-label="Close class policies">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <h4>&#9200; Lateness Policy</h4>
+      <p>Please arrive at <strong>11:25 AM</strong>. Class begins at <strong>11:30 AM</strong> with a <strong>5-minute grace period only</strong>. Out of respect for the group and the practice, late arrivals will not be admitted &mdash; no exceptions, and late arrivals are not eligible for a credit.</p>
+      <h4>&#9877;&#65039; Medical Disclaimer</h4>
+      <p>Pilates involves physical activity. Please consult your physician before participating if you have any medical conditions, injuries, or health concerns. By continuing, you confirm you are physically able to participate, and you do so at your own risk.</p>
+    </div>
+  </div>
+</div>
+
 <div id="privacy-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="privacy-title">
   <div class="modal">
     <div class="modal-header">
@@ -4340,6 +4350,8 @@ document.addEventListener('DOMContentLoaded', function() {
   var MC_TMPL_BLAST           = 'template_ncfk6or';
   var MC_TMPL_FRIEND_INVITE   = 'template_5rk24rx';
   var MC_TMPL_FOUNDING        = 'template_zdlbyba'; // Mat & Chat — Founding Four gift
+  var MC_TMPL_WAITLIST        = 'template_REPLACE_WL';   // Mat & Chat — Waitlist Join Confirmation (paste MATCHAT_WAITLIST_TEMPLATE.html)
+  var MC_TMPL_WL_OPEN         = 'template_REPLACE_OPEN';  // Mat & Chat — Waitlist Spot Opened (paste MATCHAT_WAITLIST_OPEN_TEMPLATE.html)
 
   var MAX_PER_SESSION     = 6;
   var MC_MAX_SPOTS        = 20;
@@ -5463,7 +5475,7 @@ document.addEventListener('DOMContentLoaded', function() {
     doc.text('SESSION',col2,y+16);
     doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(44,36,32);
     doc.text(rec.sessionLabel+' \u00b7 Arrival '+rec.arrival,col2,y+28);
-    doc.text('Class starts '+rec.classStart+' \u00b7 June 19th',col2,y+40);
+    doc.text('Class starts '+rec.classStart+' \u00b7 '+(rec.eventDate||'June 19th'),col2,y+40);
     doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(90,58,26);
     doc.text('SIGNED',col2,y+56);
     doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(44,36,32);
@@ -5710,6 +5722,7 @@ document.addEventListener('DOMContentLoaded', function() {
     SESSIONS.forEach(function(s){notifyWaitlist(s.id);});
     alert('Waitlists notified!');
   });
+  document.getElementById('admin-mc-notify-btn').addEventListener('click', mcNotifyWaitlist);
 
   function renderAdmin(){
     var body=document.getElementById('admin-body');
@@ -5739,11 +5752,12 @@ document.addEventListener('DOMContentLoaded', function() {
             var removeBtn='<button onclick="adminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128465; Remove</button>';
             var confirmBtn='<button onclick="adminConfirmPayment(\''+rec.code+'\')" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u2705 Confirmed</button>';
             var pendingBtn='<button onclick="adminPaymentPending(\''+rec.code+'\')" style="background:#fef9e7;border:1px solid #f0dca0;color:#7a6320;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u23f3 Pending</button>';
+            var waiverBtn = rec.signature ? '<button onclick="adminWaiverPDF(\''+rec.code+'\')" style="background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128196; Waiver</button>' : '';
             var pNotesHTML = rec.notes ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;white-space:pre-line;"><strong style="color:var(--gold-text);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">&#129534; Health Notes:</strong><br>'+escapeHTML(rec.notes)+'</div>' : '';
             item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span>'+paymentBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+pNotesHTML+adminNotesField('pilates_registrations', rec.code, rec.adminNotes)+'</div>'+
               '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
               '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
-              '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;">'+confirmBtn+pendingBtn+removeBtn+'</div></div>';
+              '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+pendingBtn+waiverBtn+removeBtn+'</div></div>';
             block.appendChild(item);
           });
         }
@@ -5783,12 +5797,13 @@ document.addEventListener('DOMContentLoaded', function() {
           var confirmBtn='<button onclick="mcAdminConfirmPayment(\''+rec.code+'\')" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u2705 Confirmed</button>';
           var pendingBtn='<button onclick="mcAdminPaymentPending(\''+rec.code+'\')" style="background:#fff8e1;border:1px solid #ffe082;color:#f57f17;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u23f3 Pending</button>';
           var removeBtn='<button onclick="mcAdminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128465; Remove</button>';
+          var waiverBtn = rec.signature ? '<button onclick="mcAdminWaiverPDF(\''+rec.code+'\')" style="background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128196; Waiver</button>' : '';
           var notesHTML = rec.notes ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;"><strong style="color:var(--gold-text);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">&#128221; Notes for Instructor:</strong><br>'+escapeHTML(rec.notes)+'<div style="margin-top:.5rem;text-align:right;"><button onclick="mcAdminClearHealth(\''+rec.code+'\',\''+(rec.name||'').replace(/\'/g,"\\\'").replace(/"/g,'&quot;')+'\')" style="background:#fff;border:1px solid var(--gold);color:var(--brown);border-radius:6px;padding:.25rem .65rem;font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;font-weight:500;letter-spacing:.5px;">&#128465; Clear Health Notes</button></div></div>' : '';
           var pairHTML = rec.isPair ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#f5e6d3;border-left:3px solid var(--brown);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;"><strong style="color:var(--brown);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">&#128111; Pair Booking ($55):</strong><br><strong>Friend:</strong> '+escapeHTML(rec.friendName||'?')+'<br><strong>Email:</strong> '+escapeHTML(rec.friendEmail||'?')+'</div>' : '';
           item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span>'+(rec.isPair?' <span style="font-size:.7rem;background:var(--brown);color:#fff;padding:.1rem .4rem;border-radius:10px;font-weight:700;letter-spacing:.5px;">PAIR</span>':'')+paymentBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+pairHTML+notesHTML+adminNotesField('matchat_registrations', rec.code, rec.adminNotes)+'</div>'+
             '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
             '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
-            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;">'+confirmBtn+pendingBtn+removeBtn+'</div></div>';
+            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+pendingBtn+waiverBtn+removeBtn+'</div></div>';
           mcBlock.appendChild(item);
         });
       }
@@ -6500,6 +6515,41 @@ document.addEventListener('DOMContentLoaded', function() {
   buildMCSpots();
 
   // MC Join Waitlist
+  // Send a confirmation to someone who just joined the Mat & Chat waitlist
+  function sendMCWaitlistEmail(rec) {
+    var el = document.getElementById('mc-wl-email-status');
+    if (el) el.innerHTML = '<div class="email-status email-sent">Sending waitlist confirmation...</div>';
+    if (typeof emailjs === 'undefined') { if(el) el.innerHTML = '<div class="email-status email-failed">Email service unavailable — you are still on the waitlist.</div>'; return; }
+    if (MC_TMPL_WAITLIST.indexOf('REPLACE') !== -1) { if(el) el.innerHTML = '<div class="email-status email-sent">✅ You\'re on the list! We\'ll be in touch by email.</div>'; return; }
+    emailjs.send(EMAILJS_SERVICE_ID, MC_TMPL_WAITLIST, {
+      from_name: rec.name, to_email: rec.email, session_label: rec.sessionLabel,
+      arrival_time: rec.arrival, wl_position: rec.wlPosition, cancel_code: rec.code
+    }).then(function(){ if(el) el.innerHTML = '<div class="email-status email-sent">✅ Waitlist confirmation sent to '+escapeHTML(rec.email)+'</div>'; })
+      .catch(function(){ if(el) el.innerHTML = '<div class="email-status email-failed">⚠️ Could not send email — you are still on the waitlist.</div>'; });
+  }
+
+  // Email everyone on the Mat & Chat waitlist that a spot has opened (admin button)
+  function mcNotifyWaitlist() {
+    getMCData(function(data){
+      var wl = (data.mc1 || []).filter(function(r){ return r.type==='waitlist'; });
+      if (!wl.length) { alert('No one is on the Mat & Chat waitlist yet.'); return; }
+      if (typeof emailjs === 'undefined') { alert('Email service unavailable.'); return; }
+      if (MC_TMPL_WL_OPEN.indexOf('REPLACE') !== -1) { alert('Set MC_TMPL_WL_OPEN to your real EmailJS template id first (create it from MATCHAT_WAITLIST_OPEN_TEMPLATE.html).'); return; }
+      if (!confirm('Email all ' + wl.length + ' person(s) on the Mat & Chat waitlist that a spot has opened?\n\nFirst to register gets it.')) return;
+      var sent = 0;
+      wl.forEach(function(person){
+        emailjs.send(EMAILJS_SERVICE_ID, MC_TMPL_WL_OPEN, {
+          from_name: person.name, to_email: person.email,
+          session_label: 'Mat & Chat', arrival_time: '11:25 AM',
+          register_url: window.location.href.split('?')[0].split('#')[0],
+          message: 'A spot has opened for Mat & Chat on Saturday, August 1st! This message is going to everyone on the waitlist — first to register gets it!'
+        });
+        sent++;
+      });
+      alert('Spot-opened email sent to ' + sent + ' Mat & Chat waitlister(s).');
+    });
+  }
+
   document.getElementById('mc-join-waitlist-btn').addEventListener('click', function() {
     var name  = document.getElementById('mc-reg-name').value.trim();
     var email = document.getElementById('mc-reg-email').value.trim();
@@ -6537,6 +6587,7 @@ document.addEventListener('DOMContentLoaded', function() {
         mcShowStep('mc-step-waitlist');
         document.getElementById('mc-page-layout').classList.remove('waiver-active');
         announce('Added to waitlist at position '+wlPos+'.');
+        sendMCWaitlistEmail(record);
         buildMCSpots();
       });
     });
@@ -6886,6 +6937,26 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   };
 
+  window.adminWaiverPDF = function(code){
+    getData(function(data){
+      var foundPerson, foundSess;
+      SESSIONS.forEach(function(sess){ data[sess.id].forEach(function(rec){ if(rec.code===code){ foundPerson=rec; foundSess=sess; } }); });
+      if(!foundPerson){ alert('Could not find registration.'); return; }
+      foundPerson.sessionLabel = foundPerson.sessionLabel || foundSess.label;
+      foundPerson.arrival = foundPerson.arrival || foundSess.arrival;
+      foundPerson.classStart = foundPerson.classStart || foundSess.start;
+      foundPerson.eventDate = 'June 19th';
+      generateWaiverPDF(foundPerson);
+    });
+  };
+  window.mcAdminWaiverPDF = function(code){
+    getMCData(function(data){
+      var foundPerson = data.mc1.find(function(r){ return r.code===code; });
+      if(!foundPerson){ alert('Could not find registration.'); return; }
+      foundPerson.eventDate = 'Saturday, August 1st';
+      generateWaiverPDF(foundPerson);
+    });
+  };
   window.mcAdminRemove = function(code){
     if(!confirm('Remove this registration? This cannot be undone.')) return;
     getMCData(function(data){
@@ -7603,15 +7674,19 @@ document.addEventListener('DOMContentLoaded', function() {
     var el = document.getElementById(id);
     if (el) el.addEventListener('click', function(){ openModal('terms-modal'); });
   });
+  var openPolBtn = document.getElementById('mc-open-policies-btn');
+  if (openPolBtn) openPolBtn.addEventListener('click', function(){ openModal('policies-modal'); });
   var openA11yBtn = document.getElementById('open-accessibility-btn');
   if (openA11yBtn) openA11yBtn.addEventListener('click', function(){ openModal('accessibility-modal'); });
 
   document.getElementById('close-privacy-btn').addEventListener('click', function(){ closeModal('privacy-modal'); });
   document.getElementById('close-terms-btn').addEventListener('click', function(){ closeModal('terms-modal'); });
+  var closePolBtn = document.getElementById('close-policies-btn');
+  if (closePolBtn) closePolBtn.addEventListener('click', function(){ closeModal('policies-modal'); });
   var closeA11yBtn = document.getElementById('close-accessibility-btn');
   if (closeA11yBtn) closeA11yBtn.addEventListener('click', function(){ closeModal('accessibility-modal'); });
 
-  ['privacy-modal','terms-modal','accessibility-modal'].forEach(function(id){
+  ['privacy-modal','terms-modal','accessibility-modal','policies-modal'].forEach(function(id){
     var el = document.getElementById(id);
     if (el) el.addEventListener('click', function(e){ if(e.target===this) closeModal(id); });
   });
@@ -7622,6 +7697,8 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!document.getElementById('terms-modal').classList.contains('hidden'))   closeModal('terms-modal');
       var a11y = document.getElementById('accessibility-modal');
       if (a11y && !a11y.classList.contains('hidden')) closeModal('accessibility-modal');
+      var pol = document.getElementById('policies-modal');
+      if (pol && !pol.classList.contains('hidden')) closeModal('policies-modal');
     }
   });
 
