@@ -4350,8 +4350,8 @@ document.addEventListener('DOMContentLoaded', function() {
   var MC_TMPL_BLAST           = 'template_ncfk6or';
   var MC_TMPL_FRIEND_INVITE   = 'template_5rk24rx';
   var MC_TMPL_FOUNDING        = 'template_zdlbyba'; // Mat & Chat — Founding Four gift
-  var MC_TMPL_WAITLIST        = 'template_REPLACE_WL';   // Mat & Chat — Waitlist Join Confirmation (paste MATCHAT_WAITLIST_TEMPLATE.html)
-  var MC_TMPL_WL_OPEN         = 'template_REPLACE_OPEN';  // Mat & Chat — Waitlist Spot Opened (paste MATCHAT_WAITLIST_OPEN_TEMPLATE.html)
+  var MC_TMPL_WAITLIST        = 'template_5eounfg';   // Mat & Chat — Waitlist Join Confirmation (MATCHAT_WAITLIST_TEMPLATE.html)
+  var MC_TMPL_WL_OPEN         = 'template_iyikaop';  // Mat & Chat — Waitlist Spot Opened (MATCHAT_WAITLIST_OPEN_TEMPLATE.html)
 
   var MAX_PER_SESSION     = 6;
   var MC_MAX_SPOTS        = 20;
@@ -6523,7 +6523,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (MC_TMPL_WAITLIST.indexOf('REPLACE') !== -1) { if(el) el.innerHTML = '<div class="email-status email-sent">✅ You\'re on the list! We\'ll be in touch by email.</div>'; return; }
     emailjs.send(EMAILJS_SERVICE_ID, MC_TMPL_WAITLIST, {
       from_name: rec.name, to_email: rec.email, session_label: rec.sessionLabel,
-      arrival_time: rec.arrival, wl_position: rec.wlPosition, cancel_code: rec.code
+      arrival_time: rec.arrival, wl_position: rec.wlPosition
     }).then(function(){ if(el) el.innerHTML = '<div class="email-status email-sent">✅ Waitlist confirmation sent to '+escapeHTML(rec.email)+'</div>'; })
       .catch(function(){ if(el) el.innerHTML = '<div class="email-status email-failed">⚠️ Could not send email — you are still on the waitlist.</div>'; });
   }
