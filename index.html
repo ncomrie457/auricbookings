@@ -4964,7 +4964,42 @@ document.addEventListener('DOMContentLoaded', function() {
       return '<stripe-buy-button buy-button-id="' + tier.buyBtnId + '" publishable-key="' + publishableKey + '"></stripe-buy-button>';
     }
     var url = (tier && tier.stripeUrl) || '#';
-    return '<a href="' + url + '" target="_blank" rel="noopener" class="btn btn-primary" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-size:1rem;padding:.85rem 1.75rem;">Complete Payment &mdash; $' + price + ' &rarr;</a>';
+    return '<a href="' + url + '" class="btn btn-primary" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-size:1rem;padding:.85rem 1.75rem;">Complete Payment &mdash; $' + price + ' &rarr;</a>';
+  }
+
+  // Shown when Stripe redirects the customer back to the site after paying
+  // (the payment links' "after payment" URL is set to ...?paid=matchat).
+  function showPaymentReceivedOverlay() {
+    if (document.getElementById('payment-received-overlay')) return;
+    var overlay = document.createElement('div');
+    overlay.id = 'payment-received-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(44,26,14,.85);backdrop-filter:blur(8px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;';
+    overlay.innerHTML =
+      '<div style="background:#fdfbf7;border-radius:16px;padding:2.25rem 2rem;max-width:440px;width:100%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.4);">' +
+        '<div style="font-size:2.4rem;color:#2e7d32;line-height:1;margin-bottom:.4rem;">✓</div>' +
+        '<div style="font-family:Georgia,serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#9a6535;font-weight:bold;margin-bottom:8px;">Payment Received</div>' +
+        '<h2 style="font-family:\'Cormorant Garamond\',serif;font-style:italic;font-size:1.7rem;color:var(--brown);margin:0 0 .65rem;font-weight:500;">You&rsquo;re confirmed 🤍</h2>' +
+        '<p style="font-family:Georgia,serif;font-size:.95rem;color:#3d322a;line-height:1.65;margin:0 0 1.25rem;">Your spot for <strong>Mat &amp; Chat &mdash; Saturday, August 1st</strong> is secured. A confirmation email is on its way — check your spam folder just in case.</p>' +
+        '<button type="button" id="pr-add-cal" class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:.6rem;">📅 Add to Calendar (.ics)</button>' +
+        '<button type="button" id="pr-close" class="btn btn-secondary" style="width:100%;justify-content:center;">Done</button>' +
+      '</div>';
+    document.body.appendChild(overlay);
+    document.getElementById('pr-add-cal').addEventListener('click', function(){
+      downloadICSFile({
+        title: 'Mat & Chat — Auric Movement',
+        description: 'Arrival 11:25 AM\nClass starts 11:30 AM',
+        location: 'The Fitin, 297 7th Ave, Floor 3, New York, NY 10001',
+        startISO: '2026-08-01T15:30:00Z',
+        endISO:   '2026-08-01T16:30:00Z'
+      });
+    });
+    document.getElementById('pr-close').addEventListener('click', function(){
+      overlay.remove();
+      if (window.history && window.history.replaceState) {
+        var u = new URL(window.location.href); u.searchParams.delete('paid');
+        window.history.replaceState({}, '', u.pathname + u.search + u.hash);
+      }
+    });
   }
 
   function showMCPaymentOverlay(tier, publishableKey, price, record) {
@@ -7405,6 +7440,13 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   var urlParams = new URLSearchParams(window.location.search);
+
+  // Stripe redirects here after a successful payment (set the payment links'
+  // "after payment" URL to https://book.auricmovement.com/?paid=matchat).
+  if (urlParams.get('paid') === 'matchat') {
+    setTimeout(showPaymentReceivedOverlay, 400);
+  }
+
   var eventParam = urlParams.get('event');
   if (eventParam) {
     setTimeout(function(){
