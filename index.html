@@ -6256,7 +6256,7 @@ document.addEventListener('DOMContentLoaded', function() {
           sent++;
         }).catch(function(err){
           failed++;
-          failedRecipients.push(p.email);
+          failedRecipients.push(p.email + ' — ' + ((err && (err.text || err.message)) || 'failed'));
           console.error('[founding four] FAILED for ' + p.email, err);
         }).then(function(){
           btn.textContent = 'Sending... (' + (sent + failed) + '/' + four.length + ')';
