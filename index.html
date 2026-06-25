@@ -5783,12 +5783,13 @@ document.addEventListener('DOMContentLoaded', function() {
       var arr = Object.keys(marks).map(function(k){ return marks[k]; });
       if (!arr.length){ box.innerHTML = '<div style="color:var(--text-muted);font-size:.85rem;padding:.5rem;">No attendance marks yet. Tap &ldquo;&#9711; Attended&rdquo; on someone in the lists above to give them a mark.</div>'; return; }
       arr.sort(function(a,b){ return b.count - a.count; });
-      var html = '<table style="width:100%;border-collapse:collapse;font-size:.82rem;"><tr style="text-align:left;color:var(--gold-text);border-bottom:1px solid var(--border);"><th style="padding:.4rem;">Member</th><th>Marks</th><th>Status</th></tr>';
+      var html = '<table style="width:100%;border-collapse:collapse;font-size:.82rem;"><tr style="text-align:left;color:var(--gold-text);border-bottom:1px solid var(--border);"><th style="padding:.4rem;">Member</th><th>Marks</th><th>Status</th><th></th></tr>';
       arr.forEach(function(m){
         var earned = Math.floor(m.count/10);
         var prog = m.count % 10;
-        var status = earned>0 ? ('&#127873; '+earned+' free earned') : (prog>=8 ? '&#9889; '+(10-prog)+' to go!' : (10-prog)+' to go');
-        html += '<tr style="border-bottom:1px solid #f0e9dc;"><td style="padding:.4rem;">'+escapeHTML(m.name||'—')+'<br><span style="color:var(--text-muted);font-size:.75rem;">'+escapeHTML(m.email)+'</span></td><td style="text-align:center;"><strong>'+m.count+'</strong></td><td style="font-size:.78rem;">'+status+'</td></tr>';
+        var status = earned>0 ? ('&#127873; '+earned+' free earned') : (prog>=8 ? '&#9889; '+fmtMarks(10-prog)+' to go!' : fmtMarks(10-prog)+' to go');
+        var refBtn = (m.code && m.table) ? '<button onclick="addReferralPoint(\''+m.table+'\',\''+m.code+'\')" style="background:#fef9e7;border:1px solid #f0dca0;color:#7a6320;border-radius:6px;padding:.2rem .45rem;font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;white-space:nowrap;">+½ ref</button>' : '';
+        html += '<tr style="border-bottom:1px solid #f0e9dc;"><td style="padding:.4rem;">'+escapeHTML(m.name||'—')+'<br><span style="color:var(--text-muted);font-size:.75rem;">'+escapeHTML(m.email)+'</span></td><td style="text-align:center;"><strong>'+fmtMarks(m.count)+'</strong></td><td style="font-size:.78rem;">'+status+'</td><td style="text-align:right;">'+refBtn+'</td></tr>';
       });
       box.innerHTML = html + '</table>';
     });
@@ -7017,21 +7018,36 @@ document.addEventListener('DOMContentLoaded', function() {
     getData(function(pdata){
       getMCData(function(mdata){
         var marks = {};
-        function tally(rec){
+        function tally(rec, table){
           if (!rec || !rec.email) return;
-          if (!/#attended/i.test(rec.adminNotes||'')) return;
+          var notes = rec.adminNotes || '';
+          var refs = (notes.match(/#referral/gi) || []).length;
+          var pts = (/#attended/i.test(notes) ? 1 : 0) + 0.5 * refs;
+          if (pts <= 0) return;
           var key = rec.email.toLowerCase();
-          if (!marks[key]) marks[key] = { email: rec.email, name: rec.name||'', count: 0 };
-          marks[key].count++;
+          if (!marks[key]) marks[key] = { email: rec.email, name: rec.name||'', count: 0, table: table, code: rec.code };
+          marks[key].count += pts;
           if (rec.name) marks[key].name = rec.name;
         }
-        ['s1','s2'].forEach(function(s){ (pdata[s]||[]).forEach(tally); });
-        (mdata.mc1||[]).forEach(tally);
+        ['s1','s2'].forEach(function(s){ (pdata[s]||[]).forEach(function(r){ tally(r, 'pilates_registrations'); }); });
+        (mdata.mc1||[]).forEach(function(r){ tally(r, 'matchat_registrations'); });
         callback(marks);
       });
     });
   }
   // Toggle a person's attendance mark (stored as a #attended tag in admin_notes; no schema change).
+  // Award half a referral point to a member (appends a #referral tag; getClubData counts each as 0.5).
+  window.addReferralPoint = function(table, code){
+    if (!table || !code){ alert('No record to credit.'); return; }
+    if (!confirm('Add a half-point referral credit to this member?')) return;
+    supabase.from(table).select('admin_notes').eq('code', code).single().then(function(res){
+      var notes = (res.data && res.data.admin_notes) || '';
+      var newNotes = notes.trim() ? notes.trim() + ' #referral' : '#referral';
+      supabase.from(table).update({ admin_notes: newNotes }).eq('code', code).then(function(){
+        var btn = document.getElementById('admin-club-btn'); if (btn) btn.click();
+      }, function(err){ alert('Could not add referral point.'); console.error(err); });
+    }, function(err){ alert('Could not read record.'); console.error(err); });
+  };
   window.toggleAttended = function(table, code){
     supabase.from(table).select('admin_notes').eq('code', code).single().then(function(res){
       var notes = (res.data && res.data.admin_notes) || '';
@@ -7834,21 +7850,28 @@ document.addEventListener('DOMContentLoaded', function() {
   if (openA11yBtn) openA11yBtn.addEventListener('click', function(){ openModal('accessibility-modal'); });
 
   // ===== Auric Club lookup (public loyalty card) =====
+  function fmtMarks(n){
+    var w = Math.floor(n);
+    return ((n - w) >= 0.5) ? ((w > 0 ? w : '') + '½') : ('' + w);
+  }
   function renderClubCircles(count){
     var wrap = document.getElementById('club-circles');
     if (!wrap) return;
     var progress = count % 10;
-    var full = count > 0 && progress === 0;
-    var marks = full ? 10 : progress;
+    var marks = (count > 0 && progress === 0) ? 10 : progress;
+    var whole = Math.floor(marks);
+    var half = (marks - whole) >= 0.5;
     var base = 'aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;font-family:\'Cormorant Garamond\',Georgia,serif;';
     var html = '';
     for (var i=0;i<10;i++){
       var isFree = (i===9);
-      var filled = isFree ? (marks===10) : (i < marks);
       if (isFree){
-        html += '<div style="'+base+'background:'+(filled?'#f0d28a':'#d4a55f')+';color:#2f3a24;font-style:italic;font-size:.62rem;line-height:1;font-weight:600;'+(filled?'box-shadow:0 0 0 3px rgba(231,196,126,.35);':'')+'">free<br>event</div>';
-      } else if (filled){
+        var freeFilled = (marks === 10);
+        html += '<div style="'+base+'background:'+(freeFilled?'#f0d28a':'#d4a55f')+';color:#2f3a24;font-style:italic;font-size:.62rem;line-height:1;font-weight:600;'+(freeFilled?'box-shadow:0 0 0 3px rgba(231,196,126,.35);':'')+'">free<br>event</div>';
+      } else if (i < whole){
         html += '<div style="'+base+'background:#d4a55f;color:#2f3a24;font-size:1.15rem;">&#10022;</div>';
+      } else if (i === whole && half){
+        html += '<div style="'+base+'background:linear-gradient(90deg,#d4a55f 50%,transparent 50%);border:1.5px dashed #b9924e;color:#2f3a24;font-size:.8rem;font-weight:700;">&frac12;</div>';
       } else {
         html += '<div style="'+base+'border:1.5px dashed #b9924e;color:#c9a463;font-size:1.1rem;">'+(i+1)+'</div>';
       }
@@ -7870,9 +7893,9 @@ document.addEventListener('DOMContentLoaded', function() {
       if (count === 0){
         res.innerHTML = 'No marks yet — your first Auric event earns your first mark. ✦';
       } else if (freeEarned > 0){
-        res.innerHTML = (name?name+', you':'You')+'’ve earned <strong>'+freeEarned+' free event'+(freeEarned>1?'s':'')+'</strong>! '+(count%10)+' mark'+((count%10)===1?'':'s')+' toward your next. ✦';
+        res.innerHTML = (name?name+', you':'You')+'’ve earned <strong>'+freeEarned+' free event'+(freeEarned>1?'s':'')+'</strong>! '+fmtMarks(count%10)+' toward your next. ✦';
       } else {
-        res.innerHTML = (name?name+', you':'You')+' have <strong>'+count+'</strong> mark'+(count===1?'':'s')+' — '+(10-count)+' more for a free event. ✦';
+        res.innerHTML = (name?name+', you':'You')+' have <strong>'+fmtMarks(count)+'</strong> mark'+(count===1?'':'s')+' — '+fmtMarks(10-count)+' more for a free event. ✦';
       }
     });
   }
