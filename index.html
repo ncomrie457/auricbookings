@@ -469,12 +469,6 @@
     .admin-sub-item .aname { font-weight:600; color:#3d322a; }
     .admin-sub-item .aemail { color:var(--text-muted); font-size:.8rem; }
     .admin-sub-item .atype { font-size:.7rem; font-weight:700; letter-spacing:.5px; text-transform:uppercase; padding:.15rem .5rem; border-radius:10px; }
-    /* Desktop only: give each admin registration row's info + instructor notes the full width
-       (action buttons drop to their own line below). Phone view (<=720px) is left exactly as-is. */
-    @media (min-width: 721px) {
-      .admin-sub-item { align-items: flex-start; }
-      .admin-sub-item > div { flex-basis: 100% !important; }
-    }
     .type-confirmed { background:#e8f5e9; color:var(--green); } .type-waitlist { background:#fef9e7; color:#7a6320; }
     .admin-hint { font-size:.75rem; color:#6f6457; margin-top:1rem; text-align:center; font-style:italic; }
     .empty-state { text-align:center; padding:1.5rem; color:#6f6457; font-style:italic; font-size:.9rem; }
@@ -6608,7 +6602,7 @@ document.addEventListener('DOMContentLoaded', function() {
           + '<br><span style="color:#3d6b4c;font-weight:600;font-size:.92em;">Only ' + fLeft + ' of ' + MC_FOUNDING_LIMIT + ' founding spot' + (fLeft===1?'':'s') + ' left at this price</span>';
       } else {
         el.innerHTML = '<span style="color:#9a6535;font-weight:700;">' + mcActiveTier.name + ' — ' + priceStr + '</span>'
-          + '<br>' + ((remaining <= 5) ? '<span style="color:#a8432f;font-weight:700;font-size:.92em;">✦ Almost sold out — just a few spots left!</span>' : '<span style="color:#3d6b4c;font-weight:600;font-size:.92em;">Spots available</span>');
+          + '<br>' + ((remaining <= 5) ? '<span style="color:#a8432f;font-weight:700;font-size:.92em;">✦ Almost sold out — just a few spots left!</span>' : '<span style="color:#3d6b4c;font-weight:600;font-size:.92em;">Limited spots</span>');
       }
     });
   }
@@ -7483,7 +7477,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (mcEl) {
         if (mcRemaining <= 0) { setSpotsBadge(mcEl, 'Waitlist only', 'sold-out'); mcIsSoldOut = true; }
         else if (mcRemaining <= 5) setSpotsBadge(mcEl, 'Almost sold out', 'low');
-        else setSpotsBadge(mcEl, 'Spots available', 'available');
+        else setSpotsBadge(mcEl, 'Limited spots', 'available');
       }
       var mFlyer = document.getElementById('matchat-flyer-wrap');
       if (mFlyer) mFlyer.classList.toggle('is-sold-out', mcIsSoldOut);
@@ -7641,6 +7635,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // \u2500\u2500 Tab switching \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   document.querySelectorAll('.tab-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
+      if (adminPanel) adminPanel.classList.remove('visible');
       document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
       btn.classList.add('active');
       btn.setAttribute('aria-selected','true');
@@ -8092,6 +8087,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Click handler: switch tab (for tab links) or scroll to section
     topnav.querySelectorAll('a[data-nav-tab], a[data-nav-scroll], a[data-nav-home], .bq-topnav-brand').forEach(function(link){
       link.addEventListener('click', function(e){
+        if (adminPanel) adminPanel.classList.remove('visible');
         var tabId = link.getAttribute('data-nav-tab');
         var scrollId = link.getAttribute('data-nav-scroll');
         var goHome = link.hasAttribute('data-nav-home');
