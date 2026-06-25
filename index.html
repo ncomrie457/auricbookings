@@ -24,16 +24,16 @@
   <meta property="og:url" content="https://book.auricmovement.com">
   <meta property="og:title" content="Auric Movement &#10022; A Practice of Returning to Yourself">
   <meta property="og:description" content="A practice of returning to yourself. Pilates events hosted with intention in NYC.">
-  <meta property="og:image" content="https://book.auricmovement.com/hero.jpg">
-  <meta property="og:image:width" content="1024">
-  <meta property="og:image:height" content="1536">
-  <meta property="og:image:alt" content="Warm beige plaster wall with an olive tree in a textured ochre vase, soft dappled light across a concrete floor">
+  <meta property="og:image" content="https://book.auricmovement.com/og-preview.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Auric Movement — a practice of returning to yourself. Pilates events in NYC.">
 
   <!-- Twitter/iMessage card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Auric Movement &#10022; A Practice of Returning to Yourself">
   <meta name="twitter:description" content="A practice of returning to yourself. Pilates events hosted with intention in NYC.">
-  <meta name="twitter:image" content="https://book.auricmovement.com/hero.jpg">
+  <meta name="twitter:image" content="https://book.auricmovement.com/og-preview.png">
 
   <!-- JSON-LD: Organization -->
   <script type="application/ld+json">
@@ -7532,6 +7532,19 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   applyRegistrationLocks();
+  // Early-access deep link: ?early=<CODE> drops the visitor straight on the Mat & Chat
+  // booking form (skips the landing page + the Reserve click). Runs after init settles.
+  (function earlyDeepLink(){
+    var ep = (new URLSearchParams(window.location.search).get('early') || '').toUpperCase();
+    if (ep !== EARLY_ACCESS_CODE) return;
+    var card = document.getElementById('event-card-matchat');
+    if (!card || card.classList.contains('is-locked')) return;
+    setTimeout(function(){
+      showAllPanels('tab-matchat');
+      if (typeof mcShowStep === 'function') mcShowStep('mc-step-register');
+      window.scrollTo({ top: 0 });
+    }, 0);
+  })();
 
   document.getElementById('event-card-pilates').addEventListener('click', function(){
     showAllPanels('tab-current');
