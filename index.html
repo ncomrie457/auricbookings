@@ -3682,7 +3682,6 @@
         <button type="button" id="admin-csv-btn" class="btn btn-secondary">&#128229; CSV</button>
         <button type="button" id="admin-notify-btn" class="btn btn-secondary">&#128227; Notify Pilates Waitlist</button>
         <button type="button" id="admin-mc-notify-btn" class="btn btn-secondary">&#128227; Notify Mat &amp; Chat Waitlist</button>
-        <button type="button" id="admin-blast-btn" class="btn btn-primary">&#128640; Blast Notify List</button>
         <button type="button" id="admin-thankyou-btn" class="btn btn-primary">&#10022; Send Thank-You Emails</button>
         <button type="button" id="admin-founding-btn" class="btn btn-primary">&#127873; Send Founding Four</button>
         <button type="button" id="admin-club-btn" class="btn btn-secondary">&#10022; Auric Club</button>
@@ -5642,10 +5641,6 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('admin-early-notify-btn').addEventListener('click', function(){
     var btn = this;
     getNotifyList(function(data){ sendBatch(data.notify, MC_TMPL_EARLY_NOTIFY, 'early access', btn); });
-  });
-  document.getElementById('admin-blast-btn').addEventListener('click', function(){
-    var btn = this;
-    getNotifyList(function(data){ sendBatch(data.notify, TMPL_BLAST, 'the registration-open email', btn); });
   });
 
   // Wire up Event Badges admin section: load current state + save on toggle
