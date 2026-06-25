@@ -5604,52 +5604,48 @@ document.addEventListener('DOMContentLoaded', function() {
         e.target.style.borderColor = 'var(--red)';
       });
   }, true);
+  // Robust sequential email sender: one at a time (avoids EmailJS rate limits),
+  // skips blank/invalid addresses, and reports exactly what sent vs failed.
+  function sendBatch(rawList, templateId, label, btn){
+    if (typeof emailjs === 'undefined'){ alert('EmailJS not loaded.'); return; }
+    var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    var list = (rawList || []).filter(function(p){ return p && p.email && EMAIL_RE.test((p.email||'').trim()); });
+    var skipped = (rawList || []).length - list.length;
+    if (!list.length){ alert('No valid email addresses to send to' + (skipped ? ' (' + skipped + ' were blank/invalid)' : '') + '.'); return; }
+    if (!confirm('Send ' + label + ' to ' + list.length + ' people' + (skipped ? ' (' + skipped + ' skipped for bad emails)' : '') + '?')) return;
+    var orig = btn ? btn.textContent : '';
+    if (btn) btn.disabled = true;
+    var ok = 0, fail = 0, errs = [];
+    (function next(i){
+      if (i >= list.length){
+        if (btn){ btn.disabled = false; btn.textContent = orig; }
+        var msg = '✅ Sent ' + ok + ' of ' + list.length + '.';
+        if (fail) msg += '\n⚠️ ' + fail + ' failed:\n' + errs.slice(0,10).join('\n');
+        if (skipped) msg += '\n\n(' + skipped + ' skipped — blank or invalid email)';
+        alert(msg);
+        return;
+      }
+      if (btn) btn.textContent = 'Sending… (' + (i+1) + '/' + list.length + ')';
+      emailjs.send(EMAILJS_SERVICE_ID, templateId, { from_name: list[i].name, to_email: (list[i].email||'').trim() })
+        .then(function(){ ok++; setTimeout(function(){ next(i+1); }, 1500); })
+        .catch(function(e){ fail++; errs.push((list[i].email||'?') + ' — ' + ((e && (e.text || e.message)) || 'send failed')); console.error('[sendBatch] failed for', list[i].email, e); setTimeout(function(){ next(i+1); }, 1500); });
+    })(0);
+  }
   document.getElementById('admin-club-welcome-btn').addEventListener('click', function(){
-    if (MC_TMPL_CLUB_WELCOME.indexOf('REPLACE') !== -1){ alert('Create the Auric Club Welcome template in EmailJS first (from AURIC_CLUB_WELCOME_TEMPLATE.html), then send me the ID.'); return; }
+    var btn = this;
     getData(function(data){
       var seen={}, list=[];
       SESSIONS.forEach(function(sess){ (data[sess.id]||[]).filter(function(r){return r.type==='confirmed';}).forEach(function(rec){ var k=(rec.email||'').toLowerCase(); if(k && !seen[k]){ seen[k]=1; list.push(rec); } }); });
-      if (!list.length){ alert('No Juneteenth attendees found.'); return; }
-      if (typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
-      if (!confirm('Send the Auric Club welcome (with early access) to '+list.length+' Juneteenth attendee(s)?')) return;
-      var sent=0, fail=0;
-      list.forEach(function(person){
-        emailjs.send(EMAILJS_SERVICE_ID, MC_TMPL_CLUB_WELCOME, { from_name:person.name, to_email:person.email })
-          .then(function(){ sent++; if(sent+fail===list.length) alert('Sent to '+sent+' attendee(s)'+(fail?' ('+fail+' failed)':'')+'.'); })
-          .catch(function(){ fail++; if(sent+fail===list.length) alert('Sent to '+sent+' attendee(s)'+(fail?' ('+fail+' failed)':'')+'.'); });
-      });
+      sendBatch(list, MC_TMPL_CLUB_WELCOME, 'the Auric Club welcome (with early access)', btn);
     });
   });
   document.getElementById('admin-early-notify-btn').addEventListener('click', function(){
-    if (MC_TMPL_EARLY_NOTIFY.indexOf('REPLACE') !== -1){ alert('Create the notify-list early-access template in EmailJS first (from NOTIFY_EARLY_ACCESS_TEMPLATE.html), then send me the ID.'); return; }
-    getNotifyList(function(data){
-      var list = data.notify || [];
-      if (!list.length){ alert('No one on the notify list yet.'); return; }
-      if (typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
-      if (!confirm('Send EARLY ACCESS to '+list.length+' people on the notify list?')) return;
-      var sent=0, fail=0;
-      list.forEach(function(person){
-        emailjs.send(EMAILJS_SERVICE_ID, MC_TMPL_EARLY_NOTIFY, { from_name:person.name, to_email:person.email })
-          .then(function(){ sent++; if(sent+fail===list.length) alert('Sent early access to '+sent+'.'); })
-          .catch(function(){ fail++; if(sent+fail===list.length) alert('Sent to '+sent+' ('+fail+' failed).'); });
-      });
-    });
+    var btn = this;
+    getNotifyList(function(data){ sendBatch(data.notify, MC_TMPL_EARLY_NOTIFY, 'early access', btn); });
   });
   document.getElementById('admin-blast-btn').addEventListener('click', function(){
-    getNotifyList(function(data){
-      var list = data.notify || [];
-      if (!list.length){ alert('No one on the notify list yet.'); return; }
-      if (!confirm('Send registration open email to ' + list.length + ' people on the Mat & Chat notify list?')) return;
-      if (typeof emailjs === 'undefined'){ alert('EmailJS not loaded.'); return; }
-      var sent = 0;
-      list.forEach(function(person){
-        emailjs.send(EMAILJS_SERVICE_ID, TMPL_BLAST, {
-          from_name: person.name,
-          to_email:  person.email
-        }).then(function(){ sent++; if(sent===list.length) alert('\u2705 Blasted to ' + sent + ' people!'); })
-          .catch(function(){ alert('\u26a0\ufe0f Some emails may not have sent.'); });
-      });
-    });
+    var btn = this;
+    getNotifyList(function(data){ sendBatch(data.notify, TMPL_BLAST, 'the registration-open email', btn); });
   });
 
   // Wire up Event Badges admin section: load current state + save on toggle
