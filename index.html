@@ -3729,7 +3729,7 @@
         <p>Arrival 11:35 AM &#183; Art starts 11:45 AM &#183; $65</p>
         <strong>What&rsquo;s Included</strong>
         <p>
-          &#10022; Guided art &amp; intention-setting<br>
+          &#10022; Guided art &amp; intention-setting with Georgina<br>
           &#10022; Mat Pilates with Niara<br>
           &#10022; All art &amp; mat materials provided<br>
           &#10022; Refreshments &amp; chat after<br>
@@ -8497,6 +8497,19 @@ document.addEventListener('DOMContentLoaded', function() {
           if (btnEvents) btnEvents.click();
         } else {
           switchTab('btn-events'); showAllPanels('tab-matchat');
+        }
+      }
+      else if (eventParam === 'recharge') {
+        // Respect Create & Recharge registration lock — if registration hasn't opened
+        // (and no owner ?preview unlock), bounce to Events so the visitor sees the
+        // "Opens July 15" card instead of the booking form.
+        var crCardDl = document.getElementById('event-card-recharge');
+        if (crCardDl && crCardDl.classList.contains('is-locked')) {
+          var btnEv = document.getElementById('btn-events');
+          if (btnEv) btnEv.click();
+        } else {
+          switchTab('btn-events'); showAllPanels('tab-recharge');
+          if (typeof buildCRSpots === 'function') buildCRSpots();
         }
       }
       else if (eventParam === 'coming') { switchTab('btn-events'); showAllPanels('tab-coming'); }
