@@ -6222,18 +6222,20 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // FOUNDING FOUR — emails the first 4 confirmed Mat & Chat bookers their free-tote note.
-  // getMCData returns rows ordered by created_at, so the first 4 confirmed = earliest bookers.
+  // FOUNDING FOUR — emails the first confirmed Mat & Chat bookers their free-tote note.
+  // getMCData returns rows ordered by created_at, so the first N confirmed = earliest bookers.
   // Opens a checkbox picker so Niara chooses exactly who gets the email (e.g. skip anyone
   // already emailed manually). Already-sent people start unchecked but can be overridden.
+  // FOUNDING_GIFT_COUNT controls how many of the earliest bookers are offered the gift.
+  var FOUNDING_GIFT_COUNT = 5;
   document.getElementById('admin-founding-btn').addEventListener('click', function(){
     getMCData(function(data){
       var confirmed = (data.mc1 || []).filter(function(r){ return r.type === 'confirmed'; });
       // Skip anyone whose admin notes contain "#nobag" (e.g. already got a tote at a
-      // past event). The next eligible booker automatically rolls up to fill the four.
+      // past event). The next eligible booker automatically rolls up to fill the slots.
       var eligible = confirmed.filter(function(r){ return !/#nobag/i.test(r.adminNotes || ''); });
       var skipped  = confirmed.filter(function(r){ return  /#nobag/i.test(r.adminNotes || ''); });
-      var four = eligible.slice(0, 4);
+      var four = eligible.slice(0, FOUNDING_GIFT_COUNT);
       if (!four.length){ alert('No eligible Mat & Chat bookings yet.'); return; }
       if (typeof emailjs === 'undefined'){ alert('EmailJS not loaded.'); return; }
       if (MC_TMPL_FOUNDING.indexOf('REPLACE_ME') !== -1){ alert('Set MC_TMPL_FOUNDING to your real EmailJS template id first.'); return; }
