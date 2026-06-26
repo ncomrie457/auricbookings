@@ -255,10 +255,10 @@
     }
 
     /* Event card hover lift */
-    #event-card-pilates, #event-card-matchat, #event-card-coming {
+    #event-card-pilates, #event-card-matchat, #event-card-recharge, #event-card-coming {
       will-change: transform, box-shadow;
     }
-    #event-card-pilates:hover, #event-card-matchat:hover, #event-card-coming:hover {
+    #event-card-pilates:hover, #event-card-matchat:hover, #event-card-recharge:hover, #event-card-coming:hover {
       transform: translateY(-4px) !important;
       box-shadow: 0 12px 32px rgba(92,74,58,.18) !important;
     }
@@ -268,6 +268,10 @@
     #event-card-pilates:hover img, #event-card-matchat:hover img {
       transform: scale(1.04);
     }
+    /* When the Create & Recharge card is locked, hide the placeholder's decorative
+       text so it doesn't collide with the "Coming Soon" lock message (the green
+       gradient stays as the backdrop). The text returns once registration opens. */
+    #event-card-recharge.is-locked .bq-event-placeholder > div { visibility: hidden; }
 
     /* Scroll-triggered fade-in (applied via JS) */
     .scroll-reveal {
@@ -2623,6 +2627,28 @@
         <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
       </button>
 
+      <!-- Create & Recharge -->
+      <button type="button" id="event-card-recharge" class="bq-event scroll-reveal" data-event-date="2026-08-15" data-event-name="Create &amp; Recharge" data-reg-opens="2026-07-15">
+        <div class="bq-event-photo">
+          <div class="bq-event-placeholder" aria-hidden="true" style="width:100%;height:100%;min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:1.5rem;background:radial-gradient(120% 90% at 50% 18%, #45562f 0%, #3b4a2f 48%, #313e27 100%);">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:2.6rem;color:#e7c47e;line-height:1;">&#10022;</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.7rem;color:#f4ecdb;line-height:1.15;margin-top:.5rem;">Create &amp; Recharge</div>
+            <div style="font-family:'Jost',sans-serif;letter-spacing:.18em;font-size:.62rem;text-transform:uppercase;color:#c9a463;margin-top:.7rem;">Art &#183; Intention &#183; Mat Pilates</div>
+          </div>
+          <div class="bq-event-status" aria-hidden="true">Sold Out</div>
+          <div class="bq-event-lock" aria-hidden="true">
+            <div class="bq-event-lock-eyebrow">Coming Soon</div>
+            <div class="bq-event-lock-msg">Registration for<br>Create &amp; Recharge<br>opens</div>
+            <div class="bq-event-lock-date">July 15<span class="bq-event-lock-ord">th</span></div>
+          </div>
+        </div>
+        <div class="bq-event-date">08.15.26 &#183; Create &amp; Recharge</div>
+        <div class="bq-event-name">Create <em>&amp;</em> Recharge</div>
+        <div class="bq-event-sub">Art + Mat Pilates &#183; 11:45 AM &#183; $65</div>
+        <div id="recharge-card-spots" class="bq-event-spots"></div>
+        <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
+      </button>
+
     </div>
 
   </div>
@@ -3671,6 +3697,264 @@
     </div><!-- /form-col -->
   </div><!-- /mc-page-layout -->
 </div><!-- /tab-matchat -->
+
+<!-- TAB: Create & Recharge -->
+<div id="tab-recharge" class="tab-panel" role="tabpanel" aria-labelledby="btn-events">
+  <div style="max-width:1100px;margin:2rem auto 0;padding:0 1.25rem;">
+    <button type="button" id="back-to-events-recharge" class="btn btn-secondary" style="font-size:.82rem;margin-bottom:1rem;">&#8592; Back to Events</button>
+  </div>
+  <div style="max-width:760px;margin:.5rem auto 2.75rem;padding:0 1.25rem;text-align:center;">
+    <div class="bq-section-eyebrow" style="margin-bottom:.6rem;">An Invitation</div>
+    <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.55rem;color:var(--brown);line-height:1.3;margin:0 0 1.1rem;">Set your intentions through art, then embody them on the mat.</p>
+    <p style="font-family:Georgia,serif;font-size:1rem;line-height:1.85;color:#3d322a;margin:0 0 1.1rem;">Join <strong>Georgina Arroyo</strong> &mdash; an artist with residencies at ACE Hotel, Arts Letters and Numbers, and Camp Stomping Ground &mdash; and <strong>Niara Comrie</strong>, certified Pilates instructor, for Create &amp; Recharge, a curated Auric experience. Set your intentions through art, then embody that practice through mat Pilates. Art and Pilates mat materials will be provided. Simply bring good vibes and positive energy.</p>
+    <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.2rem;color:var(--gold-text);margin:0;">Create. Move. Recharge.</p>
+  </div>
+  <div class="page-layout" id="cr-page-layout">
+
+    <!-- Left: Flyer placeholder + details -->
+    <div class="flyer-col" id="cr-flyer-col">
+      <div class="bq-flyer-wrap" id="recharge-flyer-wrap">
+        <div aria-hidden="true" style="aspect-ratio:4/5;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;border-radius:12px;background:radial-gradient(120% 90% at 50% 16%, #45562f 0%, #3b4a2f 48%, #313e27 100%);box-shadow:0 14px 40px rgba(0,0,0,.25);">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:3rem;color:#e7c47e;line-height:1;">&#10022;</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:2.1rem;color:#f4ecdb;line-height:1.15;margin-top:.6rem;">Create &amp; Recharge</div>
+          <div style="font-family:'Jost',sans-serif;letter-spacing:.2em;font-size:.7rem;text-transform:uppercase;color:#c9a463;margin-top:.9rem;">Art &#183; Intention &#183; Mat Pilates</div>
+          <div style="font-family:'Jost',sans-serif;font-size:.82rem;color:#cdbf9c;margin-top:1.4rem;letter-spacing:.04em;">Saturday, August 15th &#183; 11:45 AM</div>
+        </div>
+        <div class="bq-event-status" aria-hidden="true">Sold Out</div>
+      </div>
+      <div class="event-details-box">
+        <strong>Location</strong>
+        <p>300 W 38th Street, 2F<br>New York, NY 10018</p>
+        <strong>August 15th &#8212; One Session</strong>
+        <p>Arrival 11:35 AM &#183; Art starts 11:45 AM &#183; $65</p>
+        <strong>What&rsquo;s Included</strong>
+        <p>
+          &#10022; Guided art &amp; intention-setting<br>
+          &#10022; Mat Pilates with Niara<br>
+          &#10022; All art &amp; mat materials provided<br>
+          &#10022; Refreshments &amp; chat after<br>
+          &#10022; Intimate setting &mdash; only 25 spots
+        </p>
+        <strong>Getting There</strong>
+        <p>
+          <strong>Subway:</strong> <span style="background:#2850AD;color:#fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;font-size:11px;font-weight:700;vertical-align:middle;">A</span> <span style="background:#2850AD;color:#fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;font-size:11px;font-weight:700;vertical-align:middle;">C</span> <span style="background:#2850AD;color:#fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;font-size:11px;font-weight:700;vertical-align:middle;">E</span> to 42nd St&ndash;Port Authority<br>
+          <strong>Also:</strong> <span style="background:#EE352E;color:#fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;font-size:11px;font-weight:700;vertical-align:middle;">1</span> <span style="background:#EE352E;color:#fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;font-size:11px;font-weight:700;vertical-align:middle;">2</span> <span style="background:#EE352E;color:#fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;font-size:11px;font-weight:700;vertical-align:middle;">3</span> to 34th St&ndash;Penn Station<br>
+          <strong>Parking:</strong> Nearby parking garages available
+        </p>
+        <p style="margin-top:.5rem;">
+          <a href="https://maps.google.com/?q=300+W+38th+Street+New+York+NY+10018" target="_blank" rel="noopener noreferrer" style="color:var(--gold-text);font-weight:600;font-size:.85rem;text-decoration:none;margin-right:.75rem;">&#128506; Google Maps</a>
+          <a href="https://maps.apple.com/?q=300+W+38th+Street+New+York+NY+10018" target="_blank" rel="noopener noreferrer" style="color:var(--gold-text);font-weight:600;font-size:.85rem;text-decoration:none;">&#127822; Apple Maps</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Right: Registration -->
+    <div class="form-col">
+
+      <!-- STEP 1: Register -->
+      <div id="cr-step-register" class="card">
+        <h2>Reserve Your Spot</h2>
+        <p class="subtitle">Fill in your details to register. Limited spots.</p>
+        <div class="field">
+          <label for="cr-reg-name">Full Legal Name <span class="required" aria-hidden="true">*</span></label>
+          <input type="text" id="cr-reg-name" placeholder="Enter your full legal name" aria-required="true">
+          <div id="cr-reg-name-err" class="err-msg" role="alert"></div>
+        </div>
+        <div class="field">
+          <label for="cr-reg-email">Email Address <span class="required" aria-hidden="true">*</span></label>
+          <input type="email" id="cr-reg-email" placeholder="your@email.com" aria-required="true">
+          <div id="cr-reg-email-err" class="err-msg" role="alert"></div>
+        </div>
+        <div class="field">
+          <label for="cr-reg-phone">Phone Number <span style="font-weight:400;color:var(--text-muted);font-size:.78rem;">(optional)</span></label>
+          <input type="tel" id="cr-reg-phone" placeholder="(555) 123-4567" autocomplete="tel">
+          <p style="font-size:.75rem;color:var(--text-muted);margin-top:.3rem;line-height:1.5;">For class day reminders &mdash; we&rsquo;ll text you 24 hours before. Never shared, opt-out anytime.</p>
+        </div>
+
+        <div id="cr-spots-display" style="margin-bottom:1rem;padding:.75rem 1rem;background:#faf5ee;border-radius:10px;font-size:.85rem;color:#3d322a;text-align:center;"></div>
+        <div class="privacy-bar">
+          By registering you agree to our <button type="button" id="cr-open-privacy-btn" style="background:none;border:none;color:var(--gold-text);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Privacy Policy</button>, <button type="button" id="cr-open-terms-btn" style="background:none;border:none;color:var(--gold-text);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Terms &amp; Refund Policy</button>, and <button type="button" id="cr-open-policies-btn" style="background:none;border:none;color:var(--gold-text);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Class Policies</button> <span style="color:var(--text-muted);">(lateness &amp; medical)</span>.
+        </div>
+        <div style="margin-top:1.25rem;display:flex;justify-content:flex-end;gap:.75rem;">
+          <button type="button" id="cr-join-waitlist-btn" class="btn btn-secondary hidden">Join Waitlist &#8594;</button>
+          <button type="button" id="cr-to-waiver-btn" class="btn btn-primary">Continue to Waiver &#8594;</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Waiver -->
+      <div id="cr-step-waiver" class="card hidden">
+        <!-- Summary box -->
+        <div style="background:#faf5ee;border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.25rem;margin-bottom:1.25rem;">
+          <p style="font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--brown);margin-bottom:.6rem;">Your Booking Summary</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;font-size:.85rem;color:#3d322a;margin-bottom:.5rem;">
+            <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Event</span><strong>Create &amp; Recharge</strong></div>
+            <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Date</span><strong>August 15th</strong></div>
+            <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Time</span><strong>11:45 AM</strong></div>
+            <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Price</span><strong>$65</strong></div>
+          </div>
+          <p style="font-size:.8rem;color:#3d322a;margin-bottom:.75rem;">&#128205; 300 W 38th Street, 2F &#183; New York, NY 10018</p>
+          <div style="border-top:1px solid var(--border);padding-top:.75rem;">
+            <p style="font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--brown);margin-bottom:.3rem;">Complete Your Booking</p>
+            <p style="font-size:.8rem;color:#3d322a;line-height:1.55;margin:0;">Check all 19 clauses and sign your name below. Payment opens automatically after signing &#8212; <span>$65</span> to confirm your spot.</p>
+          </div>
+        </div>
+
+        <div>
+          <div>
+
+            <!-- Pilates Experience -->
+            <div class="field" style="margin-bottom:1.1rem;">
+              <label style="display:block;font-size:.85rem;color:var(--brown);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;">Pilates Experience</label>
+              <p style="font-size:.78rem;color:var(--text-muted);margin:0 0 .55rem;line-height:1.5;">Helps your instructor plan the class for you.</p>
+              <label class="mc-health-row"><input type="radio" name="cr-experience" value="First time"><span>First time</span></label>
+              <label class="mc-health-row"><input type="radio" name="cr-experience" value="A handful of classes"><span>A handful of classes</span></label>
+              <label class="mc-health-row"><input type="radio" name="cr-experience" value="Regular practice"><span>Regular practice</span></label>
+            </div>
+
+            <!-- Health Disclosure — Section 1: Clearance required -->
+            <div class="field" style="margin-bottom:1.1rem;">
+              <label style="display:block;font-size:.85rem;color:var(--brown);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;">Health Disclosure</label>
+              <p style="font-size:.82rem;color:#3d322a;margin:0 0 .85rem;line-height:1.55;">For your safety, please share anything your instructor should know. This information is reviewed for class preparation and <strong>permanently deleted within 48 hours</strong>.</p>
+              <p style="font-size:.78rem;color:var(--text-muted);margin:0 0 .65rem;line-height:1.5;"><strong style="color:#3d322a;">Have you had any of the following in the past 3 months?</strong><br><em>Physician clearance required if yes.</em></p>
+              <label class="mc-health-row"><input type="checkbox" id="cr-h-spine"><span>Spine, neck, or back surgery or injury</span></label>
+              <label class="mc-health-row"><input type="checkbox" id="cr-h-joint"><span>Recent joint surgery or significant injury</span></label>
+              <label class="mc-health-row"><input type="checkbox" id="cr-h-pregnant"><span>Pregnancy</span></label>
+              <label class="mc-health-row"><input type="checkbox" id="cr-h-osteo"><span>Severe osteoporosis or bone density issues</span></label>
+            </div>
+
+            <!-- Health Disclosure — Section 2: Disclosure only -->
+            <div class="field" style="margin-bottom:1.1rem;">
+              <p style="font-size:.78rem;color:var(--text-muted);margin:0 0 .55rem;line-height:1.5;"><strong style="color:#3d322a;">Do you experience any of the following?</strong><br><em>Disclosure only.</em></p>
+              <label class="mc-health-row"><input type="checkbox" id="cr-h-dizzy"><span>Dizziness, balance problems, or vertigo</span></label>
+            </div>
+
+            <!-- Health Disclosure — Section 3: Free text -->
+            <div class="field" style="margin-bottom:1rem;">
+              <label for="cr-h-notes" style="display:block;font-size:.78rem;color:var(--text-muted);margin:0 0 .4rem;line-height:1.5;"><strong style="color:#3d322a;">Is there anything else about your body or fitness that would help me plan the class for you?</strong><br><em>e.g., chronic issues, areas to avoid, modifications you typically use.</em></label>
+              <textarea id="cr-h-notes" rows="3" style="width:100%;padding:.65rem .85rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.88rem;background:var(--cream-light);color:#3d322a;resize:vertical;box-sizing:border-box;line-height:1.5;" placeholder="Optional &mdash; share anything you'd like the instructor to know."></textarea>
+            </div>
+
+            <!-- Health Disclosure — Section 4: Food allergies -->
+            <div class="field" style="margin-bottom:1.1rem;padding:.85rem 1rem;background:#faf5ee;border-left:3px solid var(--gold);border-radius:0 8px 8px 0;">
+              <label for="cr-h-allergies" style="display:block;font-size:.78rem;color:#3d322a;margin:0 0 .55rem;line-height:1.5;">
+                <strong>&#x1F36A; Light refreshments will be offered after class.</strong><br>
+                <em style="color:var(--text-muted);">Please disclose any food allergies &mdash; including <strong>airborne sensitivities</strong> (peanuts, tree nuts, sesame, shellfish, etc.) &mdash; so Auric Movement can choose safe refreshments and accommodate everyone.</em>
+              </label>
+              <textarea id="cr-h-allergies" rows="2" style="width:100%;padding:.65rem .85rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.88rem;background:var(--white);color:#3d322a;resize:vertical;box-sizing:border-box;line-height:1.5;" placeholder="e.g., peanut allergy (airborne sensitivity), gluten intolerance, dairy-free, none"></textarea>
+            </div>
+
+            <!-- Policy footer -->
+            <div style="margin-bottom:1.5rem;padding:.7rem .85rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.75rem;color:#3d322a;line-height:1.55;">
+              <strong style="color:var(--gold-text);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">Policy</strong><br>
+              If you checked any item in the first section, you must provide written physician clearance before attending. This information will be reviewed for class preparation and <strong>deleted within 48 hours</strong>.
+            </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.5rem;margin-bottom:.4rem;">
+              <h2>Liability Waiver &amp; Release</h2>
+              <span style="font-size:.85rem;color:var(--text-muted);">Signing as <strong id="cr-waiver-name-display"></strong></span>
+            </div>
+            <p class="subtitle">Read each clause carefully and check the box to confirm. All 19 clauses must be acknowledged before signing. You may select all at once or check them individually.</p>
+            <div class="progress-section">
+              <div class="progress-label">
+                <span><span id="cr-confirmed-count">0</span>/19 confirmed</span>
+                <span id="cr-remaining-text">19 remaining</span>
+              </div>
+              <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="19" id="cr-progress-track">
+                <div class="progress-fill" id="cr-progress-fill"></div>
+              </div>
+            </div>
+            <div style="margin-bottom:.75rem;">
+              <button type="button" id="cr-select-all-btn" class="btn btn-secondary" style="font-size:.82rem;padding:.5rem 1rem;width:100%;justify-content:center;">&#10003; Select All Clauses</button>
+            </div>
+            <div id="cr-clauses-container" role="group" aria-label="Waiver clauses"></div>
+
+            <!-- Cancellation & Credit Policy Acknowledgment -->
+            <div style="margin:1.25rem 0;padding:1rem 1.25rem;background:#faf5ee;border:2px solid var(--gold);border-radius:10px;">
+              <h3 style="font-size:.85rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brown);margin-bottom:.6rem;">&#9888; Cancellation &amp; Credit Policy &mdash; Create &amp; Recharge</h3>
+              <p style="font-size:.85rem;color:#3d322a;line-height:1.6;margin:0 0 .5rem;">By booking this session, you agree to the following:</p>
+              <ul style="font-size:.85rem;color:#3d322a;line-height:1.7;margin:0 0 .75rem;padding-left:1.25rem;">
+                <li><strong>All sales are final</strong> &mdash; no cash refunds.</li>
+                <li>Cancel at least <strong>48 hours before</strong> the session and we&rsquo;ll issue a <strong>credit for the full amount you paid</strong>, valid toward any future <strong>Auric Movement event hosted by Niara</strong> for <strong>6 months</strong>. <em>(Collaborations &amp; partner events excluded.)</em></li>
+                <li>Cancellations within 48 hours of the session, or no-shows, are <strong>not eligible for a credit</strong>.</li>
+                <li><strong>Spot transfers to a friend are welcome up to 24 hours before the event.</strong> Email <a href="mailto:auricmovement@outlook.com" style="color:var(--gold-text);font-weight:600;">auricmovement@outlook.com</a> with both names and emails to arrange.</li>
+              </ul>
+              <label style="display:flex;align-items:flex-start;gap:.6rem;padding:.65rem .75rem;background:#fff;border:1px solid var(--gold);border-radius:8px;cursor:pointer;font-size:.85rem;color:#3d322a;">
+                <input type="checkbox" id="cr-refund-policy-agree" style="margin-top:.15rem;accent-color:var(--gold);width:18px;height:18px;flex-shrink:0;">
+                <span>I have read and agree to the Create &amp; Recharge cancellation &amp; credit policy above. <span style="color:var(--red);">*</span></span>
+              </label>
+              <div id="cr-refund-policy-err" class="err-msg" role="alert"></div>
+            </div>
+
+            <div class="sig-section">
+              <div class="statement">
+                I, <strong id="cr-waiver-name-stmt"></strong>, acknowledge that I have carefully read and fully understand this Liability Waiver &amp; Release. I understand that I am giving up substantial legal rights, including the right to sue. I sign this agreement freely and voluntarily, without any inducement.
+              </div>
+              <div class="final-check">
+                <input type="checkbox" id="cr-final-agree" disabled>
+                <label for="cr-final-agree">I have read, understood, and agree to all terms above</label>
+              </div>
+              <p style="font-size:.78rem;color:var(--text-muted);line-height:1.6;margin-bottom:.75rem;">By typing your name below you are signing this agreement electronically. You agree that your electronic signature is the legal equivalent of your handwritten signature and is legally binding under the E-SIGN Act, 15 U.S.C. &#167; 7001.</p>
+              <div class="field">
+                <label for="cr-sig-input">Digital Signature &#8212; Type your full name <span class="required" aria-hidden="true">*</span></label>
+                <input type="text" id="cr-sig-input" placeholder="Type your full legal name to sign" aria-required="true" disabled>
+                <div id="cr-sig-err" class="err-msg" role="alert"></div>
+              </div>
+              <button type="button" id="cr-submit-btn" class="btn btn-primary btn-full" disabled>Submit &amp; Reserve My Spot &#10022;</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3a: Confirmed -->
+      <div id="cr-step-confirmed" class="card success-card hidden">
+        <div class="checkmark" aria-hidden="true">&#10022;</div>
+        <h2 style="color:var(--brown);">Thank You!</h2>
+        <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:1.25rem;">Your waiver has been completed successfully.</p>
+        <p class="detail"><strong>Name:</strong> <span id="cr-conf-name"></span></p>
+        <p class="detail"><strong>Event:</strong> Create &amp; Recharge &#8212; August 15th</p>
+        <p class="detail"><strong>Arrival:</strong> 11:35 AM &#183; Art starts 11:45 AM</p>
+        <p class="detail"><strong>Waiver signed at:</strong> <span id="cr-conf-time"></span></p>
+        <div id="cr-email-status"></div>
+        <div id="cr-confirmed-payment-box" style="margin-top:1.25rem;padding:1rem 1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:10px;text-align:left;">
+          <p style="font-size:.9rem;color:var(--brown);font-weight:700;margin-bottom:.5rem;">What happens next?</p>
+          <p style="font-size:.85rem;color:#3d322a;line-height:1.75;">Our team will verify your payment and send you a confirmation email once your spot is secured. If you have not yet completed payment, click below &#8212; it will open Stripe.</p>
+          <div id="cr-confirmed-pay-slot"><stripe-buy-button
+            buy-button-id="buy_btn_1TmfgnCyx5PIptEiSfabhBlh"
+            publishable-key="pk_live_51TSmNuCyx5PIptEi8SCgMFB3I7ECVFeAzDOwjj1ZLrVZX1scB6cH8wAjNor3SFilMwMuqo0aFsbsckjYLU33iSAp00tmUxBVlK"
+          ></stripe-buy-button></div>
+          <p style="font-size:.75rem;color:var(--text-muted);margin-top:.5rem;">Already paid? You're all set &#8212; watch for your confirmation email.</p>
+        </div>
+        <div style="margin-top:1rem;padding:1rem 1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:10px;text-align:center;">
+          <p style="font-size:.85rem;color:var(--brown);font-weight:700;margin-bottom:.5rem;">&#128197; Add to Your Calendar</p>
+          <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:.75rem;">Works with Apple Calendar, Outlook, Google Calendar &mdash; any calendar app.</p>
+          <button type="button" id="cr-add-to-cal-btn" class="btn btn-secondary" style="font-size:.85rem;">&#128197; Add to Calendar (.ics)</button>
+        </div>
+        <div style="margin-top:1rem;padding:.75rem 1rem;background:#fef9e7;border:1px solid #f0dca0;border-radius:10px;font-size:.82rem;color:#7a6320;line-height:1.6;">
+          &#128236; <strong>Can't find your waiver email?</strong> Please check your <strong>spam or junk folder</strong> and mark it as "Not Spam".
+        </div>
+        <div class="success-actions">
+          <button type="button" id="cr-download-waiver-btn" class="btn btn-secondary">&#128196; Download My Waiver (PDF)</button>
+          <button type="button" id="cr-new-btn" class="btn btn-secondary">New Participant &#8594;</button>
+        </div>
+      </div>
+
+      <!-- STEP 3b: Waitlist -->
+      <div id="cr-step-waitlist" class="card waitlist-card hidden">
+        <div class="waitlist-icon" aria-hidden="true">&#128336;</div>
+        <h2>You're on the Waitlist</h2>
+        <div class="waitlist-pos" id="cr-waitlist-pos-display"></div>
+        <p class="detail"><strong>Name:</strong> <span id="cr-wl-name"></span></p>
+        <p class="detail"><strong>Email:</strong> <span id="cr-wl-email"></span></p>
+        <div id="cr-wl-email-status"></div>
+        <p style="color:var(--text-muted);font-size:.85rem;margin-top:1rem;line-height:1.6;">This event is currently full. If a spot opens, everyone on the waitlist will be notified at the same time &#8212; first to respond gets it.</p>
+        <div class="success-actions">
+          <button type="button" id="cr-new-btn-wl" class="btn btn-secondary">New Participant &#8594;</button>
+        </div>
+      </div>
+
+    </div><!-- /form-col -->
+  </div><!-- /cr-page-layout -->
+</div><!-- /tab-recharge -->
 
 <!-- Admin panel &#8212; outside tabs so always accessible -->
 <div style="max-width:1100px;margin:0 auto;padding:0 1.25rem 2rem;">
@@ -5812,10 +6096,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Pre-create section containers in fixed order so async fetches don't race
     var sessionsContainer = document.createElement('div'); sessionsContainer.id = 'admin-sessions-container';
     var mcContainer       = document.createElement('div'); mcContainer.id       = 'admin-mc-container';
+    var crContainer       = document.createElement('div'); crContainer.id       = 'admin-cr-container';
     var corpContainer     = document.createElement('div'); corpContainer.id     = 'admin-corp-container';
     body.appendChild(sessionsContainer);
     body.appendChild(mcContainer);
+    body.appendChild(crContainer);
     body.appendChild(corpContainer);
+    if (typeof renderCRSection === 'function') renderCRSection(crContainer);
 
     getData(function(data){
       sessionsContainer.innerHTML='';
@@ -7162,6 +7449,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         ['s1','s2'].forEach(function(s){ (pdata[s]||[]).forEach(function(r){ tally(r, 'pilates_registrations'); }); });
         (mdata.mc1||[]).forEach(function(r){ tally(r, 'matchat_registrations'); });
+        if (typeof getCRData === 'function') {
+          getCRData(function(crdata){
+            (crdata.cr1||[]).forEach(function(r){ tally(r, 'create_recharge_registrations'); });
+            callback(marks);
+          });
+          return;
+        }
         callback(marks);
       });
     });
@@ -7545,7 +7839,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function showAllPanels(activeId) {
-    var allPanels = ['tab-home','tab-events','tab-current','tab-matchat','tab-coming','tab-about','tab-past','tab-faq','tab-corporate','tab-members'];
+    var allPanels = ['tab-home','tab-events','tab-current','tab-matchat','tab-recharge','tab-coming','tab-about','tab-past','tab-faq','tab-corporate','tab-members'];
     allPanels.forEach(function(id){
       var el = document.getElementById(id);
       if (!el) return;
@@ -7594,7 +7888,378 @@ document.addEventListener('DOMContentLoaded', function() {
       var mFlyer = document.getElementById('matchat-flyer-wrap');
       if (mFlyer) mFlyer.classList.toggle('is-sold-out', mcIsSoldOut);
     });
+    // Create & Recharge — card spot badge
+    if (typeof getCRData === 'function') getCRData(function(data) {
+      var crRemaining = CR_MAX_SPOTS - (data.cr1||[]).filter(function(r){ return r.type==='confirmed'; }).length;
+      var crEl = document.getElementById('recharge-card-spots');
+      var crIsSoldOut = false;
+      if (crEl) {
+        if (crRemaining <= 0) { setSpotsBadge(crEl, 'Waitlist only', 'sold-out'); crIsSoldOut = true; }
+        else if (crRemaining <= 5) setSpotsBadge(crEl, 'Almost sold out', 'low');
+        else setSpotsBadge(crEl, 'Limited spots', 'available');
+      }
+      var crFlyer = document.getElementById('recharge-flyer-wrap');
+      if (crFlyer) crFlyer.classList.toggle('is-sold-out', crIsSoldOut);
+    });
   }
+
+  // ════════════════════════════════════════════════════════════
+  //  CREATE & RECHARGE — booking engine (mirrors Mat & Chat)
+  //  Sat Aug 15, 2026 · 300 W 38th St, 2F · $65 · 25 spots
+  //  Backed by create_recharge_registrations + book_create_recharge_session RPC.
+  //  Self-contained; reuses shared helpers (supabase, emailjs, clauseTexts,
+  //  escapeHTML, genCode, announce, downloadICSFile, generateWaiverPDF, etc.).
+  // ════════════════════════════════════════════════════════════
+  var CR_MAX_SPOTS = 25;
+  var CR_STRIPE_PUBLISHABLE = 'pk_live_51TSmNuCyx5PIptEi8SCgMFB3I7ECVFeAzDOwjj1ZLrVZX1scB6cH8wAjNor3SFilMwMuqo0aFsbsckjYLU33iSAp00tmUxBVlK';
+  var CR_BUY_BTN_ID = 'buy_btn_1TmfgnCyx5PIptEiSfabhBlh';
+  var CR_EVENT = {
+    id: 'cr1', label: 'Create & Recharge',
+    date: 'August 15th', eventDate: 'Saturday, August 15th',
+    arrival: '11:35 AM', start: '11:45 AM', price: 65,
+    venue: '300 W 38th Street, 2F, New York, NY 10018',
+    stripeUrl: 'https://buy.stripe.com/eVqeVc350bKV88k24a9sk05'
+  };
+  var CR_REFUND_POLICY_TEXT =
+    'All sales are final. To receive a credit, cancel at least 48 hours before the event — ' +
+    'we will issue a credit for the full amount you paid, valid toward any future Auric Movement ' +
+    'event hosted by Niara (collaborations and partner events excluded) for 6 months. ' +
+    'Cancellations within 48 hours of the session, or no-shows, are not eligible for a credit. ' +
+    'Spot transfers to a friend are welcome up to 24 hours before the event — email ' +
+    'auricmovement@outlook.com with both names and emails to arrange.';
+  var CR_STORAGE_KEY = 'auric_recharge';
+  var crCheckedClauses = {}, crCheckedCount = 0, crLastSubmission = null;
+
+  function _crRowToRec(row){
+    return {
+      name: row.name, email: row.email, phone: row.phone || '', signature: row.signature || '',
+      session: 'cr1', sessionLabel: CR_EVENT.label,
+      arrival: CR_EVENT.arrival, classStart: CR_EVENT.start, eventDate: CR_EVENT.eventDate,
+      time: row.time_str, timestamp: row.timestamp_iso,
+      code: row.code, type: row.type,
+      wlPosition: row.wl_position, clausesAgreed: row.clauses_agreed,
+      notes: row.notes || '', adminNotes: row.admin_notes || '',
+      isPaid: !!row.is_paid, paidAt: row.paid_at, expiresAt: row.expires_at,
+      refundPolicyText: CR_REFUND_POLICY_TEXT
+    };
+  }
+  function getCRData(callback){
+    supabase.from('create_recharge_registrations').select('*').order('created_at')
+      .then(function(res){
+        var data = { cr1: (res.data || []).map(_crRowToRec) };
+        try { localStorage.setItem(CR_STORAGE_KEY, JSON.stringify(data)); } catch(e){}
+        callback(data);
+      }, function(){
+        try { callback(JSON.parse(localStorage.getItem(CR_STORAGE_KEY)) || { cr1:[] }); }
+        catch(e){ callback({ cr1:[] }); }
+      });
+  }
+
+  var crSteps = ['cr-step-register','cr-step-waiver','cr-step-confirmed','cr-step-waitlist'];
+  function crShowStep(id){ crSteps.forEach(function(s){ var el=document.getElementById(s); if(el) el.classList.toggle('hidden', s!==id); }); }
+
+  function buildCRSpots(){
+    getCRData(function(data){
+      var confirmed = (data.cr1||[]).filter(function(r){ return r.type==='confirmed'; }).length;
+      var remaining = CR_MAX_SPOTS - confirmed;
+      var el = document.getElementById('cr-spots-display');
+      var waiverBtn = document.getElementById('cr-to-waiver-btn');
+      var wlBtn = document.getElementById('cr-join-waitlist-btn');
+      if (remaining <= 0) {
+        if (el) el.innerHTML = '<span style="color:#9a6535;font-weight:700;">Waitlist only — this event is full</span>';
+        if (waiverBtn) waiverBtn.classList.add('hidden');
+        if (wlBtn) wlBtn.classList.remove('hidden');
+      } else {
+        if (el) el.innerHTML = (remaining <= 5)
+          ? '<span style="color:#9a6535;font-weight:700;">Almost sold out — just a few spots left!</span>'
+          : '<span style="color:#9a6535;font-weight:700;">Limited spots</span>';
+        if (waiverBtn) waiverBtn.classList.remove('hidden');
+        if (wlBtn) wlBtn.classList.add('hidden');
+      }
+    });
+  }
+
+  function composeCRNotes(){
+    var lines = [];
+    var exp = document.querySelector('input[name="cr-experience"]:checked');
+    if (exp) lines.push('Pilates experience: ' + exp.value);
+    var flags = [];
+    if (document.getElementById('cr-h-spine').checked)    flags.push('Spine/neck/back surgery or injury (clearance required)');
+    if (document.getElementById('cr-h-joint').checked)    flags.push('Recent joint surgery or significant injury (clearance required)');
+    if (document.getElementById('cr-h-pregnant').checked) flags.push('Pregnancy (clearance required)');
+    if (document.getElementById('cr-h-osteo').checked)    flags.push('Severe osteoporosis / bone density (clearance required)');
+    if (document.getElementById('cr-h-dizzy').checked)    flags.push('Dizziness / balance / vertigo');
+    if (flags.length) lines.push('Health flags: ' + flags.join('; '));
+    var notes = document.getElementById('cr-h-notes').value.trim();
+    if (notes) lines.push('Notes: ' + notes);
+    var allergies = document.getElementById('cr-h-allergies').value.trim();
+    if (allergies) lines.push('Food allergies: ' + allergies);
+    return lines.join('\n');
+  }
+
+  function buildCRClauses(){
+    var container = document.getElementById('cr-clauses-container');
+    container.innerHTML=''; crCheckedClauses={}; crCheckedCount=0; updateCRProgress();
+    var selBtn = document.getElementById('cr-select-all-btn');
+    if (selBtn){ selBtn.textContent = '✓ Select All Clauses'; selBtn.disabled=false; }
+    clauseTexts.forEach(function(text, i){
+      var div=document.createElement('div'); div.className='clause';
+      var cb=document.createElement('input'); cb.type='checkbox'; cb.id='crcb-'+i;
+      cb.setAttribute('aria-label','Agree to clause '+(i+1)+' of 19');
+      var lbl=document.createElement('label'); lbl.htmlFor='crcb-'+i; lbl.className='clause-text';
+      lbl.innerHTML='<span class="clause-num">'+(i+1)+'.</span> '+text;
+      cb.addEventListener('change', function(){
+        if(this.checked){ crCheckedClauses[i]=true; div.classList.add('checked'); }
+        else { delete crCheckedClauses[i]; div.classList.remove('checked'); }
+        updateCRProgress();
+      });
+      div.appendChild(cb); div.appendChild(lbl); container.appendChild(div);
+    });
+  }
+  function updateCRProgress(){
+    crCheckedCount = Object.keys(crCheckedClauses).length;
+    document.getElementById('cr-confirmed-count').textContent = crCheckedCount;
+    document.getElementById('cr-remaining-text').textContent  = (19-crCheckedCount)+' remaining';
+    document.getElementById('cr-progress-fill').style.width   = (crCheckedCount/19*100)+'%';
+    document.getElementById('cr-progress-track').setAttribute('aria-valuenow', crCheckedCount);
+    var fa = document.getElementById('cr-final-agree');
+    if (crCheckedCount===19){ fa.disabled=false; }
+    else { fa.disabled=true; fa.checked=false; document.getElementById('cr-sig-input').disabled=true; document.getElementById('cr-sig-input').value=''; document.getElementById('cr-submit-btn').disabled=true; }
+  }
+
+  var crToWaiverBtn = document.getElementById('cr-to-waiver-btn');
+  if (crToWaiverBtn) crToWaiverBtn.addEventListener('click', function(){
+    var name  = document.getElementById('cr-reg-name').value.trim();
+    var email = document.getElementById('cr-reg-email').value.trim();
+    var ok = true;
+    if (!name||name.length<2){ document.getElementById('cr-reg-name-err').textContent='Please enter your full name.'; ok=false; }
+    else { document.getElementById('cr-reg-name-err').textContent=''; }
+    if (!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ document.getElementById('cr-reg-email-err').textContent='Please enter a valid email.'; ok=false; }
+    else { document.getElementById('cr-reg-email-err').textContent=''; }
+    if (!ok) return;
+    document.getElementById('cr-waiver-name-display').textContent = name;
+    document.getElementById('cr-waiver-name-stmt').textContent    = name;
+    buildCRClauses();
+    crShowStep('cr-step-waiver');
+    var layout=document.getElementById('cr-page-layout'); if(layout) layout.classList.add('waiver-active');
+    document.getElementById('cr-step-waiver').scrollIntoView({behavior:'smooth'});
+    announce('Waiver loaded. 19 clauses to review.');
+  });
+
+  var crSelAll = document.getElementById('cr-select-all-btn');
+  if (crSelAll) crSelAll.addEventListener('click', function(){
+    document.querySelectorAll('#cr-clauses-container input[type="checkbox"]').forEach(function(cb){ if(!cb.checked){ cb.checked=true; cb.dispatchEvent(new Event('change')); } });
+    this.textContent = '✓ All Clauses Selected'; this.disabled=true;
+    announce('All 19 clauses selected.');
+  });
+  var crFinalAgree = document.getElementById('cr-final-agree');
+  if (crFinalAgree) crFinalAgree.addEventListener('change', function(){
+    var si = document.getElementById('cr-sig-input');
+    if(this.checked && crCheckedCount===19){ si.disabled=false; si.focus(); }
+    else { si.disabled=true; si.value=''; document.getElementById('cr-submit-btn').disabled=true; }
+  });
+  var crSig = document.getElementById('cr-sig-input');
+  if (crSig) crSig.addEventListener('input', function(){
+    var refundOk = document.getElementById('cr-refund-policy-agree').checked;
+    var sigOk    = this.value.trim().length >= 2;
+    document.getElementById('cr-submit-btn').disabled = !(refundOk && sigOk);
+    document.getElementById('cr-sig-err').textContent = '';
+  });
+  var crRefund = document.getElementById('cr-refund-policy-agree');
+  if (crRefund) crRefund.addEventListener('change', function(){
+    var sigOk = (document.getElementById('cr-sig-input').value || '').trim().length >= 2;
+    document.getElementById('cr-submit-btn').disabled = !(this.checked && sigOk);
+    if (this.checked) document.getElementById('cr-refund-policy-err').textContent = '';
+  });
+
+  var crSubmitBtn = document.getElementById('cr-submit-btn');
+  if (crSubmitBtn) crSubmitBtn.addEventListener('click', function(){
+    var name  = document.getElementById('cr-reg-name').value.trim();
+    var email = document.getElementById('cr-reg-email').value.trim();
+    var phoneEl = document.getElementById('cr-reg-phone');
+    var phone = phoneEl ? phoneEl.value.trim() : '';
+    var sig   = document.getElementById('cr-sig-input').value.trim();
+    var refundChk = document.getElementById('cr-refund-policy-agree');
+    if (!refundChk || !refundChk.checked) {
+      document.getElementById('cr-refund-policy-err').textContent = 'You must acknowledge the cancellation & credit policy before booking.';
+      refundChk.focus(); refundChk.scrollIntoView({behavior:'smooth', block:'center'}); return;
+    }
+    if(sig.toLowerCase()!==name.toLowerCase()){
+      document.getElementById('cr-sig-err').textContent = 'Signature must match your name: "'+name+'"';
+      document.getElementById('cr-sig-input').focus(); return;
+    }
+    document.getElementById('cr-sig-err').textContent = '';
+    var submitBtn = document.getElementById('cr-submit-btn');
+    submitBtn.disabled=true; submitBtn.textContent = 'Saving...';
+
+    getCRData(function(data){
+      var existing = (data.cr1||[]).filter(function(r){ return (r.email||'').toLowerCase() === email.toLowerCase(); })[0];
+      if (existing) {
+        submitBtn.disabled=false; submitBtn.textContent = 'Submit & Reserve My Spot ✦';
+        alert(existing.type==='confirmed'
+          ? 'You\'re already registered for Create & Recharge with ' + email + '. Check your inbox for your confirmation.'
+          : 'You\'re already on the Create & Recharge waitlist (position #' + (existing.wlPosition||'?') + ').');
+        return;
+      }
+      var now=new Date(); var timeStr=now.toLocaleString(); var code=genCode();
+      var notes = composeCRNotes();
+      var refundAckTime = now.toLocaleString();
+      var ackLine = 'REFUND POLICY ACKNOWLEDGED: ' + refundAckTime + '\nText agreed to: ' + CR_REFUND_POLICY_TEXT;
+      var ticketLine = 'TICKET: Create & Recharge ($' + CR_EVENT.price + ')';
+      var phoneLine = phone ? 'PHONE (for class reminders): ' + phone : '';
+      var notesWithAck = ticketLine + '\n\n' + ackLine + (phoneLine ? '\n\n' + phoneLine : '') + (notes ? '\n\n' + notes : '');
+
+      supabase.rpc('book_create_recharge_session', {
+        p_name:name, p_email:email, p_signature:sig,
+        p_time_str:timeStr, p_timestamp_iso:now.toISOString(),
+        p_code:code, p_clauses_agreed:19, p_notes:notesWithAck,
+        p_is_pair:false, p_friend_name:null, p_friend_email:null,
+        p_max_spots:CR_MAX_SPOTS
+      }).then(function(res){
+        submitBtn.disabled=false; submitBtn.textContent = 'Submit & Reserve My Spot ✦';
+        if (res.error || !res.data || !res.data.length) {
+          console.error('[book_create_recharge_session] RPC failed', res.error);
+          alert('Something went wrong saving your registration. Please try again, or email auricmovement@outlook.com.');
+          return;
+        }
+        var row = res.data[0];
+        var type = row.out_type, wlPos = row.out_wl_position;
+        var record = { name:name, email:email, phone:phone, signature:sig, session:'cr1', sessionLabel:CR_EVENT.label, arrival:CR_EVENT.arrival, classStart:CR_EVENT.start, eventDate:CR_EVENT.eventDate, time:timeStr, timestamp:now.toISOString(), code:code, type:type, wlPosition:wlPos, clausesAgreed:19, notes:notesWithAck, refundPolicyAck:refundAckTime, refundPolicyText:CR_REFUND_POLICY_TEXT, pricePaid:CR_EVENT.price };
+        crLastSubmission = record;
+
+        if(type==='confirmed'){
+          document.getElementById('cr-conf-name').textContent = name;
+          document.getElementById('cr-conf-time').textContent = timeStr;
+          crShowStep('cr-step-confirmed');
+          var layoutC=document.getElementById('cr-page-layout'); if(layoutC) layoutC.classList.remove('waiver-active');
+          document.getElementById('cr-step-confirmed').scrollIntoView({behavior:'smooth'});
+          announce('Waiver signed! Complete payment to confirm your spot.');
+          if(typeof emailjs!=='undefined'){
+            emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
+              admin_email: ADMIN_EMAIL, from_name:name, participant_email:email, to_email:email,
+              session_label:'Create & Recharge — August 15th',
+              arrival_time:CR_EVENT.arrival, registration_type:'Waiver signed — payment pending',
+              sign_time:timeStr, clauses_agreed:'19 of 19', cancel_code:code
+            }).then(function(){ console.log('[admin notif] create&recharge sent for', code); })
+              .catch(function(err){ console.error('[admin notif] create&recharge FAILED for', code, err); });
+          }
+        } else {
+          document.getElementById('cr-wl-name').textContent = name;
+          document.getElementById('cr-wl-email').textContent = email;
+          document.getElementById('cr-waitlist-pos-display').textContent = 'Waitlist position #'+wlPos;
+          crShowStep('cr-step-waitlist');
+          var layoutW=document.getElementById('cr-page-layout'); if(layoutW) layoutW.classList.remove('waiver-active');
+          announce('Session full. Added to waitlist at position '+wlPos+'.');
+        }
+        buildCRSpots(); updateEventCardSpots();
+      }, function(err){
+        submitBtn.disabled=false; submitBtn.textContent = 'Submit & Reserve My Spot ✦';
+        console.error('[book_create_recharge_session] RPC error', err);
+        alert('Something went wrong saving your registration. Please try again, or email auricmovement@outlook.com.');
+      });
+    });
+  });
+
+  function resetCRForm(){
+    crCheckedClauses={}; crCheckedCount=0; crLastSubmission=null;
+    ['cr-reg-name','cr-reg-email','cr-reg-phone','cr-h-notes','cr-h-allergies','cr-sig-input'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+    ['cr-h-spine','cr-h-joint','cr-h-pregnant','cr-h-osteo','cr-h-dizzy','cr-final-agree','cr-refund-policy-agree'].forEach(function(id){ var el=document.getElementById(id); if(el) el.checked=false; });
+    var expSel = document.querySelector('input[name="cr-experience"]:checked'); if(expSel) expSel.checked=false;
+    var si=document.getElementById('cr-sig-input'); if(si) si.disabled=true;
+    var sb=document.getElementById('cr-submit-btn'); if(sb) sb.disabled=true;
+    var layout=document.getElementById('cr-page-layout'); if(layout) layout.classList.remove('waiver-active');
+    buildCRSpots(); crShowStep('cr-step-register');
+  }
+  ['cr-new-btn','cr-new-btn-wl'].forEach(function(id){ var el=document.getElementById(id); if(el) el.addEventListener('click', resetCRForm); });
+
+  var crCalBtn = document.getElementById('cr-add-to-cal-btn');
+  if (crCalBtn) crCalBtn.addEventListener('click', function(){
+    if (!crLastSubmission) return;
+    downloadICSFile({
+      title: 'Create & Recharge — Auric Movement',
+      description: 'Arrival 11:35 AM\nArt starts 11:45 AM, then mat Pilates + refreshments.\n\nConfirmation code: ' + crLastSubmission.code,
+      location: CR_EVENT.venue,
+      startISO: '2026-08-15T15:35:00Z',
+      endISO:   '2026-08-15T17:00:00Z'
+    });
+  });
+  var crDlBtn = document.getElementById('cr-download-waiver-btn');
+  if (crDlBtn) crDlBtn.addEventListener('click', function(){ if(crLastSubmission) generateWaiverPDF(crLastSubmission); });
+
+  var crPrivacyBtn = document.getElementById('cr-open-privacy-btn'); if (crPrivacyBtn) crPrivacyBtn.addEventListener('click', function(){ openModal('privacy-modal'); });
+  var crTermsBtn   = document.getElementById('cr-open-terms-btn');   if (crTermsBtn)   crTermsBtn.addEventListener('click', function(){ openModal('terms-modal'); });
+  var crPolBtn     = document.getElementById('cr-open-policies-btn'); if (crPolBtn)     crPolBtn.addEventListener('click', function(){ openModal('policies-modal'); });
+  var crWlBtn      = document.getElementById('cr-join-waitlist-btn'); if (crWlBtn)      crWlBtn.addEventListener('click', function(){ var b=document.getElementById('cr-to-waiver-btn'); if(b) b.click(); });
+
+  var crCard = document.getElementById('event-card-recharge');
+  if (crCard) crCard.addEventListener('click', function(e){
+    if (this.classList.contains('is-locked')) { e.preventDefault(); return false; }
+    showAllPanels('tab-recharge');
+    buildCRSpots();
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+
+  // CR admin roster (rendered into #admin-cr-container by renderAdmin)
+  function renderCRSection(container){
+    getCRData(function(crData){
+      var block = document.createElement('div'); block.className='admin-session-block' + (isEventPast('2026-08-15')?' collapsed':'');
+      var list = crData.cr1 || [];
+      var confirmed = list.filter(function(r){ return r.type==='confirmed'; });
+      var waitlist  = list.filter(function(r){ return r.type==='waitlist'; });
+      var toMark = confirmed.filter(function(r){ return !/#attended/i.test(r.adminNotes||''); }).length;
+      block.innerHTML = '<h3 style="color:var(--gold-text);">Create &amp; Recharge — Aug 15th · '+confirmed.length+'/'+CR_MAX_SPOTS+' spots · '+waitlist.length+' waitlisted</h3>'+(confirmed.length?'<button onclick="crBulkAttend()" style="margin:.1rem 0 .6rem;background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.3rem .7rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;">✓ Mark all attended ('+toMark+')</button>':'');
+      if(!list.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; }
+      else {
+        list.forEach(function(rec){
+          var item=document.createElement('div'); item.className='admin-sub-item';
+          var attended = /#attended/i.test(rec.adminNotes||'');
+          var attendBtn='<button onclick="toggleAttended(\'create_recharge_registrations\',\''+rec.code+'\')" style="background:'+(attended?'#e8f5e9':'#fff')+';border:1px solid '+(attended?'#a5d6a7':'var(--gold)')+';color:'+(attended?'#2e7d32':'var(--brown)')+';border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">'+(attended?'✓ Attended':'○ Attended')+'</button>';
+          var paidBtn='<button onclick="crAdminTogglePaid(\''+rec.code+'\','+(rec.isPaid?'false':'true')+')" style="background:'+(rec.isPaid?'#e8f5e9':'#fff8e1')+';border:1px solid '+(rec.isPaid?'#a5d6a7':'#ffe082')+';color:'+(rec.isPaid?'#2e7d32':'#f57f17')+';border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">'+(rec.isPaid?'✅ Paid':'⏳ Mark paid')+'</button>';
+          var waiverBtn = rec.signature ? '<button onclick="crAdminWaiverPDF(\''+rec.code+'\')" style="background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F4C4} Waiver</button>' : '';
+          var removeBtn='<button onclick="crAdminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F5D1} Remove</button>';
+          var notesHTML = rec.notes ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;white-space:pre-line;line-height:1.55;"><strong style="color:var(--gold-text);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">\u{1F4DD} Notes for Instructor:</strong><br>'+cleanInstructorNotes(rec.notes)+'</div>' : '';
+          item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span>'+paymentBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+notesHTML+adminNotesField('create_recharge_registrations', rec.code, rec.adminNotes)+'</div>'+
+            '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
+            '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
+            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+attendBtn+paidBtn+waiverBtn+removeBtn+'</div></div>';
+          block.appendChild(item);
+        });
+      }
+      container.innerHTML=''; container.appendChild(block);
+    });
+  }
+  window.crAdminWaiverPDF = function(code){
+    getCRData(function(data){
+      var p = (data.cr1||[]).find(function(r){ return r.code===code; });
+      if(!p){ alert('Could not find registration.'); return; }
+      p.eventDate = CR_EVENT.eventDate;
+      generateWaiverPDF(p);
+    });
+  };
+  window.crAdminRemove = function(code){
+    if(!confirm('Remove this registration? This cannot be undone.')) return;
+    supabase.from('create_recharge_registrations').delete().eq('code', code)
+      .then(function(){ renderAdmin(); buildCRSpots(); updateEventCardSpots(); }, function(){ alert('Could not remove. Try again.'); });
+  };
+  window.crAdminTogglePaid = function(code, paid){
+    supabase.from('create_recharge_registrations').update({ is_paid: !!paid, paid_at: paid ? new Date().toISOString() : null }).eq('code', code)
+      .then(function(){ renderAdmin(); }, function(){ alert('Could not update payment status.'); });
+  };
+  window.crBulkAttend = function(){
+    getCRData(function(data){
+      var todo = (data.cr1||[]).filter(function(r){ return r.type==='confirmed' && !/#attended/i.test(r.adminNotes||''); });
+      if(!todo.length){ alert('Everyone confirmed here is already marked attended.'); return; }
+      if(!confirm('Mark all '+todo.length+' confirmed attendee(s) as attended?\n\nYou can untick any no-shows afterward.')) return;
+      var done=0, fail=0;
+      todo.forEach(function(r){
+        var notes=(r.adminNotes||'').trim(); var newNotes = notes ? notes+' #attended' : '#attended';
+        supabase.from('create_recharge_registrations').update({ admin_notes:newNotes }).eq('code', r.code)
+          .then(function(){ done++; if(done+fail===todo.length) renderAdmin(); }, function(){ fail++; if(done+fail===todo.length){ renderAdmin(); alert(fail+' update(s) failed.'); } });
+      });
+    });
+  };
+  buildCRSpots();
+
   updateEventCardSpots();
 
   // ─── Auto-refresh spot counts ──────────────────────────────────────────
@@ -7734,7 +8399,7 @@ document.addEventListener('DOMContentLoaded', function() {
   })();
 
   // Back buttons
-  ['back-to-events-pilates','back-to-events-matchat','back-to-events-coming'].forEach(function(id){
+  ['back-to-events-pilates','back-to-events-matchat','back-to-events-recharge','back-to-events-coming'].forEach(function(id){
     var el = document.getElementById(id);
     if (el) el.addEventListener('click', function(){
       showAllPanels('tab-events');
@@ -7752,7 +8417,7 @@ document.addEventListener('DOMContentLoaded', function() {
       btn.classList.add('active');
       btn.setAttribute('aria-selected','true');
       var target = btn.getAttribute('aria-controls');
-      var allPanels = ['tab-home','tab-events','tab-current','tab-matchat','tab-coming','tab-about','tab-past','tab-faq','tab-corporate','tab-members'];
+      var allPanels = ['tab-home','tab-events','tab-current','tab-matchat','tab-recharge','tab-coming','tab-about','tab-past','tab-faq','tab-corporate','tab-members'];
       allPanels.forEach(function(id){
         var el = document.getElementById(id);
         if (!el) return;
@@ -7768,7 +8433,7 @@ document.addEventListener('DOMContentLoaded', function() {
     _historyIsPopState = true;
     var panelId = (e.state && e.state.panel) || 'tab-home';
     // For sub-panels & home (no tab button), use showAllPanels directly
-    if (panelId === 'tab-current' || panelId === 'tab-matchat' || panelId === 'tab-coming' || panelId === 'tab-home') {
+    if (panelId === 'tab-current' || panelId === 'tab-matchat' || panelId === 'tab-recharge' || panelId === 'tab-coming' || panelId === 'tab-home') {
       // Also clear active states from tab buttons when going home
       if (panelId === 'tab-home') {
         document.querySelectorAll('.tab-btn').forEach(function(b){
@@ -7796,7 +8461,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function switchTab(tabId) {
     document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
-    var allPanels = ['tab-home','tab-events','tab-current','tab-matchat','tab-coming','tab-about','tab-past','tab-faq','tab-corporate','tab-members'];
+    var allPanels = ['tab-home','tab-events','tab-current','tab-matchat','tab-recharge','tab-coming','tab-about','tab-past','tab-faq','tab-corporate','tab-members'];
     allPanels.forEach(function(id){
       var el = document.getElementById(id);
       if (el) el.classList.toggle('active', id === tabId);
