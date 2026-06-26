@@ -8134,6 +8134,8 @@ document.addEventListener('DOMContentLoaded', function() {
           var layoutC=document.getElementById('cr-page-layout'); if(layoutC) layoutC.classList.remove('waiver-active');
           document.getElementById('cr-step-confirmed').scrollIntoView({behavior:'smooth'});
           announce('Waiver signed! Complete payment to confirm your spot.');
+          // Force payment after waiver (matches Mat & Chat — overlay with the Stripe Buy Button)
+          showCRPaymentOverlay(record);
           if(typeof emailjs!=='undefined'){
             emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
               admin_email: ADMIN_EMAIL, from_name:name, participant_email:email, to_email:email,
@@ -8258,6 +8260,73 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
   };
+  // Forced payment overlay shown right after the waiver is signed (mirrors showMCPaymentOverlay).
+  function showCRPaymentOverlay(record){
+    var existing = document.getElementById('payment-countdown-overlay');
+    if (existing) existing.remove();
+    var overlay = document.createElement('div');
+    overlay.id = 'payment-countdown-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(44,26,14,.85);backdrop-filter:blur(8px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;animation:fadeIn .3s;';
+    overlay.innerHTML =
+      '<div style="background:#fff;border-radius:16px;padding:2rem;max-width:420px;width:100%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.4);">' +
+        '<div style="font-size:3rem;color:var(--gold-text);margin-bottom:.5rem;">✦</div>' +
+        '<h2 style="font-family:\'Playfair Display\',serif;color:var(--brown);font-size:1.4rem;margin-bottom:.5rem;">Waiver signed!</h2>' +
+        '<p style="color:#3d322a;font-size:.95rem;margin-bottom:.4rem;">Your spot is held. Complete payment now to confirm.</p>' +
+        '<p style="color:var(--text-muted);font-size:.8rem;margin-bottom:1rem;">Payment is required to confirm your spot.</p>' +
+        '<div style="margin:1.25rem 0;display:flex;justify-content:center;">' +
+          mcPaymentHtml({ buyBtnId: CR_BUY_BTN_ID }, CR_STRIPE_PUBLISHABLE, CR_EVENT.price) +
+        '</div>' +
+        '<p style="color:var(--text-muted);font-size:.72rem;margin-bottom:.75rem;">Stripe opens securely below. Return here after paying.</p>' +
+        '<button type="button" id="payment-cancel-cr" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.78rem;text-decoration:underline;font-family:\'Jost\',sans-serif;padding:.4rem;">Pay later (I\'ll lose my spot)</button>' +
+      '</div>';
+    document.body.appendChild(overlay);
+    document.getElementById('payment-cancel-cr').addEventListener('click', function(){
+      if (!confirm('Are you sure? Your spot will be released and you will need to re-register if you change your mind.')) return;
+      this.disabled = true; this.textContent = 'Releasing your spot…';
+      releaseSpot('create_recharge_registrations', record && record.code, function(){
+        window.location.reload();
+      });
+    });
+  }
+
+  // "Payment Received" overlay shown when Stripe returns the customer to ?paid=recharge
+  // (set the Buy Button's success/return URL to https://book.auricmovement.com/?paid=recharge).
+  function showCRPaymentReceivedOverlay(){
+    if (document.getElementById('payment-received-overlay')) return;
+    var overlay = document.createElement('div');
+    overlay.id = 'payment-received-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(44,26,14,.85);backdrop-filter:blur(8px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;';
+    overlay.innerHTML =
+      '<div style="background:#fdfbf7;border-radius:16px;padding:2.25rem 2rem;max-width:440px;width:100%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.4);">' +
+        '<div style="font-size:2.4rem;color:#2e7d32;line-height:1;margin-bottom:.4rem;">✓</div>' +
+        '<div style="font-family:Georgia,serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#9a6535;font-weight:bold;margin-bottom:8px;">Payment Received</div>' +
+        '<h2 style="font-family:\'Cormorant Garamond\',serif;font-style:italic;font-size:1.7rem;color:var(--brown);margin:0 0 .65rem;font-weight:500;">You&rsquo;re confirmed 🤍</h2>' +
+        '<p style="font-family:Georgia,serif;font-size:.95rem;color:#3d322a;line-height:1.65;margin:0 0 1.25rem;">Your spot for <strong>Create &amp; Recharge &mdash; Saturday, August 15th</strong> is secured. A confirmation email is on its way — check your spam folder just in case.</p>' +
+        '<button type="button" id="cr-pr-add-cal" class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:.6rem;">📅 Add to Calendar (.ics)</button>' +
+        '<button type="button" id="cr-pr-close" class="btn btn-secondary" style="width:100%;justify-content:center;">Done</button>' +
+      '</div>';
+    document.body.appendChild(overlay);
+    document.getElementById('cr-pr-add-cal').addEventListener('click', function(){
+      downloadICSFile({
+        title: 'Create & Recharge — Auric Movement',
+        description: 'Arrival 11:35 AM\nArt starts 11:45 AM, then mat Pilates + refreshments.',
+        location: CR_EVENT.venue,
+        startISO: '2026-08-15T15:35:00Z',
+        endISO:   '2026-08-15T17:00:00Z'
+      });
+    });
+    document.getElementById('cr-pr-close').addEventListener('click', function(){
+      overlay.remove();
+      if (window.history && window.history.replaceState) {
+        var u = new URL(window.location.href); u.searchParams.delete('paid');
+        window.history.replaceState({}, '', u.pathname + u.search + u.hash);
+      }
+    });
+  }
+  if (new URLSearchParams(window.location.search).get('paid') === 'recharge') {
+    setTimeout(showCRPaymentReceivedOverlay, 400);
+  }
+
   buildCRSpots();
 
   updateEventCardSpots();
