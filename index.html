@@ -6224,6 +6224,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // FOUNDING FOUR — emails the first 4 confirmed Mat & Chat bookers their free-tote note.
   // getMCData returns rows ordered by created_at, so the first 4 confirmed = earliest bookers.
+  // Opens a checkbox picker so Niara chooses exactly who gets the email (e.g. skip anyone
+  // already emailed manually). Already-sent people start unchecked but can be overridden.
   document.getElementById('admin-founding-btn').addEventListener('click', function(){
     getMCData(function(data){
       var confirmed = (data.mc1 || []).filter(function(r){ return r.type === 'confirmed'; });
@@ -6233,58 +6235,166 @@ document.addEventListener('DOMContentLoaded', function() {
       var skipped  = confirmed.filter(function(r){ return  /#nobag/i.test(r.adminNotes || ''); });
       var four = eligible.slice(0, 4);
       if (!four.length){ alert('No eligible Mat & Chat bookings yet.'); return; }
-      // Don't re-email anyone already sent the Founding Four (tagged #foundingsent on send).
-      var toSend = four.filter(function(r){ return !/#foundingsent/i.test(r.adminNotes || ''); });
-      if (!toSend.length){ alert('All ' + four.length + ' founding member(s) have already been emailed. ✦'); return; }
-      var roster = four.map(function(r, i){
-        var done = /#foundingsent/i.test(r.adminNotes || '');
-        return (i + 1) + '. ' + (done ? '✓ already sent — ' : '→ ') + r.name + ' (' + r.email + ')';
-      }).join('\n');
-      var skipNote = skipped.length ? ('\n\n⏭️ Skipped (#nobag): ' + skipped.map(function(r){ return r.name; }).join(', ')) : '';
-      if (!confirm('Send the FOUNDING FOUR email to the ' + toSend.length + ' booker(s) who haven\'t gotten it yet?\n\n' + roster + skipNote)) return;
       if (typeof emailjs === 'undefined'){ alert('EmailJS not loaded.'); return; }
       if (MC_TMPL_FOUNDING.indexOf('REPLACE_ME') !== -1){ alert('Set MC_TMPL_FOUNDING to your real EmailJS template id first.'); return; }
+      openFoundingPicker(four, skipped);
+    });
+  });
 
-      var btn = document.getElementById('admin-founding-btn');
-      btn.disabled = true;
-      var originalText = btn.textContent;
-      btn.textContent = 'Sending... (0/' + toSend.length + ')';
+  // Checkbox picker for the Founding Four. Anyone already tagged #foundingsent starts
+  // UNCHECKED (they were already emailed); everyone else starts checked. Niara can override
+  // any box, so if 2 of 4 were emailed manually she simply unchecks them and sends the rest.
+  function openFoundingPicker(four, skipped){
+    var prior = document.getElementById('founding-picker'); if (prior) prior.remove();
+
+    // Track send-selection per booker; default: send to anyone not already emailed.
+    four.forEach(function(r){ r._send = !/#foundingsent/i.test(r.adminNotes || ''); });
+
+    var overlay = document.createElement('div');
+    overlay.id = 'founding-picker';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(27,34,21,.62);display:flex;align-items:center;justify-content:center;padding:20px;';
+
+    function byCode(c){ return four.filter(function(r){ return r.code === c; })[0]; }
+
+    // One row: send checkbox + name + email + a status control.
+    // Already-tagged → "already emailed" badge with an "undo" link.
+    // Not tagged     → a "Mark sent · no email" button (tags #foundingsent without emailing).
+    function rowHTML(r){
+      var done = /#foundingsent/i.test(r.adminNotes || '');
+      var ctrl = done
+        ? '<span style="margin-left:8px;font-size:.74em;color:#9a7b2e;background:#f0e4c6;border-radius:20px;padding:2px 9px;letter-spacing:.04em;white-space:nowrap;">already emailed</span>'
+          + ' <button type="button" class="founding-untag" data-code="' + escapeHTML(r.code) + '" style="margin-left:4px;background:none;border:none;padding:0;font:inherit;font-size:.74em;color:#8a8568;text-decoration:underline;cursor:pointer;">undo</button>'
+        : '<button type="button" class="founding-marksent" data-code="' + escapeHTML(r.code) + '" style="margin-left:8px;background:#ece2c6;border:1px solid #d9cba6;border-radius:20px;padding:3px 11px;font:inherit;font-size:.74em;color:#5d5a3f;cursor:pointer;white-space:nowrap;">Mark sent &middot; no email</button>';
+      return '<label style="display:flex;align-items:flex-start;gap:10px;padding:11px 12px;border:1px solid #d9cba6;border-radius:10px;margin-bottom:9px;cursor:pointer;background:#fbf6e9;">'
+        + '<input type="checkbox" class="founding-pick" data-code="' + escapeHTML(r.code) + '" ' + (r._send ? 'checked' : '') + ' style="margin-top:3px;width:17px;height:17px;flex:0 0 auto;accent-color:#3b4a2f;">'
+        + '<span style="line-height:1.35;"><span style="font-weight:600;color:#2f3a24;">' + escapeHTML(r.name) + '</span>' + ctrl + '<br><span style="font-size:.86em;color:#6b6750;">' + escapeHTML(r.email) + '</span></span>'
+        + '</label>';
+    }
+
+    var skipNote = skipped.length ? '<div style="margin-top:4px;font-size:.82em;color:#8a8568;">Skipped (#nobag): ' + skipped.map(function(r){ return escapeHTML(r.name); }).join(', ') + '</div>' : '';
+
+    overlay.innerHTML =
+      '<div style="background:#f4ecdb;max-width:440px;width:100%;border-radius:16px;padding:22px 22px 18px;box-shadow:0 24px 70px rgba(0,0,0,.4);font-family:\'Jost\',sans-serif;max-height:88vh;overflow:auto;">'
+      + '<div style="font-family:\'Cormorant Garamond\',serif;font-style:italic;font-size:1.5rem;color:#3b4a2f;margin-bottom:2px;">&#127873; Send Founding Four</div>'
+      + '<div style="font-size:.86em;color:#6b6750;margin-bottom:14px;">Check who should get the free-tote email. Already got it elsewhere? Hit &ldquo;Mark sent&rdquo; to tag them without emailing.</div>'
+      + '<div id="founding-rows"></div>'
+      + skipNote
+      + '<div id="founding-pick-status" style="display:none;margin-top:10px;font-size:.88em;color:#3b4a2f;"></div>'
+      + '<div style="display:flex;gap:9px;margin-top:16px;">'
+      +   '<button type="button" id="founding-pick-send" class="btn btn-primary" style="flex:1;">Send to selected</button>'
+      +   '<button type="button" id="founding-pick-cancel" class="btn" style="background:#e3d9bf;color:#3b4a2f;">Cancel</button>'
+      + '</div>'
+      + '</div>';
+
+    document.body.appendChild(overlay);
+
+    function close(){ overlay.remove(); }
+    overlay.addEventListener('click', function(e){ if (e.target === overlay) close(); });
+    document.getElementById('founding-pick-cancel').addEventListener('click', close);
+
+    var sendBtn  = document.getElementById('founding-pick-send');
+    var statusEl = document.getElementById('founding-pick-status');
+
+    function renderRows(){
+      document.getElementById('founding-rows').innerHTML = four.map(rowHTML).join('');
+      refreshCount();
+    }
+
+    function refreshCount(){
+      var n = overlay.querySelectorAll('.founding-pick:checked').length;
+      sendBtn.textContent = n ? ('Send to selected (' + n + ')') : 'Send to selected';
+      sendBtn.disabled = !n;
+    }
+
+    // Tag (or untag) #foundingsent in admin_notes WITHOUT sending an email. Optimistic UI;
+    // reverts + alerts if the Supabase write fails.
+    function setSentTag(r, on){
+      if (!r) return;
+      var before = r.adminNotes || '';
+      var notes  = before.trim();
+      var updated;
+      if (on){
+        if (/#foundingsent/i.test(notes)) return;
+        updated = notes ? notes + ' #foundingsent' : '#foundingsent';
+        r._send = false;
+      } else {
+        updated = notes.replace(/#foundingsent/ig, '').replace(/\s+/g, ' ').trim();
+        r._send = true;
+      }
+      r.adminNotes = updated;
+      renderRows();
+      supabase.from('matchat_registrations').update({ admin_notes: updated }).eq('code', r.code)
+        .then(function(res){
+          if (res && res.error){ throw res.error; }
+        })
+        .catch(function(err){
+          r.adminNotes = before; renderRows();
+          console.error('[founding tag] FAILED for ' + r.email, err);
+          alert('Could not update ' + r.name + '. ' + ((err && (err.message || err.text)) || 'Try again.'));
+        });
+    }
+
+    overlay.addEventListener('change', function(e){
+      if (e.target.classList && e.target.classList.contains('founding-pick')){
+        var r = byCode(e.target.getAttribute('data-code')); if (r) r._send = e.target.checked;
+      }
+      refreshCount();
+    });
+    overlay.addEventListener('click', function(e){
+      var ms = e.target.closest && e.target.closest('.founding-marksent');
+      var ut = e.target.closest && e.target.closest('.founding-untag');
+      if (ms){ e.preventDefault(); setSentTag(byCode(ms.getAttribute('data-code')), true); }
+      else if (ut){ e.preventDefault(); setSentTag(byCode(ut.getAttribute('data-code')), false); }
+    });
+
+    renderRows();
+
+    sendBtn.addEventListener('click', function(){
+      var picked = Array.prototype.slice.call(overlay.querySelectorAll('.founding-pick:checked')).map(function(cb){
+        var code = cb.getAttribute('data-code');
+        return four.filter(function(r){ return r.code === code; })[0];
+      }).filter(Boolean);
+      if (!picked.length) return;
+      if (!confirm('Send the Founding Four email to ' + picked.length + ' selected booker(s)?')) return;
+
+      sendBtn.disabled = true;
+      document.getElementById('founding-pick-cancel').disabled = true;
+      statusEl.style.display = 'block';
+      statusEl.textContent = 'Sending... (0/' + picked.length + ')';
 
       var sent = 0, failed = 0, failedRecipients = [];
       function sendNext(i){
-        if (i >= toSend.length){
-          btn.disabled = false;
-          btn.textContent = originalText;
+        if (i >= picked.length){
           var msg = '✅ Sent ' + sent + ' Founding Four email(s).';
-          if (failed > 0) {
-            msg += '\n\n⚠️ ' + failed + ' failed: ' + failedRecipients.join(', ');
-            msg += '\n\nCheck EmailJS Dashboard → History for details.';
-          }
+          if (failed > 0){ msg += '\n\n⚠️ ' + failed + ' failed: ' + failedRecipients.join(', ') + '\n\nCheck EmailJS Dashboard → History for details.'; }
+          close();
           alert(msg);
           renderAdmin();
           return;
         }
-        var p = toSend[i];
-        emailjs.send(EMAILJS_SERVICE_ID, MC_TMPL_FOUNDING, {
-          from_name: p.name,
-          to_email:  p.email
-        }).then(function(){
-          sent++;
-          // Tag them so they won't be emailed again on a future click.
-          var existing = (p.adminNotes || '').trim();
-          supabase.from('matchat_registrations').update({ admin_notes: existing ? existing + ' #foundingsent' : '#foundingsent' }).eq('code', p.code);
-        }).catch(function(err){
-          failed++;
-          failedRecipients.push(p.email + ' — ' + ((err && (err.text || err.message)) || 'failed'));
-          console.error('[founding four] FAILED for ' + p.email, err);
-        }).then(function(){
-          btn.textContent = 'Sending... (' + (sent + failed) + '/' + toSend.length + ')';
-          setTimeout(function(){ sendNext(i + 1); }, 600);
-        });
+        var p = picked[i];
+        emailjs.send(EMAILJS_SERVICE_ID, MC_TMPL_FOUNDING, { from_name: p.name, to_email: p.email })
+          .then(function(){
+            sent++;
+            // Tag on success so the roster reflects who's been emailed (and future auto-skip works).
+            var existing = (p.adminNotes || '').trim();
+            if (!/#foundingsent/i.test(existing)){
+              supabase.from('matchat_registrations').update({ admin_notes: existing ? existing + ' #foundingsent' : '#foundingsent' }).eq('code', p.code);
+            }
+          })
+          .catch(function(err){
+            failed++;
+            failedRecipients.push(p.email + ' — ' + ((err && (err.text || err.message)) || 'failed'));
+            console.error('[founding four] FAILED for ' + p.email, err);
+          })
+          .then(function(){
+            statusEl.textContent = 'Sending... (' + (sent + failed) + '/' + picked.length + ')';
+            setTimeout(function(){ sendNext(i + 1); }, 600);
+          });
       }
       sendNext(0);
     });
-  });
+  }
 
   // FLEXIBLE REMINDER SYSTEM
   // Auto-generates personable greetings based on days out, or accepts custom override.
