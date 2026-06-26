@@ -8396,7 +8396,11 @@ document.addEventListener('DOMContentLoaded', function() {
       var openDateStr = card.getAttribute('data-reg-opens');
       if (!openDateStr) return;
       var openDate = new Date(openDateStr + 'T00:00:00');
-      var locked = (now < openDate) && !previewUnlock && !earlyUnlock;
+      // The AURICVIP early-access code only unlocks Mat & Chat — not other upcoming
+      // events (e.g. Create & Recharge stays locked until its own July 15 open date).
+      // The owner ?preview=mc0801 unlock still applies to every card.
+      var earlyUnlockThisCard = earlyUnlock && card.id === 'event-card-matchat';
+      var locked = (now < openDate) && !previewUnlock && !earlyUnlockThisCard;
       card.classList.toggle('is-locked', locked);
       if (locked) {
         card.setAttribute('aria-disabled', 'true');
