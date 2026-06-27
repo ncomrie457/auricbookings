@@ -8013,8 +8013,27 @@ document.addEventListener('DOMContentLoaded', function() {
   // The hero masthead belongs to the Home tab only — hide it on every other panel.
   function setHeroVisible(activeId){
     var hero = document.querySelector('.bq-hero');
-    if (hero) hero.style.display = (activeId === 'tab-home') ? '' : 'none';
+    var onHome = (activeId === 'tab-home');
+    if (hero) hero.style.display = onHome ? '' : 'none';
+    // The fixed header is normally cleared by the hero's top padding (Home only).
+    // On every other tab the hero is hidden, so pad the body by the header height
+    // to stop the fixed header from overlapping the panel content.
+    var nav = document.querySelector('.bq-topnav');
+    if (!onHome && nav) {
+      document.body.style.paddingTop = (nav.offsetHeight + 18) + 'px';
+      document.body.setAttribute('data-nav-pad', '1');
+    } else {
+      document.body.style.paddingTop = '';
+      document.body.removeAttribute('data-nav-pad');
+    }
   }
+  // Keep the header offset correct if its height changes on viewport resize.
+  window.addEventListener('resize', function(){
+    if (document.body.getAttribute('data-nav-pad')) {
+      var n = document.querySelector('.bq-topnav');
+      if (n) document.body.style.paddingTop = (n.offsetHeight + 18) + 'px';
+    }
+  });
 
   // Load spot counts for event cards
   function setSpotsBadge(el, text, state) {
