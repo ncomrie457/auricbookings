@@ -7296,6 +7296,28 @@ document.addEventListener('DOMContentLoaded', function() {
       else { document.getElementById('mc-friend-email-err').textContent = ''; }
     }
     if (!ok) return;
+
+    // Live sold-out check: re-read the spot count at click time so that once
+    // the session is full we NEVER let someone into the waiver (which would
+    // create another unpaid booking). Send them to the waitlist instead.
+    getMCData(function(freshData){
+      var takenNow = mcConfirmedCount(freshData);
+      var need = isPair ? 2 : 1; // a pair needs 2 open spots
+      mcActiveTier = mcTierFor(takenNow);
+      if ((MC_MAX_SPOTS - takenNow) < need || !mcActiveTier) {
+        buildMCSpots(); // re-renders the sold-out message, shows waitlist, hides the waiver button
+        announce('This session is sold out. You can join the waitlist below.');
+        var sd = document.getElementById('mc-spots-display');
+        if (sd && sd.scrollIntoView) sd.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+      mcProceedToWaiver(name, email, isPair, friendName, friendEmail);
+    });
+  });
+
+  // Builds the Mat & Chat waiver step for a validated registrant.
+  // Only reached when there is confirmed space (see the live check above).
+  function mcProceedToWaiver(name, email, isPair, friendName, friendEmail) {
     document.getElementById('mc-waiver-name-display').textContent = name;
     document.getElementById('mc-waiver-name-stmt').textContent    = name;
 
@@ -7330,7 +7352,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('mc-page-layout').classList.add('waiver-active');
     document.getElementById('mc-step-waiver').scrollIntoView({behavior:'smooth'});
     announce('Waiver loaded. 19 clauses to review.');
-  });
+  }
 
   function buildMCClauses() {
     var container = document.getElementById('mc-clauses-container');
