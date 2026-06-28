@@ -5427,8 +5427,17 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Sweep: mark unpaid 'confirmed' records as 'cancelled' once their 2-hour
-  // expiry has passed. Runs on every page load so the spot count stays accurate
-  // even if no admin action is taken.
+  // expiry has passed.
+  //
+  // DISABLED — payment verification is not reliable: `is_paid` is only set true
+  // by an external Stripe->Cloudflare webhook (not in this repo). While that
+  // webhook is down, every self-service booking stays is_paid=false, so this
+  // sweep was silently cancelling REAL (often already-paid) bookings after 2h.
+  // That undercounts confirmed spots (e.g. 11 booked showing as 9), which in
+  // turn keeps the price tier stuck on Founding $35 instead of switching to
+  // General $45 once 10 spots fill. Until the webhook reliably sets is_paid,
+  // do NOT auto-cancel. Admins manage unpaid holds manually via the
+  // Confirmed / Pending / Remove buttons in the admin panel.
   function sweepExpiredSpots() {
     var nowIso = new Date().toISOString();
     ['pilates_registrations','matchat_registrations'].forEach(function(table){
@@ -5440,17 +5449,32 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(function(){}, function(){});
     });
   }
-  // Run on page load
-  sweepExpiredSpots();
+  // Auto-sweep intentionally NOT called on page load (see note above).
+  // sweepExpiredSpots();
 
   // Returns the payment widget HTML for a tier: an embedded Stripe Buy Button
   // when the tier has a buyBtnId (Founding), or a styled payment-link button
   // that opens the tier's Stripe Payment Link (General Admission).
-  function mcPaymentHtml(tier, publishableKey, price) {
+  // Attach the booking code (and email) to a Stripe Payment Link so the
+  // payment webhook can match the payment back to the EXACT registration row
+  // (via checkout.session.client_reference_id) instead of guessing by email.
+  // Purely additive query params — they cannot break the checkout.
+  function stripeLinkWithRef(url, code, email) {
+    if (!url || url === '#') return url;
+    var parts = [];
+    if (code)  parts.push('client_reference_id=' + encodeURIComponent(code));
+    if (email) parts.push('prefilled_email=' + encodeURIComponent(email));
+    if (!parts.length) return url;
+    return url + (url.indexOf('?') === -1 ? '?' : '&') + parts.join('&');
+  }
+
+  function mcPaymentHtml(tier, publishableKey, price, code, email) {
     if (tier && tier.buyBtnId) {
-      return '<stripe-buy-button buy-button-id="' + tier.buyBtnId + '" publishable-key="' + publishableKey + '"></stripe-buy-button>';
+      return '<stripe-buy-button buy-button-id="' + tier.buyBtnId + '" publishable-key="' + publishableKey + '"'
+        + (code ? ' client-reference-id="' + code + '"' : '')
+        + '></stripe-buy-button>';
     }
-    var url = (tier && tier.stripeUrl) || '#';
+    var url = stripeLinkWithRef((tier && tier.stripeUrl) || '#', code, email);
     return '<a href="' + url + '" class="btn btn-primary" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-size:1rem;padding:.85rem 1.75rem;">Complete Payment &mdash; $' + price + ' &rarr;</a>';
   }
 
@@ -5502,7 +5526,7 @@ document.addEventListener('DOMContentLoaded', function() {
         '<p style="color:#3d322a;font-size:.95rem;margin-bottom:.4rem;">Your spot is held. Complete payment now to confirm.</p>' +
         '<p style="color:var(--text-muted);font-size:.8rem;margin-bottom:1rem;">Payment is required to confirm your spot.</p>' +
         '<div style="margin:1.25rem 0;display:flex;justify-content:center;">' +
-          mcPaymentHtml(tier, publishableKey, price) +
+          mcPaymentHtml(tier, publishableKey, price, record && record.code, record && record.email) +
         '</div>' +
         '<p style="color:var(--text-muted);font-size:.72rem;margin-bottom:.75rem;">Stripe opens in a new tab. Return here after paying.</p>' +
         '<button type="button" id="payment-cancel-mc" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.78rem;text-decoration:underline;font-family:\'Jost\',sans-serif;padding:.4rem;">Pay later (I\'ll lose my spot)</button>' +
@@ -5519,6 +5543,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Shows a 5-second countdown then redirects to Stripe (Option 2: force payment after waiver)
   function showPaymentRedirectCountdown(stripeUrl, record) {
+    // Tag the link with the booking code/email so the payment webhook can match it.
+    stripeUrl = stripeLinkWithRef(stripeUrl, record && record.code, record && record.email);
     var existing = document.getElementById('payment-countdown-overlay');
     if (existing) existing.remove();
     var overlay = document.createElement('div');
@@ -5799,7 +5825,7 @@ document.addEventListener('DOMContentLoaded', function() {
           document.getElementById('conf-name').textContent    = name;
           document.getElementById('conf-session').textContent = sess.label+' \u00b7 Arrival '+sess.arrival+' \u00b7 Class '+sess.start;
           document.getElementById('conf-time').textContent    = timeStr;
-          document.getElementById('stripe-pay-btn').href      = sess.stripeUrl;
+          document.getElementById('stripe-pay-btn').href      = stripeLinkWithRef(sess.stripeUrl, code, email);
           showStep('step-confirmed');
           document.getElementById('step-confirmed').scrollIntoView({behavior:'smooth'});
           announce('Waiver signed! Redirecting to payment...');
@@ -7053,7 +7079,7 @@ document.addEventListener('DOMContentLoaded', function() {
   //   • GENERAL  ($45): https://buy.stripe.com/eVqcN48pkbKV74g4ci9sk04
   // (buyBtnId left empty on both => mcPaymentHtml renders a payment-link button.
   //  To switch a tier back to an embedded on-page Buy Button, set its buyBtnId.)
-  var MC_FOUNDING_LIMIT = 10;
+  var MC_FOUNDING_LIMIT = 11;
   var MC_TIERS = {
     founding: { key:'founding', name:'Founding Ticket', price:35,
                 buyBtnId:'',
@@ -7270,6 +7296,28 @@ document.addEventListener('DOMContentLoaded', function() {
       else { document.getElementById('mc-friend-email-err').textContent = ''; }
     }
     if (!ok) return;
+
+    // Live sold-out check: re-read the spot count at click time so that once
+    // the session is full we NEVER let someone into the waiver (which would
+    // create another unpaid booking). Send them to the waitlist instead.
+    getMCData(function(freshData){
+      var takenNow = mcConfirmedCount(freshData);
+      var need = isPair ? 2 : 1; // a pair needs 2 open spots
+      mcActiveTier = mcTierFor(takenNow);
+      if ((MC_MAX_SPOTS - takenNow) < need || !mcActiveTier) {
+        buildMCSpots(); // re-renders the sold-out message, shows waitlist, hides the waiver button
+        announce('This session is sold out. You can join the waitlist below.');
+        var sd = document.getElementById('mc-spots-display');
+        if (sd && sd.scrollIntoView) sd.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+      mcProceedToWaiver(name, email, isPair, friendName, friendEmail);
+    });
+  });
+
+  // Builds the Mat & Chat waiver step for a validated registrant.
+  // Only reached when there is confirmed space (see the live check above).
+  function mcProceedToWaiver(name, email, isPair, friendName, friendEmail) {
     document.getElementById('mc-waiver-name-display').textContent = name;
     document.getElementById('mc-waiver-name-stmt').textContent    = name;
 
@@ -7304,7 +7352,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('mc-page-layout').classList.add('waiver-active');
     document.getElementById('mc-step-waiver').scrollIntoView({behavior:'smooth'});
     announce('Waiver loaded. 19 clauses to review.');
-  });
+  }
 
   function buildMCClauses() {
     var container = document.getElementById('mc-clauses-container');
@@ -8067,7 +8115,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     getMCData(function(data) {
       // Mat & Chat — accurate sold-out detection + correct grammar for singular
-      var mcRemaining = MC_MAX_SPOTS - data.mc1.filter(function(r){ return r.type==='confirmed'; }).length;
+      var mcRemaining = MC_MAX_SPOTS - mcConfirmedCount(data); // pair = 2 spots, consistent w/ booking form
       var mcEl = document.getElementById('matchat-card-spots');
       var mcIsSoldOut = false;
       if (mcEl) {
@@ -8529,7 +8577,7 @@ document.addEventListener('DOMContentLoaded', function() {
         '<p style="color:#3d322a;font-size:.95rem;margin-bottom:.4rem;">Your spot is held. Complete payment now to confirm.</p>' +
         '<p style="color:var(--text-muted);font-size:.8rem;margin-bottom:1rem;">Payment is required to confirm your spot.</p>' +
         '<div style="margin:1.25rem 0;display:flex;justify-content:center;">' +
-          mcPaymentHtml({ buyBtnId: CR_BUY_BTN_ID }, CR_STRIPE_PUBLISHABLE, CR_EVENT.price) +
+          mcPaymentHtml({ buyBtnId: CR_BUY_BTN_ID }, CR_STRIPE_PUBLISHABLE, CR_EVENT.price, record && record.code, record && record.email) +
         '</div>' +
         '<p style="color:var(--text-muted);font-size:.72rem;margin-bottom:.75rem;">Stripe opens securely below. Return here after paying.</p>' +
         '<button type="button" id="payment-cancel-cr" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.78rem;text-decoration:underline;font-family:\'Jost\',sans-serif;padding:.4rem;">Pay later (I\'ll lose my spot)</button>' +
