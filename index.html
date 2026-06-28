@@ -5427,8 +5427,17 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Sweep: mark unpaid 'confirmed' records as 'cancelled' once their 2-hour
-  // expiry has passed. Runs on every page load so the spot count stays accurate
-  // even if no admin action is taken.
+  // expiry has passed.
+  //
+  // DISABLED — payment verification is not reliable: `is_paid` is only set true
+  // by an external Stripe->Cloudflare webhook (not in this repo). While that
+  // webhook is down, every self-service booking stays is_paid=false, so this
+  // sweep was silently cancelling REAL (often already-paid) bookings after 2h.
+  // That undercounts confirmed spots (e.g. 11 booked showing as 9), which in
+  // turn keeps the price tier stuck on Founding $35 instead of switching to
+  // General $45 once 10 spots fill. Until the webhook reliably sets is_paid,
+  // do NOT auto-cancel. Admins manage unpaid holds manually via the
+  // Confirmed / Pending / Remove buttons in the admin panel.
   function sweepExpiredSpots() {
     var nowIso = new Date().toISOString();
     ['pilates_registrations','matchat_registrations'].forEach(function(table){
@@ -5440,8 +5449,8 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(function(){}, function(){});
     });
   }
-  // Run on page load
-  sweepExpiredSpots();
+  // Auto-sweep intentionally NOT called on page load (see note above).
+  // sweepExpiredSpots();
 
   // Returns the payment widget HTML for a tier: an embedded Stripe Buy Button
   // when the tier has a buyBtnId (Founding), or a styled payment-link button
@@ -8067,7 +8076,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     getMCData(function(data) {
       // Mat & Chat — accurate sold-out detection + correct grammar for singular
-      var mcRemaining = MC_MAX_SPOTS - data.mc1.filter(function(r){ return r.type==='confirmed'; }).length;
+      var mcRemaining = MC_MAX_SPOTS - mcConfirmedCount(data); // pair = 2 spots, consistent w/ booking form
       var mcEl = document.getElementById('matchat-card-spots');
       var mcIsSoldOut = false;
       if (mcEl) {
