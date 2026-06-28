@@ -5455,11 +5455,26 @@ document.addEventListener('DOMContentLoaded', function() {
   // Returns the payment widget HTML for a tier: an embedded Stripe Buy Button
   // when the tier has a buyBtnId (Founding), or a styled payment-link button
   // that opens the tier's Stripe Payment Link (General Admission).
-  function mcPaymentHtml(tier, publishableKey, price) {
+  // Attach the booking code (and email) to a Stripe Payment Link so the
+  // payment webhook can match the payment back to the EXACT registration row
+  // (via checkout.session.client_reference_id) instead of guessing by email.
+  // Purely additive query params — they cannot break the checkout.
+  function stripeLinkWithRef(url, code, email) {
+    if (!url || url === '#') return url;
+    var parts = [];
+    if (code)  parts.push('client_reference_id=' + encodeURIComponent(code));
+    if (email) parts.push('prefilled_email=' + encodeURIComponent(email));
+    if (!parts.length) return url;
+    return url + (url.indexOf('?') === -1 ? '?' : '&') + parts.join('&');
+  }
+
+  function mcPaymentHtml(tier, publishableKey, price, code, email) {
     if (tier && tier.buyBtnId) {
-      return '<stripe-buy-button buy-button-id="' + tier.buyBtnId + '" publishable-key="' + publishableKey + '"></stripe-buy-button>';
+      return '<stripe-buy-button buy-button-id="' + tier.buyBtnId + '" publishable-key="' + publishableKey + '"'
+        + (code ? ' client-reference-id="' + code + '"' : '')
+        + '></stripe-buy-button>';
     }
-    var url = (tier && tier.stripeUrl) || '#';
+    var url = stripeLinkWithRef((tier && tier.stripeUrl) || '#', code, email);
     return '<a href="' + url + '" class="btn btn-primary" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-size:1rem;padding:.85rem 1.75rem;">Complete Payment &mdash; $' + price + ' &rarr;</a>';
   }
 
@@ -5511,7 +5526,7 @@ document.addEventListener('DOMContentLoaded', function() {
         '<p style="color:#3d322a;font-size:.95rem;margin-bottom:.4rem;">Your spot is held. Complete payment now to confirm.</p>' +
         '<p style="color:var(--text-muted);font-size:.8rem;margin-bottom:1rem;">Payment is required to confirm your spot.</p>' +
         '<div style="margin:1.25rem 0;display:flex;justify-content:center;">' +
-          mcPaymentHtml(tier, publishableKey, price) +
+          mcPaymentHtml(tier, publishableKey, price, record && record.code, record && record.email) +
         '</div>' +
         '<p style="color:var(--text-muted);font-size:.72rem;margin-bottom:.75rem;">Stripe opens in a new tab. Return here after paying.</p>' +
         '<button type="button" id="payment-cancel-mc" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.78rem;text-decoration:underline;font-family:\'Jost\',sans-serif;padding:.4rem;">Pay later (I\'ll lose my spot)</button>' +
@@ -5528,6 +5543,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Shows a 5-second countdown then redirects to Stripe (Option 2: force payment after waiver)
   function showPaymentRedirectCountdown(stripeUrl, record) {
+    // Tag the link with the booking code/email so the payment webhook can match it.
+    stripeUrl = stripeLinkWithRef(stripeUrl, record && record.code, record && record.email);
     var existing = document.getElementById('payment-countdown-overlay');
     if (existing) existing.remove();
     var overlay = document.createElement('div');
@@ -5808,7 +5825,7 @@ document.addEventListener('DOMContentLoaded', function() {
           document.getElementById('conf-name').textContent    = name;
           document.getElementById('conf-session').textContent = sess.label+' \u00b7 Arrival '+sess.arrival+' \u00b7 Class '+sess.start;
           document.getElementById('conf-time').textContent    = timeStr;
-          document.getElementById('stripe-pay-btn').href      = sess.stripeUrl;
+          document.getElementById('stripe-pay-btn').href      = stripeLinkWithRef(sess.stripeUrl, code, email);
           showStep('step-confirmed');
           document.getElementById('step-confirmed').scrollIntoView({behavior:'smooth'});
           announce('Waiver signed! Redirecting to payment...');
@@ -8538,7 +8555,7 @@ document.addEventListener('DOMContentLoaded', function() {
         '<p style="color:#3d322a;font-size:.95rem;margin-bottom:.4rem;">Your spot is held. Complete payment now to confirm.</p>' +
         '<p style="color:var(--text-muted);font-size:.8rem;margin-bottom:1rem;">Payment is required to confirm your spot.</p>' +
         '<div style="margin:1.25rem 0;display:flex;justify-content:center;">' +
-          mcPaymentHtml({ buyBtnId: CR_BUY_BTN_ID }, CR_STRIPE_PUBLISHABLE, CR_EVENT.price) +
+          mcPaymentHtml({ buyBtnId: CR_BUY_BTN_ID }, CR_STRIPE_PUBLISHABLE, CR_EVENT.price, record && record.code, record && record.email) +
         '</div>' +
         '<p style="color:var(--text-muted);font-size:.72rem;margin-bottom:.75rem;">Stripe opens securely below. Return here after paying.</p>' +
         '<button type="button" id="payment-cancel-cr" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.78rem;text-decoration:underline;font-family:\'Jost\',sans-serif;padding:.4rem;">Pay later (I\'ll lose my spot)</button>' +
