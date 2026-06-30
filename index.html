@@ -2105,8 +2105,10 @@
     @media (max-width: 900px) {
       .bq-videos-gallery { grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
     }
-    @media (max-width: 520px) {
-      .bq-videos-gallery { grid-template-columns: 1fr; }
+    @media (max-width: 768px) {
+      /* Phones: stack to a single column (video first, then photos) instead of
+         two squished columns. */
+      .bq-videos-gallery { grid-template-columns: 1fr; gap: 1.5rem; }
     }
 
     .bq-video-card {
