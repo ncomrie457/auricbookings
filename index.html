@@ -4253,16 +4253,17 @@
     <div style="letter-spacing:.12em;font-size:.6rem;color:#a9b48c;text-transform:uppercase;margin-top:.5rem;">Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect</div>
     <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:1.35rem;color:#e7c47e;margin-top:1.75rem;">you belong here</div>
     <h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:2.5rem;line-height:1;color:#f4ecdb;margin:.25rem 0 0;font-weight:600;letter-spacing:.02em;">THE AURIC CLUB</h2>
-    <p style="font-size:.9rem;color:#d7cbb0;line-height:1.6;margin:1.2rem auto 0;max-width:380px;">Earn a mark each time you join an Auric Movement event. Ten visits earns an event on us.</p>
+    <p style="font-size:.9rem;color:#d7cbb0;line-height:1.6;margin:1.2rem auto 0;max-width:380px;">Earn a mark each time you join an Auric Movement event. Pick a reward at 5 marks &mdash; and a free event at 10.</p>
     <div style="margin:1.6rem auto 0;max-width:360px;">
       <input type="email" id="club-email-input" placeholder="Enter your email to see your marks" autocomplete="email" style="width:100%;padding:.7rem .9rem;border:1px solid rgba(201,164,99,.5);border-radius:8px;background:rgba(0,0,0,.18);color:#f1e9d8;font-family:'Jost',sans-serif;font-size:.9rem;box-sizing:border-box;text-align:center;">
       <button type="button" id="club-lookup-btn" style="margin-top:.6rem;width:100%;padding:.72rem;border:none;border-radius:8px;background:#d4a55f;color:#2f3a24;font-family:'Jost',sans-serif;font-weight:600;letter-spacing:.05em;font-size:.85rem;cursor:pointer;">Check My Marks</button>
       <div id="club-result" style="margin-top:.8rem;font-size:.85rem;color:#e7c47e;line-height:1.5;min-height:1.2rem;"></div>
     </div>
     <div id="club-circles" style="display:grid;grid-template-columns:repeat(5,1fr);gap:.8rem;margin:1.6rem auto 0;max-width:430px;"></div>
+    <div id="club-reward" style="margin:1.1rem auto 0;max-width:430px;"></div>
     <div style="margin-top:2rem;border-top:1px solid rgba(201,164,99,.3);padding-top:1.25rem;">
       <p style="font-weight:600;color:#f1e9d8;font-size:.85rem;margin:0;">No physical card needed &mdash; it's tracked for you automatically.</p>
-      <p style="color:#cdbf9c;font-size:.78rem;margin:.4rem 0 0;">Your marks are added when you attend. One free event per full card.</p>
+      <p style="color:#cdbf9c;font-size:.78rem;margin:.4rem 0 0;">Your marks are added when you attend. Choose a reward at 5 marks; one free event per full card.</p>
       <p style="color:#a9b48c;font-size:.75rem;letter-spacing:.08em;margin:.75rem 0 0;">@auricmovement</p>
     </div>
   </div>
@@ -9054,6 +9055,10 @@ document.addEventListener('DOMContentLoaded', function() {
       if (isFree){
         var freeFilled = (marks === 10);
         html += '<div style="'+base+'background:'+(freeFilled?'#f0d28a':'#d4a55f')+';color:#2f3a24;font-style:italic;font-size:.62rem;line-height:1;font-weight:600;'+(freeFilled?'box-shadow:0 0 0 3px rgba(231,196,126,.35);':'')+'">free<br>event</div>';
+      } else if (i === 4){
+        // The 5th circle is the "pick a reward" milestone (gift at 5 marks).
+        var giftFilled = (whole >= 5);
+        html += '<div style="'+base+'background:'+(giftFilled?'#f0d28a':'#fbeed0')+';color:#2f3a24;font-size:.95rem;'+(giftFilled?'box-shadow:0 0 0 3px rgba(231,196,126,.35);':'border:1.5px dashed #b9924e;')+'">&#127873;</div>';
       } else if (i < whole){
         html += '<div style="'+base+'background:#d4a55f;color:#2f3a24;font-size:1.15rem;">&#10022;</div>';
       } else if (i === whole && half){
@@ -9080,16 +9085,45 @@ document.addEventListener('DOMContentLoaded', function() {
         res.innerHTML = 'No marks yet — your first Auric event earns your first mark. ✦';
       } else if (freeEarned > 0){
         res.innerHTML = (name?name+', you':'You')+'’ve earned <strong>'+freeEarned+' free event'+(freeEarned>1?'s':'')+'</strong>! '+fmtMarks(count%10)+' toward your next. ✦';
+      } else if (count >= 5){
+        res.innerHTML = (name?name+', you':'You')+' have <strong>'+fmtMarks(count)+'</strong> marks — your <strong>5-mark reward</strong> is ready 🎁, and '+fmtMarks(10-count)+' more earns a free event. ✦';
       } else {
-        res.innerHTML = (name?name+', you':'You')+' have <strong>'+fmtMarks(count)+'</strong> mark'+(count===1?'':'s')+' — '+fmtMarks(10-count)+' more for a free event. ✦';
+        res.innerHTML = (name?name+', you':'You')+' have <strong>'+fmtMarks(count)+'</strong> mark'+(count===1?'':'s')+' — '+fmtMarks(5-count)+' more to unlock a reward 🎁, '+fmtMarks(10-count)+' for a free event. ✦';
       }
+      renderClubReward(count, name);
     });
+  }
+
+  // At 5+ marks, let the member choose their reward (in-person claim — no login,
+  // so the pick is shown on-screen to claim at their next class).
+  function renderClubReward(count, name){
+    var box = document.getElementById('club-reward');
+    if (!box) return;
+    if (!count || count < 5){ box.innerHTML = ''; return; }
+    box.innerHTML =
+      '<div style="background:rgba(231,196,126,.12);border:1px solid rgba(201,164,99,.5);border-radius:12px;padding:1rem 1.1rem;text-align:center;">'
+      + '<p style="margin:0 0 .65rem;color:#f1e9d8;font-weight:600;font-size:.85rem;">🎉 You’ve unlocked a 5-mark reward — pick one:</p>'
+      + '<div style="display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;">'
+      +   '<button type="button" data-reward="Bring a friend free" class="club-reward-btn" style="flex:1;min-width:150px;padding:.65rem .8rem;border:none;border-radius:8px;background:#d4a55f;color:#2f3a24;font-family:\'Jost\',sans-serif;font-weight:600;font-size:.8rem;cursor:pointer;">👯 Bring a friend free</button>'
+      +   '<button type="button" data-reward="an Auric gift" class="club-reward-btn" style="flex:1;min-width:150px;padding:.65rem .8rem;border:none;border-radius:8px;background:#d4a55f;color:#2f3a24;font-family:\'Jost\',sans-serif;font-weight:600;font-size:.8rem;cursor:pointer;">🎁 Auric gift</button>'
+      + '</div></div>';
+    var btns = box.querySelectorAll('.club-reward-btn');
+    for (var j=0;j<btns.length;j++){
+      btns[j].addEventListener('click', function(){
+        var reward = this.getAttribute('data-reward');
+        box.innerHTML =
+          '<div style="background:rgba(231,196,126,.16);border:1px solid rgba(201,164,99,.6);border-radius:12px;padding:1rem 1.1rem;text-align:center;">'
+          + '<p style="margin:0;color:#f1e9d8;font-size:.85rem;line-height:1.6;">✨ Lovely choice'+(name?', '+name:'')+' — you’ve picked <strong>'+reward+'</strong>. Show this screen to Niara at your next class to claim it. 🤍</p>'
+          + '</div>';
+      });
+    }
   }
   function showClub(){
     var b = document.getElementById('btn-members');
     if (b) b.click();
     var res = document.getElementById('club-result'); if (res) res.textContent = '';
     var inp = document.getElementById('club-email-input'); if (inp) inp.value = '';
+    var rw = document.getElementById('club-reward'); if (rw) rw.innerHTML = '';
     renderClubCircles(0);
     window.scrollTo({top:0,behavior:'smooth'});
   }
