@@ -4507,6 +4507,15 @@ document.addEventListener('DOMContentLoaded', function() {
   // The first 3 appear on the homepage; the full list shows in Past Events.
   // ============================================================
   var PAST_EVENT_VIDEOS = [
+    {
+      file:     'juneteenth-recap.mp4',     // self-hosted video in the repo
+      title:    'Juneteenth Recap',
+      date:     'June 19, 2026',
+      subtitle: 'Pilates x Niara · New York'
+      // eventId omitted on purpose so this shows as its own card AND the
+      // Juneteenth photo gallery still appears separately. Add eventId:'pilates'
+      // if you'd rather the video replace the photo-gallery card.
+    },
     // Add real videos here — newest first. Example entry:
     // {
     //   id:       'YOUTUBE_SHORTS_ID',  // the part after youtube.com/shorts/
@@ -4550,6 +4559,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // Lite-embed renderer: shows poster image with play button.
   // Click swaps poster for a YouTube iframe (keeps page fast).
   function renderVideoCard(v){
+    // Self-hosted video file (e.g. a recap .mp4 in the repo) instead of YouTube.
+    if (v.file) return renderLocalVideoCard(v);
     var poster = 'https://i.ytimg.com/vi/' + v.id + '/hqdefault.jpg';
     var hi = 'https://i.ytimg.com/vi/' + v.id + '/maxresdefault.jpg';
     var wrapper = document.createElement('div');
@@ -4602,6 +4613,53 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Helper for upgraded iframe replacement (keeps it inside the same poster slot)
   function wrapPanel(node){ return node; }
+
+  // Self-hosted recap video: shows the first frame as a poster with a play
+  // button; click swaps in a full <video> player. Same look as the YouTube
+  // cards, but the file lives in the repo (no YouTube needed).
+  function renderLocalVideoCard(v){
+    var vidStyle = 'width:100%;height:100%;object-fit:cover;display:block;background:#000;';
+    var wrapper = document.createElement('div');
+    wrapper.className = 'bq-video-wrap';
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'bq-video-card';
+    btn.setAttribute('aria-label', 'Play video: ' + (v.title || 'Past event'));
+    btn.innerHTML =
+      '<div class="bq-video-poster">' +
+        '<video class="bq-local-thumb" muted playsinline preload="metadata" src="' + v.file + '#t=0.1" style="' + vidStyle + '"></video>' +
+        '<div class="bq-video-play" aria-hidden="true">' +
+          '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>' +
+        '</div>' +
+      '</div>' +
+      (v.date ? '<div class="bq-video-date">' + v.date + '</div>' : '') +
+      (v.title ? '<div class="bq-video-title">' + v.title + '</div>' : '') +
+      (v.subtitle ? '<div class="bq-video-sub">' + v.subtitle + '</div>' : '');
+    btn.addEventListener('click', function(){
+      var posterEl = btn.querySelector('.bq-video-poster');
+      var vidWrap = document.createElement('div');
+      vidWrap.className = 'bq-video-iframe-wrap';
+      vidWrap.innerHTML = '<video src="' + v.file + '" controls autoplay playsinline style="' + vidStyle + '"></video>';
+      posterEl.replaceWith(vidWrap);
+    });
+    wrapper.appendChild(btn);
+
+    if (v.flyer) {
+      var flyerBtn = document.createElement('button');
+      flyerBtn.type = 'button';
+      flyerBtn.className = 'bq-flyer-link';
+      flyerBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="1"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>View The Flyer <span aria-hidden="true">&#8594;</span>';
+      flyerBtn.setAttribute('aria-label', 'View the flyer for ' + (v.title || 'this event'));
+      flyerBtn.addEventListener('click', function(e){
+        e.stopPropagation();
+        openFlyerLightbox(v.flyer, v.title || '', v.date || '');
+      });
+      wrapper.appendChild(flyerBtn);
+    }
+
+    return wrapper;
+  }
 
   // ──────────────────────────────────────────────────────────────
   // Flyer lightbox
