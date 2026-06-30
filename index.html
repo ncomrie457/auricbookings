@@ -2095,6 +2095,19 @@
         scroll-snap-align: start;
       }
     }
+    @media (max-width: 768px) {
+      /* Phones: stack the homepage Past Events row into one column (video first,
+         then photos) instead of a squished horizontal carousel. */
+      .bq-videos-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        overflow-x: visible;
+        margin: 0;
+        padding: 0;
+      }
+      .bq-videos-row .bq-video-card { flex: none; }
+    }
 
     /* Full gallery (Past Events tab) */
     .bq-videos-gallery {
