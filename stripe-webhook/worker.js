@@ -134,7 +134,11 @@ function timingSafeEqual(a, b) {
  * it can't clobber unrelated past bookings.
  */
 async function markPaid(env, code, email) {
-  if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_KEY) {
+  // Trim to defend against invisible trailing spaces/newlines from copy-paste,
+  // and strip any trailing slash on the URL so we never build a double slash.
+  const baseUrl = (env.SUPABASE_URL || '').trim().replace(/\/+$/, '');
+  const apiKey = (env.SUPABASE_SERVICE_KEY || '').trim();
+  if (!baseUrl || !apiKey) {
     throw new Error('SUPABASE_URL / SUPABASE_SERVICE_KEY not configured');
   }
 
@@ -146,11 +150,11 @@ async function markPaid(env, code, email) {
       ? 'code=eq.' + encodeURIComponent(code)
       : 'email=eq.' + encodeURIComponent(email) + '&is_paid=eq.false';
 
-    const resp = await fetch(env.SUPABASE_URL + '/rest/v1/' + table + '?' + filter, {
+    const resp = await fetch(baseUrl + '/rest/v1/' + table + '?' + filter, {
       method: 'PATCH',
       headers: {
-        apikey: env.SUPABASE_SERVICE_KEY,
-        Authorization: 'Bearer ' + env.SUPABASE_SERVICE_KEY,
+        apikey: apiKey,
+        Authorization: 'Bearer ' + apiKey,
         'content-type': 'application/json',
         Prefer: 'return=representation',
       },
