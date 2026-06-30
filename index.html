@@ -5510,17 +5510,14 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Sweep: mark unpaid 'confirmed' records as 'cancelled' once their 2-hour
-  // expiry has passed.
+  // expiry has passed. Runs on every page load so spot counts stay accurate.
   //
-  // DISABLED — payment verification is not reliable: `is_paid` is only set true
-  // by an external Stripe->Cloudflare webhook (not in this repo). While that
-  // webhook is down, every self-service booking stays is_paid=false, so this
-  // sweep was silently cancelling REAL (often already-paid) bookings after 2h.
-  // That undercounts confirmed spots (e.g. 11 booked showing as 9), which in
-  // turn keeps the price tier stuck on Founding $35 instead of switching to
-  // General $45 once 10 spots fill. Until the webhook reliably sets is_paid,
-  // do NOT auto-cancel. Admins manage unpaid holds manually via the
-  // Confirmed / Pending / Remove buttons in the admin panel.
+  // RE-ENABLED now that the Stripe->Cloudflare webhook reliably sets is_paid
+  // on payment (verified working). With payments recording automatically, this
+  // only clears holds from people who registered but never paid within 2h —
+  // it will not touch paid bookings (their is_paid is true within seconds of
+  // checkout). If the webhook ever goes down again, disable this call so real
+  // bookings aren't cancelled while is_paid is stuck false.
   function sweepExpiredSpots() {
     var nowIso = new Date().toISOString();
     ['pilates_registrations','matchat_registrations'].forEach(function(table){
@@ -5532,8 +5529,8 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(function(){}, function(){});
     });
   }
-  // Auto-sweep intentionally NOT called on page load (see note above).
-  // sweepExpiredSpots();
+  // Run on page load.
+  sweepExpiredSpots();
 
   // Returns the payment widget HTML for a tier: an embedded Stripe Buy Button
   // when the tier has a buyBtnId (Founding), or a styled payment-link button
