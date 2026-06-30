@@ -4640,8 +4640,17 @@ document.addEventListener('DOMContentLoaded', function() {
       var posterEl = btn.querySelector('.bq-video-poster');
       var vidWrap = document.createElement('div');
       vidWrap.className = 'bq-video-iframe-wrap';
-      vidWrap.innerHTML = '<video src="' + v.file + '" controls autoplay playsinline style="' + vidStyle + '"></video>';
+      var videoEl = document.createElement('video');
+      videoEl.src = v.file;
+      videoEl.controls = true;
+      videoEl.setAttribute('playsinline', '');
+      videoEl.style.cssText = vidStyle;
       posterEl.replaceWith(vidWrap);
+      vidWrap.appendChild(videoEl);
+      // Call play() inside the click gesture so it starts WITH sound — a bare
+      // autoplay attribute is often forced to start muted by the browser.
+      var p = videoEl.play();
+      if (p && p.catch) p.catch(function(){ /* fall back to the controls */ });
     });
     wrapper.appendChild(btn);
 
