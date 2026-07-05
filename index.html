@@ -2805,7 +2805,7 @@
         </div>
         <div class="bq-event-date">08.15.26 &#183; Create &amp; Recharge</div>
         <div class="bq-event-name">Create <em>&amp;</em> Recharge</div>
-        <div class="bq-event-sub">Art + Mat Pilates &#183; 11:45 AM &#183; $65</div>
+        <div class="bq-event-sub">Art + Mat Pilates &#183; 11:35 AM &#183; $65</div>
         <div id="recharge-card-spots" class="bq-event-spots"></div>
         <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
       </button>
@@ -3894,7 +3894,7 @@
       <div class="bq-flyer-wrap" id="recharge-flyer-wrap">
         <picture>
           <source srcset="recharge-flyer.webp?v=1" type="image/webp">
-          <img src="recharge-flyer.png?v=1" alt="Create &amp; Recharge &#8212; Saturday, August 15th, 11:45 AM at 300 W 38th Street, 2F, New York, NY" class="flyer-img" loading="lazy" decoding="async">
+          <img src="recharge-flyer.png?v=1" alt="Create &amp; Recharge &#8212; Saturday, August 15th, 11:35 AM at 300 W 38th Street, 2F, New York, NY" class="flyer-img" loading="lazy" decoding="async">
         </picture>
         <div class="bq-event-status" aria-hidden="true">Sold Out</div>
       </div>
@@ -3902,7 +3902,7 @@
         <strong>Location</strong>
         <p>300 W 38th Street, 2F<br>New York, NY 10018</p>
         <strong>August 15th &#8212; One Session</strong>
-        <p>Arrival 11:35 AM &#183; Art starts 11:45 AM &#183; $65</p>
+        <p>Arrival 11:30 AM &#183; Art starts 11:35 AM &#183; $65</p>
         <strong>What&rsquo;s Included</strong>
         <p>
           &#10022; Guided art &amp; intention-setting with Georgina<br>
@@ -3965,7 +3965,7 @@
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;font-size:.85rem;color:#3d322a;margin-bottom:.5rem;">
             <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Event</span><strong>Create &amp; Recharge</strong></div>
             <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Date</span><strong>August 15th</strong></div>
-            <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Time</span><strong>11:45 AM</strong></div>
+            <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Time</span><strong>11:35 AM</strong></div>
             <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Price</span><strong>$65</strong></div>
           </div>
           <p style="font-size:.8rem;color:#3d322a;margin-bottom:.75rem;">&#128205; 300 W 38th Street, 2F &#183; New York, NY 10018</p>
@@ -4088,7 +4088,7 @@
         <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:1.25rem;">Your waiver has been completed successfully.</p>
         <p class="detail"><strong>Name:</strong> <span id="cr-conf-name"></span></p>
         <p class="detail"><strong>Event:</strong> Create &amp; Recharge &#8212; August 15th</p>
-        <p class="detail"><strong>Arrival:</strong> 11:35 AM &#183; Art starts 11:45 AM</p>
+        <p class="detail"><strong>Arrival:</strong> 11:30 AM &#183; Art starts 11:35 AM</p>
         <p class="detail"><strong>Waiver signed at:</strong> <span id="cr-conf-time"></span></p>
         <div id="cr-email-status"></div>
         <div id="cr-confirmed-payment-box" style="margin-top:1.25rem;padding:1rem 1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:10px;text-align:left;">
@@ -8238,7 +8238,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var CR_EVENT = {
     id: 'cr1', label: 'Create & Recharge',
     date: 'August 15th', eventDate: 'Saturday, August 15th',
-    arrival: '11:35 AM', start: '11:45 AM', price: 65,
+    arrival: '11:30 AM', start: '11:35 AM', price: 65,
     venue: '300 W 38th Street, 2F, New York, NY 10018',
     stripeUrl: 'https://buy.stripe.com/eVqeVc350bKV88k24a9sk05'
   };
@@ -8513,7 +8513,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!crLastSubmission) return;
     downloadICSFile({
       title: 'Create & Recharge — Auric Movement',
-      description: 'Arrival 11:35 AM\nArt starts 11:45 AM, then mat Pilates + refreshments.\n\nConfirmation code: ' + crLastSubmission.code,
+      description: 'Arrival 11:30 AM\nArt starts 11:35 AM, then mat Pilates + refreshments.\n\nConfirmation code: ' + crLastSubmission.code,
       location: CR_EVENT.venue,
       startISO: '2026-08-15T15:35:00Z',
       endISO:   '2026-08-15T17:00:00Z'
@@ -8689,7 +8689,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cr-pr-add-cal').addEventListener('click', function(){
       downloadICSFile({
         title: 'Create & Recharge — Auric Movement',
-        description: 'Arrival 11:35 AM\nArt starts 11:45 AM, then mat Pilates + refreshments.',
+        description: 'Arrival 11:30 AM\nArt starts 11:35 AM, then mat Pilates + refreshments.',
         location: CR_EVENT.venue,
         startISO: '2026-08-15T15:35:00Z',
         endISO:   '2026-08-15T17:00:00Z'
