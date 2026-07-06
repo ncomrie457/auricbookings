@@ -7826,17 +7826,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Clear health disclosure (Mat & Chat). NULLs the notes column and appends an
   // audit-trail timestamp to admin_notes so the deletion shows up in CSV export.
+  // Remove ONLY the health-disclosure portion of a Mat & Chat notes field,
+  // keeping the operational/legal lines (ticket, refund acknowledgment, phone).
+  function mcStripHealthFromNotes(notes){
+    if (!notes) return '';
+    var keep = /^(TICKET:|REFUND POLICY ACKNOWLEDGED|PHONE \(for class reminders\):)/i;
+    return String(notes).split(/\n{2,}/)
+      .filter(function(b){ return keep.test(b.trim()); })
+      .join('\n\n');
+  }
+
   window.mcAdminClearHealth = function(code, name){
-    if (!confirm('Clear the health disclosure for ' + (name || 'this person') + '?\n\nThis deletes the disclosure data and stamps the time into admin_notes (so the CSV shows when it was cleared). This cannot be undone.')) return;
+    if (!confirm('Clear the health disclosure for ' + (name || 'this person') + '?\n\nThis removes ONLY the health/disclosure info. The ticket, refund acknowledgment, and phone are kept, and the time is stamped into admin_notes. This cannot be undone.')) return;
     var stampLine = 'Health disclosure cleared ' + new Date().toLocaleString();
     supabase.from('matchat_registrations')
-      .select('admin_notes')
+      .select('admin_notes,notes')
       .eq('code', code)
       .single()
       .then(function(res){
         var existing = (res.data && res.data.admin_notes) ? res.data.admin_notes + '\n' : '';
+        var kept = mcStripHealthFromNotes(res.data ? res.data.notes : '');
         supabase.from('matchat_registrations')
-          .update({ notes: null, admin_notes: existing + stampLine })
+          .update({ notes: kept || null, admin_notes: existing + stampLine })
           .eq('code', code)
           .then(function(){
             // Refresh the admin panel
