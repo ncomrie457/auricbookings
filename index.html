@@ -7666,8 +7666,22 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // MC Admin functions
-  // Edit a Mat & Chat registrant's name / email. Safe: the spot count keys off
-  // 'type' and the payment webhook matches on 'code', neither of which changes.
+  // Phone is stored inside the notes field ("PHONE (for class reminders): ...").
+  function getPhoneFromNotes(notes){
+    var m = (notes || '').match(/PHONE \(for class reminders\):\s*([^\n]*)/i);
+    return m ? m[1].trim() : '';
+  }
+  function setPhoneInNotes(notes, phone){
+    phone = (phone || '').trim();
+    var blocks = (notes || '').split(/\n{2,}/).filter(function(b){
+      return b.trim() && !/^PHONE \(for class reminders\):/i.test(b.trim());
+    });
+    if (phone) blocks.push('PHONE (for class reminders): ' + phone);
+    return blocks.join('\n\n').trim();
+  }
+
+  // Edit a Mat & Chat registrant's name / email / phone. Safe: the spot count
+  // keys off 'type' and the payment webhook matches on 'code', neither changes.
   window.mcAdminEdit = function(code){
     getMCData(function(data){
       var rec = data.mc1.find(function(r){ return r.code===code; });
@@ -7680,8 +7694,11 @@ document.addEventListener('DOMContentLoaded', function() {
       if (newEmail === null) return; // cancelled
       newEmail = newEmail.trim();
       if (newEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)){ alert('Please enter a valid email (or leave it unchanged).'); return; }
+      var newPhone = prompt('Edit phone (leave blank for none):', getPhoneFromNotes(rec.notes));
+      if (newPhone === null) return; // cancelled
+      var newNotes = setPhoneInNotes(rec.notes, newPhone);
       supabase.from('matchat_registrations')
-        .update({ name: newName, email: newEmail })
+        .update({ name: newName, email: newEmail, notes: newNotes || null })
         .eq('code', code)
         .then(function(res){
           if (res && res.error){ alert('Update failed: ' + res.error.message); return; }
@@ -8625,8 +8642,11 @@ document.addEventListener('DOMContentLoaded', function() {
       if (newEmail === null) return; // cancelled
       newEmail = newEmail.trim();
       if (newEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)){ alert('Please enter a valid email (or leave it unchanged).'); return; }
+      var newPhone = prompt('Edit phone (leave blank for none):', getPhoneFromNotes(rec.notes));
+      if (newPhone === null) return; // cancelled
+      var newNotes = setPhoneInNotes(rec.notes, newPhone);
       supabase.from('create_recharge_registrations')
-        .update({ name: newName, email: newEmail })
+        .update({ name: newName, email: newEmail, notes: newNotes || null })
         .eq('code', code)
         .then(function(res){
           if (res && res.error){ alert('Update failed: ' + res.error.message); return; }
