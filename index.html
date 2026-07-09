@@ -6434,6 +6434,7 @@ document.addEventListener('DOMContentLoaded', function() {
           var confirmBtn='<button onclick="mcAdminConfirmPayment(\''+rec.code+'\')" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u2705 Confirmed</button>';
           var pendingBtn='<button onclick="mcAdminPaymentPending(\''+rec.code+'\')" style="background:#fff8e1;border:1px solid #ffe082;color:#f57f17;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u23f3 Pending</button>';
           var removeBtn='<button onclick="mcAdminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128465; Remove</button>';
+          var editBtn='<button onclick="mcAdminEdit(\''+rec.code+'\')" style="background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">✏️ Edit</button>';
           var waiverBtn = rec.signature ? '<button onclick="mcAdminWaiverPDF(\''+rec.code+'\')" style="background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128196; Waiver</button>' : '';
           var attendedMC = /#attended/i.test(rec.adminNotes||'');
           var attendBtn = '<button onclick="toggleAttended(\'matchat_registrations\',\''+rec.code+'\')" style="background:'+(attendedMC?'#e8f5e9':'#fff')+';border:1px solid '+(attendedMC?'#a5d6a7':'var(--gold)')+';color:'+(attendedMC?'#2e7d32':'var(--brown)')+';border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">'+(attendedMC?'✓ Attended':'○ Attended')+'</button>';
@@ -6442,7 +6443,7 @@ document.addEventListener('DOMContentLoaded', function() {
           item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span>'+(rec.isPair?' <span style="font-size:.7rem;background:var(--brown);color:#fff;padding:.1rem .4rem;border-radius:10px;font-weight:700;letter-spacing:.5px;">PAIR</span>':'')+paymentBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+pairHTML+notesHTML+adminNotesField('matchat_registrations', rec.code, rec.adminNotes)+'</div>'+
             '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
             '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
-            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+attendBtn+confirmBtn+pendingBtn+waiverBtn+removeBtn+'</div></div>';
+            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+attendBtn+confirmBtn+pendingBtn+waiverBtn+editBtn+removeBtn+'</div></div>';
           mcBlock.appendChild(item);
         });
       }
@@ -7665,6 +7666,30 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // MC Admin functions
+  // Edit a Mat & Chat registrant's name / email. Safe: the spot count keys off
+  // 'type' and the payment webhook matches on 'code', neither of which changes.
+  window.mcAdminEdit = function(code){
+    getMCData(function(data){
+      var rec = data.mc1.find(function(r){ return r.code===code; });
+      if(!rec){ alert('Could not find registration.'); return; }
+      var newName = prompt('Edit name for this booking:', rec.name || '');
+      if (newName === null) return; // cancelled
+      newName = newName.trim();
+      if (!newName){ alert('Name cannot be empty.'); return; }
+      var newEmail = prompt('Edit email for this booking:', rec.email || '');
+      if (newEmail === null) return; // cancelled
+      newEmail = newEmail.trim();
+      if (newEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)){ alert('Please enter a valid email (or leave it unchanged).'); return; }
+      supabase.from('matchat_registrations')
+        .update({ name: newName, email: newEmail })
+        .eq('code', code)
+        .then(function(res){
+          if (res && res.error){ alert('Update failed: ' + res.error.message); return; }
+          renderAdmin();
+        }, function(err){ alert('Update failed. Check console for details.'); console.error(err); });
+    });
+  };
+
   window.mcAdminConfirmPayment = function(code){
     getMCData(function(data){
       var foundPerson = data.mc1.find(function(r){ return r.code===code; });
