@@ -8590,11 +8590,12 @@ document.addEventListener('DOMContentLoaded', function() {
           var confirmBtn='<button onclick="crAdminConfirmPayment(\''+rec.code+'\')" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">✅ Confirmed</button>';
           var waiverBtn = rec.signature ? '<button onclick="crAdminWaiverPDF(\''+rec.code+'\')" style="background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F4C4} Waiver</button>' : '';
           var removeBtn='<button onclick="crAdminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F5D1} Remove</button>';
+          var editBtn='<button onclick="crAdminEdit(\''+rec.code+'\')" style="background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">✏️ Edit</button>';
           var notesHTML = rec.notes ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;white-space:pre-line;line-height:1.55;"><strong style="color:var(--gold-text);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">\u{1F4DD} Notes for Instructor:</strong><br>'+cleanInstructorNotes(rec.notes)+'</div>' : '';
           item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span>'+paymentBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+notesHTML+adminNotesField('create_recharge_registrations', rec.code, rec.adminNotes)+'</div>'+
             '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
             '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
-            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+attendBtn+confirmBtn+waiverBtn+removeBtn+'</div></div>';
+            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+attendBtn+confirmBtn+waiverBtn+editBtn+removeBtn+'</div></div>';
           block.appendChild(item);
         });
       }
@@ -8607,6 +8608,30 @@ document.addEventListener('DOMContentLoaded', function() {
       if(!p){ alert('Could not find registration.'); return; }
       p.eventDate = CR_EVENT.eventDate;
       generateWaiverPDF(p);
+    });
+  };
+
+  // Edit a Create & Recharge registrant's name / email. Safe: count keys off
+  // 'type' and the payment webhook matches on 'code', neither of which changes.
+  window.crAdminEdit = function(code){
+    getCRData(function(data){
+      var rec = (data.cr1||[]).find(function(r){ return r.code===code; });
+      if(!rec){ alert('Could not find registration.'); return; }
+      var newName = prompt('Edit name for this booking:', rec.name || '');
+      if (newName === null) return; // cancelled
+      newName = newName.trim();
+      if (!newName){ alert('Name cannot be empty.'); return; }
+      var newEmail = prompt('Edit email for this booking:', rec.email || '');
+      if (newEmail === null) return; // cancelled
+      newEmail = newEmail.trim();
+      if (newEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)){ alert('Please enter a valid email (or leave it unchanged).'); return; }
+      supabase.from('create_recharge_registrations')
+        .update({ name: newName, email: newEmail })
+        .eq('code', code)
+        .then(function(res){
+          if (res && res.error){ alert('Update failed: ' + res.error.message); return; }
+          renderAdmin();
+        }, function(err){ alert('Update failed. Check console for details.'); console.error(err); });
     });
   };
   window.crAdminRemove = function(code){
