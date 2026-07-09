@@ -4251,6 +4251,17 @@
         <p style="font-size:.7rem;color:var(--text-muted);margin-top:.2rem;font-style:italic;">Suggested: <span id="admin-flex-reminder-suggestion">See you next week!</span></p>
       </div>
 
+      <div style="margin-bottom:.85rem;">
+        <label for="admin-flex-reminder-message" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Message <span style="font-weight:400;color:var(--text-muted);">(edit freely &mdash; this is the email body; your edits are remembered)</span></label>
+        <textarea id="admin-flex-reminder-message" rows="7" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;resize:vertical;line-height:1.55;">What to bring: just your good vibes &mdash; all equipment is provided. Wear something comfy to move in and you're set.
+
+Location: The Fitin &middot; 297 7th Ave, Floor 3, New York, NY 10001
+
+Please arrive on time &mdash; class begins promptly with a 5-minute grace period only, and late arrivals can't be admitted.
+
+Can't wait to move and connect with you!</textarea>
+      </div>
+
       <button type="button" id="admin-flex-reminder-send" class="btn btn-primary" style="width:100%;">&#128232; Send Reminder &rarr;</button>
       <div id="admin-flex-reminder-status" style="margin-top:.5rem;font-size:.78rem;color:var(--text-muted);"></div>
     </div>
@@ -6976,10 +6987,19 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('admin-flex-reminder-suggestion').textContent = getReminderPhrasing(days).greeting;
   });
 
+  // Remember the editable reminder message across sessions (per browser).
+  (function(){
+    var msgEl = document.getElementById('admin-flex-reminder-message');
+    if (!msgEl) return;
+    try { var saved = localStorage.getItem('auric_reminder_msg'); if (saved !== null) msgEl.value = saved; } catch(e){}
+    msgEl.addEventListener('input', function(){ try { localStorage.setItem('auric_reminder_msg', this.value); } catch(e){} });
+  })();
+
   document.getElementById('admin-flex-reminder-send').addEventListener('click', function(){
     var eventType = document.getElementById('admin-flex-reminder-event').value;
     var days = parseInt(document.getElementById('admin-flex-reminder-days').value, 10) || 0;
     var customGreeting = document.getElementById('admin-flex-reminder-greeting').value.trim();
+    var customMessage = (document.getElementById('admin-flex-reminder-message').value || '').trim();
     var phrasing = getReminderPhrasing(days);
     var greeting = customGreeting || phrasing.greeting;
     var daysText = phrasing.days_text;
@@ -7036,7 +7056,8 @@ document.addEventListener('DOMContentLoaded', function() {
           arrival_time:  item.sess.arrival,
           class_time:    item.sess.start,
           greeting:      greeting,
-          days_text:     daysText
+          days_text:     daysText,
+          custom_message: customMessage
         }).then(function(){
           sent++;
         }).catch(function(err){
