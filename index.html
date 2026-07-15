@@ -6100,7 +6100,7 @@ document.addEventListener('DOMContentLoaded', function() {
     doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(90,58,26);
     doc.text('AGREED CLAUSES',margin,y); y+=6;
     doc.setDrawColor(176,120,64); doc.setLineWidth(0.75); doc.line(margin,y,pageW-margin,y); y+=14;
-    clauseTexts.forEach(function(text,i){
+    (rec.clauseList || clauseTexts).forEach(function(text,i){
       var lines=doc.setFontSize(8.5).splitTextToSize(text,contentW-26);
       var blockH=lines.length*11+14; checkPage(blockH);
       doc.setFillColor(176,120,64); doc.circle(margin+8,y+5,7,'F');
@@ -8516,15 +8516,20 @@ document.addEventListener('DOMContentLoaded', function() {
     return lines.join('\n');
   }
 
+  // Create & Recharge uses the shared clauses PLUS one collab/art-specific clause
+  // (covers art-material risk and extends the release to Georgina Arroyo & collaborators).
+  var CR_CLAUSE_TEXTS = clauseTexts.concat([
+    "I understand that Create & Recharge is co-hosted with Georgina Arroyo and includes creative and art-based activities. I acknowledge the inherent risks of using art materials and tools — including cuts, skin irritation, or allergic reactions to paints, adhesives, or other supplies, and staining of clothing or belongings — and I voluntarily assume all such risks. I agree that every release, waiver, and hold-harmless provision in this agreement also protects Auric Movement LLC's collaborators, co-hosts, and guest instructors, including Georgina Arroyo, to the same extent as the Released Parties. I agree to disclose any known allergies or sensitivities to my instructor before participating."
+  ]);
   function buildCRClauses(){
     var container = document.getElementById('cr-clauses-container');
     container.innerHTML=''; crCheckedClauses={}; crCheckedCount=0; updateCRProgress();
     var selBtn = document.getElementById('cr-select-all-btn');
     if (selBtn){ selBtn.textContent = '✓ Select All Clauses'; selBtn.disabled=false; }
-    clauseTexts.forEach(function(text, i){
+    CR_CLAUSE_TEXTS.forEach(function(text, i){
       var div=document.createElement('div'); div.className='clause';
       var cb=document.createElement('input'); cb.type='checkbox'; cb.id='crcb-'+i;
-      cb.setAttribute('aria-label','Agree to clause '+(i+1)+' of 19');
+      cb.setAttribute('aria-label','Agree to clause '+(i+1)+' of '+CR_CLAUSE_TEXTS.length);
       var lbl=document.createElement('label'); lbl.htmlFor='crcb-'+i; lbl.className='clause-text';
       lbl.innerHTML='<span class="clause-num">'+(i+1)+'.</span> '+text;
       cb.addEventListener('change', function(){
@@ -8538,11 +8543,11 @@ document.addEventListener('DOMContentLoaded', function() {
   function updateCRProgress(){
     crCheckedCount = Object.keys(crCheckedClauses).length;
     document.getElementById('cr-confirmed-count').textContent = crCheckedCount;
-    document.getElementById('cr-remaining-text').textContent  = (19-crCheckedCount)+' remaining';
-    document.getElementById('cr-progress-fill').style.width   = (crCheckedCount/19*100)+'%';
+    document.getElementById('cr-remaining-text').textContent  = (CR_CLAUSE_TEXTS.length-crCheckedCount)+' remaining';
+    document.getElementById('cr-progress-fill').style.width   = (crCheckedCount/CR_CLAUSE_TEXTS.length*100)+'%';
     document.getElementById('cr-progress-track').setAttribute('aria-valuenow', crCheckedCount);
     var fa = document.getElementById('cr-final-agree');
-    if (crCheckedCount===19){ fa.disabled=false; }
+    if (crCheckedCount===CR_CLAUSE_TEXTS.length){ fa.disabled=false; }
     else { fa.disabled=true; fa.checked=false; document.getElementById('cr-sig-input').disabled=true; document.getElementById('cr-sig-input').value=''; document.getElementById('cr-submit-btn').disabled=true; }
   }
 
@@ -8562,19 +8567,19 @@ document.addEventListener('DOMContentLoaded', function() {
     crShowStep('cr-step-waiver');
     var layout=document.getElementById('cr-page-layout'); if(layout) layout.classList.add('waiver-active');
     document.getElementById('cr-step-waiver').scrollIntoView({behavior:'smooth'});
-    announce('Waiver loaded. 19 clauses to review.');
+    announce('Waiver loaded. '+CR_CLAUSE_TEXTS.length+' clauses to review.');
   });
 
   var crSelAll = document.getElementById('cr-select-all-btn');
   if (crSelAll) crSelAll.addEventListener('click', function(){
     document.querySelectorAll('#cr-clauses-container input[type="checkbox"]').forEach(function(cb){ if(!cb.checked){ cb.checked=true; cb.dispatchEvent(new Event('change')); } });
     this.textContent = '✓ All Clauses Selected'; this.disabled=true;
-    announce('All 19 clauses selected.');
+    announce('All '+CR_CLAUSE_TEXTS.length+' clauses selected.');
   });
   var crFinalAgree = document.getElementById('cr-final-agree');
   if (crFinalAgree) crFinalAgree.addEventListener('change', function(){
     var si = document.getElementById('cr-sig-input');
-    if(this.checked && crCheckedCount===19){ si.disabled=false; si.focus(); }
+    if(this.checked && crCheckedCount===CR_CLAUSE_TEXTS.length){ si.disabled=false; si.focus(); }
     else { si.disabled=true; si.value=''; document.getElementById('cr-submit-btn').disabled=true; }
   });
   var crSig = document.getElementById('cr-sig-input');
@@ -8631,7 +8636,7 @@ document.addEventListener('DOMContentLoaded', function() {
       supabase.rpc('book_create_recharge_session', {
         p_name:name, p_email:email, p_signature:sig,
         p_time_str:timeStr, p_timestamp_iso:now.toISOString(),
-        p_code:code, p_clauses_agreed:19, p_notes:notesWithAck,
+        p_code:code, p_clauses_agreed:CR_CLAUSE_TEXTS.length, p_notes:notesWithAck,
         p_is_pair:false, p_friend_name:null, p_friend_email:null,
         p_max_spots:CR_MAX_SPOTS
       }).then(function(res){
@@ -8643,7 +8648,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         var row = res.data[0];
         var type = row.out_type, wlPos = row.out_wl_position;
-        var record = { name:name, email:email, phone:phone, signature:sig, session:'cr1', sessionLabel:CR_EVENT.label, arrival:CR_EVENT.arrival, classStart:CR_EVENT.start, eventDate:CR_EVENT.eventDate, time:timeStr, timestamp:now.toISOString(), code:code, type:type, wlPosition:wlPos, clausesAgreed:19, notes:notesWithAck, refundPolicyAck:refundAckTime, refundPolicyText:CR_REFUND_POLICY_TEXT, pricePaid:CR_EVENT.price };
+        var record = { name:name, email:email, phone:phone, signature:sig, session:'cr1', sessionLabel:CR_EVENT.label, arrival:CR_EVENT.arrival, classStart:CR_EVENT.start, eventDate:CR_EVENT.eventDate, time:timeStr, timestamp:now.toISOString(), code:code, type:type, wlPosition:wlPos, clausesAgreed:CR_CLAUSE_TEXTS.length, clauseList:CR_CLAUSE_TEXTS, notes:notesWithAck, refundPolicyAck:refundAckTime, refundPolicyText:CR_REFUND_POLICY_TEXT, pricePaid:CR_EVENT.price };
         crLastSubmission = record;
 
         if(type==='confirmed'){
@@ -8660,7 +8665,7 @@ document.addEventListener('DOMContentLoaded', function() {
               admin_email: ADMIN_EMAIL, from_name:name, participant_email:email, to_email:email,
               session_label:'Create & Recharge — August 15th',
               arrival_time:CR_EVENT.arrival, registration_type:'Waiver signed — payment pending',
-              sign_time:timeStr, clauses_agreed:'19 of 19', cancel_code:code
+              sign_time:timeStr, clauses_agreed:CR_CLAUSE_TEXTS.length+' of '+CR_CLAUSE_TEXTS.length, cancel_code:code
             }).then(function(){ console.log('[admin notif] create&recharge sent for', code); })
               .catch(function(err){ console.error('[admin notif] create&recharge FAILED for', code, err); });
           }
@@ -8767,6 +8772,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var p = (data.cr1||[]).find(function(r){ return r.code===code; });
       if(!p){ alert('Could not find registration.'); return; }
       p.eventDate = CR_EVENT.eventDate;
+      p.clauseList = CR_CLAUSE_TEXTS;
       generateWaiverPDF(p);
     });
   };
