@@ -4060,13 +4060,11 @@
 
             <!-- Cancellation & Credit Policy Acknowledgment -->
             <div style="margin:1.25rem 0;padding:1rem 1.25rem;background:#faf5ee;border:2px solid var(--gold);border-radius:10px;">
-              <h3 style="font-size:.85rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brown);margin-bottom:.6rem;">&#9888; Cancellation &amp; Credit Policy &mdash; Create &amp; Recharge</h3>
+              <h3 style="font-size:.85rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brown);margin-bottom:.6rem;">&#9888; Refund Policy &mdash; Create &amp; Recharge</h3>
               <p style="font-size:.85rem;color:#3d322a;line-height:1.6;margin:0 0 .5rem;">By booking this session, you agree to the following:</p>
               <ul style="font-size:.85rem;color:#3d322a;line-height:1.7;margin:0 0 .75rem;padding-left:1.25rem;">
-                <li><strong>All sales are final</strong> &mdash; no cash refunds.</li>
-                <li>Cancel at least <strong>48 hours before</strong> the session and we&rsquo;ll issue a <strong>credit for the full amount you paid</strong>, valid toward any future <strong>Auric Movement event hosted by Niara</strong> for <strong>6 months</strong>. <em>(Collaborations &amp; partner events excluded.)</em></li>
-                <li>Cancellations within 48 hours of the session, or no-shows, are <strong>not eligible for a credit</strong>.</li>
-                <li><strong>Spot transfers to a friend are welcome up to 24 hours before the event.</strong> Email <a href="mailto:auricmovement@outlook.com" style="color:var(--gold-text);font-weight:600;">auricmovement@outlook.com</a> with both names and emails to arrange.</li>
+                <li><strong>All sales are final</strong> &mdash; no refunds and no credits.</li>
+                <li>Can&rsquo;t make it? <strong>Spot transfers to a friend are welcome up to 24 hours before the event.</strong> Email <a href="mailto:auricmovement@outlook.com" style="color:var(--gold-text);font-weight:600;">auricmovement@outlook.com</a> with both names and emails to arrange.</li>
               </ul>
               <label style="display:flex;align-items:flex-start;gap:.6rem;padding:.65rem .75rem;background:#fff;border:1px solid var(--gold);border-radius:8px;cursor:pointer;font-size:.85rem;color:#3d322a;">
                 <input type="checkbox" id="cr-refund-policy-agree" style="margin-top:.15rem;accent-color:var(--gold);width:18px;height:18px;flex-shrink:0;">
@@ -5495,6 +5493,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Returns an HTML badge showing payment status for an admin row
   function paymentBadge(rec) {
     if (rec.type === 'waitlist' || rec.type === 'cancelled') return '';
+    if (/#comp\b/i.test(rec.adminNotes || '')) {
+      return '<span style="display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.5px;padding:.15rem .5rem;border-radius:10px;background:#f3ecfb;color:#6a3ca5;margin-left:.3rem;text-transform:uppercase;">&#127873; Comped</span>';
+    }
     if (rec.isPaid) {
       return '<span style="display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.5px;padding:.15rem .5rem;border-radius:10px;background:#e8f5e9;color:#2e7d32;margin-left:.3rem;text-transform:uppercase;">&#128181; Paid</span>';
     }
@@ -8332,11 +8333,8 @@ document.addEventListener('DOMContentLoaded', function() {
     stripeUrl: 'https://buy.stripe.com/eVqeVc350bKV88k24a9sk05'
   };
   var CR_REFUND_POLICY_TEXT =
-    'All sales are final. To receive a credit, cancel at least 48 hours before the event — ' +
-    'we will issue a credit for the full amount you paid, valid toward any future Auric Movement ' +
-    'event hosted by Niara (collaborations and partner events excluded) for 6 months. ' +
-    'Cancellations within 48 hours of the session, or no-shows, are not eligible for a credit. ' +
-    'Spot transfers to a friend are welcome up to 24 hours before the event — email ' +
+    'All sales are final — no refunds and no credits. ' +
+    'Can’t make it? Spot transfers to a friend are welcome up to 24 hours before the event — email ' +
     'auricmovement@outlook.com with both names and emails to arrange.';
   var CR_STORAGE_KEY = 'auric_recharge';
   var crCheckedClauses = {}, crCheckedCount = 0, crLastSubmission = null;
@@ -8632,7 +8630,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var confirmed = list.filter(function(r){ return r.type==='confirmed'; });
       var waitlist  = list.filter(function(r){ return r.type==='waitlist'; });
       var toMark = confirmed.filter(function(r){ return !/#attended/i.test(r.adminNotes||''); }).length;
-      block.innerHTML = '<h3 style="color:var(--gold-text);">Create &amp; Recharge — Aug 15th · '+confirmed.length+'/'+CR_MAX_SPOTS+' spots · '+waitlist.length+' waitlisted</h3>'+(confirmed.length?'<button onclick="crBulkAttend()" style="margin:.1rem 0 .6rem;background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.3rem .7rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;">✓ Mark all attended ('+toMark+')</button>':'')+(waitlist.length?'<button onclick="crNotifyWaitlist()" style="margin:.1rem 0 .6rem .4rem;background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.3rem .7rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;">📣 Notify waitlist ('+waitlist.length+')</button>':'');
+      block.innerHTML = '<h3 style="color:var(--gold-text);">Create &amp; Recharge — Aug 15th · '+confirmed.length+'/'+CR_MAX_SPOTS+' spots · '+waitlist.length+' waitlisted</h3>'+'<button onclick="crAdminAddComp()" style="margin:.1rem .4rem .6rem 0;background:#f3ecfb;border:1px solid #d4bff4;color:#6a3ca5;border-radius:6px;padding:.3rem .7rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F381} Add comp attendee</button>'+(confirmed.length?'<button onclick="crBulkAttend()" style="margin:.1rem 0 .6rem;background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.3rem .7rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;">✓ Mark all attended ('+toMark+')</button>':'')+(waitlist.length?'<button onclick="crNotifyWaitlist()" style="margin:.1rem 0 .6rem .4rem;background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.3rem .7rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;">📣 Notify waitlist ('+waitlist.length+')</button>':'');
       if(!list.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; }
       else {
         list.forEach(function(rec){
@@ -8709,6 +8707,50 @@ document.addEventListener('DOMContentLoaded', function() {
         supabase.from('create_recharge_registrations').update({ admin_notes:newNotes }).eq('code', r.code)
           .then(function(){ done++; if(done+fail===todo.length) renderAdmin(); }, function(){ fail++; if(done+fail===todo.length){ renderAdmin(); alert(fail+' update(s) failed.'); } });
       });
+    });
+  };
+  // Admin: add a comped attendee (no payment) — e.g. a co-host or guest.
+  // Books through the same RPC so spot counting stays consistent, then marks
+  // the row paid + tags it #comp so it shows a "Comped" badge and is never
+  // swept as an unpaid hold. Reusable for future events.
+  window.crAdminAddComp = function(){
+    var name = prompt('Comp attendee — full name:');
+    if (name === null) return;
+    name = name.trim();
+    if (!name){ alert('Name is required.'); return; }
+    var email = prompt('Comp attendee — email (optional, for their confirmation):', '');
+    if (email === null) return;
+    email = email.trim();
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ alert('That email looks off. Leave it blank if you don\'t have one.'); return; }
+    if(!confirm('Add '+name+' as a COMPED attendee (no payment)?\n\nThey\'ll take a confirmed spot and show a "Comped" badge.')) return;
+    var now=new Date(); var timeStr=now.toLocaleString(); var code=genCode();
+    var notes = 'TICKET: Create & Recharge (COMPED — added by admin)';
+    supabase.rpc('book_create_recharge_session', {
+      p_name:name, p_email:email || (code.toLowerCase()+'@comp.auric'), p_signature:name,
+      p_time_str:timeStr, p_timestamp_iso:now.toISOString(),
+      p_code:code, p_clauses_agreed:19, p_notes:notes,
+      p_is_pair:false, p_friend_name:null, p_friend_email:null,
+      p_max_spots:CR_MAX_SPOTS
+    }).then(function(res){
+      if (res.error || !res.data || !res.data.length){
+        console.error('[crAdminAddComp] RPC failed', res.error);
+        alert('Could not add the comp — the session may be full, or there was a save error.');
+        return;
+      }
+      var type = res.data[0].out_type;
+      if (type !== 'confirmed'){
+        alert('The session is full, so '+name+' was placed on the waitlist instead. Remove someone or bump them up if this should be a confirmed comp.');
+        renderAdmin(); buildCRSpots(); updateEventCardSpots(); return;
+      }
+      // Mark paid (so the sweep never touches it) and tag it as a comp.
+      supabase.from('create_recharge_registrations')
+        .update({ is_paid:true, paid_at:now.toISOString(), admin_notes:'#comp' })
+        .eq('code', code)
+        .then(function(){ renderAdmin(); buildCRSpots(); updateEventCardSpots(); alert('✅ '+name+' added as a comped attendee.'); },
+              function(){ renderAdmin(); alert('Added, but could not tag it as a comp. You can edit the note manually.'); });
+    }, function(err){
+      console.error('[crAdminAddComp] RPC error', err);
+      alert('Could not add the comp. Please try again.');
     });
   };
   // Admin: send the "you're confirmed / receipt" email + mark paid (mirrors mcAdminConfirmPayment).
