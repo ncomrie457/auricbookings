@@ -4152,8 +4152,6 @@
       <h2>Registrations</h2>
       <div class="admin-actions">
         <button type="button" id="admin-csv-btn" class="btn btn-secondary">&#128229; CSV</button>
-        <button type="button" id="admin-notify-btn" class="btn btn-secondary">&#128227; Notify Pilates Waitlist</button>
-        <button type="button" id="admin-mc-notify-btn" class="btn btn-secondary">&#128227; Notify Mat &amp; Chat Waitlist</button>
         <button type="button" id="admin-thankyou-btn" class="btn btn-primary">&#10022; Send Thank-You Emails</button>
         <button type="button" id="admin-founding-btn" class="btn btn-primary">&#127873; Send Founding Four</button>
         <button type="button" id="admin-club-btn" class="btn btn-secondary">&#10022; Auric Club</button>
@@ -4164,6 +4162,14 @@
       </div>
     </div>
     <div id="admin-body"></div>
+
+    <!-- Consolidated Waitlist Notify — all events in one place -->
+    <div id="admin-waitlist-section" style="margin-top:1.5rem;padding:1.25rem;background:#eef4fb;border:1px solid #cfe0f5;border-radius:12px;">
+      <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#185fa5;margin-bottom:.4rem;">&#128227; Waitlist &mdash; Notify</h3>
+      <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:.85rem;line-height:1.5;">Everyone on a waitlist, across all events. Tick who to notify that a spot has opened, then send &mdash; each person automatically gets the right email for their event.</p>
+      <div id="admin-waitlist-body"><div style="color:var(--text-muted);font-size:.85rem;">Loading&hellip;</div></div>
+    </div>
+
     <div id="admin-club-section" style="display:none;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);">
       <h3 style="color:var(--gold-text);margin:0 0 .75rem;">&#10022; Auric Club Members</h3>
       <div id="admin-club-body"></div>
@@ -6355,11 +6361,102 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   document.getElementById('admin-close-btn').addEventListener('click',function(){adminPanel.classList.remove('visible');});
-  document.getElementById('admin-notify-btn').addEventListener('click',function(){
-    SESSIONS.forEach(function(s){notifyWaitlist(s.id);});
-    alert('Waitlists notified!');
-  });
-  document.getElementById('admin-mc-notify-btn').addEventListener('click', mcNotifyWaitlist);
+
+  // ── Consolidated waitlist notify (all events in one list) ─────────────────
+  var _waitlistItems = [];
+  function gatherAllWaitlist(cb){
+    var base = window.location.href.split('?')[0].split('#')[0];
+    var items = [];
+    getData(function(pdata){
+      SESSIONS.forEach(function(sess){
+        (pdata[sess.id]||[]).filter(function(r){ return r.type==='waitlist'; }).forEach(function(rec){
+          items.push({ name:rec.name, email:rec.email, eventShort:'Pilates', tmpl:TMPL_WL_OPEN,
+            vars:{ from_name:rec.name, to_email:rec.email, session_label:sess.label, arrival_time:sess.arrival,
+              register_url:base, message:'A spot has opened for '+sess.label+' on June 19th! This message is going to everyone on the waitlist — first to register gets it!' } });
+        });
+      });
+      getMCData(function(mcdata){
+        (mcdata.mc1||[]).filter(function(r){ return r.type==='waitlist'; }).forEach(function(rec){
+          items.push({ name:rec.name, email:rec.email, eventShort:'Mat & Chat', tmpl:MC_TMPL_WL_OPEN,
+            vars:{ from_name:rec.name, to_email:rec.email, session_label:'Mat & Chat', arrival_time:'11:25 AM',
+              register_url:base, message:'A spot has opened for Mat & Chat on Saturday, August 1st! This message is going to everyone on the waitlist — first to register gets it!' } });
+        });
+        function finish(){ cb(items); }
+        if (typeof getCRData === 'function') {
+          getCRData(function(crdata){
+            (crdata.cr1||[]).filter(function(r){ return r.type==='waitlist'; }).forEach(function(rec){
+              items.push({ name:rec.name, email:rec.email, eventShort:'Create & Recharge', tmpl:CR_TMPL_WL_OPEN,
+                vars:{ from_name:rec.name, to_email:rec.email, session_label:CR_EVENT.label, arrival_time:CR_EVENT.arrival,
+                  register_url:(typeof CR_REGISTER_URL!=='undefined'?CR_REGISTER_URL:base), message:'A spot has opened for Create & Recharge on Saturday, August 15th! This message is going to everyone on the waitlist — first to register gets it!' } });
+            });
+            finish();
+          });
+        } else finish();
+      });
+    });
+  }
+  function renderWaitlistNotify(){
+    var bodyEl = document.getElementById('admin-waitlist-body');
+    if (!bodyEl) return;
+    bodyEl.innerHTML = '<div style="color:var(--text-muted);font-size:.85rem;">Loading…</div>';
+    gatherAllWaitlist(function(items){
+      _waitlistItems = items;
+      if (!items.length){ bodyEl.innerHTML = '<div class="empty-state">No one is on any waitlist right now.</div>'; return; }
+      var btnCss = 'background:#fff;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.25rem .6rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;';
+      var rows = items.map(function(it, i){
+        return '<label style="display:flex;align-items:center;gap:.6rem;padding:.5rem .25rem;border-bottom:1px solid #dce3f2;cursor:pointer;">'+
+          '<input type="checkbox" class="admin-wl-check" data-wl-index="'+i+'" checked onchange="updateWaitlistSendLabel()" style="width:16px;height:16px;flex-shrink:0;accent-color:#185fa5;">'+
+          '<span style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(it.name)+'</span> <span style="font-size:.72rem;color:var(--text-muted);">'+escapeHTML(it.email)+'</span></span>'+
+          '<span style="font-size:.68rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:#185fa5;background:#fff;border:1px solid #cfe0f5;border-radius:20px;padding:.15rem .5rem;white-space:nowrap;">'+escapeHTML(it.eventShort)+'</span>'+
+        '</label>';
+      }).join('');
+      bodyEl.innerHTML =
+        '<div style="display:flex;gap:.5rem;margin-bottom:.5rem;flex-wrap:wrap;">'+
+          '<button type="button" onclick="waitlistSelectAll(true)" style="'+btnCss+'">Select all</button>'+
+          '<button type="button" onclick="waitlistSelectAll(false)" style="'+btnCss+'">Clear</button>'+
+        '</div>'+ rows +
+        '<button type="button" id="admin-wl-send" onclick="notifySelectedWaitlist()" class="btn btn-primary" style="width:100%;margin-top:.75rem;">📣 Notify selected</button>'+
+        '<div id="admin-wl-status" style="margin-top:.5rem;font-size:.78rem;color:var(--text-muted);"></div>';
+      updateWaitlistSendLabel();
+    });
+  }
+  window.waitlistSelectAll = function(on){
+    document.querySelectorAll('.admin-wl-check').forEach(function(cb){ cb.checked = !!on; });
+    updateWaitlistSendLabel();
+  };
+  window.updateWaitlistSendLabel = function(){
+    var n = document.querySelectorAll('.admin-wl-check:checked').length;
+    var btn = document.getElementById('admin-wl-send');
+    if (btn){ btn.textContent = '📣 Notify selected (' + n + ')'; btn.disabled = (n === 0); }
+  };
+  window.notifySelectedWaitlist = function(){
+    var checked = Array.prototype.slice.call(document.querySelectorAll('.admin-wl-check:checked'));
+    var chosen = checked.map(function(cb){ return _waitlistItems[parseInt(cb.getAttribute('data-wl-index'),10)]; }).filter(Boolean);
+    if (!chosen.length){ alert('Select at least one person to notify.'); return; }
+    if (typeof emailjs === 'undefined'){ alert('Email service unavailable.'); return; }
+    var missing = chosen.filter(function(it){ return !it.tmpl || it.tmpl.indexOf('REPLACE') !== -1; });
+    if (missing.length){ alert('One or more events don’t have a waitlist-open email template set yet. Set the template id first.'); return; }
+    if (!confirm('Email ' + chosen.length + ' waitlister(s) that a spot has opened?\n\nFirst to register gets it.')) return;
+    var btn = document.getElementById('admin-wl-send');
+    var statusEl = document.getElementById('admin-wl-status');
+    btn.disabled = true;
+    var sent = 0, failed = 0, failedList = [];
+    (function next(i){
+      if (i >= chosen.length){
+        btn.disabled = false; updateWaitlistSendLabel();
+        var msg = '✅ Notified ' + sent + ' waitlister(s).';
+        if (failed){ msg += '\n\n⚠️ ' + failed + ' failed: ' + failedList.join(', '); }
+        if (statusEl) statusEl.textContent = msg.replace(/\n+/g,' ');
+        alert(msg);
+        return;
+      }
+      var it = chosen[i];
+      if (statusEl) statusEl.textContent = 'Sending… (' + (sent+failed) + '/' + chosen.length + ')';
+      emailjs.send(EMAILJS_SERVICE_ID, it.tmpl, it.vars)
+        .then(function(){ sent++; }, function(err){ failed++; failedList.push(it.email); console.error('[waitlist notify] FAILED for '+it.email, err); })
+        .then(function(){ setTimeout(function(){ next(i+1); }, 1000); });
+    })(0);
+  };
   document.getElementById('admin-club-btn').addEventListener('click', function(){
     var sec = document.getElementById('admin-club-section');
     var box = document.getElementById('admin-club-body');
@@ -6406,6 +6503,7 @@ document.addEventListener('DOMContentLoaded', function() {
     body.appendChild(crContainer);
     body.appendChild(corpContainer);
     if (typeof renderCRSection === 'function') renderCRSection(crContainer);
+    if (typeof renderWaitlistNotify === 'function') renderWaitlistNotify();
 
     getData(function(data){
       sessionsContainer.innerHTML='';
