@@ -3933,7 +3933,7 @@
         </p>
         <strong>Finding the Entrance</strong>
         <p>
-          <strong>Inner Diamond Studio</strong> is on the <strong>2nd floor</strong> of a walk-up building at <strong>300 W 38th Street, #2F</strong> &mdash; between <strong>City Sewing Machine</strong> and <strong>Carmen&rsquo;s Kitchen</strong>. Look for the <strong>sculpture of a lion&rsquo;s head</strong> above the entrance, then head up to the second floor.
+          <b>Inner Diamond Studio</b> is on the 2nd floor of a walk-up building at <b>300 W 38th Street, #2F</b> &mdash; between City Sewing Machine and Carmen&rsquo;s Kitchen. Look for the sculpture of a lion&rsquo;s head above the entrance, then head up to the second floor.
         </p>
       </div>
     </div>
@@ -4214,9 +4214,13 @@
           <input type="checkbox" data-event-badge="pilates" data-field="is_collab">
           <span>Pilates x Niara &mdash; Collab</span>
         </label>
-        <label class="mc-health-row" style="margin-bottom:0;">
+        <label class="mc-health-row" style="margin-bottom:.45rem;">
           <input type="checkbox" data-event-badge="matchat" data-field="is_collab">
           <span>Mat &amp; Chat &mdash; Collab</span>
+        </label>
+        <label class="mc-health-row" style="margin-bottom:0;">
+          <input type="checkbox" data-event-badge="recharge" data-field="is_collab">
+          <span>Create &amp; Recharge &mdash; Collab</span>
         </label>
       </div>
       <div id="admin-event-badges-status" style="margin-top:.5rem;font-size:.78rem;color:var(--text-muted);"></div>
@@ -4231,9 +4235,13 @@
         <label for="admin-donor-pilates" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Pilates x Niara &mdash; Donors</label>
         <input type="text" id="admin-donor-pilates" data-event-donors="pilates" placeholder="e.g., Costco, LMNT" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
       </div>
-      <div>
+      <div style="margin-bottom:.85rem;">
         <label for="admin-donor-matchat" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Mat &amp; Chat &mdash; Donors</label>
         <input type="text" id="admin-donor-matchat" data-event-donors="matchat" placeholder="e.g., Sweetgreen, Erewhon" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
+      </div>
+      <div>
+        <label for="admin-donor-recharge" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Create &amp; Recharge &mdash; Donors</label>
+        <input type="text" id="admin-donor-recharge" data-event-donors="recharge" placeholder="e.g., partner or sponsor names" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
       </div>
       <div id="admin-event-donors-status" style="margin-top:.5rem;font-size:.78rem;color:var(--text-muted);"></div>
     </div>
@@ -5434,7 +5442,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function applyEventBadges() {
     getEventConfig(function(cfg){
-      var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat' };
+      var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat', recharge: 'event-card-recharge' };
       Object.keys(cards).forEach(function(key){
         var card = document.getElementById(cards[key]);
         if (!card) return;
