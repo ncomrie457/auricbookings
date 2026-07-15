@@ -1,0 +1,250 @@
+<!--
+  ════════════════════════════════════════════════════════════
+   Create & Recharge — Confirmation Email  (matches the
+   "THANK YOU" card aesthetic: cream + periwinkle watercolor,
+   bold sans-serif headers, tan accent box)
+   ────────────────────────────────────────────────────────────
+   COPY THIS ENTIRE FILE (Cmd+A → Cmd+C) and paste into:
+     EmailJS → Email Templates → template_am03atq →
+     switch to the "Code"/HTML view → paste over everything → Save.
+
+   EmailJS template settings to set:
+     • Subject:  You're in — Create & Recharge with Auric Movement × Georgina Arroyo
+
+   EmailJS variables used (leave these exactly as-is):
+     {{from_name}} {{arrival_time}} {{class_time}} {{calendar_url}}
+     {{receipt_amount}} {{receipt_code}} {{receipt_signed_as}}
+     {{receipt_signed_at}} {{refund_policy_text}} {{refund_policy_ack_at}}
+  ════════════════════════════════════════════════════════════
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You're in — Create &amp; Recharge</title>
+</head>
+<body style="margin:0;padding:0;background-color:#efe9dc;font-family:Georgia,'Times New Roman',serif;color:#33313a;">
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#efe9dc;padding:32px 16px;">
+  <tr>
+    <td align="center">
+
+      <!-- Outer container -->
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf6ec;border-radius:14px;overflow:hidden;box-shadow:0 6px 30px rgba(120,128,190,0.14);max-width:600px;width:100%;">
+
+        <!-- Top brand line -->
+        <tr>
+          <td align="center" style="background-color:#faf6ec;padding:26px 24px 6px;">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:#7b83c0;letter-spacing:4px;text-transform:uppercase;font-weight:bold;">
+              Auric Movement <span style="color:#c9b489;">&times;</span> Georgina Arroyo
+            </div>
+          </td>
+        </tr>
+
+        <!-- Periwinkle watercolor header band -->
+        <tr>
+          <td align="center" style="background:linear-gradient(135deg,#9aa1d6 0%,#7d86c4 55%,#6c76ba 100%);background-color:#7d86c4;padding:46px 30px 42px;">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:#e9ebfa;letter-spacing:5px;text-transform:uppercase;margin-bottom:14px;">You're In</div>
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:52px;line-height:0.98;color:#ffffff;font-weight:800;letter-spacing:-1px;text-transform:uppercase;">
+              Thank<br>You
+            </div>
+            <div style="width:56px;height:2px;background-color:#e6d9b8;margin:20px auto 16px;"></div>
+            <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:21px;color:#f3f1fb;letter-spacing:0.5px;">
+              Create. Move. Recharge.
+            </div>
+          </td>
+        </tr>
+
+        <!-- Greeting -->
+        <tr>
+          <td style="padding:36px 42px 6px;">
+            <p style="font-family:Georgia,serif;font-size:16px;line-height:1.7;color:#33313a;margin:0 0 14px 0;">
+              Hi {{from_name}},
+            </p>
+            <p style="font-family:Georgia,serif;font-size:16px;line-height:1.75;color:#33313a;margin:0 0 8px 0;">
+              Your spot is confirmed. We&rsquo;re so glad you&rsquo;ll be creating and moving with us &mdash; a morning to set your intentions through art, then embody them on the mat.
+            </p>
+          </td>
+        </tr>
+
+        <!-- "Walk away feeling" prompt — tan accent box -->
+        <tr>
+          <td style="padding:20px 42px 8px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#ece0c6;border-radius:10px;">
+              <tr>
+                <td style="padding:24px 26px;" align="center">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#9a7f47;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">Before You Arrive</div>
+                  <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:22px;line-height:1.45;color:#5a4a2a;margin:0;">
+                    What would you love to walk away feeling?
+                  </p>
+                  <p style="font-family:Georgia,serif;font-size:13px;line-height:1.6;color:#6d5f45;margin:12px 0 0 0;">
+                    Sit with it on the way over &mdash; we&rsquo;ll create from there.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Session details -->
+        <tr>
+          <td style="padding:24px 42px 8px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f2eee1;border-left:3px solid #7d86c4;border-radius:0 8px 8px 0;">
+              <tr>
+                <td style="padding:20px 24px;">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#7b83c0;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:12px;">Session Details</div>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d3a44;width:120px;"><strong>Arrival:</strong></td>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d3a44;">{{arrival_time}}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d3a44;"><strong>We begin:</strong></td>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d3a44;">{{class_time}}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d3a44;vertical-align:top;"><strong>Where:</strong></td>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d3a44;line-height:1.55;">Inner Diamond Studio<br>300 W 38th Street, 2F<br>New York, NY 10018</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Finding the entrance -->
+        <tr>
+          <td style="padding:16px 42px 8px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#eef0f8;border:1px solid #ccd2ee;border-radius:8px;">
+              <tr>
+                <td style="padding:18px 24px;">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#5c66ab;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">&#128205; Finding the Entrance</div>
+                  <p style="font-family:Georgia,serif;font-size:14px;color:#3d3a44;line-height:1.65;margin:0;">
+                    Inner Diamond Studio is on the <strong>2nd floor</strong> of a walk-up at <strong>300 W 38th Street</strong>, between <em>City Sewing Machine</em> and <em>Carmen&rsquo;s Kitchen</em>. Look for the building with a <strong>lion&rsquo;s-head sculpture</strong> above the entrance.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Add to calendar -->
+        <tr>
+          <td style="padding:22px 42px 10px;" align="center">
+            <a href="{{calendar_url}}" style="display:inline-block;background-color:#7d86c4;color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:13px 30px;border-radius:8px;">Add to Calendar &rarr;</a>
+            <p style="font-family:Georgia,serif;font-size:12px;color:#8a8494;margin:12px 0 0 0;line-height:1.5;">Arrival instructions are tucked into the calendar note, too.</p>
+          </td>
+        </tr>
+
+        <!-- Divider -->
+        <tr><td style="padding:12px 42px;"><div style="border-top:1px solid #e4ddcc;"></div></td></tr>
+
+        <!-- What to bring -->
+        <tr>
+          <td style="padding:0 42px 18px;">
+            <h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:22px;color:#5c66ab;margin:0 0 12px 0;font-weight:500;">What to bring</h2>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td style="padding:5px 0;font-family:Georgia,serif;font-size:14px;color:#3d3a44;line-height:1.6;">&bull;&nbsp;&nbsp;Comfortable, fitted clothes you can move in</td></tr>
+              <tr><td style="padding:5px 0;font-family:Georgia,serif;font-size:14px;color:#3d3a44;line-height:1.6;">&bull;&nbsp;&nbsp;Grippy socks</td></tr>
+              <tr><td style="padding:5px 0;font-family:Georgia,serif;font-size:14px;color:#3d3a44;line-height:1.6;">&bull;&nbsp;&nbsp;A water bottle</td></tr>
+              <tr><td style="padding:5px 0;font-family:Georgia,serif;font-size:14px;color:#3d3a44;line-height:1.6;">&bull;&nbsp;&nbsp;An open, curious mind &mdash; the art supplies are on us</td></tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Lateness note -->
+        <tr>
+          <td style="padding:0 42px 20px;">
+            <p style="font-family:Georgia,serif;font-size:13px;color:#7a7484;line-height:1.65;margin:0;font-style:italic;">
+              A gentle note: please arrive at {{arrival_time}} so we can begin together at {{class_time}}. Doors may be locked once we start, and late arrivals can disrupt the flow for everyone.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Receipt -->
+        <tr>
+          <td style="padding:0 42px 22px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f2eee1;border-radius:8px;">
+              <tr>
+                <td style="padding:20px 24px;">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#9a7f47;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:12px;">&#128179; Your Receipt</div>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d3a44;width:140px;"><strong>Amount paid:</strong></td>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d3a44;">{{receipt_amount}}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d3a44;"><strong>Booking code:</strong></td>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d3a44;">{{receipt_code}}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d3a44;"><strong>Signed as:</strong></td>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d3a44;">{{receipt_signed_as}}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d3a44;"><strong>Confirmed at:</strong></td>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d3a44;">{{receipt_signed_at}}</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Refund policy -->
+        <tr>
+          <td style="padding:0 42px 28px;">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#9a8fa4;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">Refund Policy</div>
+            <p style="font-family:Georgia,serif;font-size:12px;color:#7a7484;line-height:1.65;margin:0 0 6px 0;white-space:pre-line;">{{refund_policy_text}}</p>
+            <p style="font-family:Georgia,serif;font-size:11px;color:#9a94a4;line-height:1.5;margin:0;">Acknowledged {{refund_policy_ack_at}}</p>
+          </td>
+        </tr>
+
+        <!-- With gratitude -->
+        <tr>
+          <td align="center" style="padding:6px 42px 22px;">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#7b83c0;letter-spacing:3px;text-transform:uppercase;font-weight:bold;">
+              With Gratitude <span style="color:#c98b9a;">&#9829;</span>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Two-column host credit footer -->
+        <tr>
+          <td style="background-color:#7d86c4;padding:30px 34px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td width="50%" valign="top" style="padding:0 12px 0 0;">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#ffffff;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">Georgina Arroyo</div>
+                  <div style="font-family:Georgia,serif;font-size:12px;color:#e6e8f7;line-height:1.8;">
+                    IG <a href="https://instagram.com/supgeemun" style="color:#f0ecd8;text-decoration:none;">@supgeemun</a><br>
+                    TikTok <a href="https://tiktok.com/@geeeeeebie" style="color:#f0ecd8;text-decoration:none;">@geeeeeebie</a>
+                  </div>
+                </td>
+                <td width="50%" valign="top" style="padding:0 0 0 12px;border-left:1px solid #939bd0;">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#ffffff;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;padding-left:12px;">Niara Comrie</div>
+                  <div style="font-family:Georgia,serif;font-size:12px;color:#e6e8f7;line-height:1.8;padding-left:12px;">
+                    IG / TikTok <a href="https://instagram.com/auricmovement" style="color:#f0ecd8;text-decoration:none;">@auricmovement</a><br>
+                    <a href="https://book.auricmovement.com" style="color:#f0ecd8;text-decoration:none;">book.auricmovement.com</a>
+                  </div>
+                </td>
+              </tr>
+            </table>
+            <div style="border-top:1px solid #939bd0;margin-top:22px;padding-top:16px;text-align:center;">
+              <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:15px;color:#f3f1fb;">Create. Move. Recharge.</div>
+            </div>
+          </td>
+        </tr>
+
+      </table>
+      <!-- /Outer container -->
+
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>
