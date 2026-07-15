@@ -4257,6 +4257,7 @@
           <select id="admin-flex-reminder-event" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
             <option value="pilates">Pilates x Niara (both sessions)</option>
             <option value="matchat">Mat &amp; Chat</option>
+            <option value="recharge">Create &amp; Recharge</option>
           </select>
         </div>
         <div>
@@ -7042,6 +7043,13 @@ document.addEventListener('DOMContentLoaded', function() {
         getMCData(function(data){
           var confirmed = (data.mc1 || []).filter(function(r){ return r.type === 'confirmed'; }).map(function(rec){
             return { rec: rec, sess: { label: 'Mat & Chat', arrival: '11:25 AM', start: '11:30 AM' } };
+          });
+          callback(confirmed);
+        });
+      } else if (eventType === 'recharge') {
+        getCRData(function(data){
+          var confirmed = (data.cr1 || []).filter(function(r){ return r.type === 'confirmed'; }).map(function(rec){
+            return { rec: rec, sess: { label: CR_EVENT.label, arrival: CR_EVENT.arrival, start: CR_EVENT.start } };
           });
           callback(confirmed);
         });
