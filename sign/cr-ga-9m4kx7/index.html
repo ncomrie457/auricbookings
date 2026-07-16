@@ -17,6 +17,8 @@
     .agreement{ font-size:.92rem; color:#3d322a; white-space:pre-wrap; max-height:320px; overflow-y:auto; padding:.5rem .75rem; background:var(--cream); border:1px solid var(--border); border-radius:8px; }
     label{ display:block; font-size:.78rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--gold-text); margin:0 0 .35rem; }
     input[type=text],input[type=email]{ width:100%; padding:.65rem .8rem; border:1px solid var(--border); border-radius:8px; font-family:Georgia,serif; font-size:1rem; background:#fff; color:var(--ink); }
+    input.fillin{ width:88px; padding:0 4px; border:none; border-bottom:1.5px solid var(--gold); border-radius:0; background:#fdf6ea; font-family:inherit; font-size:inherit; color:var(--brown); font-weight:bold; text-align:center; }
+    input.fillin:focus{ outline:none; background:#faedd3; }
     .row{ margin-bottom:1rem; }
     .sig-box{ position:relative; border:2px dashed var(--gold); border-radius:10px; background:#fffef9; }
     canvas{ display:block; width:100%; height:200px; touch-action:none; border-radius:10px; cursor:crosshair; }
@@ -50,7 +52,8 @@ This Agreement is entered into between Auric Movement LLC, a New York single-mem
 1. THE EVENT
 Create &amp; Recharge, a one-time art and Pilates experience at 300 W 38th Street, 2F, New York, NY 10018, on Saturday, August 15, 2026. Registration at book.auricmovement.com. Capped at 25 attendees at $65 per person.
 Run of show:
-11:00 AM — doors / arrival
+11:00 AM — hosts arrive &amp; set up
+11:30 AM — attendee arrival / doors
 11:35 AM — watercolor class (45 min), led by Georgina
 12:20 PM — Pilates mat class (45 min), led by Niara
 1:05 PM – 2:00 PM — wind-down, departure
@@ -61,7 +64,7 @@ Auric Movement LLC serves as instructor for the Pilates mat class and handles al
 Both parties will promote the event on their own social media channels, posting at least once before the event.
 
 3. COMPENSATION
-Event costs are deducted from gross registration revenue before any split. Those costs are venue rental ($240), mat rental ($25), and Georgina's art materials ($______).
+Event costs are deducted from gross registration revenue before any split. Those costs are venue rental ($240), mat rental ($25), and Georgina's art materials ($<input type="text" id="art-cost" class="fillin" inputmode="decimal" autocomplete="off" placeholder="amount" aria-label="Art materials cost">).
 Remaining net revenue is split 60% to Auric Movement LLC and 40% to Georgina Arroyo, paid within 14 days of the event.
 Grip socks and thank-you cards are Auric Movement's hospitality spend and are paid from its share, not deducted off the top.
 No other costs are deducted off the top unless both parties agree in writing beforehand.
@@ -188,12 +191,15 @@ By typing my full legal name and drawing my signature below, I, Georgina Arroyo,
 
     var nameEl = document.getElementById('signer-name');
     var agreeEl = document.getElementById('agree-check');
+    var artEl = document.getElementById('art-cost');
     var btn = document.getElementById('sign-btn');
     function updateBtn(){
-      btn.disabled = !(nameEl.value.trim().length >= 2 && hasDrawn && agreeEl.checked);
+      var artOk = !artEl || artEl.value.trim().length > 0;
+      btn.disabled = !(nameEl.value.trim().length >= 2 && hasDrawn && agreeEl.checked && artOk);
     }
     nameEl.addEventListener('input', updateBtn);
     agreeEl.addEventListener('change', updateBtn);
+    if(artEl) artEl.addEventListener('input', updateBtn);
 
     function two(n){ return (n<10?'0':'')+n; }
     function stampNow(){
@@ -208,11 +214,16 @@ By typing my full legal name and drawing my signature below, I, Georgina Arroyo,
       if(name.length < 2){ err.textContent = 'Please enter your full legal name.'; return; }
       if(!hasDrawn){ err.textContent = 'Please draw your signature.'; return; }
       if(!agreeEl.checked){ err.textContent = 'Please check the agreement box.'; return; }
+      if(artEl && artEl.value.trim().length === 0){ err.textContent = 'Please fill in the art materials amount in Section 3.'; return; }
       if(!(window.jspdf && window.jspdf.jsPDF)){ err.textContent = 'Could not load the PDF library — check your connection and try again.'; return; }
 
       var stamp = stampNow();
       var sigImg = canvas.toDataURL('image/png');
-      var agreementText = document.getElementById('agreement-text').innerText;
+      // Build agreement text with the filled-in art-materials amount substituted for the input field.
+      var agClone = document.getElementById('agreement-text').cloneNode(true);
+      var ciNode = agClone.querySelector('#art-cost');
+      if(ciNode){ var sp = document.createElement('span'); sp.textContent = (artEl ? artEl.value.trim() : '') || '______'; ciNode.parentNode.replaceChild(sp, ciNode); }
+      var agreementText = agClone.innerText;
 
       try {
         var jsPDF = window.jspdf.jsPDF;
