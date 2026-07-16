@@ -134,8 +134,10 @@ By typing my full legal name and drawing my signature below, I, Georgina Arroyo,
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
   (function(){
+    var AGREEMENT_ID = 'create-recharge-collab';
     // EmailJS — auto-emails the signed copy to Auric Movement on signing.
     // The PDF always downloads regardless; this is an extra notification.
     var EJS_PUBLIC  = 'xr1kT3l8rFhNodudq';
@@ -144,6 +146,12 @@ By typing my full legal name and drawing my signature below, I, Georgina Arroyo,
     // ↓ Set this to your EmailJS "Signature Received" template id to turn the email on.
     var SIGN_TMPL   = 'REPLACE_SIGN_TEMPLATE';
     try { if (window.emailjs) emailjs.init({ publicKey: EJS_PUBLIC }); } catch(e){}
+
+    // Supabase — saves the signed record so it can be downloaded from the admin panel.
+    var SB_URL = 'https://qvmiwyxerotkqpbuhpun.supabase.co';
+    var SB_KEY = 'sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ';
+    var sb = null;
+    try { if (window.supabase && window.supabase.createClient) sb = window.supabase.createClient(SB_URL, SB_KEY); } catch(e){}
     var canvas = document.getElementById('sigpad');
     var ctx = canvas.getContext('2d');
     var drawing = false, hasDrawn = false, last = null;
@@ -291,6 +299,22 @@ By typing my full legal name and drawing my signature below, I, Georgina Arroyo,
             emailed = true;
           }
         } catch(e){ if(window.console) console.error('email send failed', e); }
+
+        // Save to Supabase so the signed agreement is retrievable from the admin panel.
+        try {
+          if (sb) {
+            sb.from('signed_agreements').insert({
+              agreement_id: AGREEMENT_ID,
+              signer_name: name,
+              signer_email: email || null,
+              art_cost: (artEl ? artEl.value.trim() : null) || null,
+              agreement_text: agreementText,
+              signature_data: sigImg,
+              signed_at: stamp.iso,
+              signed_at_display: stamp.readable
+            }).then(function(res){ if(res && res.error && window.console) console.error('save error', res.error); }, function(e){ if(window.console) console.error('save failed', e); });
+          }
+        } catch(e){ if(window.console) console.error('save exception', e); }
 
         document.getElementById('form-view').style.display = 'none';
         var dv = document.getElementById('done-view'); dv.style.display = 'block';
