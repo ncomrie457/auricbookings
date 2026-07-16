@@ -97,13 +97,22 @@ By typing my name and drawing my signature below, I confirm that I have read, un
       <h2 style="color:var(--brown);">Signature Recorded</h2>
       <p id="done-msg">Thank you. Your signed copy has downloaded.</p>
       <div class="stamp" id="done-stamp"></div>
-      <p class="muted" style="margin-top:1rem;">Please email your downloaded PDF to <a href="mailto:auricmovement@outlook.com" style="color:var(--gold-text);">auricmovement@outlook.com</a> to complete the process.</p>
+      <p class="muted" id="done-manual-note" style="margin-top:1rem;">Please email your downloaded PDF to <a href="mailto:auricmovement@outlook.com" style="color:var(--gold-text);">auricmovement@outlook.com</a> to complete the process.</p>
     </div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script>
   (function(){
+    // EmailJS — auto-emails the signed copy to Auric Movement on signing.
+    // The PDF always downloads regardless; this is an extra notification.
+    var EJS_PUBLIC  = 'xr1kT3l8rFhNodudq';
+    var EJS_SERVICE = 'service_9n4adla';
+    var EJS_TO      = 'auricmovement@outlook.com';
+    // ↓ Set this to your EmailJS "Signature Received" template id to turn the email on.
+    var SIGN_TMPL   = 'REPLACE_SIGN_TEMPLATE';
+    try { if (window.emailjs) emailjs.init({ publicKey: EJS_PUBLIC }); } catch(e){}
     var canvas = document.getElementById('sigpad');
     var ctx = canvas.getContext('2d');
     var drawing = false, hasDrawn = false, last = null;
@@ -222,11 +231,35 @@ By typing my name and drawing my signature below, I confirm that I have read, un
         doc.text('UTC: ' + stamp.iso, margin, y);
 
         var safe = name.replace(/[^a-z0-9]+/gi,'-').toLowerCase();
-        doc.save('signed-agreement-' + safe + '.pdf');
+        var fname = 'signed-agreement-' + safe + '.pdf';
+        doc.save(fname);
+
+        // Auto-email the signed copy to Auric Movement (best-effort; never blocks the download).
+        var emailed = false;
+        try {
+          if (window.emailjs && SIGN_TMPL.indexOf('REPLACE') === -1) {
+            var pdfB64 = doc.output('datauristring').split(',')[1];
+            emailjs.send(EJS_SERVICE, SIGN_TMPL, {
+              to_email: EJS_TO,
+              signer_name: name,
+              signer_email: email || '(not provided)',
+              signed_at: stamp.readable,
+              signed_at_iso: stamp.iso,
+              signature_image: sigImg,
+              content: pdfB64,
+              pdf_filename: fname
+            });
+            emailed = true;
+          }
+        } catch(e){ if(window.console) console.error('email send failed', e); }
 
         document.getElementById('form-view').style.display = 'none';
         var dv = document.getElementById('done-view'); dv.style.display = 'block';
         document.getElementById('done-stamp').textContent = 'Signed by ' + name + ' · ' + stamp.readable;
+        if (emailed) {
+          document.getElementById('done-msg').textContent = 'Thank you. Your signed copy has downloaded, and a copy has been sent to Auric Movement.';
+          var mn = document.getElementById('done-manual-note'); if(mn) mn.style.display = 'none';
+        }
         window.scrollTo({ top:0, behavior:'smooth' });
       } catch(ex){
         err.textContent = 'Something went wrong generating the signed copy. Please try again.';
