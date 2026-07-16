@@ -4174,6 +4174,11 @@
       <div id="admin-notify-list-body"></div>
     </div>
 
+    <div id="admin-agreements-section" style="margin-top:1.5rem;">
+      <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold-text);margin-bottom:.6rem;border-bottom:1px solid var(--border);padding-bottom:.4rem;">&#128196; Signed Agreements</h3>
+      <div id="admin-agreements-body"></div>
+    </div>
+
     <!-- Manual Add -->
     <div style="margin-top:1.5rem;padding:1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:12px;">
       <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--brown);margin-bottom:1rem;">&#10133; Manually Add Registration</h3>
@@ -6480,6 +6485,64 @@ document.addEventListener('DOMContentLoaded', function() {
     s = s.replace(/(^|\n)([^\n:]{1,45}:)/g, '$1<strong style="color:var(--gold-text);">$2</strong>');
     return s;
   }
+  // ── Signed Agreements (drawn "wet" signatures saved from /sign pages) ──────
+  var _signedAgreements = [];
+  function renderSignedAgreements(){
+    var body = document.getElementById('admin-agreements-body');
+    if (!body) return;
+    body.innerHTML = '<div style="color:var(--text-muted);font-size:.85rem;">Loading…</div>';
+    supabase.from('signed_agreements').select('*').order('created_at', { ascending:false })
+      .then(function(res){
+        if (res && res.error){ body.innerHTML = '<div class="empty-state">No signed agreements yet.</div>'; return; }
+        var rows = (res && res.data) || [];
+        _signedAgreements = rows;
+        if (!rows.length){ body.innerHTML = '<div class="empty-state">No signed agreements yet.</div>'; return; }
+        body.innerHTML = '';
+        rows.forEach(function(r){
+          var item = document.createElement('div'); item.className = 'admin-sub-item';
+          var when = r.signed_at_display || (r.signed_at ? new Date(r.signed_at).toLocaleString() : '');
+          var dl = '<button onclick="downloadAgreementPDF(\''+r.id+'\')" style="background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F4C4} Download PDF</button>';
+          item.innerHTML = '<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(r.signer_name||'')+'</span>'+
+            (r.signer_email?'<br><span class="aemail">'+escapeHTML(r.signer_email)+'</span>':'')+
+            '<br><span style="font-size:.72rem;color:var(--text-muted);">'+escapeHTML(r.agreement_id||'')+(r.art_cost?(' · art materials $'+escapeHTML(r.art_cost)):'')+'</span></div>'+
+            '<div style="text-align:right;"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(when)+'</span><br><div style="margin-top:.3rem;">'+dl+'</div></div>';
+          body.appendChild(item);
+        });
+      }, function(){ body.innerHTML = '<div class="empty-state">No signed agreements yet.</div>'; });
+  }
+  window.downloadAgreementPDF = function(id){
+    var r = _signedAgreements.find(function(x){ return String(x.id)===String(id); });
+    if (!r){ alert('Could not find that record.'); return; }
+    if (!(window.jspdf && window.jspdf.jsPDF)){ alert('PDF library not loaded. Please try again.'); return; }
+    try {
+      var jsPDF = window.jspdf.jsPDF;
+      var doc = new jsPDF({ unit:'pt', format:'letter' });
+      var margin=54, W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight(), y=margin;
+      doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(125,134,196);
+      doc.text('AURIC MOVEMENT  ×  GEORGINA ARROYO', margin, y); y+=22;
+      doc.setFont('times','italic'); doc.setFontSize(20); doc.setTextColor(90,58,26);
+      doc.text('Signed Agreement', margin, y); y+=26;
+      doc.setDrawColor(176,120,64); doc.setLineWidth(1); doc.line(margin, y, W-margin, y); y+=20;
+      doc.setFont('times','normal'); doc.setFontSize(10.5); doc.setTextColor(45,36,32);
+      var lines = doc.splitTextToSize(r.agreement_text||'', W-margin*2);
+      for (var i=0;i<lines.length;i++){ if(y>H-margin){ doc.addPage(); y=margin; } doc.text(lines[i], margin, y); y+=15; }
+      y+=14; if(y>H-180){ doc.addPage(); y=margin; }
+      doc.setDrawColor(230,221,206); doc.setLineWidth(1); doc.line(margin,y,W-margin,y); y+=24;
+      doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(154,101,53); doc.text('SIGNED BY', margin, y); y+=16;
+      doc.setFont('times','normal'); doc.setFontSize(12); doc.setTextColor(45,36,32); doc.text(r.signer_name||'', margin, y);
+      if(r.signer_email){ doc.setFontSize(9.5); doc.setTextColor(120,110,90); doc.text(r.signer_email, margin, y+14); }
+      y+=34;
+      if(r.signature_data){ try{ doc.addImage(r.signature_data,'PNG',margin,y,240,90); }catch(e){} }
+      doc.setDrawColor(216,203,180); doc.setLineWidth(0.75); doc.line(margin,y+94,margin+240,y+94);
+      doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(140,125,100); doc.text('Signature', margin, y+106); y+=124;
+      doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(154,101,53); doc.text('TIMESTAMP', margin, y); y+=14;
+      doc.setFont('times','normal'); doc.setFontSize(10); doc.setTextColor(45,36,32); doc.text(String(r.signed_at_display||r.signed_at||''), margin, y); y+=13;
+      doc.setFontSize(8); doc.setTextColor(140,125,100); doc.text('UTC: '+String(r.signed_at||''), margin, y);
+      var safe = (r.signer_name||'signer').replace(/[^a-z0-9]+/gi,'-').toLowerCase();
+      doc.save('signed-agreement-'+safe+'.pdf');
+    } catch(e){ alert('Could not generate the PDF.'); if(window.console) console.error(e); }
+  };
+
   function renderAdmin(){
     var body=document.getElementById('admin-body');
     body.innerHTML='';
@@ -6496,6 +6559,7 @@ document.addEventListener('DOMContentLoaded', function() {
     body.appendChild(corpContainer);
     if (typeof renderCRSection === 'function') renderCRSection(crContainer);
     if (typeof renderWaitlistNotify === 'function') renderWaitlistNotify();
+    if (typeof renderSignedAgreements === 'function') renderSignedAgreements();
 
     getData(function(data){
       sessionsContainer.innerHTML='';
