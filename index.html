@@ -6502,14 +6502,23 @@ document.addEventListener('DOMContentLoaded', function() {
           var item = document.createElement('div'); item.className = 'admin-sub-item';
           var when = r.signed_at_display || (r.signed_at ? new Date(r.signed_at).toLocaleString() : '');
           var dl = '<button onclick="downloadAgreementPDF(\''+r.id+'\')" style="background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F4C4} Download PDF</button>';
+          var rm = '<button onclick="removeSignedAgreement(\''+r.id+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F5D1} Remove</button>';
           item.innerHTML = '<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(r.signer_name||'')+'</span>'+
             (r.signer_email?'<br><span class="aemail">'+escapeHTML(r.signer_email)+'</span>':'')+
             '<br><span style="font-size:.72rem;color:var(--text-muted);">'+escapeHTML(r.agreement_id||'')+(r.art_cost?(' · art materials $'+escapeHTML(r.art_cost)):'')+'</span></div>'+
-            '<div style="text-align:right;"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(when)+'</span><br><div style="margin-top:.3rem;">'+dl+'</div></div>';
+            '<div style="text-align:right;"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(when)+'</span><br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+dl+rm+'</div></div>';
           body.appendChild(item);
         });
       }, function(){ body.innerHTML = '<div class="empty-state">No signed agreements yet.</div>'; });
   }
+  window.removeSignedAgreement = function(id){
+    if (!confirm('Remove this signed agreement? This cannot be undone.')) return;
+    supabase.from('signed_agreements').delete().eq('id', id)
+      .then(function(res){
+        if (res && res.error){ alert('Could not remove: ' + res.error.message + '\n\nIf this mentions permissions, run the DELETE policy SQL.'); return; }
+        renderSignedAgreements();
+      }, function(){ alert('Could not remove. Please try again.'); });
+  };
   window.downloadAgreementPDF = function(id){
     var r = _signedAgreements.find(function(x){ return String(x.id)===String(id); });
     if (!r){ alert('Could not find that record.'); return; }
