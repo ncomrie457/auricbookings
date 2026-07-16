@@ -25,3 +25,7 @@ create policy "anon insert signed_agreements" on public.signed_agreements
 drop policy if exists "anon read signed_agreements" on public.signed_agreements;
 create policy "anon read signed_agreements" on public.signed_agreements
   for select to anon, authenticated using (true);
+
+drop policy if exists "anon delete signed_agreements" on public.signed_agreements;
+create policy "anon delete signed_agreements" on public.signed_agreements
+  for delete to anon, authenticated using (true);
