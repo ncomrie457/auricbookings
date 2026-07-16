@@ -5,12 +5,12 @@
   <!-- Main booking page (homepage) -->
   <url>
     <loc>https://book.auricmovement.com/</loc>
-    <lastmod>2026-06-08</lastmod>
+    <lastmod>2026-07-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://book.auricmovement.com/flyer.jpg</image:loc>
-      <image:title>Pilates x Niara — June 19, 2026</image:title>
+      <image:loc>https://book.auricmovement.com/recharge-flyer.png</image:loc>
+      <image:title>Create &amp; Recharge — Auric Movement × Georgina Arroyo, August 15, 2026</image:title>
     </image:image>
     <image:image>
       <image:loc>https://book.auricmovement.com/flyer2.jpg</image:loc>
@@ -22,28 +22,40 @@
     </image:image>
   </url>
 
-  <!-- Juneteenth event link-preview page -->
+  <!-- Create & Recharge event link-preview page -->
   <url>
-    <loc>https://book.auricmovement.com/juneteenth/</loc>
-    <lastmod>2026-06-08</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://book.auricmovement.com/create-recharge/</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://book.auricmovement.com/recharge-flyer.png</image:loc>
+      <image:title>Create &amp; Recharge — August 15, 2026</image:title>
+    </image:image>
   </url>
 
   <!-- Mat & Chat event link-preview page -->
   <url>
-    <loc>https://book.auricmovement.com/matchat/</loc>
-    <lastmod>2026-06-08</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://book.auricmovement.com/matchat.html</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
-  <!-- Standalone waiver page (if it lives in the same repo) -->
+  <!-- Juneteenth (past event) link-preview page -->
   <url>
-    <loc>https://book.auricmovement.com/waiver.html</loc>
-    <lastmod>2026-06-08</lastmod>
+    <loc>https://book.auricmovement.com/juneteenth/</loc>
+    <lastmod>2026-06-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
+  </url>
+
+  <!-- Standalone waiver page -->
+  <url>
+    <loc>https://book.auricmovement.com/waiver.html</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
   </url>
 
 </urlset>
