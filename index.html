@@ -2787,7 +2787,6 @@
             <source srcset="rnb-pilates-flyer.webp?v=1" type="image/webp">
             <img src="rnb-pilates-flyer.png?v=1" alt="R&amp;B Pilates &#8212; August 22nd, Washington DC" loading="lazy" decoding="async">
           </picture>
-          <span style="position:absolute;top:.75rem;right:.75rem;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#fff;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:.25rem .55rem;border-radius:20px;box-shadow:0 2px 6px rgba(176,120,64,.35);z-index:2;">&#129309; Collab</span>
         </div>
         <div class="bq-event-date">08.22.26 &#183; R&amp;B Pilates</div>
         <div class="bq-event-name">R&amp;B <em>Pilates</em></div>
@@ -4209,9 +4208,13 @@
           <input type="checkbox" data-event-badge="matchat" data-field="is_collab">
           <span>Mat &amp; Chat &mdash; Collab</span>
         </label>
-        <label class="mc-health-row" style="margin-bottom:0;">
+        <label class="mc-health-row" style="margin-bottom:.45rem;">
           <input type="checkbox" data-event-badge="recharge" data-field="is_collab">
           <span>Create &amp; Recharge &mdash; Collab</span>
+        </label>
+        <label class="mc-health-row" style="margin-bottom:0;">
+          <input type="checkbox" data-event-badge="rnb" data-field="is_collab">
+          <span>R&amp;B Pilates &mdash; Collab</span>
         </label>
       </div>
       <div id="admin-event-badges-status" style="margin-top:.5rem;font-size:.78rem;color:var(--text-muted);"></div>
@@ -5448,7 +5451,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function applyEventBadges() {
     getEventConfig(function(cfg){
-      var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat', recharge: 'event-card-recharge' };
+      var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat', recharge: 'event-card-recharge', rnb: 'event-card-rnb' };
       Object.keys(cards).forEach(function(key){
         var card = document.getElementById(cards[key]);
         if (!card) return;
