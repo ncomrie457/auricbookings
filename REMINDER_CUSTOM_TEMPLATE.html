@@ -14,8 +14,8 @@
      • To Email:  {{to_email}}
 
    Variables (sent by the admin "Send Custom Reminder" tool):
-     {{from_name}} {{to_email}} {{session_label}} {{arrival_time}}
-     {{class_time}} {{greeting}} {{days_text}} {{custom_message}}
+     {{from_name}} {{to_email}} {{session_label}} {{event_date}}
+     {{arrival_time}} {{class_time}} {{greeting}} {{days_text}} {{custom_message}}
 
    {{custom_message}} sits in a soft "A Note From Niara" box.
    Line breaks you type in the admin panel are preserved.
@@ -67,6 +67,7 @@
           <tr><td style="padding:18px 22px;">
             <div style="font-family:Georgia,serif;font-size:10px;color:#3f6fa3;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">&#128205; Session Details</div>
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#33333b;width:120px;"><strong>&#128197; Date:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#33333b;">{{event_date}}</td></tr>
               <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#33333b;width:120px;"><strong>&#9200; Arrival:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#33333b;">{{arrival_time}}</td></tr>
               <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#33333b;"><strong>&#129496; Class starts:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#33333b;">{{class_time}}</td></tr>
             </table>
