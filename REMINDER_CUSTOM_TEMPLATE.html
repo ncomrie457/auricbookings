@@ -1,0 +1,101 @@
+<!--
+  ════════════════════════════════════════════════════════════
+   Auric Movement — Flexible / Custom Reminder Email
+   ────────────────────────────────────────────────────────────
+   Paste into: EmailJS → Email Templates → template_rvzyaff →
+     Content tab → code/HTML view → select all → paste → Save.
+
+   Settings tab:
+     • Subject:   ✦ {{greeting}}
+     • From Name: Auric Movement
+     • From Email: book@auricmovement.com   (uncheck "Use Default")
+     • Reply To:  auricmovement@outlook.com
+     • Bcc:       auricmovement@outlook.com  (optional copy)
+     • To Email:  {{to_email}}
+
+   Variables (sent by the admin "Send Custom Reminder" tool):
+     {{from_name}} {{to_email}} {{session_label}} {{arrival_time}}
+     {{class_time}} {{greeting}} {{days_text}} {{custom_message}}
+
+   The {{custom_message}} block is now a branded box ("A Note From
+   Niara"). Line breaks you type in the admin panel are preserved.
+  ════════════════════════════════════════════════════════════
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A reminder — Auric Movement</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f5f0e8;font-family:Georgia,'Times New Roman',serif;color:#2c2420;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f0e8;padding:32px 16px;">
+  <tr><td align="center">
+    <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#fdfbf7;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(176,120,64,0.08);max-width:600px;width:100%;">
+
+      <!-- Header -->
+      <tr><td align="center" style="background-color:#5A3A1A;padding:36px 24px 28px;">
+        <img src="https://book.auricmovement.com/logo-am-gold-192.png" alt="" width="56" height="48" style="display:block;border:0;outline:none;margin-bottom:12px;">
+        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:22px;color:#d4a370;letter-spacing:2px;">Auric Movement</div>
+        <div style="font-family:Georgia,serif;font-size:10px;color:#c8956c;letter-spacing:3px;text-transform:uppercase;margin-top:6px;">Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect</div>
+      </td></tr>
+
+      <!-- Greeting -->
+      <tr><td style="padding:36px 40px 8px;">
+        <div style="font-family:Georgia,serif;font-size:10px;color:#9a6535;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">A Reminder</div>
+        <h1 style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:28px;line-height:1.2;color:#5A3A1A;margin:0 0 12px 0;font-weight:500;">{{greeting}}</h1>
+        <p style="font-family:Georgia,serif;font-size:15px;line-height:1.7;color:#2c2420;margin:0 0 20px 0;">
+          Hi <strong>{{from_name}}</strong> &mdash; you&rsquo;re signed up for <strong>{{session_label}}</strong>, and it&rsquo;s <em>{{days_text}}</em>. Here&rsquo;s everything you need.
+        </p>
+      </td></tr>
+
+      <!-- Session details -->
+      <tr><td style="padding:0 40px 24px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border-left:3px solid #b07840;border-radius:0 8px 8px 0;">
+          <tr><td style="padding:18px 22px;">
+            <div style="font-family:Georgia,serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">Session Details</div>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;width:110px;"><strong>Arrival:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{arrival_time}}</td></tr>
+              <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Class starts:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{class_time}}</td></tr>
+            </table>
+          </td></tr>
+        </table>
+      </td></tr>
+
+      <!-- Editable message from the admin panel — boxed -->
+      <tr><td style="padding:0 40px 28px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border-left:3px solid #b07840;border-radius:0 8px 8px 0;">
+          <tr><td style="padding:18px 22px;">
+            <div style="font-family:Georgia,serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">A Note From Niara</div>
+            <div style="font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.75;white-space:pre-line;">{{custom_message}}</div>
+          </td></tr>
+        </table>
+      </td></tr>
+
+      <!-- Closing -->
+      <tr><td style="padding:0 40px 32px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #e8e0d5;padding-top:24px;">
+          <tr><td align="center" style="padding:8px 0;">
+            <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:18px;color:#5A3A1A;line-height:1.5;margin:0 0 6px 0;">Can&rsquo;t wait to move and connect with you.</p>
+            <p style="font-family:Georgia,serif;font-size:13px;color:#7a6e63;letter-spacing:1px;text-transform:uppercase;margin:8px 0 0 0;">&mdash; Niara</p>
+          </td></tr>
+        </table>
+      </td></tr>
+
+      <!-- Footer -->
+      <tr><td style="background-color:#5A3A1A;padding:28px 40px;text-align:center;">
+        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:16px;color:#d4a370;margin-bottom:6px;">Auric Movement</div>
+        <div style="font-family:Georgia,serif;font-size:12px;color:#c8956c;line-height:1.6;">
+          Pilates events in NYC, hosted with intention.<br>
+          <a href="mailto:auricmovement@outlook.com" style="color:#d4a370;text-decoration:none;">auricmovement@outlook.com</a>
+          <span style="color:#7a5a3a;"> &middot; </span>
+          <a href="https://book.auricmovement.com" style="color:#d4a370;text-decoration:none;">book.auricmovement.com</a>
+        </div>
+        <div style="font-family:Georgia,serif;font-size:10px;color:#c8956c;letter-spacing:2px;margin-top:14px;text-transform:uppercase;">&#10022; Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect &#10022;</div>
+      </td></tr>
+
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>
