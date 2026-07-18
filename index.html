@@ -7235,7 +7235,7 @@ document.addEventListener('DOMContentLoaded', function() {
           return;
         }
         var item = confirmed[i];
-        emailjs.send(EMAILJS_SERVICE_ID, TMPL_REMINDER_WEEK, {
+        emailjs.send(EMAILJS_SERVICE_RESEND, TMPL_REMINDER_WEEK, {
           from_name:     item.rec.name,
           to_email:      item.rec.email,
           session_label: item.sess.label,
