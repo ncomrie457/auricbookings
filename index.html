@@ -4909,6 +4909,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
   var EMAILJS_PUBLIC_KEY  = 'xr1kT3l8rFhNodudq';
   var EMAILJS_SERVICE_ID  = 'service_9n4adla';
+  // Resend-backed service (verified domain book@auricmovement.com) — used for
+  // customer-facing sends we've migrated for inbox deliverability. Other templates
+  // stay on EMAILJS_SERVICE_ID until their From address is switched to the domain.
+  var EMAILJS_SERVICE_RESEND = 'service_ieahnue';
   var ADMIN_EMAIL         = 'auricmovement@outlook.com'; // where admin notifications go
   var TMPL_CONFIRM    = 'template_6i1srps'; // Pilates \u2014 Participant Confirmation
   var TMPL_WAITLIST   = 'template_y50ixp4'; // Pilates \u2014 Participant Waitlist
@@ -8936,7 +8940,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (CR_TMPL_CONFIRM.indexOf('REPLACE') !== -1){ alert('Set CR_TMPL_CONFIRM to your real EmailJS template id first (create it from CREATE_RECHARGE_CONFIRMATION_TEMPLATE.html).'); return; }
       var refundAck  = p.refundPolicyAck || p.time || '';
       var refundText = p.refundPolicyText || CR_REFUND_POLICY_TEXT;
-      emailjs.send(EMAILJS_SERVICE_ID, CR_TMPL_CONFIRM, {
+      emailjs.send(EMAILJS_SERVICE_RESEND, CR_TMPL_CONFIRM, {
         from_name:p.name, to_email:p.email,
         session_label: CR_EVENT.label,
         arrival_time: CR_EVENT.arrival, class_time: CR_EVENT.start,
