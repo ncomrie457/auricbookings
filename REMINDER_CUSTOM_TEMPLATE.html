@@ -16,6 +16,7 @@
    Variables (sent by the admin "Send Custom Reminder" tool):
      {{from_name}} {{to_email}} {{session_label}} {{event_date}}
      {{arrival_time}} {{class_time}} {{greeting}} {{days_text}} {{custom_message}}
+     {{question_eyebrow}} {{custom_question}} {{question_sub}}
   ════════════════════════════════════════════════════════════
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -44,6 +45,17 @@
         <p style="font-family:Georgia,serif;font-size:15px;line-height:1.7;color:#2c2420;margin:0 0 20px 0;">
           Hi <strong>{{from_name}}</strong> &mdash; you&rsquo;re signed up for <strong>{{session_label}}</strong>, and it&rsquo;s <em>{{days_text}}</em>. Here&rsquo;s everything you need.
         </p>
+      </td></tr>
+
+      <!-- Reflection / question box (eyebrow, question, subtitle filled from admin panel) -->
+      <tr><td style="padding:0 40px 24px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5eeff;border-radius:12px;">
+          <tr><td align="center" style="padding:26px 28px 24px;">
+            <div style="font-family:Georgia,serif;font-size:10px;color:#a06bff;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">{{question_eyebrow}}</div>
+            <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:24px;line-height:1.35;color:#8b53e0;margin:0 0 10px 0;">{{custom_question}}</p>
+            <p style="font-family:Georgia,serif;font-size:13px;line-height:1.6;color:#6b5f7a;margin:0;">{{question_sub}}</p>
+          </td></tr>
+        </table>
       </td></tr>
 
       <!-- Session details -->

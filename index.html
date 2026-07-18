@@ -4274,6 +4274,16 @@ Please arrive on time &mdash; class begins promptly with a 5-minute grace period
 Can't wait to move and connect with you!</textarea>
       </div>
 
+      <!-- Question box (highlighted reflection prompt) -->
+      <div style="margin-bottom:.85rem;padding-top:.75rem;border-top:1px dashed var(--border);">
+        <label for="admin-flex-reminder-question-preset" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Question box <span style="font-weight:400;color:var(--text-muted);">(the highlighted prompt &mdash; pick a preset per event, or write your own)</span></label>
+        <select id="admin-flex-reminder-question-preset" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;margin-bottom:.5rem;"></select>
+        <input type="text" id="admin-flex-reminder-question-eyebrow" placeholder="Small label above (e.g., One Little Thing)" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;margin-bottom:.4rem;">
+        <input type="text" id="admin-flex-reminder-question" placeholder="The question (e.g., What's the one song you need to hear on the mat?)" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;margin-bottom:.4rem;">
+        <input type="text" id="admin-flex-reminder-question-sub" placeholder="Small note under it (e.g., Reply and we'll add it to the playlist)" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
+        <p style="font-size:.7rem;color:var(--text-muted);margin-top:.25rem;font-style:italic;">Presets change with the event above. Edit any field to customize the highlighted prompt.</p>
+      </div>
+
       <button type="button" id="admin-flex-reminder-send" class="btn btn-primary" style="width:100%;">&#128232; Send Reminder &rarr;</button>
       <div id="admin-flex-reminder-status" style="margin-top:.5rem;font-size:.78rem;color:var(--text-muted);"></div>
     </div>
@@ -7174,11 +7184,64 @@ document.addEventListener('DOMContentLoaded', function() {
     msgEl.addEventListener('input', function(){ try { localStorage.setItem('auric_reminder_msg', this.value); } catch(e){} });
   })();
 
+  // ── Reminder "question box" presets, per event ──
+  // Fills the eyebrow / question / subtitle fields; each is still editable.
+  var REMINDER_QUESTION_PRESETS = {
+    matchat: [
+      { label: 'Playlist song',      eyebrow: 'One Little Thing',  question: "What's the one song you need to hear on the mat?", sub: "Just reply to this email with your pick and we'll add it to the playlist. 🎵" },
+      { label: 'How you want to feel', eyebrow: 'Set Your Intention', question: 'What do you hope to walk away feeling?', sub: "Reply and let us know — we'll hold space for it." },
+      { label: 'Bingo trivia tease',  eyebrow: 'Game On',           question: 'How sharp is your Pilates trivia?', sub: "Brush up — there's a prize on the line at bingo. 😏" }
+    ],
+    recharge: [
+      { label: 'Walk away feeling',   eyebrow: 'Before You Arrive', question: 'What would you love to walk away feeling?', sub: "Sit with it on the way over — we'll create from there." },
+      { label: 'Set an intention',    eyebrow: 'Set Your Intention', question: "What's one intention you'd like to set through art today?", sub: 'Reply and share — Georgina and Niara would love to know.' }
+    ],
+    pilates: [
+      { label: 'How you want to feel', eyebrow: 'Set Your Intention', question: 'What do you hope to walk away feeling?', sub: "Reply and let us know — we'll hold space for it." }
+    ]
+  };
+  function applyReminderQuestion(p){
+    if (!p) return;
+    var eb = document.getElementById('admin-flex-reminder-question-eyebrow');
+    var q  = document.getElementById('admin-flex-reminder-question');
+    var sb = document.getElementById('admin-flex-reminder-question-sub');
+    if (eb) eb.value = p.eyebrow || '';
+    if (q)  q.value  = p.question || '';
+    if (sb) sb.value = p.sub || '';
+  }
+  function populateReminderQuestionPresets(eventType){
+    var sel = document.getElementById('admin-flex-reminder-question-preset');
+    if (!sel) return;
+    var list = REMINDER_QUESTION_PRESETS[eventType] || [];
+    sel.innerHTML = '';
+    list.forEach(function(p, i){
+      var o = document.createElement('option'); o.value = String(i); o.textContent = p.label; sel.appendChild(o);
+    });
+    var oc = document.createElement('option'); oc.value = 'custom'; oc.textContent = '✏️ Custom (write your own)'; sel.appendChild(oc);
+    if (list.length) { sel.value = '0'; applyReminderQuestion(list[0]); }
+    else { sel.value = 'custom'; applyReminderQuestion({ eyebrow:'', question:'', sub:'' }); }
+  }
+  (function(){
+    var evSel = document.getElementById('admin-flex-reminder-event');
+    var qSel  = document.getElementById('admin-flex-reminder-question-preset');
+    if (!evSel || !qSel) return;
+    populateReminderQuestionPresets(evSel.value);
+    evSel.addEventListener('change', function(){ populateReminderQuestionPresets(this.value); });
+    qSel.addEventListener('change', function(){
+      if (this.value === 'custom') return; // leave fields for manual editing
+      var list = REMINDER_QUESTION_PRESETS[evSel.value] || [];
+      applyReminderQuestion(list[parseInt(this.value, 10)]);
+    });
+  })();
+
   document.getElementById('admin-flex-reminder-send').addEventListener('click', function(){
     var eventType = document.getElementById('admin-flex-reminder-event').value;
     var days = parseInt(document.getElementById('admin-flex-reminder-days').value, 10) || 0;
     var customGreeting = document.getElementById('admin-flex-reminder-greeting').value.trim();
     var customMessage = (document.getElementById('admin-flex-reminder-message').value || '').trim();
+    var qEyebrow  = (document.getElementById('admin-flex-reminder-question-eyebrow').value || '').trim();
+    var qQuestion = (document.getElementById('admin-flex-reminder-question').value || '').trim();
+    var qSub      = (document.getElementById('admin-flex-reminder-question-sub').value || '').trim();
     var phrasing = getReminderPhrasing(days);
     var greeting = customGreeting || phrasing.greeting;
     var daysText = phrasing.days_text;
@@ -7242,6 +7305,9 @@ document.addEventListener('DOMContentLoaded', function() {
           event_date:    item.sess.date || '',
           arrival_time:  item.sess.arrival,
           class_time:    item.sess.start,
+          question_eyebrow: qEyebrow,
+          custom_question:  qQuestion,
+          question_sub:     qSub,
           greeting:      greeting,
           days_text:     daysText,
           custom_message: customMessage
