@@ -8002,7 +8002,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       var refundAck  = foundPerson.refundPolicyAck || foundPerson.time || '';
       var refundText = foundPerson.refundPolicyText || MC_REFUND_POLICY_TEXT;
-      emailjs.send(EMAILJS_SERVICE_ID, MC_TMPL_PAYMENT_CONFIRM, {
+      emailjs.send(EMAILJS_SERVICE_RESEND, MC_TMPL_PAYMENT_CONFIRM, {
         from_name:foundPerson.name, to_email:foundPerson.email,
         session_label: MC_EVENT.label,
         arrival_time:'11:25 AM', class_time:'11:30 AM',
