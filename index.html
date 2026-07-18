@@ -7197,14 +7197,14 @@ document.addEventListener('DOMContentLoaded', function() {
       } else if (eventType === 'matchat') {
         getMCData(function(data){
           var confirmed = (data.mc1 || []).filter(function(r){ return r.type === 'confirmed'; }).map(function(rec){
-            return { rec: rec, sess: { label: 'Mat & Chat', arrival: '11:25 AM', start: '11:30 AM' } };
+            return { rec: rec, sess: { label: 'Mat & Chat', date: 'Saturday, August 1st', arrival: '11:25 AM', start: '11:30 AM' } };
           });
           callback(confirmed);
         });
       } else if (eventType === 'recharge') {
         getCRData(function(data){
           var confirmed = (data.cr1 || []).filter(function(r){ return r.type === 'confirmed'; }).map(function(rec){
-            return { rec: rec, sess: { label: CR_EVENT.label, arrival: CR_EVENT.arrival, start: CR_EVENT.start } };
+            return { rec: rec, sess: { label: CR_EVENT.label, date: CR_EVENT.eventDate, arrival: CR_EVENT.arrival, start: CR_EVENT.start } };
           });
           callback(confirmed);
         });
@@ -7239,6 +7239,7 @@ document.addEventListener('DOMContentLoaded', function() {
           from_name:     item.rec.name,
           to_email:      item.rec.email,
           session_label: item.sess.label,
+          event_date:    item.sess.date || '',
           arrival_time:  item.sess.arrival,
           class_time:    item.sess.start,
           greeting:      greeting,
