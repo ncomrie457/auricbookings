@@ -4606,6 +4606,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   };
 
+  // Per-event recap metadata for events that don't have a photo gallery yet
+  // (e.g. before photos are uploaded). Drives the "Sold Out" chip + a short
+  // recap paragraph on the auto "Recap Coming Soon" past-events card. When a
+  // photo gallery is later added for the same event, the gallery's own
+  // soldOut/description take priority, with these as a fallback.
+  var PAST_EVENT_META = {
+    matchat: {
+      soldOut: true,
+      description: 'Our sold-out Mat &amp; Chat &mdash; a morning of mat Pilates, community, and good energy. We moved together, played a custom Auric bingo, and shared food, music, and connection.'
+    }
+  };
+
   // Lite-embed renderer: shows poster image with play button.
   // Click swaps poster for a YouTube iframe (keeps page fast).
   function renderVideoCard(v){
@@ -4797,7 +4809,7 @@ document.addEventListener('DOMContentLoaded', function() {
       card.innerHTML =
         '<button type="button" class="bq-photo-gallery-cover" data-gallery="' + p.eventId + '" aria-label="View ' + gallery.photos.length + ' photos from ' + (p.title || gallery.title) + '">' +
           '<img src="' + gallery.cover + '" alt="Cover from ' + (p.title || gallery.title) + '">' +
-          (gallery.soldOut ? '<span style="position:absolute;top:.7rem;left:.7rem;background:rgba(58,45,30,.92);color:#f0e4cc;font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:.28rem .62rem;border-radius:20px;box-shadow:0 2px 6px rgba(0,0,0,.25);z-index:3;">Sold Out</span>' : '') +
+          ((gallery.soldOut || p.soldOut) ? '<span style="position:absolute;top:.7rem;left:.7rem;background:rgba(58,45,30,.92);color:#f0e4cc;font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:.28rem .62rem;border-radius:20px;box-shadow:0 2px 6px rgba(0,0,0,.25);z-index:3;">Sold Out</span>' : '') +
           '<div class="bq-photo-gallery-overlay">' +
             '<span class="bq-photo-gallery-mark" aria-hidden="true">&#10022;</span>' +
             '<span class="bq-photo-gallery-count">' + gallery.photos.length + ' Photos</span>' +
@@ -4807,7 +4819,7 @@ document.addEventListener('DOMContentLoaded', function() {
         (p.date ? '<div class="bq-video-date">' + p.date + '</div>' : '') +
         (p.title ? '<div class="bq-video-title">' + p.title + '</div>' : '') +
         '<div class="bq-video-sub">' + gallery.photos.length + ' photos from the event.</div>' +
-        (gallery.description ? '<p style="margin:.7rem 0 0;font-family:Georgia,serif;font-size:.86rem;line-height:1.7;color:#4a3f33;">' + gallery.description + '</p>' : '') +
+        ((gallery.description || p.description) ? '<p style="margin:.7rem 0 0;font-family:Georgia,serif;font-size:.86rem;line-height:1.7;color:#4a3f33;">' + (gallery.description || p.description) + '</p>' : '') +
         (gallery.reflection ? '<p style="margin:.55rem 0 0;font-family:Cormorant Garamond,serif;font-style:italic;font-size:1.02rem;line-height:1.55;color:var(--gold-text);">' + gallery.reflection + '</p>' : '') +
         donorLine;
 
@@ -4818,6 +4830,7 @@ document.addEventListener('DOMContentLoaded', function() {
       card.innerHTML =
         '<div class="bq-video-poster">' +
           '<img src="' + p.flyer + '" alt="">' +
+          (p.soldOut ? '<span style="position:absolute;top:.7rem;left:.7rem;background:rgba(58,45,30,.92);color:#f0e4cc;font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:.28rem .62rem;border-radius:20px;box-shadow:0 2px 6px rgba(0,0,0,.25);z-index:3;">Sold Out</span>' : '') +
           '<div class="bq-recap-overlay">' +
             '<span class="bq-recap-mark" aria-hidden="true">✦</span>' +
             '<span class="bq-recap-text">Recap Coming Soon</span>' +
@@ -4827,6 +4840,7 @@ document.addEventListener('DOMContentLoaded', function() {
         (p.date ? '<div class="bq-video-date">' + p.date + '</div>' : '') +
         (p.title ? '<div class="bq-video-title">' + p.title + '</div>' : '') +
         '<div class="bq-video-sub">Watch this space.</div>' +
+        (p.description ? '<p style="margin:.7rem 0 0;font-family:Georgia,serif;font-size:.86rem;line-height:1.7;color:#4a3f33;">' + p.description + '</p>' : '') +
         donorLine;
     }
     wrapper.appendChild(card);
@@ -4866,11 +4880,14 @@ document.addEventListener('DOMContentLoaded', function() {
       var name = card.getAttribute('data-event-name') || '';
       // Format date as e.g. "June 19, 2026"
       var fmtDate = eventDate.toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+      var meta = PAST_EVENT_META[slug] || {};
       pending.push({
         eventId: slug,
         title:   name,
         date:    fmtDate,
         flyer:   flyer,
+        soldOut: !!meta.soldOut,
+        description: meta.description || '',
         sortDate: eventDate
       });
     });
