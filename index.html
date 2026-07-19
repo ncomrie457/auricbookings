@@ -4587,6 +4587,7 @@ document.addEventListener('DOMContentLoaded', function() {
     pilates: {
       title:  'Juneteenth Recap',
       date:   'June 19, 2026',
+      soldOut: true,   // shows a "Sold Out" chip on the gallery cover
       // NOTE: filenames below are placeholders. Once you drop your photos
       // into the auricwaiver folder, the actual filenames will be matched
       // and this array updated to use them.
@@ -4600,7 +4601,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'juneteenth-06.jpg',  // 6. Side-plank stretch, class following
         'juneteenth-07.jpg'   // 7. Community with Auric gift bags
       ],
-      description: 'A curated reformer Pilates class featuring jump board work, movement in all planes of motion, and a hand-held fan from Ghana &mdash; a nod to the motherland and a celebration of freedom. Attendees left with a Pilates essentials bag.',
+      description: 'Our sold-out Juneteenth celebration &mdash; a curated reformer Pilates class featuring jump board work, movement in all planes of motion, and a hand-held fan from Ghana &mdash; a nod to the motherland and a celebration of freedom. Attendees left with a Pilates essentials bag.',
       reflection: 'Through movement and wellness, we reclaim agency over our own bodies &mdash; a true act of freedom.'
     }
   };
@@ -4796,6 +4797,7 @@ document.addEventListener('DOMContentLoaded', function() {
       card.innerHTML =
         '<button type="button" class="bq-photo-gallery-cover" data-gallery="' + p.eventId + '" aria-label="View ' + gallery.photos.length + ' photos from ' + (p.title || gallery.title) + '">' +
           '<img src="' + gallery.cover + '" alt="Cover from ' + (p.title || gallery.title) + '">' +
+          (gallery.soldOut ? '<span style="position:absolute;top:.7rem;left:.7rem;background:rgba(58,45,30,.92);color:#f0e4cc;font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:.28rem .62rem;border-radius:20px;box-shadow:0 2px 6px rgba(0,0,0,.25);z-index:3;">Sold Out</span>' : '') +
           '<div class="bq-photo-gallery-overlay">' +
             '<span class="bq-photo-gallery-mark" aria-hidden="true">&#10022;</span>' +
             '<span class="bq-photo-gallery-count">' + gallery.photos.length + ' Photos</span>' +
