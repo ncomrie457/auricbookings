@@ -8584,7 +8584,9 @@ document.addEventListener('DOMContentLoaded', function() {
   var CR_TMPL_CONFIRM  = 'template_am03atq';   // payment confirmed / receipt  (Create & Recharge confirmation)
   var CR_TMPL_WAITLIST = 'REPLACE_CR_WAITLIST';  // waitlist join confirmation   (CREATE_RECHARGE_WAITLIST_TEMPLATE.html)
   var CR_TMPL_WL_OPEN  = 'REPLACE_CR_WLOPEN';    // waitlist spot opened         (CREATE_RECHARGE_WAITLIST_OPEN_TEMPLATE.html)
+  var CR_TMPL_PENDING  = 'REPLACE_CR_PENDING';   // "complete your payment" reminder (CREATE_RECHARGE_PENDING_TEMPLATE.html)
   var CR_REGISTER_URL  = 'https://book.auricmovement.com/?event=recharge';
+  var CR_PAY_PAGE_URL  = 'https://book.auricmovement.com/pay-recharge/'; // standalone pay page (carries ?code & ?email)
   var CR_CALENDAR_URL  = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Create+%26+Recharge+%E2%9C%A6+Auric+Movement&dates=20260815T153000Z/20260815T170000Z&details=Auric+Movement+%7C+Create+%26+Recharge%0A%0AArrival+11%3A30+AM%2C+Art+starts+11%3A35+AM.%0A%0AInner+Diamond+Studio+%E2%80%94+on+the+2nd+floor+of+a+walk-up+at+300+W+38th+St%2C+%232F%2C+between+City+Sewing+Machine+and+Carmen%27s+Kitchen.+Look+for+the+lion%27s-head+sculpture+above+the+entrance%2C+then+head+up+to+the+second+floor.&location=300+W+38th+Street%2C+2F%2C+New+York%2C+NY+10018';
   var CR_EVENT = {
     id: 'cr1', label: 'Create & Recharge',
@@ -8907,11 +8909,15 @@ document.addEventListener('DOMContentLoaded', function() {
           var waiverBtn = rec.signature ? '<button onclick="crAdminWaiverPDF(\''+rec.code+'\')" style="background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F4C4} Waiver</button>' : '';
           var removeBtn='<button onclick="crAdminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F5D1} Remove</button>';
           var editBtn='<button onclick="crAdminEdit(\''+rec.code+'\')" style="background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">✏️ Edit</button>';
+          var crComped = /#comp\b/i.test(rec.adminNotes||'');
+          var payReminderBtn = (rec.type==='confirmed' && !rec.isPaid && !crComped)
+            ? '<button onclick="crAdminPaymentPending(\''+rec.code+'\')" style="background:#fff4e5;border:1px solid #f0c890;color:#a86617;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">⏳ Pay Reminder</button>'
+            : '';
           var notesHTML = rec.notes ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;white-space:pre-line;line-height:1.55;"><strong style="color:var(--gold-text);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">\u{1F4DD} Notes for Instructor:</strong><br>'+cleanInstructorNotes(rec.notes)+'</div>' : '';
           item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span>'+paymentBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+notesHTML+adminNotesField('create_recharge_registrations', rec.code, rec.adminNotes)+'</div>'+
             '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
             '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
-            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+attendBtn+confirmBtn+waiverBtn+editBtn+removeBtn+'</div></div>';
+            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+attendBtn+confirmBtn+payReminderBtn+waiverBtn+editBtn+removeBtn+'</div></div>';
           block.appendChild(item);
         });
       }
@@ -8925,6 +8931,27 @@ document.addEventListener('DOMContentLoaded', function() {
       p.eventDate = CR_EVENT.eventDate;
       p.clauseList = CR_CLAUSE_TEXTS;
       generateWaiverPDF(p);
+    });
+  };
+
+  // Email an unpaid Create & Recharge registrant a "complete your payment"
+  // link. The link points at the standalone pay page carrying their booking
+  // code, so paying there marks THIS record paid via the Stripe webhook.
+  window.crAdminPaymentPending = function(code){
+    getCRData(function(data){
+      var p = (data.cr1||[]).find(function(r){ return r.code===code; });
+      if(!p){ alert('Could not find registration.'); return; }
+      if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
+      if (CR_TMPL_PENDING.indexOf('REPLACE') !== -1){ alert('Set CR_TMPL_PENDING to your real EmailJS template id first (create it from CREATE_RECHARGE_PENDING_TEMPLATE.html).'); return; }
+      if(!confirm('Send a "complete your payment" reminder to '+p.name+' ('+p.email+')?')) return;
+      var payUrl = CR_PAY_PAGE_URL + '?code=' + encodeURIComponent(p.code) + '&email=' + encodeURIComponent(p.email||'');
+      emailjs.send(EMAILJS_SERVICE_RESEND, CR_TMPL_PENDING, {
+        from_name: p.name, to_email: p.email,
+        event_date: CR_EVENT.eventDate, class_time: CR_EVENT.start,
+        receipt_amount: '$' + CR_EVENT.price + '.00',
+        pay_url: payUrl
+      }).then(function(){ alert('⏳ Payment reminder sent to '+p.email); })
+        .catch(function(err){ alert('⚠️ Could not send. Check EmailJS dashboard.'); console.error(err); });
     });
   };
 

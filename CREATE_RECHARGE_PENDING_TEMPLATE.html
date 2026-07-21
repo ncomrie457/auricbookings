@@ -1,0 +1,82 @@
+<!--
+  ════════════════════════════════════════════════════════════
+   Create & Recharge — "Complete Your Payment" reminder
+   ────────────────────────────────────────────────────────────
+   1. EmailJS → Email Templates → Create New Template → paste this
+      into the Content (code/HTML) view → Save.
+   2. Settings tab:
+        • Subject:    Your Create & Recharge spot — complete your payment
+        • From Name:  Auric Movement
+        • From Email: book@auricmovement.com   (uncheck "Use Default")
+        • Reply To:   auricmovement@outlook.com
+        • Bcc:        auricmovement@outlook.com   (optional)
+        • To Email:   {{to_email}}
+   3. Copy the new template's ID (template_xxxxxxx) and send it to
+      Claude to set CR_TMPL_PENDING in index.html.
+
+   Variables: {{from_name}} {{to_email}} {{event_date}} {{class_time}}
+              {{receipt_amount}} {{pay_url}}
+  ════════════════════════════════════════════════════════════
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete your payment — Auric Movement</title>
+</head>
+<body style="margin:0;padding:0;background-color:#eef1fb;font-family:Georgia,'Times New Roman',serif;color:#2c2c33;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#eef1fb;padding:32px 16px;">
+  <tr><td align="center">
+    <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#fffdfa;border-radius:14px;overflow:hidden;box-shadow:0 6px 28px rgba(90,110,180,0.16);max-width:600px;width:100%;">
+
+      <!-- Header -->
+      <tr><td align="center" style="background-color:#5A3A1A;padding:34px 24px 26px;">
+        <img src="https://book.auricmovement.com/logo-am-gold-192.png" alt="" width="54" height="46" style="display:block;border:0;outline:none;margin-bottom:12px;">
+        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:22px;color:#e7c47e;letter-spacing:2px;">Auric Movement &#215; Georgina Arroyo</div>
+      </td></tr>
+
+      <!-- Body -->
+      <tr><td style="padding:34px 40px 8px;">
+        <div style="font-family:Georgia,serif;font-size:10px;color:#7a6320;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">&#9203; Payment Pending</div>
+        <h1 style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:27px;line-height:1.25;color:#5A3A1A;margin:0 0 12px 0;font-weight:600;">Your spot is being held, {{from_name}}.</h1>
+        <p style="font-family:Georgia,serif;font-size:15px;line-height:1.7;color:#2c2c33;margin:0 0 18px 0;">
+          You reserved a place at <strong>Create &amp; Recharge</strong>, but your payment isn&rsquo;t complete yet &mdash; so your spot isn&rsquo;t locked in. Finish your payment below to secure it. Spots are limited and unpaid holds are released.
+        </p>
+      </td></tr>
+
+      <!-- Details -->
+      <tr><td style="padding:0 40px 22px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4efe4;border-left:4px solid #c9a463;border-radius:0 10px 10px 0;">
+          <tr><td style="padding:16px 20px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td style="padding:3px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;width:110px;"><strong>Event:</strong></td><td style="padding:3px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">Create &amp; Recharge</td></tr>
+              <tr><td style="padding:3px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Date:</strong></td><td style="padding:3px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{event_date}}</td></tr>
+              <tr><td style="padding:3px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Class starts:</strong></td><td style="padding:3px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{class_time}}</td></tr>
+              <tr><td style="padding:3px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Amount due:</strong></td><td style="padding:3px 0;font-family:Georgia,serif;font-size:15px;color:#5A3A1A;font-weight:bold;">{{receipt_amount}}</td></tr>
+            </table>
+          </td></tr>
+        </table>
+      </td></tr>
+
+      <!-- CTA -->
+      <tr><td align="center" style="padding:4px 40px 30px;">
+        <a href="{{pay_url}}" style="display:inline-block;background-color:#5A3A1A;color:#ffffff;font-family:Georgia,serif;font-size:15px;font-weight:bold;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;padding:15px 34px;border-radius:8px;">Complete Payment &rarr;</a>
+        <p style="font-family:Georgia,serif;font-size:12px;color:#7a6e63;margin:14px 0 0 0;">Secure checkout by Stripe. Your spot is confirmed the moment payment goes through.</p>
+      </td></tr>
+
+      <!-- Footer -->
+      <tr><td style="background-color:#5A3A1A;padding:26px 40px;text-align:center;">
+        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:16px;color:#e7c47e;margin-bottom:6px;">Auric Movement</div>
+        <div style="font-family:Georgia,serif;font-size:12px;color:#c8956c;line-height:1.6;">
+          Questions? <a href="mailto:auricmovement@outlook.com" style="color:#e7c47e;text-decoration:none;">auricmovement@outlook.com</a>
+          <span style="color:#9a6a3a;"> &middot; </span>
+          <a href="https://book.auricmovement.com" style="color:#e7c47e;text-decoration:none;">book.auricmovement.com</a>
+        </div>
+      </td></tr>
+
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>

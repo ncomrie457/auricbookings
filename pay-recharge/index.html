@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Complete Your Payment — Create &amp; Recharge</title>
+  <link rel="icon" href="https://book.auricmovement.com/logo-am-gold-192.png">
+  <script async src="https://js.stripe.com/v3/buy-button.js"></script>
+  <style>
+    :root { --brown:#5A3A1A; --gold:#c9a463; --peri:#8098c9; --cream:#f5f0e8; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:#f2eee4; font-family:'Jost',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; color:#2c2420; }
+    .wrap { max-width:520px; margin:0 auto; padding:40px 20px 60px; }
+    .card { background:#fffdf9; border-radius:16px; box-shadow:0 8px 32px rgba(90,58,26,.12); overflow:hidden; }
+    .head { background:var(--brown); color:#fff; text-align:center; padding:34px 24px 28px; }
+    .head img { width:52px; height:44px; display:block; margin:0 auto 12px; }
+    .brand { font-family:Georgia,serif; font-style:italic; font-size:22px; color:var(--gold); letter-spacing:2px; }
+    .tag { font-size:10px; letter-spacing:3px; text-transform:uppercase; color:#c8956c; margin-top:6px; }
+    .body { padding:32px 30px 36px; text-align:center; }
+    .eyebrow { font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--peri); font-weight:700; margin-bottom:10px; }
+    h1 { font-family:Georgia,serif; font-size:26px; line-height:1.25; color:var(--brown); margin:0 0 8px; font-weight:500; }
+    .sub { font-size:15px; line-height:1.6; color:#4a3f33; margin:0 0 22px; }
+    .amount { display:inline-block; background:#f4efe4; border:1px solid #e6dcc6; border-radius:12px; padding:14px 22px; margin-bottom:26px; }
+    .amount .lbl { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#9a6535; font-weight:700; }
+    .amount .val { font-family:Georgia,serif; font-size:30px; color:var(--brown); margin-top:2px; }
+    .note { font-size:12.5px; color:#7a6e63; line-height:1.6; margin-top:24px; }
+    .err { background:#fdecea; border:1px solid #f5c6c2; color:#9a2b22; border-radius:12px; padding:18px 20px; font-size:14px; line-height:1.6; }
+    a { color:var(--peri); }
+    .foot { text-align:center; font-size:12px; color:#9a8f80; margin-top:22px; line-height:1.6; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="head">
+        <img src="https://book.auricmovement.com/logo-am-gold-192.png" alt="">
+        <div class="brand">Auric Movement</div>
+        <div class="tag">Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect</div>
+      </div>
+      <div class="body">
+        <div class="eyebrow">Complete Your Reservation</div>
+        <h1>Create &amp; Recharge</h1>
+        <p class="sub">Saturday, August 15th &middot; 11:30 AM<br>Your spot is held &mdash; finish payment below to lock it in.</p>
+        <div class="amount"><div class="lbl">Amount Due</div><div class="val">$65.00</div></div>
+        <div id="pay-slot"></div>
+        <p class="note">Secure checkout by Stripe. Once your payment goes through, you&rsquo;ll get a confirmation and your spot is officially secured. Questions? Email <a href="mailto:auricmovement@outlook.com">auricmovement@outlook.com</a>.</p>
+      </div>
+    </div>
+    <div class="foot">&#10022; Auric Movement LLC &middot; <a href="https://book.auricmovement.com">book.auricmovement.com</a></div>
+  </div>
+
+  <script>
+    (function(){
+      var CR_BUY_BTN_ID = 'buy_btn_1TmfgnCyx5PIptEiSfabhBlh';
+      var CR_PUBLISHABLE = 'pk_live_51TSmNuCyx5PIptEi8SCgMFB3I7ECVFeAzDOwjj1ZLrVZX1scB6cH8wAjNor3SFilMwMuqo0aFsbsckjYLU33iSAp00tmUxBVlK';
+      var params = new URLSearchParams(window.location.search);
+      var code  = (params.get('code')  || '').trim();
+      var email = (params.get('email') || '').trim();
+      var slot  = document.getElementById('pay-slot');
+      if (!code) {
+        slot.innerHTML = '<div class="err">This payment link is missing your booking code. Please use the exact link from your reminder email, or email <a href="mailto:auricmovement@outlook.com">auricmovement@outlook.com</a> and we&rsquo;ll help you pay.</div>';
+        return;
+      }
+      var btn = document.createElement('stripe-buy-button');
+      btn.setAttribute('buy-button-id', CR_BUY_BTN_ID);
+      btn.setAttribute('publishable-key', CR_PUBLISHABLE);
+      btn.setAttribute('client-reference-id', code);
+      if (email) btn.setAttribute('customer-email', email);
+      slot.appendChild(btn);
+    })();
+  </script>
+</body>
+</html>
