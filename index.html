@@ -8044,18 +8044,24 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   };
 
+  // Mat & Chat is a flat $45 (Stripe Payment Link). The reminder emails that
+  // link with the person's booking code attached, so paying marks THIS record
+  // paid via the webhook. Sends via Resend (verified book@auricmovement.com).
+  var MC_PAY_LINK = 'https://buy.stripe.com/eVqcN48pkbKV74g4ci9sk04'; // Mat & Chat $45
   window.mcAdminPaymentPending = function(code){
     getMCData(function(data){
       var foundPerson = data.mc1.find(function(r){ return r.code===code; });
       if(!foundPerson){ alert('Could not find registration.'); return; }
-      if(!confirm('Send payment pending reminder to '+foundPerson.name+' ('+foundPerson.email+')?')) return;
       if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
-      emailjs.send(EMAILJS_SERVICE_ID, MC_TMPL_PAYMENT_PENDING, {
+      if(!confirm('Send a "complete your payment" reminder to '+foundPerson.name+' ('+foundPerson.email+')?')) return;
+      var payUrl = stripeLinkWithRef(MC_PAY_LINK, foundPerson.code, foundPerson.email);
+      emailjs.send(EMAILJS_SERVICE_RESEND, MC_TMPL_PAYMENT_PENDING, {
         from_name:foundPerson.name, to_email:foundPerson.email,
-        arrival_time:'11:25 AM', class_time:'11:30 AM',
-        stripe_url:MC_EVENT.stripeUrl
-      }).then(function(){ alert('\u23f3 Payment pending sent to '+foundPerson.email); })
-        .catch(function(){ alert('\u26a0\ufe0f Could not send. Check EmailJS dashboard.'); });
+        event_date:'Saturday, August 1st', class_time:'11:30 AM',
+        receipt_amount:'$45.00',
+        pay_url:payUrl
+      }).then(function(){ alert('\u23f3 Payment reminder sent to '+foundPerson.email); })
+        .catch(function(err){ alert('\u26a0\ufe0f Could not send. Check EmailJS dashboard.'); console.error(err); });
     });
   };
 
