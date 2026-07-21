@@ -6658,6 +6658,7 @@ document.addEventListener('DOMContentLoaded', function() {
           var pendingBtn='<button onclick="mcAdminPaymentPending(\''+rec.code+'\')" style="background:#fff8e1;border:1px solid #ffe082;color:#f57f17;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u23f3 Pending</button>';
           var removeBtn='<button onclick="mcAdminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128465; Remove</button>';
           var editBtn='<button onclick="mcAdminEdit(\''+rec.code+'\')" style="background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">✏️ Edit</button>';
+          var promoteBtn = (rec.type==='waitlist') ? '<button onclick="mcAdminPromote(\''+rec.code+'\')" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#11014;&#65039; To Spot</button>' : '';
           var waiverBtn = rec.signature ? '<button onclick="mcAdminWaiverPDF(\''+rec.code+'\')" style="background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128196; Waiver</button>' : '';
           var attendedMC = /#attended/i.test(rec.adminNotes||'');
           var attendBtn = '<button onclick="toggleAttended(\'matchat_registrations\',\''+rec.code+'\')" style="background:'+(attendedMC?'#e8f5e9':'#fff')+';border:1px solid '+(attendedMC?'#a5d6a7':'var(--gold)')+';color:'+(attendedMC?'#2e7d32':'var(--brown)')+';border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">'+(attendedMC?'✓ Attended':'○ Attended')+'</button>';
@@ -6666,7 +6667,7 @@ document.addEventListener('DOMContentLoaded', function() {
           item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span>'+(rec.isPair?' <span style="font-size:.7rem;background:var(--brown);color:#fff;padding:.1rem .4rem;border-radius:10px;font-weight:700;letter-spacing:.5px;">PAIR</span>':'')+paymentBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+pairHTML+notesHTML+adminNotesField('matchat_registrations', rec.code, rec.adminNotes)+'</div>'+
             '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
             '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
-            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+attendBtn+confirmBtn+pendingBtn+waiverBtn+editBtn+removeBtn+'</div></div>';
+            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+promoteBtn+attendBtn+confirmBtn+pendingBtn+waiverBtn+editBtn+removeBtn+'</div></div>';
           mcBlock.appendChild(item);
         });
       }
@@ -8001,6 +8002,26 @@ document.addEventListener('DOMContentLoaded', function() {
           if (res && res.error){ alert('Update failed: ' + res.error.message); return; }
           renderAdmin();
         }, function(err){ alert('Update failed. Check console for details.'); console.error(err); });
+    });
+  };
+
+  // Move a waitlisted person into a confirmed spot (e.g. to fill an opening).
+  // They become 'confirmed' but UNPAID — send a Pay Reminder afterward so they
+  // complete the $45. Remaining waitlist positions are renumbered.
+  window.mcAdminPromote = function(code){
+    getMCData(function(data){
+      var rec = data.mc1.find(function(r){ return r.code===code; });
+      if(!rec){ alert('Could not find registration.'); return; }
+      if(rec.type!=='waitlist'){ alert(rec.name+' is not on the waitlist.'); return; }
+      var confirmedSpots = data.mc1.filter(function(r){ return r.type==='confirmed'; }).reduce(function(s,r){ return s + (r.isPair?2:1); }, 0);
+      var need = rec.isPair ? 2 : 1;
+      if (confirmedSpots + need > MC_MAX_SPOTS && !confirm('This puts confirmed bookings over the '+MC_MAX_SPOTS+'-spot limit. Continue anyway?')) return;
+      if(!confirm('Move '+rec.name+' from the waitlist into a confirmed spot?\n\nThey will show as UNPAID until they pay — use the ⏳ Pay Reminder afterward so they complete the $45.')) return;
+      supabase.from('matchat_registrations').update({ type:'confirmed', wl_position:null }).eq('code', code)
+        .then(function(res){
+          if (res && res.error){ alert('Could not move: '+res.error.message); return; }
+          renumberMCWaitlist(function(){ renderAdmin(); buildMCSpots(); });
+        }, function(err){ alert('Could not move. Check console for details.'); console.error(err); });
     });
   };
 
