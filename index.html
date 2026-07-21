@@ -7871,6 +7871,25 @@ document.addEventListener('DOMContentLoaded', function() {
         var row = res.data[0];
         var type  = row.out_type;
         var wlPos = row.out_wl_position;
+        // Auto-move: this new booking supersedes any prior WAITLIST or CANCELLED
+        // entry for the same email (case-insensitive), so remove those to avoid
+        // a duplicate. Paid/confirmed rows are never touched.
+        (function(){
+          var em = (email||'').trim().toLowerCase();
+          supabase.from('matchat_registrations').select('code,email,type').then(function(dres){
+            if (!dres || !dres.data) return;
+            var dupes = dres.data.filter(function(r){
+              return r.code !== code && (r.email||'').trim().toLowerCase() === em && (r.type==='waitlist' || r.type==='cancelled');
+            });
+            if (!dupes.length) return;
+            var left = dupes.length;
+            dupes.forEach(function(d){
+              supabase.from('matchat_registrations').delete().eq('code', d.code).then(function(){
+                if (--left === 0) renumberMCWaitlist(function(){});
+              }, function(){ if (--left === 0) renumberMCWaitlist(function(){}); });
+            });
+          }, function(){});
+        })();
         var record={ name:name, email:email, phone:phone, signature:sig, session:'mc1', sessionLabel:'Mat & Chat', arrival:'11:25 AM', classStart:'11:30 AM', time:timeStr, timestamp:now.toISOString(), code:code, type:type, wlPosition:wlPos, clausesAgreed:19, notes:notesWithAck, isPair:isPair, friendName:isPair?friendName:'', friendEmail:isPair?friendEmail:'', refundPolicyAck:refundAckTime, refundPolicyText:MC_REFUND_POLICY_TEXT, tier:bookedTier.key, pricePaid:bookedTier.price };
         mcLastSubmission=record;
 
