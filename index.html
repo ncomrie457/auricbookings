@@ -6474,7 +6474,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       var it = chosen[i];
       if (statusEl) statusEl.textContent = 'Sending… (' + (sent+failed) + '/' + chosen.length + ')';
-      emailjs.send(EMAILJS_SERVICE_ID, it.tmpl, it.vars)
+      emailjs.send(EMAILJS_SERVICE_RESEND, it.tmpl, it.vars)
         .then(function(){ sent++; }, function(err){ failed++; failedList.push(it.email); console.error('[waitlist notify] FAILED for '+it.email, err); })
         .then(function(){ setTimeout(function(){ next(i+1); }, 1000); });
     })(0);
@@ -7580,7 +7580,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (el) el.innerHTML = '<div class="email-status email-sent">Sending waitlist confirmation...</div>';
     if (typeof emailjs === 'undefined') { if(el) el.innerHTML = '<div class="email-status email-failed">Email service unavailable — you are still on the waitlist.</div>'; return; }
     if (MC_TMPL_WAITLIST.indexOf('REPLACE') !== -1) { if(el) el.innerHTML = '<div class="email-status email-sent">✅ You\'re on the list! We\'ll be in touch by email.</div>'; return; }
-    emailjs.send(EMAILJS_SERVICE_ID, MC_TMPL_WAITLIST, {
+    emailjs.send(EMAILJS_SERVICE_RESEND, MC_TMPL_WAITLIST, {
       from_name: rec.name, to_email: rec.email, session_label: rec.sessionLabel,
       arrival_time: rec.arrival, wl_position: rec.wlPosition
     }).then(function(){ if(el) el.innerHTML = '<div class="email-status email-sent">✅ Waitlist confirmation sent to '+escapeHTML(rec.email)+'</div>'; })
