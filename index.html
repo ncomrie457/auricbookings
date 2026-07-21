@@ -5535,17 +5535,18 @@ document.addEventListener('DOMContentLoaded', function() {
     if (rec.isPaid) {
       return '<span style="display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.5px;padding:.15rem .5rem;border-radius:10px;background:#e8f5e9;color:#2e7d32;margin-left:.3rem;text-transform:uppercase;">&#128181; Paid</span>';
     }
-    // Unpaid \u2014 show time-until-expiry if known
+    // Unpaid \u2014 make it unmistakable (bold red "UNPAID" + status detail)
+    var unpaidStyle = 'display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.6px;padding:.18rem .55rem;border-radius:10px;background:#c0392b;color:#fff;margin-left:.3rem;text-transform:uppercase;box-shadow:0 1px 3px rgba(192,57,43,.35);';
     if (rec.expiresAt) {
       var msLeft = new Date(rec.expiresAt).getTime() - Date.now();
       if (msLeft <= 0) {
-        return '<span style="display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.5px;padding:.15rem .5rem;border-radius:10px;background:#fdecea;color:#c0392b;margin-left:.3rem;text-transform:uppercase;">\u23f0 Expired</span>';
+        return '<span style="' + unpaidStyle + '">\u26a0\ufe0f Unpaid \u00b7 Expired</span>';
       }
       var mins = Math.floor(msLeft / 60000);
       var label = mins > 60 ? Math.floor(mins/60) + 'h ' + (mins%60) + 'm left' : mins + 'm left';
-      return '<span style="display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.5px;padding:.15rem .5rem;border-radius:10px;background:#fef9e7;color:#7a6320;margin-left:.3rem;text-transform:uppercase;">\u23f3 ' + label + '</span>';
+      return '<span style="' + unpaidStyle + '">\u26a0\ufe0f Unpaid \u00b7 ' + label + '</span>';
     }
-    return '<span style="display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.5px;padding:.15rem .5rem;border-radius:10px;background:#fef9e7;color:#7a6320;margin-left:.3rem;text-transform:uppercase;">\u23f3 Pending</span>';
+    return '<span style="' + unpaidStyle + '">\u26a0\ufe0f Unpaid</span>';
   }
 
   function adminNotesField(table, code, existingNote) {
