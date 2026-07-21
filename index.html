@@ -8018,7 +8018,9 @@ document.addEventListener('DOMContentLoaded', function() {
       var need = rec.isPair ? 2 : 1;
       if (confirmedSpots + need > MC_MAX_SPOTS && !confirm('This puts confirmed bookings over the '+MC_MAX_SPOTS+'-spot limit. Continue anyway?')) return;
       if(!confirm('Move '+rec.name+' from the waitlist into a confirmed spot?\n\nThey will show as UNPAID until they pay — use the ⏳ Pay Reminder afterward so they complete the $45.')) return;
-      supabase.from('matchat_registrations').update({ type:'confirmed', wl_position:null }).eq('code', code)
+      // Clear expires_at so the unpaid-hold auto-sweep never cancels an
+      // admin-held spot (they're held by decision, not an expiring checkout).
+      supabase.from('matchat_registrations').update({ type:'confirmed', wl_position:null, expires_at:null }).eq('code', code)
         .then(function(res){
           if (res && res.error){ alert('Could not move: '+res.error.message); return; }
           renumberMCWaitlist(function(){ renderAdmin(); buildMCSpots(); });
