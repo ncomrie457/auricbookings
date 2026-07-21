@@ -6659,6 +6659,7 @@ document.addEventListener('DOMContentLoaded', function() {
           var removeBtn='<button onclick="mcAdminRemove(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128465; Remove</button>';
           var editBtn='<button onclick="mcAdminEdit(\''+rec.code+'\')" style="background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">✏️ Edit</button>';
           var promoteBtn = (rec.type==='waitlist') ? '<button onclick="mcAdminPromote(\''+rec.code+'\')" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#11014;&#65039; To Spot</button>' : '';
+          var demoteBtn = (rec.type==='confirmed') ? '<button onclick="mcAdminDemote(\''+rec.code+'\')" style="background:#fff3e0;border:1px solid #ffcc80;color:#e65100;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#8617;&#65039; To Waitlist</button>' : '';
           var waiverBtn = rec.signature ? '<button onclick="mcAdminWaiverPDF(\''+rec.code+'\')" style="background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128196; Waiver</button>' : '';
           var attendedMC = /#attended/i.test(rec.adminNotes||'');
           var attendBtn = '<button onclick="toggleAttended(\'matchat_registrations\',\''+rec.code+'\')" style="background:'+(attendedMC?'#e8f5e9':'#fff')+';border:1px solid '+(attendedMC?'#a5d6a7':'var(--gold)')+';color:'+(attendedMC?'#2e7d32':'var(--brown)')+';border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">'+(attendedMC?'✓ Attended':'○ Attended')+'</button>';
@@ -6667,7 +6668,7 @@ document.addEventListener('DOMContentLoaded', function() {
           item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span>'+(rec.isPair?' <span style="font-size:.7rem;background:var(--brown);color:#fff;padding:.1rem .4rem;border-radius:10px;font-weight:700;letter-spacing:.5px;">PAIR</span>':'')+paymentBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+pairHTML+notesHTML+adminNotesField('matchat_registrations', rec.code, rec.adminNotes)+'</div>'+
             '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
             '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
-            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+promoteBtn+attendBtn+confirmBtn+pendingBtn+waiverBtn+editBtn+removeBtn+'</div></div>';
+            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+promoteBtn+demoteBtn+attendBtn+confirmBtn+pendingBtn+waiverBtn+editBtn+removeBtn+'</div></div>';
           mcBlock.appendChild(item);
         });
       }
@@ -8025,6 +8026,24 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   };
 
+  // Move a confirmed person back to the waitlist (frees their spot). They go to
+  // the end of the waitlist; is_paid is cleared since they no longer hold a spot.
+  window.mcAdminDemote = function(code){
+    getMCData(function(data){
+      var rec = data.mc1.find(function(r){ return r.code===code; });
+      if(!rec){ alert('Could not find registration.'); return; }
+      if(rec.type!=='confirmed'){ alert(rec.name+' is not in a confirmed spot.'); return; }
+      if(!confirm('Move '+rec.name+' back to the waitlist? This frees their spot.')) return;
+      var maxWl = data.mc1.filter(function(r){ return r.type==='waitlist'; })
+        .reduce(function(m,r){ return Math.max(m, r.wlPosition||0); }, 0);
+      supabase.from('matchat_registrations').update({ type:'waitlist', wl_position:maxWl+1, is_paid:false, paid_at:null }).eq('code', code)
+        .then(function(res){
+          if (res && res.error){ alert('Could not move: '+res.error.message); return; }
+          renumberMCWaitlist(function(){ renderAdmin(); buildMCSpots(); });
+        }, function(err){ alert('Could not move. Check console for details.'); console.error(err); });
+    });
+  };
+
   window.mcAdminConfirmPayment = function(code){
     getMCData(function(data){
       var foundPerson = data.mc1.find(function(r){ return r.code===code; });
@@ -8575,7 +8594,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var mcIsSoldOut = false;
       if (mcEl) {
         if (mcRemaining <= 0) { setSpotsBadge(mcEl, 'Waitlist only', 'sold-out'); mcIsSoldOut = true; }
-        else if (mcRemaining <= 5) setSpotsBadge(mcEl, 'Almost sold out', 'low');
+        else if (mcRemaining <= 5) setSpotsBadge(mcEl, 'Only ' + mcRemaining + ' spot' + (mcRemaining === 1 ? '' : 's') + ' left', 'low');
         else setSpotsBadge(mcEl, 'Limited spots', 'available');
       }
       var mFlyer = document.getElementById('matchat-flyer-wrap');
