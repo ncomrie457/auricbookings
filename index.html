@@ -3952,6 +3952,24 @@
           <p style="font-size:.75rem;color:var(--text-muted);margin-top:.3rem;line-height:1.5;">For class day reminders &mdash; we&rsquo;ll text you 24 hours before. Never shared, opt-out anytime.</p>
         </div>
 
+        <!-- Bringing a minor? -->
+        <div class="field" style="margin-bottom:1rem;">
+          <label style="display:block;font-size:.85rem;color:var(--brown);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;">Are you bringing a child?</label>
+          <p style="font-size:.78rem;color:var(--text-muted);margin:0 0 .55rem;line-height:1.5;">Children <strong>12&ndash;17</strong> are welcome at Create &amp; Recharge with a parent or legal guardian who attends and signs their waiver. Children 11 and under aren&rsquo;t permitted.</p>
+          <label class="mc-health-row"><input type="radio" name="cr-minor" value="no" checked><span>No &mdash; just me (18+)</span></label>
+          <label class="mc-health-row"><input type="radio" name="cr-minor" value="yes"><span>Yes &mdash; I&rsquo;m bringing my child (age 12&ndash;17)</span></label>
+          <div id="cr-minor-fields" class="hidden" style="margin-top:.75rem;padding:.85rem 1rem;background:#faf5ee;border-left:3px solid var(--gold);border-radius:0 8px 8px 0;">
+            <label for="cr-minor-name" style="display:block;font-size:.8rem;color:#3d322a;font-weight:600;margin-bottom:.35rem;">Child&rsquo;s full name <span class="required" aria-hidden="true">*</span></label>
+            <input type="text" id="cr-minor-name" placeholder="Child&rsquo;s full name (add more than one, separated by commas)" style="width:100%;padding:.6rem .8rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.88rem;background:var(--white);color:#3d322a;box-sizing:border-box;">
+            <div id="cr-minor-name-err" class="err-msg" role="alert"></div>
+            <label style="display:block;font-size:.8rem;color:#3d322a;font-weight:600;margin:.7rem 0 .35rem;">Your relationship to the child <span class="required" aria-hidden="true">*</span></label>
+            <label class="mc-health-row"><input type="radio" name="cr-minor-rel" value="Parent"><span>Parent</span></label>
+            <label class="mc-health-row"><input type="radio" name="cr-minor-rel" value="Legal guardian"><span>Legal guardian</span></label>
+            <div id="cr-minor-rel-err" class="err-msg" role="alert"></div>
+            <p style="font-size:.72rem;color:var(--text-muted);margin:.5rem 0 0;line-height:1.5;">You&rsquo;ll sign your child&rsquo;s waiver as their parent/guardian in the next step.</p>
+          </div>
+        </div>
+
         <div id="cr-spots-display" style="margin-bottom:1rem;padding:.75rem 1rem;background:#faf5ee;border-radius:10px;font-size:.85rem;color:#3d322a;text-align:center;"></div>
         <div class="privacy-bar">
           By registering you agree to our <button type="button" id="cr-open-privacy-btn" style="background:none;border:none;color:var(--gold-text);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Privacy Policy</button>, <button type="button" id="cr-open-terms-btn" style="background:none;border:none;color:var(--gold-text);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Terms &amp; Refund Policy</button>, and <button type="button" id="cr-open-policies-btn" style="background:none;border:none;color:var(--gold-text);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Class Policies</button> <span style="color:var(--text-muted);">(lateness &amp; medical)</span>.
@@ -4062,6 +4080,19 @@
                 <span>I have read and agree to the Create &amp; Recharge cancellation &amp; credit policy above. <span style="color:var(--red);">*</span></span>
               </label>
               <div id="cr-refund-policy-err" class="err-msg" role="alert"></div>
+            </div>
+
+            <!-- Parent / Guardian consent for a minor (shown only when bringing a child) -->
+            <div id="cr-minor-consent" class="hidden" style="margin:1.25rem 0;padding:1rem 1.25rem;background:#faf5ee;border:2px solid var(--gold);border-radius:10px;">
+              <h3 style="font-size:.85rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brown);margin-bottom:.6rem;">&#128100; Parent / Guardian Consent for a Minor</h3>
+              <p style="font-size:.85rem;color:#3d322a;line-height:1.6;margin:0 0 .6rem;">You indicated you&rsquo;re attending with a minor. As their parent or legal guardian, you are signing this waiver on their behalf.</p>
+              <p style="font-size:.85rem;color:#3d322a;line-height:1.6;margin:0 0 .6rem;">Minor(s): <strong id="cr-minor-name-display"></strong> &middot; Relationship: <strong id="cr-minor-rel-display"></strong></p>
+              <p style="font-size:.82rem;color:#3d322a;line-height:1.6;margin:0 0 .75rem;font-style:italic;">As the parent or legal guardian of the minor(s) named above, I certify that each is at least 12 years of age, that I have full legal authority to sign on their behalf, and I agree to every term of this Liability Waiver &amp; Release on behalf of the minor(s) as well as myself. I accept full responsibility for the minor&rsquo;s participation and release the Released Parties from all claims arising from it, to the same extent as for myself.</p>
+              <label style="display:flex;align-items:flex-start;gap:.6rem;padding:.65rem .75rem;background:#fff;border:1px solid var(--gold);border-radius:8px;cursor:pointer;font-size:.85rem;color:#3d322a;">
+                <input type="checkbox" id="cr-minor-agree" style="margin-top:.15rem;accent-color:var(--gold);width:18px;height:18px;flex-shrink:0;">
+                <span>I am the parent or legal guardian of the minor(s) named above and I sign this waiver on their behalf. <span style="color:var(--red);">*</span></span>
+              </label>
+              <div id="cr-minor-agree-err" class="err-msg" role="alert"></div>
             </div>
 
             <div class="sig-section">
@@ -8732,6 +8763,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function composeCRNotes(){
     var lines = [];
+    var minor = crMinorState();
+    if (minor.isMinor) lines.push('⚠️ MINOR ATTENDING — ' + minor.rel + ' signing on behalf of: ' + minor.names + ' (guardian: ' + (document.getElementById('cr-reg-name').value.trim()) + ')');
     var exp = document.querySelector('input[name="cr-experience"]:checked');
     if (exp) lines.push('Pilates experience: ' + exp.value);
     var flags = [];
@@ -8783,6 +8816,27 @@ document.addEventListener('DOMContentLoaded', function() {
     else { fa.disabled=true; fa.checked=false; document.getElementById('cr-sig-input').disabled=true; document.getElementById('cr-sig-input').value=''; document.getElementById('cr-submit-btn').disabled=true; }
   }
 
+  // Returns the current "bringing a minor" state from the register step.
+  function crMinorState(){
+    var yes = document.querySelector('input[name="cr-minor"]:checked');
+    var isMinor = !!(yes && yes.value === 'yes');
+    var relEl = document.querySelector('input[name="cr-minor-rel"]:checked');
+    var nameEl = document.getElementById('cr-minor-name');
+    return {
+      isMinor: isMinor,
+      names: nameEl ? nameEl.value.trim() : '',
+      rel: relEl ? relEl.value : ''
+    };
+  }
+
+  // Show/hide the child-detail fields as the minor question is toggled.
+  document.querySelectorAll('input[name="cr-minor"]').forEach(function(r){
+    r.addEventListener('change', function(){
+      var box = document.getElementById('cr-minor-fields');
+      if (box) box.classList.toggle('hidden', this.value !== 'yes');
+    });
+  });
+
   var crToWaiverBtn = document.getElementById('cr-to-waiver-btn');
   if (crToWaiverBtn) crToWaiverBtn.addEventListener('click', function(){
     var name  = document.getElementById('cr-reg-name').value.trim();
@@ -8792,9 +8846,31 @@ document.addEventListener('DOMContentLoaded', function() {
     else { document.getElementById('cr-reg-name-err').textContent=''; }
     if (!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ document.getElementById('cr-reg-email-err').textContent='Please enter a valid email.'; ok=false; }
     else { document.getElementById('cr-reg-email-err').textContent=''; }
+    // Minor details are required when bringing a child.
+    var minor = crMinorState();
+    if (minor.isMinor){
+      if (!minor.names || minor.names.length < 2){ document.getElementById('cr-minor-name-err').textContent='Please enter your child’s full name.'; ok=false; }
+      else { document.getElementById('cr-minor-name-err').textContent=''; }
+      if (!minor.rel){ document.getElementById('cr-minor-rel-err').textContent='Please select your relationship to the child.'; ok=false; }
+      else { document.getElementById('cr-minor-rel-err').textContent=''; }
+    } else {
+      document.getElementById('cr-minor-name-err').textContent='';
+      document.getElementById('cr-minor-rel-err').textContent='';
+    }
     if (!ok) return;
     document.getElementById('cr-waiver-name-display').textContent = name;
     document.getElementById('cr-waiver-name-stmt').textContent    = name;
+    // Wire the minor-consent block for the waiver step.
+    var consent = document.getElementById('cr-minor-consent');
+    var minorAgree = document.getElementById('cr-minor-agree');
+    if (minor.isMinor){
+      document.getElementById('cr-minor-name-display').textContent = minor.names;
+      document.getElementById('cr-minor-rel-display').textContent  = minor.rel;
+      if (consent) consent.classList.remove('hidden');
+    } else {
+      if (consent) consent.classList.add('hidden');
+      if (minorAgree) minorAgree.checked = false;
+    }
     buildCRClauses();
     crShowStep('cr-step-waiver');
     var layout=document.getElementById('cr-page-layout'); if(layout) layout.classList.add('waiver-active');
@@ -8814,18 +8890,29 @@ document.addEventListener('DOMContentLoaded', function() {
     if(this.checked && crCheckedCount===CR_CLAUSE_TEXTS.length){ si.disabled=false; si.focus(); }
     else { si.disabled=true; si.value=''; document.getElementById('cr-submit-btn').disabled=true; }
   });
+  // Enable submit only when signature + refund policy (+ minor consent, if applicable) are all set.
+  function crUpdateSubmitEnabled(){
+    var sigOk    = ((document.getElementById('cr-sig-input').value) || '').trim().length >= 2;
+    var refundOk = document.getElementById('cr-refund-policy-agree').checked;
+    var minorAgreeEl = document.getElementById('cr-minor-agree');
+    var minorOk  = !crMinorState().isMinor || (minorAgreeEl && minorAgreeEl.checked);
+    var btn = document.getElementById('cr-submit-btn');
+    if (btn) btn.disabled = !(sigOk && refundOk && minorOk);
+  }
   var crSig = document.getElementById('cr-sig-input');
   if (crSig) crSig.addEventListener('input', function(){
-    var refundOk = document.getElementById('cr-refund-policy-agree').checked;
-    var sigOk    = this.value.trim().length >= 2;
-    document.getElementById('cr-submit-btn').disabled = !(refundOk && sigOk);
+    crUpdateSubmitEnabled();
     document.getElementById('cr-sig-err').textContent = '';
   });
   var crRefund = document.getElementById('cr-refund-policy-agree');
   if (crRefund) crRefund.addEventListener('change', function(){
-    var sigOk = (document.getElementById('cr-sig-input').value || '').trim().length >= 2;
-    document.getElementById('cr-submit-btn').disabled = !(this.checked && sigOk);
+    crUpdateSubmitEnabled();
     if (this.checked) document.getElementById('cr-refund-policy-err').textContent = '';
+  });
+  var crMinorAgree = document.getElementById('cr-minor-agree');
+  if (crMinorAgree) crMinorAgree.addEventListener('change', function(){
+    crUpdateSubmitEnabled();
+    if (this.checked) document.getElementById('cr-minor-agree-err').textContent = '';
   });
 
   var crSubmitBtn = document.getElementById('cr-submit-btn');
@@ -8839,6 +8926,15 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!refundChk || !refundChk.checked) {
       document.getElementById('cr-refund-policy-err').textContent = 'You must acknowledge the cancellation & credit policy before booking.';
       refundChk.focus(); refundChk.scrollIntoView({behavior:'smooth', block:'center'}); return;
+    }
+    var crMinor = crMinorState();
+    if (crMinor.isMinor) {
+      var minorChk = document.getElementById('cr-minor-agree');
+      if (!minorChk || !minorChk.checked) {
+        document.getElementById('cr-minor-agree-err').textContent = 'Please confirm you are the parent/guardian signing on the minor’s behalf.';
+        if (minorChk){ minorChk.focus(); minorChk.scrollIntoView({behavior:'smooth', block:'center'}); }
+        return;
+      }
     }
     if(sig.toLowerCase()!==name.toLowerCase()){
       document.getElementById('cr-sig-err').textContent = 'Signature must match your name: "'+name+'"';
@@ -8932,9 +9028,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function resetCRForm(){
     crCheckedClauses={}; crCheckedCount=0; crLastSubmission=null;
-    ['cr-reg-name','cr-reg-email','cr-reg-phone','cr-h-notes','cr-h-allergies','cr-sig-input'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
-    ['cr-h-spine','cr-h-joint','cr-h-pregnant','cr-h-osteo','cr-h-dizzy','cr-final-agree','cr-refund-policy-agree'].forEach(function(id){ var el=document.getElementById(id); if(el) el.checked=false; });
+    ['cr-reg-name','cr-reg-email','cr-reg-phone','cr-h-notes','cr-h-allergies','cr-sig-input','cr-minor-name'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+    ['cr-h-spine','cr-h-joint','cr-h-pregnant','cr-h-osteo','cr-h-dizzy','cr-final-agree','cr-refund-policy-agree','cr-minor-agree'].forEach(function(id){ var el=document.getElementById(id); if(el) el.checked=false; });
     var expSel = document.querySelector('input[name="cr-experience"]:checked'); if(expSel) expSel.checked=false;
+    // Reset minor question back to "No" and hide its fields/consent.
+    var minorNo = document.querySelector('input[name="cr-minor"][value="no"]'); if(minorNo) minorNo.checked=true;
+    var relSel = document.querySelector('input[name="cr-minor-rel"]:checked'); if(relSel) relSel.checked=false;
+    ['cr-minor-fields','cr-minor-consent'].forEach(function(id){ var el=document.getElementById(id); if(el) el.classList.add('hidden'); });
+    ['cr-minor-name-err','cr-minor-rel-err','cr-minor-agree-err'].forEach(function(id){ var el=document.getElementById(id); if(el) el.textContent=''; });
     var si=document.getElementById('cr-sig-input'); if(si) si.disabled=true;
     var sb=document.getElementById('cr-submit-btn'); if(sb) sb.disabled=true;
     var layout=document.getElementById('cr-page-layout'); if(layout) layout.classList.remove('waiver-active');
