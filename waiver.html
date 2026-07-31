@@ -117,7 +117,7 @@
   <!-- STEP 1: Form -->
   <div id="step-form" class="card">
     <h2>Sign Your Waiver</h2>
-    <p class="subtitle">Please read each clause carefully and check the box to confirm. All 19 clauses must be acknowledged before signing.</p>
+    <p class="subtitle">Select your event above to load its waiver, then read each clause carefully and check the box to confirm. All clauses must be acknowledged before signing.</p>
 
     <div class="field">
       <label for="reg-name">Full Legal Name <span class="required" aria-hidden="true">*</span></label>
@@ -130,17 +130,25 @@
       <div id="reg-email-err" class="err-msg" role="alert"></div>
     </div>
     <div class="field">
-      <label for="reg-event">Event Name <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
-      <input type="text" id="reg-event" placeholder="e.g. Private Pilates Session">
+      <label for="reg-event-select">Which event are you attending? <span class="required" aria-hidden="true">*</span></label>
+      <select id="reg-event-select" aria-required="true" style="width:100%;padding:.8rem 1rem;border:2px solid var(--border);border-radius:10px;font-size:.95rem;font-family:'Jost',sans-serif;color:var(--text);background:var(--cream-light);">
+        <option value="">Select your event…</option>
+        <option value="recharge">Create &amp; Recharge — Sat, Aug 15, 2026</option>
+        <option value="matchat">Mat &amp; Chat — Sat, Aug 1, 2026</option>
+        <option value="other">Another event / private session</option>
+      </select>
+      <div id="reg-event-err" class="err-msg" role="alert"></div>
     </div>
-    <div class="field">
-      <label for="reg-date">Event Date &amp; Time <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
-      <input type="text" id="reg-date" placeholder="e.g. June 25th at 10:00 AM">
+    <div class="field hidden" id="custom-event-fields">
+      <label for="reg-event">Event Name</label>
+      <input type="text" id="reg-event" placeholder="e.g. Private Pilates Session">
+      <label for="reg-date" style="display:block;margin-top:.7rem;">Event Date &amp; Time</label>
+      <input type="text" id="reg-date" placeholder="e.g. August 20th at 10:00 AM">
     </div>
 
-    <div class="progress-section">
+    <div class="progress-section hidden" id="progress-section">
       <div class="progress-label">
-        <span><span id="confirmed-count">0</span>/19 confirmed</span>
+        <span><span id="confirmed-count">0</span>/<span id="total-count">19</span> confirmed</span>
         <span id="remaining-text">19 remaining</span>
       </div>
       <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="19" id="progress-track">
@@ -148,10 +156,11 @@
       </div>
     </div>
 
-    <div style="margin-bottom:.75rem;">
+    <div style="margin-bottom:.75rem;" class="hidden" id="select-all-wrap">
       <button type="button" id="select-all-btn" class="btn btn-secondary" style="font-size:.82rem;padding:.5rem 1rem;width:100%;justify-content:center;">✓ Select All Clauses</button>
     </div>
 
+    <div id="clauses-hint" style="padding:1rem 1.1rem;border:2px dashed var(--border);border-radius:10px;background:var(--cream-light);color:var(--text-muted);font-size:.9rem;text-align:center;">👆 Select your event above to load the waiver.</div>
     <div id="clauses-container" role="group" aria-label="Waiver clauses"></div>
 
     <div class="sig-section">
@@ -325,6 +334,20 @@ document.addEventListener('DOMContentLoaded', function() {
     "I understand that a complimentary gift bag may be provided as a courtesy. I acknowledge that I assume full responsibility for any items received and their use. I release the Released Parties from any liability arising from the receipt or use of gift bag contents."
   ];
 
+  // Create & Recharge adds one collab/art-specific clause (mirrors the booking flow):
+  // covers art-material risk and extends the release to Georgina Arroyo & collaborators.
+  var CR_ART_CLAUSE =
+    "I understand that Create & Recharge is co-hosted with Georgina Arroyo and includes creative and art-based activities. I acknowledge the inherent risks of using art materials and tools — including cuts, skin irritation, or allergic reactions to paints, adhesives, or other supplies, and staining of clothing or belongings — and I voluntarily assume all such risks. I agree that every release, waiver, and hold-harmless provision in this agreement also protects Auric Movement LLC's collaborators, co-hosts, and guest instructors, including Georgina Arroyo, to the same extent as the Released Parties. I agree to disclose any known allergies or sensitivities to my instructor before participating.";
+
+  // Per-event waiver config. extraClauses are appended to the base set above.
+  var WAIVER_EVENTS = {
+    recharge: { name: 'Create & Recharge', date: 'Saturday, August 15, 2026 · 11:30 AM', extraClauses: [CR_ART_CLAUSE], custom: false },
+    matchat:  { name: 'Mat & Chat',        date: 'Saturday, August 1, 2026 · 11:30 AM',  extraClauses: [], custom: false },
+    other:    { name: '',                  date: '',                                      extraClauses: [], custom: true }
+  };
+  // The clause set currently in play (base by default; swapped when an event is chosen).
+  var activeClauses = clauseTexts.slice();
+
   var checkedClauses = {};
   var checkedCount   = 0;
   var lastSubmission = null;
@@ -401,11 +424,64 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('waiver-name-stmt').textContent = v || '[Your Name]';
   });
 
+  // Apply an event selection: swap the clause set, auto-fill event name/date,
+  // reveal the custom fields only for "other", and rebuild the waiver.
+  function applyEventSelection(key) {
+    var cfg = WAIVER_EVENTS[key];
+    var customWrap = document.getElementById('custom-event-fields');
+    var evName = document.getElementById('reg-event');
+    var evDate = document.getElementById('reg-date');
+    var hint   = document.getElementById('clauses-hint');
+    document.getElementById('reg-event-err').textContent = '';
+
+    if (!cfg) {
+      // Nothing selected — hide clauses, progress, select-all; show hint; disable signing.
+      activeClauses = clauseTexts.slice();
+      checkedClauses = {}; checkedCount = 0;
+      customWrap.classList.add('hidden');
+      document.getElementById('clauses-container').innerHTML = '';
+      document.getElementById('progress-section').classList.add('hidden');
+      document.getElementById('select-all-wrap').classList.add('hidden');
+      var fa0 = document.getElementById('final-agree'); if (fa0) { fa0.checked = false; fa0.disabled = true; }
+      var si0 = document.getElementById('sig-input'); if (si0) { si0.value=''; si0.disabled=true; }
+      var sb0 = document.getElementById('submit-btn'); if (sb0) sb0.disabled = true;
+      if (hint) hint.classList.remove('hidden');
+      return;
+    }
+
+    activeClauses = cfg.extraClauses.length ? clauseTexts.concat(cfg.extraClauses) : clauseTexts.slice();
+    TOTAL_CLAUSES = activeClauses.length;
+
+    if (cfg.custom) {
+      customWrap.classList.remove('hidden');
+      evName.value = ''; evDate.value = '';
+    } else {
+      customWrap.classList.add('hidden');
+      evName.value = cfg.name;
+      evDate.value = cfg.date;
+    }
+    if (hint) hint.classList.add('hidden');
+    document.getElementById('progress-section').classList.remove('hidden');
+    document.getElementById('select-all-wrap').classList.remove('hidden');
+    document.getElementById('total-count').textContent = TOTAL_CLAUSES;
+    // Reset signing state whenever the event (and its clauses) change.
+    var fa = document.getElementById('final-agree'); if (fa) fa.checked = false;
+    var si = document.getElementById('sig-input'); if (si) { si.value=''; si.disabled=true; }
+    var sb = document.getElementById('submit-btn'); if (sb) sb.disabled = true;
+    var sa = document.getElementById('select-all-btn'); if (sa) { sa.textContent='✓ Select All Clauses'; sa.disabled=false; }
+    document.getElementById('progress-track').setAttribute('aria-valuemax', TOTAL_CLAUSES);
+    buildClauses();
+  }
+
+  document.getElementById('reg-event-select').addEventListener('change', function(){
+    applyEventSelection(this.value);
+  });
+
   // Build clauses
   function buildClauses() {
     var container = document.getElementById('clauses-container');
     container.innerHTML = ''; checkedClauses={}; checkedCount=0; updateProgress();
-    clauseTexts.forEach(function(text, i) {
+    activeClauses.forEach(function(text, i) {
       var div = document.createElement('div'); div.className='clause';
       var cb = document.createElement('input'); cb.type='checkbox'; cb.id='cb-'+i;
       cb.setAttribute('aria-label','Agree to clause '+(i+1)+' of '+TOTAL_CLAUSES);
@@ -423,6 +499,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function updateProgress() {
     checkedCount = Object.keys(checkedClauses).length;
     document.getElementById('confirmed-count').textContent = checkedCount;
+    document.getElementById('total-count').textContent     = TOTAL_CLAUSES;
     document.getElementById('remaining-text').textContent  = (TOTAL_CLAUSES-checkedCount)+' remaining';
     document.getElementById('progress-fill').style.width   = (checkedCount/TOTAL_CLAUSES*100)+'%';
     document.getElementById('progress-track').setAttribute('aria-valuenow', checkedCount);
@@ -445,7 +522,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     this.textContent = '✓ All Clauses Selected';
     this.disabled = true;
-    announce('All 19 clauses selected.');
+    announce('All ' + TOTAL_CLAUSES + ' clauses selected.');
   });
 
   document.getElementById('final-agree').addEventListener('change', function(){
@@ -480,6 +557,15 @@ document.addEventListener('DOMContentLoaded', function() {
       ok = false;
     } else { document.getElementById('reg-email-err').textContent = ''; }
 
+    var evKey = document.getElementById('reg-event-select').value;
+    if (!evKey) {
+      document.getElementById('reg-event-err').textContent = 'Please select the event you are attending.';
+      ok = false;
+    } else if (evKey === 'other' && !document.getElementById('reg-event').value.trim()) {
+      document.getElementById('reg-event-err').textContent = 'Please enter the event name.';
+      ok = false;
+    } else { document.getElementById('reg-event-err').textContent = ''; }
+
     if (!ok) {
       document.getElementById('reg-name').scrollIntoView({behavior:'smooth', block:'center'});
       return;
@@ -502,7 +588,7 @@ document.addEventListener('DOMContentLoaded', function() {
       name: name, email: email, signature: sig,
       eventName: eventName, eventDate: eventDate,
       time: now.toLocaleString(), timestamp: now.toISOString(),
-      code: genCode(), clausesAgreed: TOTAL_CLAUSES
+      code: genCode(), clausesAgreed: TOTAL_CLAUSES, clauseList: activeClauses.slice()
     };
 
     getData(function(data){
@@ -559,6 +645,7 @@ document.addEventListener('DOMContentLoaded', function() {
     checkedClauses = {}; checkedCount = 0; lastSubmission = null;
     document.getElementById('reg-name').value = '';
     document.getElementById('reg-email').value = '';
+    document.getElementById('reg-event-select').value = '';
     document.getElementById('reg-event').value = '';
     document.getElementById('reg-date').value = '';
     document.getElementById('conf-event-row').classList.add('hidden');
@@ -570,12 +657,12 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('submit-btn').disabled = true;
     document.getElementById('email-status').innerHTML = '';
     document.getElementById('waiver-name-stmt').textContent = '[Your Name]';
-    ['reg-name-err','reg-email-err','sig-err'].forEach(function(id){
+    ['reg-name-err','reg-email-err','sig-err','reg-event-err'].forEach(function(id){
       document.getElementById(id).textContent = '';
     });
     var sa = document.getElementById('select-all-btn');
     sa.textContent = '✓ Select All Clauses'; sa.disabled = false;
-    buildClauses();
+    applyEventSelection('');  // clears clauses, hides progress, shows the "select event" hint
     document.getElementById('step-confirmed').classList.add('hidden');
     document.getElementById('step-form').classList.remove('hidden');
     window.scrollTo({top:0, behavior:'smooth'});
@@ -629,7 +716,11 @@ document.addEventListener('DOMContentLoaded', function() {
     doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(90,58,26);
     doc.text('AGREED CLAUSES', margin, y); y += 6;
     doc.setDrawColor(176,120,64); doc.setLineWidth(0.75); doc.line(margin, y, pageW-margin, y); y += 14;
-    clauseTexts.forEach(function(text, i){
+    // Use the clause set this waiver was actually signed against (Create & Recharge adds
+    // the collab/art clause). Fresh signs carry rec.clauseList; admin re-downloads infer it.
+    var pdfClauses = (rec.clauseList && rec.clauseList.length) ? rec.clauseList
+      : (/create\s*&?\s*recharge/i.test(rec.eventName || '') ? clauseTexts.concat([CR_ART_CLAUSE]) : clauseTexts);
+    pdfClauses.forEach(function(text, i){
       var lines = doc.setFontSize(8.5).splitTextToSize(text, contentW - 26);
       var blockH = lines.length * 11 + 14; checkPage(blockH);
       doc.setFillColor(176,120,64); doc.circle(margin+8, y+5, 7, 'F');
@@ -751,9 +842,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  buildClauses();
+  // Clauses are built once an event is selected (applyEventSelection), not on load.
 
   // Prefill from URL params (?name=... &email=... &event=... &date=...)
+  // ?event= accepts a key (recharge|matchat) to preselect the dropdown,
+  // or any other text which drops into the "other" custom event fields.
   try {
     var params = new URLSearchParams(window.location.search);
     var pName  = params.get('name');
@@ -765,8 +858,17 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('waiver-name-stmt').textContent = pName;
     }
     if (pEmail) document.getElementById('reg-email').value = pEmail;
-    if (pEvent) document.getElementById('reg-event').value = pEvent;
-    if (pDate)  document.getElementById('reg-date').value = pDate;
+    if (pEvent) {
+      var sel = document.getElementById('reg-event-select');
+      var key = pEvent.toLowerCase();
+      if (WAIVER_EVENTS[key] && key !== 'other') {
+        sel.value = key; applyEventSelection(key);
+      } else {
+        sel.value = 'other'; applyEventSelection('other');
+        document.getElementById('reg-event').value = pEvent;
+        if (pDate) document.getElementById('reg-date').value = pDate;
+      }
+    }
   } catch(e) {}
 });
 </script>
