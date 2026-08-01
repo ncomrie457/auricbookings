@@ -4654,27 +4654,24 @@ document.addEventListener('DOMContentLoaded', function() {
       ],
       description: 'Our sold-out Juneteenth celebration &mdash; a curated reformer Pilates class featuring jump board work, movement in all planes of motion, and a hand-held fan from Ghana &mdash; a nod to the motherland and a celebration of freedom. Attendees left with a Pilates essentials bag.',
       reflection: 'Through movement and wellness, we reclaim agency over our own bodies &mdash; a true act of freedom.'
-    }
-    /* ── Mat & Chat gallery — ACTIVATE once the photos are uploaded to the repo root.
-       Remove this comment wrapper (and the leading comma stays) to turn it on;
-       adjust the filenames to match whatever was uploaded. ──
-    ,matchat: {
+    },
+    matchat: {
       title:  'Mat & Chat Recap',
       date:   'August 1, 2026',
       soldOut: true,
-      cover:  'matchat-01.jpg',
+      cover:  'matchat-01.jpg',   // group photo (same image as IMG_0003.JPG, which is skipped below to avoid a duplicate)
       photos: [
         'matchat-01.jpg',
-        'matchat-02.jpg',
-        'matchat-03.jpg',
-        'matchat-04.jpg',
-        'matchat-05.jpg',
-        'matchat-06.jpg'
+        'IMG_0001.JPG', 'IMG_0002.JPG', 'IMG_0005.JPG', 'IMG_0006.JPG', 'IMG_0013.JPG',
+        'IMG_0017.JPG', 'IMG_0019.JPG', 'IMG_0023.JPG', 'IMG_0024.JPG', 'IMG_0026.JPG',
+        'IMG_0029.JPG', 'IMG_0032.JPG', 'IMG_0033.JPG', 'IMG_0037.JPG', 'IMG_0038.JPG',
+        'IMG_0041.JPG', 'IMG_0048.JPG', 'IMG_0050.JPG', 'IMG_0056.JPG', 'IMG_0060.JPG',
+        'IMG_0062.JPG', 'IMG_0079.JPG', 'IMG_1426.JPG', 'IMG_1426%202.JPG', 'IMG_1428.JPG',
+        'IMG_1434.JPG', 'IMG_1435.JPG', 'IMG_2234.JPG'
       ],
       description: 'Our sold-out Mat &amp; Chat &mdash; a morning of mat Pilates, community, and good energy. We eased in with the basics, then got spicy with a core series on the mat, and sent everyone home with an Auric goodie bag, refreshments, and a few new friends.',
       reflection: 'Move together, laugh together, recharge together &mdash; this is what Auric is all about.'
     }
-    */
   };
 
   // Per-event recap metadata for events that don't have a photo gallery yet
@@ -4685,6 +4682,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var PAST_EVENT_META = {
     matchat: {
       soldOut: true,
+      forcePast: true,  // show in Past Events the same day (recap goes up event evening)
       description: 'Our sold-out Mat &amp; Chat &mdash; a morning of mat Pilates, community, and good energy. We moved together, played a custom Auric bingo, and shared food, music, and connection.'
     }
   };
@@ -4942,16 +4940,18 @@ document.addEventListener('DOMContentLoaded', function() {
       var dateStr = card.getAttribute('data-event-date');
       if (!dateStr) return;
       var eventDate = new Date(dateStr + 'T00:00:00');
-      if (today <= eventDate) return; // event hasn't passed yet
       // Derive eventId from card id: 'event-card-pilates' → 'pilates'
       var slug = card.id.replace(/^event-card-/, '');
+      var meta = PAST_EVENT_META[slug] || {};
+      // Show once the event date has passed — or immediately when meta.forcePast is
+      // set (e.g. Mat & Chat, whose recap goes up the same evening as the event).
+      if (today <= eventDate && !meta.forcePast) return;
       if (manualEventIds[slug]) return; // manual video exists; skip placeholder
       var img = card.querySelector('img');
       var flyer = img ? img.getAttribute('src') : '';
       var name = card.getAttribute('data-event-name') || '';
       // Format date as e.g. "June 19, 2026"
       var fmtDate = eventDate.toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
-      var meta = PAST_EVENT_META[slug] || {};
       pending.push({
         eventId: slug,
         title:   name,
