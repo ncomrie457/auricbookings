@@ -4655,6 +4655,26 @@ document.addEventListener('DOMContentLoaded', function() {
       description: 'Our sold-out Juneteenth celebration &mdash; a curated reformer Pilates class featuring jump board work, movement in all planes of motion, and a hand-held fan from Ghana &mdash; a nod to the motherland and a celebration of freedom. Attendees left with a Pilates essentials bag.',
       reflection: 'Through movement and wellness, we reclaim agency over our own bodies &mdash; a true act of freedom.'
     }
+    /* ── Mat & Chat gallery — ACTIVATE once the photos are uploaded to the repo root.
+       Remove this comment wrapper (and the leading comma stays) to turn it on;
+       adjust the filenames to match whatever was uploaded. ──
+    ,matchat: {
+      title:  'Mat & Chat Recap',
+      date:   'August 1, 2026',
+      soldOut: true,
+      cover:  'matchat-01.jpg',
+      photos: [
+        'matchat-01.jpg',
+        'matchat-02.jpg',
+        'matchat-03.jpg',
+        'matchat-04.jpg',
+        'matchat-05.jpg',
+        'matchat-06.jpg'
+      ],
+      description: 'Our sold-out Mat &amp; Chat &mdash; a morning of mat Pilates, community, and good energy. We eased in with the basics, then got spicy with a core series on the mat, and sent everyone home with an Auric goodie bag, refreshments, and a few new friends.',
+      reflection: 'Move together, laugh together, recharge together &mdash; this is what Auric is all about.'
+    }
+    */
   };
 
   // Per-event recap metadata for events that don't have a photo gallery yet
@@ -6713,13 +6733,15 @@ document.addEventListener('DOMContentLoaded', function() {
           var demoteBtn = (rec.type==='confirmed') ? '<button onclick="mcAdminDemote(\''+rec.code+'\')" style="background:#fff3e0;border:1px solid #ffcc80;color:#e65100;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#8617;&#65039; To Waitlist</button>' : '';
           var waiverBtn = rec.signature ? '<button onclick="mcAdminWaiverPDF(\''+rec.code+'\')" style="background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128196; Waiver</button>' : '';
           var attendedMC = /#attended/i.test(rec.adminNotes||'');
+          var noShowMC = /#noshow/i.test(rec.adminNotes||'');
           var attendBtn = '<button onclick="toggleAttended(\'matchat_registrations\',\''+rec.code+'\')" style="background:'+(attendedMC?'#e8f5e9':'#fff')+';border:1px solid '+(attendedMC?'#a5d6a7':'var(--gold)')+';color:'+(attendedMC?'#2e7d32':'var(--brown)')+';border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">'+(attendedMC?'✓ Attended':'○ Attended')+'</button>';
+          var noShowBtn = '<button onclick="toggleNoShow(\'matchat_registrations\',\''+rec.code+'\')" style="background:'+(noShowMC?'#fdecea':'#fff')+';border:1px solid '+(noShowMC?'#f5c6c2':'#d8ccbb')+';color:'+(noShowMC?'#c0392b':'#8a7d6a')+';border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">'+(noShowMC?'🚫 No-Show':'○ No-Show')+'</button>';
           var notesHTML = rec.notes ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;white-space:pre-line;line-height:1.55;"><strong style="color:var(--gold-text);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">&#128221; Notes for Instructor:</strong><br>'+cleanInstructorNotes(rec.notes)+'<div style="margin-top:.5rem;text-align:right;"><button onclick="mcAdminClearHealth(\''+rec.code+'\',\''+(rec.name||'').replace(/\'/g,"\\\'").replace(/"/g,'&quot;')+'\')" style="background:#fff;border:1px solid var(--gold);color:var(--brown);border-radius:6px;padding:.25rem .65rem;font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;font-weight:500;letter-spacing:.5px;">&#128465; Clear Health Notes</button></div></div>' : '';
           var pairHTML = rec.isPair ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#f5e6d3;border-left:3px solid var(--brown);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;"><strong style="color:var(--brown);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">&#128111; Pair Booking ($55):</strong><br><strong>Friend:</strong> '+escapeHTML(rec.friendName||'?')+'<br><strong>Email:</strong> '+escapeHTML(rec.friendEmail||'?')+'</div>' : '';
-          item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span>'+(rec.isPair?' <span style="font-size:.7rem;background:var(--brown);color:#fff;padding:.1rem .4rem;border-radius:10px;font-weight:700;letter-spacing:.5px;">PAIR</span>':'')+paymentBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+pairHTML+notesHTML+adminNotesField('matchat_registrations', rec.code, rec.adminNotes)+'</div>'+
+          item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span>'+(rec.isPair?' <span style="font-size:.7rem;background:var(--brown);color:#fff;padding:.1rem .4rem;border-radius:10px;font-weight:700;letter-spacing:.5px;">PAIR</span>':'')+paymentBadge(rec)+(noShowMC?' <span style="font-size:.7rem;background:#c0392b;color:#fff;padding:.1rem .4rem;border-radius:10px;font-weight:700;letter-spacing:.5px;">NO-SHOW</span>':'')+(attendedMC?' <span style="font-size:.7rem;background:#2e7d32;color:#fff;padding:.1rem .4rem;border-radius:10px;font-weight:700;letter-spacing:.5px;">ATTENDED</span>':'')+'<br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+pairHTML+notesHTML+adminNotesField('matchat_registrations', rec.code, rec.adminNotes)+'</div>'+
             '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
             '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
-            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+promoteBtn+demoteBtn+attendBtn+confirmBtn+pendingBtn+waiverBtn+editBtn+removeBtn+'</div></div>';
+            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+promoteBtn+demoteBtn+attendBtn+noShowBtn+confirmBtn+pendingBtn+waiverBtn+editBtn+removeBtn+'</div></div>';
           mcBlock.appendChild(item);
         });
       }
@@ -8224,10 +8246,32 @@ document.addEventListener('DOMContentLoaded', function() {
     supabase.from(table).select('admin_notes').eq('code', code).single().then(function(res){
       var notes = (res.data && res.data.admin_notes) || '';
       var has = /#attended/i.test(notes);
-      var newNotes = has
-        ? notes.replace(/[ \t]*#attended/ig,'').replace(/\n{3,}/g,'\n\n').trim()
-        : (notes.trim() ? notes.trim()+' #attended' : '#attended');
+      var newNotes;
+      if (has) {
+        newNotes = notes.replace(/[ \t]*#attended/ig,'').replace(/\n{3,}/g,'\n\n').trim();
+      } else {
+        // Marking attended clears any no-show tag so they can't be both.
+        var base = notes.replace(/[ \t]*#noshow/ig,'').replace(/\n{3,}/g,'\n\n').trim();
+        newNotes = base ? base+' #attended' : '#attended';
+      }
       supabase.from(table).update({ admin_notes: newNotes }).eq('code', code).then(function(){ renderAdmin(); }, function(err){ alert('Could not update attendance.'); console.error(err); });
+    }, function(err){ alert('Could not read record.'); console.error(err); });
+  };
+  // Toggle a "no-show" tag. A no-show is never credited to Auric Club: adding it
+  // strips any #attended mark, and bulk "mark all attended" skips no-shows.
+  window.toggleNoShow = function(table, code){
+    supabase.from(table).select('admin_notes').eq('code', code).single().then(function(res){
+      var notes = (res.data && res.data.admin_notes) || '';
+      var has = /#noshow/i.test(notes);
+      var newNotes;
+      if (has) {
+        newNotes = notes.replace(/[ \t]*#noshow/ig,'').replace(/\n{3,}/g,'\n\n').trim();
+      } else {
+        // Marking no-show clears any attended mark so they aren't credited for this event.
+        var base = notes.replace(/[ \t]*#attended/ig,'').replace(/\n{3,}/g,'\n\n').trim();
+        newNotes = base ? base+' #noshow' : '#noshow';
+      }
+      supabase.from(table).update({ admin_notes: newNotes }).eq('code', code).then(function(){ renderAdmin(); }, function(err){ alert('Could not update no-show.'); console.error(err); });
     }, function(err){ alert('Could not read record.'); console.error(err); });
   };
 
@@ -8238,8 +8282,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var table = isMC ? 'matchat_registrations' : 'pilates_registrations';
     fetchFn(function(data){
       var recs = isMC ? (data.mc1||[]) : (data[scope]||[]);
-      var todo = recs.filter(function(r){ return r.type==='confirmed' && !/#attended/i.test(r.adminNotes||''); });
-      if (!todo.length){ alert('Everyone confirmed here is already marked attended.'); return; }
+      var todo = recs.filter(function(r){ return r.type==='confirmed' && !/#attended/i.test(r.adminNotes||'') && !/#noshow/i.test(r.adminNotes||''); });
+      if (!todo.length){ alert('Everyone confirmed here is already marked attended or flagged no-show.'); return; }
       if (!confirm('Mark all '+todo.length+' confirmed attendee(s) as attended?\n\nYou can untick any no-shows afterward.')) return;
       var done=0, fail=0;
       todo.forEach(function(r){
