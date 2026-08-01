@@ -4183,6 +4183,7 @@
       <div class="admin-actions">
         <button type="button" id="admin-csv-btn" class="btn btn-secondary">&#128229; CSV</button>
         <button type="button" id="admin-thankyou-btn" class="btn btn-primary">&#10022; Send Thank-You Emails</button>
+        <button type="button" id="admin-mc-thankyou-btn" class="btn btn-primary">&#10022; Send Mat &amp; Chat Thank-You</button>
         <button type="button" id="admin-founding-btn" class="btn btn-primary">&#127873; Send Founding Four</button>
         <button type="button" id="admin-club-btn" class="btn btn-secondary">&#10022; Auric Club</button>
         <button type="button" id="admin-club-welcome-btn" class="btn btn-primary">&#10022; Send Club Welcome</button>
@@ -5024,6 +5025,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var TMPL_ADMIN      = 'template_6qkcf8j'; // Admin Notification (shared)
   var TMPL_REMINDER_WEEK  = 'template_rvzyaff'; // Pilates \u2014 1-Week Reminder (branded HTML version)
   var TMPL_THANKYOU       = 'template_7oa2caj'; // Pilates \u2014 Post-Event Thank You
+  var MC_TMPL_THANKYOU    = 'template_7oa2caj'; // Mat & Chat thank-you (MATCHAT_THANKYOU_TEMPLATE.html) \u2014 sent via Resend
   var TMPL_BLAST           = 'template_ncfk6or'; // Registration Open (shared)
   var TMPL_PAYMENT_CONFIRM = 'template_1lv10up'; // Pilates \u2014 Payment Confirmed
   var TMPL_PAYMENT_PENDING = 'template_kx1d3td'; // Pilates \u2014 Payment Pending
@@ -7073,6 +7075,43 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       }
       sendNext(0);
+    });
+  });
+
+  // POST-EVENT THANK-YOU BLAST — Mat & Chat.
+  // Routed through Resend (EMAILJS_SERVICE_RESEND) so it can send as book@auricmovement.com
+  // without the Outlook "412 … not allowed to send on behalf of" error. Skips no-shows.
+  document.getElementById('admin-mc-thankyou-btn').addEventListener('click', function(){
+    getMCData(function(data){
+      var confirmed = (data.mc1||[]).filter(function(r){ return r.type==='confirmed' && !/#noshow/i.test(r.adminNotes||''); });
+      if (!confirmed.length){ alert('No confirmed Mat & Chat attendees to thank (no-shows are skipped).'); return; }
+      if (typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
+      if (MC_TMPL_THANKYOU.indexOf('REPLACE') !== -1){ alert('Set the Mat & Chat thank-you template ID (MC_TMPL_THANKYOU) first.'); return; }
+      if (!confirm('Send the Mat & Chat THANK-YOU email to '+confirmed.length+' attendee(s)?\n\n(No-shows are skipped. Sends through Resend.)')) return;
+
+      var btn = document.getElementById('admin-mc-thankyou-btn');
+      btn.disabled = true; var originalText = btn.textContent;
+      btn.textContent = 'Sending... (0/'+confirmed.length+')';
+      var sent=0, failed=0, failedRecipients=[];
+      function sendNextMC(i){
+        if (i >= confirmed.length){
+          btn.disabled=false; btn.textContent=originalText;
+          var msg='✅ Sent '+sent+' Mat & Chat thank-you email(s).';
+          if (failed>0){ msg+='\n\n⚠️ '+failed+' failed: '+failedRecipients.join(', ')+'\n\nCheck EmailJS Dashboard → History for details.'; }
+          alert(msg); return;
+        }
+        var rec = confirmed[i];
+        emailjs.send(EMAILJS_SERVICE_RESEND, MC_TMPL_THANKYOU, {
+          from_name: rec.name,
+          to_email:  rec.email
+        }).then(function(){ sent++; }).catch(function(err){
+          failed++; failedRecipients.push(rec.email); console.error('[mc thank-you] FAILED for '+rec.email, err);
+        }).then(function(){
+          btn.textContent='Sending... ('+(sent+failed)+'/'+confirmed.length+')';
+          setTimeout(function(){ sendNextMC(i+1); }, 600);
+        });
+      }
+      sendNextMC(0);
     });
   });
 
