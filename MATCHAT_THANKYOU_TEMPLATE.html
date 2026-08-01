@@ -1,21 +1,26 @@
 <!--
   ════════════════════════════════════════════════════════════
-   Mat & Chat — "Thank You For Coming" recap email
+   Mat & Chat — Thank You / Post-Class Email Template
    ────────────────────────────────────────────────────────────
-   EmailJS → Email Templates → (new template) → Content (code)
-     view → paste → Save.
+   COPY THIS ENTIRE FILE (Cmd+A → Cmd+C) and paste into:
+     EmailJS Dashboard → Email Templates → Create New →
+     Switch to HTML view → paste → Save.
 
-   Settings tab:
-     • Subject:    Thank you for moving with us at Mat & Chat 🤍
-     • From Name:  Auric Movement
+   IMPORTANT — Also update these EmailJS template settings:
+     • Subject:   ✦ Thank you for moving with us at Mat & Chat
+     • From Name: Auric Movement
      • From Email: book@auricmovement.com   (uncheck "Use Default")
-     • Reply To:   auricmovement@outlook.com
-     • To Email:   {{to_email}}
+     • Reply To:  auricmovement@outlook.com
+     • To Email:  {{to_email}}
 
-   Variables: {{from_name}} {{to_email}}
-   Note: the Senja feedback link and the group photo (matchat-01.jpg) are
-         hard-coded. The photo appears once matchat-01.jpg is uploaded to the
-         repo root (book.auricmovement.com/matchat-01.jpg).
+   EmailJS template variables used:
+     {{from_name}}   — Customer's name
+     {{to_email}}    — Their email (used as send-to)
+
+   REQUIRED IMAGES (must be uploaded to your site / GitHub repo root):
+     • logo-am-gold-192.png   (already uploaded)
+     • matchat-01.jpg         (the group photo — upload this to the repo
+                               root so it shows at book.auricmovement.com/matchat-01.jpg)
   ════════════════════════════════════════════════════════════
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -23,106 +28,171 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thank you for coming to Mat &amp; Chat — Auric Movement</title>
+  <title>Thank you — Auric Movement</title>
 </head>
-<body style="margin:0;padding:0;background-color:#f5f0e8;font-family:Georgia,'Times New Roman',serif;color:#2c2420;">
+<body style="margin:0;padding:0;background-color:#f5f0e8;font-family:Georgia, 'Times New Roman', serif;color:#2c2420;">
+
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f0e8;padding:32px 16px;">
-  <tr><td align="center">
-    <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#fdfbf7;border-radius:14px;overflow:hidden;box-shadow:0 6px 28px rgba(176,120,64,0.12);max-width:600px;width:100%;">
+  <tr>
+    <td align="center">
 
-      <!-- Header -->
-      <tr><td align="center" style="background-color:#5A3A1A;padding:36px 24px 28px;">
-        <img src="https://book.auricmovement.com/logo-am-gold-192.png" alt="" width="56" height="48" style="display:block;border:0;outline:none;margin-bottom:12px;">
-        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:22px;color:#d4a370;letter-spacing:2px;">Auric Movement</div>
-        <div style="font-family:Georgia,serif;font-size:10px;color:#c8956c;letter-spacing:3px;text-transform:uppercase;margin-top:6px;">Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect</div>
-      </td></tr>
+      <!-- Outer container -->
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#fdfbf7;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(176,120,64,0.08);max-width:600px;width:100%;">
 
-      <!-- Greeting -->
-      <tr><td style="padding:36px 40px 8px;">
-        <div style="font-family:Georgia,serif;font-size:10px;color:#9a6535;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">&#10022; Thank You For Coming</div>
-        <h1 style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:28px;line-height:1.2;color:#5A3A1A;margin:0 0 12px 0;font-weight:500;">Thank you for moving with us, {{from_name}}.</h1>
-        <p style="font-family:Georgia,serif;font-size:15px;line-height:1.7;color:#2c2420;margin:0 0 16px 0;">
-          Our sold-out <strong>Mat &amp; Chat</strong> was everything we hoped for &mdash; a room full of good energy, deep core work, laughter, and new friends. Thank you for showing up as your full self and moving with us. This won&rsquo;t be our last. 🤍
-        </p>
-      </td></tr>
+        <!-- Header band — AM logo + brand name -->
+        <tr>
+          <td align="center" style="background-color:#5A3A1A;padding:36px 24px 28px;">
+            <img src="https://book.auricmovement.com/logo-am-gold-192.png" alt="" width="56" height="48" style="display:block;border:0;outline:none;margin-bottom:12px;">
+            <div style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:22px;color:#d4a370;letter-spacing:2px;">Auric Movement</div>
+            <div style="font-family:Georgia, serif;font-size:10px;color:#c8956c;letter-spacing:3px;text-transform:uppercase;margin-top:6px;">Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect</div>
+          </td>
+        </tr>
 
-      <!-- Group photo (upload matchat-01.jpg to the repo root; it will appear here) -->
-      <tr><td style="padding:0 40px 26px;">
-        <img src="https://book.auricmovement.com/matchat-01.jpg" alt="The Mat &amp; Chat crew" width="520" style="display:block;width:100%;max-width:520px;height:auto;border-radius:12px;border:0;outline:none;">
-      </td></tr>
-
-      <!-- Auric Club -->
-      <tr><td style="padding:0 40px 26px;">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border:1px solid #e8dcc8;border-radius:12px;">
-          <tr><td style="padding:22px 24px;">
-            <div style="font-family:Georgia,serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">&#127775; You&rsquo;re In Auric Club</div>
-            <p style="font-family:Georgia,serif;font-size:14px;line-height:1.7;color:#3d322a;margin:0 0 14px 0;">
-              By coming today you&rsquo;re part of <strong>Auric Club</strong> &mdash; our free rewards tracker. No spam, no extra emails; it just remembers you each time you come. <strong>Attend 4 events and bring a friend to your 5th for free.</strong>
+        <!-- Eyebrow + Greeting -->
+        <tr>
+          <td style="padding:36px 40px 8px;">
+            <div style="font-family:Georgia, serif;font-size:10px;color:#9a6535;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">&#10022; Until Next Time</div>
+            <h1 style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:28px;line-height:1.2;color:#5A3A1A;margin:0 0 12px 0;font-weight:500;">
+              Thank you, <span style="font-weight:600;">{{from_name}}</span>.
+            </h1>
+            <p style="font-family:Georgia, serif;font-size:15px;line-height:1.7;color:#2c2420;margin:0 0 16px 0;">
+              Thank you for showing up to our sold-out <strong>Mat &amp; Chat</strong>. You brought your full self, you moved with intention, you laughed, and you made the room feel alive. That&rsquo;s exactly what Auric Movement is about &mdash; and this won&rsquo;t be our last.
             </p>
-            <div style="font-family:Georgia,serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">How To Check Your Rewards</div>
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-              <tr><td style="padding:2px 0;font-family:Georgia,serif;font-size:14px;line-height:1.7;color:#3d322a;"><strong>1.</strong> Go to <a href="https://book.auricmovement.com" style="color:#9a6535;font-weight:bold;text-decoration:none;">book.auricmovement.com</a></td></tr>
-              <tr><td style="padding:2px 0;font-family:Georgia,serif;font-size:14px;line-height:1.7;color:#3d322a;"><strong>2.</strong> Tap <strong>Auric Club</strong></td></tr>
-              <tr><td style="padding:2px 0;font-family:Georgia,serif;font-size:14px;line-height:1.7;color:#3d322a;"><strong>3.</strong> Enter your email &mdash; your progress pulls right up.</td></tr>
+          </td>
+        </tr>
+
+        <!-- Group photo -->
+        <tr>
+          <td style="padding:8px 40px 8px;" align="center">
+            <img src="https://book.auricmovement.com/matchat-01.jpg" alt="The Mat &amp; Chat crew — our sold-out second event." width="520" style="display:block;width:100%;max-width:520px;height:auto;border:0;outline:none;border-radius:10px;">
+          </td>
+        </tr>
+
+        <!-- A reflective note -->
+        <tr>
+          <td style="padding:16px 40px 24px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border-left:3px solid #b07840;border-radius:0 8px 8px 0;">
+              <tr>
+                <td style="padding:20px 22px;">
+                  <p style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:17px;line-height:1.6;color:#5A3A1A;margin:0;">
+                    &ldquo;Every shake, every laugh, every breath &mdash; that was the whole point.&rdquo;
+                  </p>
+                </td>
+              </tr>
             </table>
-          </td></tr>
-        </table>
-      </td></tr>
+          </td>
+        </tr>
 
-      <!-- Feedback -->
-      <tr><td style="padding:0 40px 26px;">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f1f7f1;border-left:4px solid #7bb07f;border-radius:0 10px 10px 0;">
-          <tr><td style="padding:18px 22px;">
-            <div style="font-family:Georgia,serif;font-size:10px;color:#3f7a44;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">Enjoyed The Class?</div>
-            <p style="font-family:Georgia,serif;font-size:14px;line-height:1.7;color:#3d322a;margin:0;">
-              We&rsquo;d love to hear how it felt &mdash; your words help us grow. <a href="https://senja.io/p/book-Zdx/r/LsB0Aj" style="color:#3f7a44;font-weight:bold;text-decoration:underline;">Leave a quick note here &rarr;</a>
+        <!-- A few things to know now -->
+        <tr>
+          <td style="padding:0 40px 24px;">
+            <h2 style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:20px;color:#5A3A1A;margin:0 0 12px 0;font-weight:500;">Before you go</h2>
+            <p style="font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0 0 14px 0;">
+              <strong>&#127873; Your goodie bag.</strong> A small thank-you for being there &mdash; everything inside was curated with intention. Take the good energy home with you.
             </p>
-          </td></tr>
-        </table>
-      </td></tr>
+            <p style="font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0 0 14px 0;">
+              <strong>&#128247; Photos and videos.</strong> We captured some beautiful moments from the day. You&rsquo;ll see them across the Auric Movement website, social channels, and marketing materials in the coming days.
+            </p>
+            <p style="font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0;">
+              <strong>&#9874; Your body tomorrow.</strong> If you feel that good kind of sore, that&rsquo;s the mat work talking. Hydrate, rest, and be kind to yourself.
+            </p>
+          </td>
+        </tr>
 
-      <!-- Next event -->
-      <tr><td style="padding:0 40px 30px;">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border-left:4px solid #b07840;border-radius:0 10px 10px 0;">
-          <tr><td style="padding:18px 22px;">
-            <div style="font-family:Georgia,serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">Don&rsquo;t Miss The Next One</div>
-            <p style="font-family:Georgia,serif;font-size:14px;line-height:1.7;color:#3d322a;margin:0 0 12px 0;">
-              <strong>Create &amp; Recharge</strong> &mdash; Saturday, August 15th at 11:30 AM. A watercolor art class with Georgina Arroyo, then a mat Pilates flow with me. All materials included, no experience needed.
+        <!-- Auric Club -->
+        <tr>
+          <td style="padding:0 40px 24px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border:1px solid #e8dcc8;border-radius:8px;">
+              <tr>
+                <td style="padding:20px 24px;">
+                  <div style="font-family:Georgia, serif;font-size:10px;color:#9a6535;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">&#127775; You&rsquo;re In Auric Club</div>
+                  <p style="font-family:Georgia, serif;font-size:14px;line-height:1.7;color:#3d322a;margin:0 0 14px 0;">
+                    By coming today you&rsquo;re part of <strong>Auric Club</strong> &mdash; our free rewards tracker. No spam, no extra emails; it just remembers you each time you come. <strong>Attend 4 events and bring a friend to your 5th for free.</strong>
+                  </p>
+                  <div style="font-family:Georgia, serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">How To Check Your Rewards</div>
+                  <p style="font-family:Georgia, serif;font-size:14px;line-height:1.8;color:#3d322a;margin:0;">
+                    <strong>1.</strong> Go to <a href="https://book.auricmovement.com" style="color:#9a6535;font-weight:bold;text-decoration:none;">book.auricmovement.com</a><br>
+                    <strong>2.</strong> Tap <strong>Auric Club</strong><br>
+                    <strong>3.</strong> Enter your email &mdash; your progress pulls right up.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Share your experience CTA -->
+        <tr>
+          <td style="padding:0 40px 24px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fef9e7;border:1px solid #f0dca0;border-radius:8px;">
+              <tr>
+                <td style="padding:20px 24px;" align="center">
+                  <div style="font-family:Georgia, serif;font-size:10px;color:#7a6320;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">&#10022; A small ask</div>
+                  <p style="font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0 0 14px 0;">
+                    If today meant something to you, would you share a few words about your experience? It helps the next person know what to expect &mdash; and it means the world to us.
+                  </p>
+                  <a href="https://senja.io/p/book-Zdx/r/LsB0Aj" style="display:inline-block;background-color:#5A3A1A;color:#ffffff;font-family:Georgia, serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:11px 22px;border-radius:6px;">Share Your Experience &rarr;</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- What's next -->
+        <tr>
+          <td style="padding:0 40px 32px;">
+            <h2 style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:20px;color:#5A3A1A;margin:0 0 12px 0;font-weight:500;">What&rsquo;s next</h2>
+            <p style="font-family:Georgia, serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0 0 14px 0;">
+              Our next gathering is <strong>Create &amp; Recharge &mdash; Saturday, August 15th at 11:30 AM</strong>. A watercolor art class with Georgina Arroyo, then a mat Pilates flow with me. All materials included, no experience needed &mdash; just bring good vibes. Reserve at <a href="https://book.auricmovement.com" style="color:#9a6535;text-decoration:underline;">book.auricmovement.com</a>.
             </p>
-            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 14px 0;">
-              <tr><td style="background-color:#fff;border:2px dashed #b07840;border-radius:8px;padding:10px 18px;font-family:Georgia,serif;font-size:14px;color:#3d322a;">
-                &#127881; Use code <strong style="color:#5A3A1A;letter-spacing:1px;">CREATEWITHUS</strong> for <strong>$10 off</strong>
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 4px 0;">
+              <tr><td style="background-color:#fff;border:2px dashed #b07840;border-radius:8px;padding:11px 20px;font-family:Georgia, serif;font-size:14px;color:#3d322a;">
+                &#127881; Use code <strong style="color:#5A3A1A;letter-spacing:1px;">CREATEWITHUS</strong> for <strong>$10 off</strong> your spot
               </td></tr>
             </table>
-            <a href="https://book.auricmovement.com" style="display:inline-block;background-color:#5A3A1A;color:#ffffff;font-family:Georgia,serif;font-size:13px;font-weight:bold;letter-spacing:1.2px;text-transform:uppercase;text-decoration:none;padding:12px 26px;border-radius:8px;">Reserve Your Spot &rarr;</a>
-          </td></tr>
-        </table>
-      </td></tr>
+          </td>
+        </tr>
 
-      <!-- Closing -->
-      <tr><td style="padding:0 40px 32px;">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #e8e0d5;padding-top:24px;">
-          <tr><td align="center" style="padding:8px 0;">
-            <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:18px;color:#5A3A1A;line-height:1.5;margin:0 0 6px 0;">Until next time &mdash; keep moving, keep recharging.</p>
-            <p style="font-family:Georgia,serif;font-size:13px;color:#7a6e63;letter-spacing:1px;text-transform:uppercase;margin:8px 0 0 0;">&mdash; Niara</p>
-          </td></tr>
-        </table>
-      </td></tr>
+        <!-- Closing message -->
+        <tr>
+          <td style="padding:0 40px 32px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #e8e0d5;padding-top:24px;">
+              <tr>
+                <td align="center" style="padding:8px 0;">
+                  <p style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:18px;color:#5A3A1A;line-height:1.5;margin:0 0 6px 0;">
+                    Until next time &mdash; thank you for moving with me.
+                  </p>
+                  <p style="font-family:Georgia, serif;font-size:13px;color:#7a6e63;letter-spacing:1px;text-transform:uppercase;margin:8px 0 0 0;">
+                    &mdash; Niara
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
 
-      <!-- Footer -->
-      <tr><td style="background-color:#5A3A1A;padding:28px 40px;text-align:center;">
-        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:16px;color:#d4a370;margin-bottom:6px;">Auric Movement</div>
-        <div style="font-family:Georgia,serif;font-size:12px;color:#c8956c;line-height:1.6;">
-          Pilates events in NYC, hosted with intention.<br>
-          <a href="mailto:auricmovement@outlook.com" style="color:#d4a370;text-decoration:none;">auricmovement@outlook.com</a>
-          <span style="color:#7a5a3a;"> &middot; </span>
-          <a href="https://book.auricmovement.com" style="color:#d4a370;text-decoration:none;">book.auricmovement.com</a>
-        </div>
-        <div style="font-family:Georgia,serif;font-size:10px;color:#c8956c;letter-spacing:2px;margin-top:14px;text-transform:uppercase;">&#10022; Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect &#10022;</div>
-      </td></tr>
+        <!-- Footer -->
+        <tr>
+          <td style="background-color:#5A3A1A;padding:28px 40px;text-align:center;">
+            <div style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:16px;color:#d4a370;margin-bottom:6px;">Auric Movement</div>
+            <div style="font-family:Georgia, serif;font-size:12px;color:#c8956c;line-height:1.6;">
+              Pilates events in NYC, hosted with intention.<br>
+              <a href="mailto:auricmovement@outlook.com" style="color:#d4a370;text-decoration:none;">auricmovement@outlook.com</a>
+              <span style="color:#7a5a3a;"> &middot; </span>
+              <a href="https://book.auricmovement.com" style="color:#d4a370;text-decoration:none;">book.auricmovement.com</a>
+            </div>
+            <div style="font-family:Georgia, serif;font-size:10px;color:#c8956c;letter-spacing:2px;margin-top:14px;text-transform:uppercase;">
+              &#10022; Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect &#10022;
+            </div>
+          </td>
+        </tr>
 
-    </table>
-  </td></tr>
+      </table>
+      <!-- /Outer container -->
+
+    </td>
+  </tr>
 </table>
+
 </body>
 </html>
