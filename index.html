@@ -4182,7 +4182,6 @@
       <h2>Registrations</h2>
       <div class="admin-actions">
         <button type="button" id="admin-csv-btn" class="btn btn-secondary">&#128229; CSV</button>
-        <button type="button" id="admin-thankyou-btn" class="btn btn-primary">&#10022; Send Thank-You Emails</button>
         <button type="button" id="admin-mc-thankyou-btn" class="btn btn-primary">&#10022; Send Mat &amp; Chat Thank-You</button>
         <button type="button" id="admin-founding-btn" class="btn btn-primary">&#127873; Send Founding Four</button>
         <button type="button" id="admin-club-btn" class="btn btn-secondary">&#10022; Auric Club</button>
@@ -7025,58 +7024,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   };
-
-  // POST-EVENT THANK-YOU BLAST
-  // Sends the branded thank-you email to every confirmed Pilates attendee.
-  document.getElementById('admin-thankyou-btn').addEventListener('click', function(){
-    getData(function(data){
-      var confirmed=[];
-      SESSIONS.forEach(function(sess){
-        data[sess.id].filter(function(r){ return r.type==='confirmed'; }).forEach(function(rec){
-          confirmed.push({ rec:rec, sess:sess });
-        });
-      });
-      if (!confirmed.length){ alert('No confirmed Pilates attendees to thank.'); return; }
-      if (!confirm('Send THANK-YOU emails to '+confirmed.length+' confirmed Pilates attendee(s)?')) return;
-      if (typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
-
-      var btn = document.getElementById('admin-thankyou-btn');
-      btn.disabled = true;
-      var originalText = btn.textContent;
-      btn.textContent = 'Sending... (0/' + confirmed.length + ')';
-
-      var sent=0, failed=0, failedRecipients=[];
-      function sendNext(i){
-        if (i >= confirmed.length){
-          btn.disabled = false;
-          btn.textContent = originalText;
-          var msg = '✅ Sent ' + sent + ' thank-you email(s).';
-          if (failed > 0) {
-            msg += '\n\n⚠️ ' + failed + ' failed: ' + failedRecipients.join(', ');
-            msg += '\n\nCheck EmailJS Dashboard → History for details.';
-          }
-          alert(msg);
-          return;
-        }
-        var item = confirmed[i];
-        emailjs.send(EMAILJS_SERVICE_ID, TMPL_THANKYOU, {
-          from_name:     item.rec.name,
-          to_email:      item.rec.email,
-          session_label: item.sess.label
-        }).then(function(){
-          sent++;
-        }).catch(function(err){
-          failed++;
-          failedRecipients.push(item.rec.email);
-          console.error('[thank-you] FAILED for ' + item.rec.email, err);
-        }).then(function(){
-          btn.textContent = 'Sending... (' + (sent + failed) + '/' + confirmed.length + ')';
-          setTimeout(function(){ sendNext(i + 1); }, 600);
-        });
-      }
-      sendNext(0);
-    });
-  });
 
   // POST-EVENT THANK-YOU BLAST — Mat & Chat.
   // Routed through Resend (EMAILJS_SERVICE_RESEND) so it can send as book@auricmovement.com
