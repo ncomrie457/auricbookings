@@ -8966,13 +8966,44 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   var crToWaiverBtn = document.getElementById('cr-to-waiver-btn');
+  function crSavePending(p){ try { localStorage.setItem('cr_pending', JSON.stringify(p)); } catch(e){} }
+
+  // Create a "payment pending" registration row the instant they reach the payment
+  // step — so it shows in the admin panel for follow-up even if they never pay.
+  // Reuses an existing row (same email+name) instead of duplicating. onDone gets
+  // (pending, existingRowOrNull). If the insert fails, we still proceed to payment
+  // (the waiver will then create the row the old way as a fallback).
+  function crCreatePendingRecord(pending, onDone){
+    if (pending.code){ onDone(pending, null); return; }
+    var pname = pending.isMinor ? pending.minorNames : pending.name;
+    getCRData(function(data){
+      var existing = (data.cr1||[]).filter(function(r){ return (r.email||'').toLowerCase()===pending.email.toLowerCase() && (r.name||'').toLowerCase()===(pname||'').toLowerCase(); })[0];
+      if (existing){ pending.code=existing.code; pending.type=existing.type; pending.wlPosition=existing.wlPosition; pending.isPaid=existing.isPaid; crSavePending(pending); onDone(pending, existing); return; }
+      var now=new Date(); var code=genCode();
+      var notes='⏳ STATUS: PAYMENT PENDING — created at checkout. Payment not yet confirmed and waiver not yet signed.' +
+        (pending.phone?('\nPHONE: '+pending.phone):'') +
+        (pending.isMinor?('\n⚠️ MINOR TICKET — child: '+pending.minorNames+' · guardian: '+pending.name+' ('+pending.minorRel+')'):'');
+      supabase.rpc('book_create_recharge_session', {
+        p_name:pname, p_email:pending.email, p_signature:'(pending — pays, then signs waiver)',
+        p_time_str:now.toLocaleString(), p_timestamp_iso:now.toISOString(),
+        p_code:code, p_clauses_agreed:0, p_notes:notes,
+        p_is_pair:false, p_friend_name:null, p_friend_email:null, p_max_spots:CR_MAX_SPOTS
+      }).then(function(res){
+        if (res.error || !res.data || !res.data.length){ onDone(pending, null); return; }
+        var row=res.data[0]; pending.code=code; pending.type=row.out_type; pending.wlPosition=row.out_wl_position; crSavePending(pending);
+        buildCRSpots(); updateEventCardSpots();
+        onDone(pending, null);
+      }, function(){ onDone(pending, null); });
+    });
+  }
+
   if (crToWaiverBtn) crToWaiverBtn.addEventListener('click', function(){
     var v = crValidateRegister();
     if (!v.ok) return;
     // Returned from Stripe already → straight to the waiver (no second payment).
     if (crAlreadyPaid){ crEnterWaiver(); return; }
-    // Not paid yet → capture details, then refund-gated payment. The waiver
-    // happens when Stripe returns them to ?paid=recharge.
+    // Not paid yet → capture details, create the payment-pending row, then show
+    // refund-gated payment. The waiver happens when Stripe returns them to ?paid=recharge.
     var phoneEl = document.getElementById('cr-reg-phone');
     var pending = {
       name: v.name, email: v.email,
@@ -8980,8 +9011,26 @@ document.addEventListener('DOMContentLoaded', function() {
       isMinor: v.minor.isMinor, minorNames: v.minor.names||'', minorRel: v.minor.rel||'',
       ts: new Date().toISOString()
     };
-    try { localStorage.setItem('cr_pending', JSON.stringify(pending)); } catch(e){}
-    showCRPayGate(pending);
+    // Reuse a code from earlier this session for the same person.
+    try { var prev=JSON.parse(localStorage.getItem('cr_pending')||'null'); if (prev && prev.code && (prev.email||'').toLowerCase()===pending.email.toLowerCase() && (prev.name||'').toLowerCase()===pending.name.toLowerCase()){ pending.code=prev.code; pending.type=prev.type; } } catch(e){}
+    crSavePending(pending);
+    var btn=this; btn.disabled=true; btn.textContent='One sec…';
+    crCreatePendingRecord(pending, function(p, existing){
+      btn.disabled=false; btn.textContent='Continue to Payment →';
+      if (existing && existing.type==='confirmed' && existing.isPaid){
+        alert('“'+(p.isMinor?p.minorNames:p.name)+'” is already registered and paid for Create & Recharge with '+p.email+'.');
+        return;
+      }
+      if (p.type==='waitlist'){
+        // Event is full — waitlist, no payment.
+        var wn=document.getElementById('cr-wl-name'); if(wn) wn.textContent=(p.isMinor?p.minorNames:p.name);
+        var we=document.getElementById('cr-wl-email'); if(we) we.textContent=p.email;
+        var wp=document.getElementById('cr-waitlist-pos-display'); if(wp) wp.textContent='Waitlist position #'+(p.wlPosition||'?');
+        crShowStep('cr-step-waitlist');
+        return;
+      }
+      showCRPayGate(p);
+    });
   });
 
   var crSelAll = document.getElementById('cr-select-all-btn');
@@ -9052,6 +9101,45 @@ document.addEventListener('DOMContentLoaded', function() {
     var participantName = crMinor.isMinor ? crMinor.names : name;
     var submitBtn = document.getElementById('cr-submit-btn');
     submitBtn.disabled=true; submitBtn.textContent = 'Saving...';
+
+    // NEW pay-first flow: a payment-pending row already exists (created at the pay
+    // step). Sign the waiver by UPDATING that row — don't insert a duplicate.
+    var _crPend=null; try{ _crPend=JSON.parse(localStorage.getItem('cr_pending')||'null'); }catch(e){}
+    if (crAlreadyPaid && _crPend && _crPend.code){
+      var uNow=new Date(); var uTime=uNow.toLocaleString();
+      var uNotes=composeCRNotes();
+      var uAck='REFUND POLICY ACKNOWLEDGED: '+uTime+'\nText agreed to: '+CR_REFUND_POLICY_TEXT;
+      var uTicket='TICKET: Create & Recharge ($'+CR_EVENT.price+') — PAID via Stripe';
+      var uPhone=phone?('PHONE (for class reminders): '+phone):'';
+      var uNotesFull=uTicket+'\n\n'+uAck+(uPhone?('\n\n'+uPhone):'')+(uNotes?('\n\n'+uNotes):'');
+      supabase.from('create_recharge_registrations').update({
+        name:participantName, phone:(phone||null), signature:sig,
+        clauses_agreed:CR_CLAUSE_TEXTS.length, notes:uNotesFull,
+        is_paid:true, paid_at:uNow.toISOString()
+      }).eq('code', _crPend.code).then(function(res){
+        submitBtn.disabled=false; submitBtn.textContent = 'Submit Waiver & Confirm My Spot ✦';
+        if (res && res.error){ console.error('[CR waiver update] failed', res.error); alert('Something went wrong saving your waiver. Please try again, or email auricmovement@outlook.com.'); return; }
+        document.getElementById('cr-conf-name').textContent = participantName;
+        document.getElementById('cr-conf-time').textContent = uTime;
+        crShowStep('cr-step-confirmed');
+        var lc=document.getElementById('cr-page-layout'); if(lc) lc.classList.remove('waiver-active');
+        document.getElementById('cr-step-confirmed').scrollIntoView({behavior:'smooth'});
+        announce('Waiver signed! You are all set. 🤍');
+        try{ localStorage.removeItem('cr_pending'); }catch(e){}
+        if (window.history && window.history.replaceState){ var _u=new URL(window.location.href); _u.searchParams.delete('paid'); window.history.replaceState({},'',_u.pathname+_u.search+_u.hash); }
+        showCRPaymentReceivedOverlay();
+        if(typeof emailjs!=='undefined'){
+          emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
+            admin_email:ADMIN_EMAIL, from_name:participantName, participant_email:email, to_email:email,
+            session_label:'Create & Recharge — August 15th', arrival_time:CR_EVENT.arrival,
+            registration_type:'PAID + waiver signed ✓', sign_time:uTime,
+            clauses_agreed:CR_CLAUSE_TEXTS.length+' of '+CR_CLAUSE_TEXTS.length, cancel_code:_crPend.code
+          }).catch(function(){});
+        }
+        buildCRSpots(); updateEventCardSpots();
+      }, function(err){ submitBtn.disabled=false; submitBtn.textContent='Submit Waiver & Confirm My Spot ✦'; console.error('[CR waiver update] error', err); alert('Something went wrong saving your waiver. Please try again, or email auricmovement@outlook.com.'); });
+      return;
+    }
 
     getCRData(function(data){
       // Match on email AND participant name, so one email can register both a
@@ -9563,6 +9651,13 @@ document.addEventListener('DOMContentLoaded', function() {
       // Always go straight to the waiver on this link (with an Add-to-Calendar).
       crEnterWaiver();
       showCRPaidBanner();
+      // Mark the payment-pending row as PAID so the admin panel flips it to
+      // "paid — waiver pending" the moment they return from Stripe.
+      if (crPend && crPend.code){
+        supabase.from('create_recharge_registrations')
+          .update({ is_paid:true, paid_at:new Date().toISOString() })
+          .eq('code', crPend.code).then(function(){ try{ if(typeof renderAdmin==='function') renderAdmin(); }catch(e){} }, function(){});
+      }
       // Heads-up to admin the moment payment lands — so if they close the tab before
       // signing, you still know who paid and can follow up with the waiver.
       if (crPend && crPend.email && typeof emailjs !== 'undefined'){
