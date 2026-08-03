@@ -4002,7 +4002,7 @@
           <p style="font-size:.8rem;color:#3d322a;margin-bottom:.75rem;">&#128205; 300 W 38th Street, 2F &#183; New York, NY 10018</p>
           <div style="border-top:1px solid var(--border);padding-top:.75rem;">
             <p style="font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--brown);margin-bottom:.3rem;">Complete Your Booking</p>
-            <p style="font-size:.8rem;color:#3d322a;line-height:1.55;margin:0;">Check all 19 clauses and sign your name below. Payment opens automatically after signing &#8212; <span>$65</span> to confirm your spot.</p>
+            <p style="font-size:.8rem;color:#3d322a;line-height:1.55;margin:0;">Check all clauses and sign your name below to complete your waiver and confirm your spot.</p>
           </div>
         </div>
 
@@ -9415,7 +9415,7 @@ document.addEventListener('DOMContentLoaded', function() {
           mcPaymentHtml({ buyBtnId: CR_BUY_BTN_ID }, CR_STRIPE_PUBLISHABLE, CR_EVENT.price, null, pending && pending.email) +
         '</div>' +
         '<p style="text-align:center;color:var(--text-muted);font-size:.72rem;margin:.8rem 0 .5rem;">After paying, you&rsquo;ll return here to sign your waiver.</p>' +
-        '<button type="button" id="cr-paygate-cancel" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.78rem;text-decoration:underline;font-family:\'Jost\',sans-serif;padding:.4rem;display:block;margin:0 auto;">Back</button>' +
+        '<button type="button" id="cr-paygate-cancel" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.78rem;text-decoration:underline;font-family:\'Jost\',sans-serif;padding:.4rem;display:block;margin:0 auto;">Pay later &mdash; I&rsquo;ll lose my spot</button>' +
       '</div>';
     document.body.appendChild(overlay);
     var chk = document.getElementById('cr-paygate-refund');
@@ -9431,7 +9431,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (hint) hint.style.display='';
       }
     });
-    document.getElementById('cr-paygate-cancel').addEventListener('click', function(){ overlay.remove(); });
+    document.getElementById('cr-paygate-cancel').addEventListener('click', function(){
+      if (!confirm('Spots are limited and are not held until you pay. Leave without paying?')) return;
+      overlay.remove();
+    });
   }
 
   // Green "payment received — finish your waiver" banner, shown on ?paid=recharge.
@@ -9444,13 +9447,22 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!b){
       b = document.createElement('div');
       b.id = 'cr-paid-banner';
-      b.style.cssText = 'background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:10px;padding:.7rem 1rem;margin:0 0 1rem;font-size:.9rem;text-align:center;font-family:\'Jost\',sans-serif;';
+      b.style.cssText = 'background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:10px;padding:.85rem 1rem;margin:0 0 1rem;font-size:.9rem;text-align:center;font-family:\'Jost\',sans-serif;';
     }
-    // Copy depends on whether they still need to enter their details first.
-    b.innerHTML = onWaiver
-      ? '&#10003; <strong>Payment received!</strong> One last step &mdash; complete your waiver below to confirm your spot.'
-      : '&#10003; <strong>Payment received!</strong> Enter your name &amp; email below, then tap &ldquo;Continue to Waiver&rdquo; to finish.';
+    b.innerHTML =
+      '&#10003; <strong>Payment received!</strong> One last step &mdash; complete your waiver below to confirm your spot.' +
+      '<div style="margin-top:.6rem;"><button type="button" id="cr-paid-cal" style="background:#fff;border:1px solid #a5d6a7;color:#2e7d32;border-radius:8px;padding:.4rem .9rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;font-weight:600;">&#128197; Add to Calendar</button></div>';
     if (target && target.parentNode && b.parentNode !== target) target.insertBefore(b, target.firstChild);
+    var cal = document.getElementById('cr-paid-cal');
+    if (cal) cal.onclick = function(){
+      downloadICSFile({
+        title: 'Create & Recharge — Auric Movement',
+        description: 'Arrival 11:30 AM\nArt starts 11:35 AM, then mat Pilates.\n\nInner Diamond Studio — 2nd floor walk-up at 300 W 38th St, #2F.',
+        location: CR_EVENT.venue,
+        startISO: '2026-08-15T15:30:00Z',
+        endISO:   '2026-08-15T17:00:00Z'
+      });
+    };
   }
 
   function showCRPaymentOverlay(record){
@@ -9527,6 +9539,9 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(function(){
       // Re-assert the Create & Recharge page in case other init routing ran after us.
       if (typeof showAllPanels === 'function') { try { showAllPanels('tab-recharge'); } catch(e){} }
+      // Prefill from the saved registration (set before Stripe) so nobody re-types
+      // anything. Real payers always have this; a directly-opened link won't, but
+      // the waiver still shows so it can be reviewed.
       if (crPend && crPend.name){
         var nEl=document.getElementById('cr-reg-name');  if(nEl) nEl.value = crPend.name||'';
         var eEl=document.getElementById('cr-reg-email'); if(eEl) eEl.value = crPend.email||'';
@@ -9536,25 +9551,19 @@ document.addEventListener('DOMContentLoaded', function() {
           var mn=document.getElementById('cr-minor-name'); if(mn) mn.value = crPend.minorNames||'';
           var mr=document.querySelector('input[name="cr-minor-rel"][value="'+(crPend.minorRel||'')+'"]'); if(mr) mr.checked=true;
         }
-        crEnterWaiver();
-        showCRPaidBanner();
-        // Heads-up to admin the moment payment lands — so if they close the tab
-        // before signing the waiver, you still know who paid and can follow up.
-        if (typeof emailjs !== 'undefined'){
-          emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
-            admin_email: ADMIN_EMAIL, from_name: crPend.name, participant_email: crPend.email, to_email: crPend.email,
-            session_label:'Create & Recharge — August 15th', arrival_time: CR_EVENT.arrival,
-            registration_type:'PAYMENT received — waiver pending', sign_time: new Date().toLocaleString(),
-            clauses_agreed:'—', cancel_code:'(awaiting waiver)'
-          }).catch(function(){});
-        }
-      } else {
-        // No saved details (paid on another device, or the link opened directly) —
-        // let them enter name/email, then "Continue to Waiver" (crAlreadyPaid=true
-        // means no second payment).
-        crShowStep('cr-step-register');
-        showCRPaidBanner();
-        var nf=document.getElementById('cr-reg-name'); if(nf){ try{ nf.focus(); nf.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){} }
+      }
+      // Always go straight to the waiver on this link (with an Add-to-Calendar).
+      crEnterWaiver();
+      showCRPaidBanner();
+      // Heads-up to admin the moment payment lands — so if they close the tab before
+      // signing, you still know who paid and can follow up with the waiver.
+      if (crPend && crPend.email && typeof emailjs !== 'undefined'){
+        emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
+          admin_email: ADMIN_EMAIL, from_name: crPend.name, participant_email: crPend.email, to_email: crPend.email,
+          session_label:'Create & Recharge — August 15th', arrival_time: CR_EVENT.arrival,
+          registration_type:'PAYMENT received — waiver pending', sign_time: new Date().toLocaleString(),
+          clauses_agreed:'—', cancel_code:'(awaiting waiver)'
+        }).catch(function(){});
       }
     }, 500);
   }
