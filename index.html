@@ -9436,15 +9436,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Green "payment received — finish your waiver" banner, shown on ?paid=recharge.
   function showCRPaidBanner(){
-    if (document.getElementById('cr-paid-banner')) return;
-    var b = document.createElement('div');
-    b.id = 'cr-paid-banner';
-    b.style.cssText = 'background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:10px;padding:.7rem 1rem;margin:0 0 1rem;font-size:.9rem;text-align:center;font-family:\'Jost\',sans-serif;';
-    b.innerHTML = '&#10003; <strong>Payment received!</strong> One last step &mdash; please complete your waiver below to confirm your spot.';
     var wv = document.getElementById('cr-step-waiver');
     var reg = document.getElementById('cr-step-register');
-    var target = (wv && !wv.classList.contains('hidden')) ? wv : reg;
-    if (target && target.parentNode) target.insertBefore(b, target.firstChild);
+    var onWaiver = (wv && !wv.classList.contains('hidden'));
+    var target = onWaiver ? wv : reg;
+    var b = document.getElementById('cr-paid-banner');
+    if (!b){
+      b = document.createElement('div');
+      b.id = 'cr-paid-banner';
+      b.style.cssText = 'background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:10px;padding:.7rem 1rem;margin:0 0 1rem;font-size:.9rem;text-align:center;font-family:\'Jost\',sans-serif;';
+    }
+    // Copy depends on whether they still need to enter their details first.
+    b.innerHTML = onWaiver
+      ? '&#10003; <strong>Payment received!</strong> One last step &mdash; complete your waiver below to confirm your spot.'
+      : '&#10003; <strong>Payment received!</strong> Enter your name &amp; email below, then tap &ldquo;Continue to Waiver&rdquo; to finish.';
+    if (target && target.parentNode && b.parentNode !== target) target.insertBefore(b, target.firstChild);
   }
 
   function showCRPaymentOverlay(record){
@@ -9519,6 +9525,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var crCtaBtn = document.getElementById('cr-to-waiver-btn');
     if (crCtaBtn) crCtaBtn.textContent = 'Continue to Waiver →';
     setTimeout(function(){
+      // Re-assert the Create & Recharge page in case other init routing ran after us.
+      if (typeof showAllPanels === 'function') { try { showAllPanels('tab-recharge'); } catch(e){} }
       if (crPend && crPend.name){
         var nEl=document.getElementById('cr-reg-name');  if(nEl) nEl.value = crPend.name||'';
         var eEl=document.getElementById('cr-reg-email'); if(eEl) eEl.value = crPend.email||'';
@@ -9541,10 +9549,12 @@ document.addEventListener('DOMContentLoaded', function() {
           }).catch(function(){});
         }
       } else {
-        // No saved details (paid on another device) — let them re-enter, then
-        // "Continue to Waiver" (crAlreadyPaid=true means no second payment).
+        // No saved details (paid on another device, or the link opened directly) —
+        // let them enter name/email, then "Continue to Waiver" (crAlreadyPaid=true
+        // means no second payment).
         crShowStep('cr-step-register');
         showCRPaidBanner();
+        var nf=document.getElementById('cr-reg-name'); if(nf){ try{ nf.focus(); nf.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){} }
       }
     }, 500);
   }
