@@ -4117,7 +4117,7 @@
                 <input type="text" id="cr-sig-input" placeholder="Type your full legal name to sign" aria-required="true" disabled>
                 <div id="cr-sig-err" class="err-msg" role="alert"></div>
               </div>
-              <button type="button" id="cr-submit-btn" class="btn btn-primary btn-full" disabled>Submit &amp; Reserve My Spot &#10022;</button>
+              <button type="button" id="cr-submit-btn" class="btn btn-primary btn-full" disabled>Submit Waiver &amp; Confirm My Spot &#10022;</button>
             </div>
           </div>
         </div>
@@ -9051,7 +9051,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // parent and their child (different names) but can't double-book the same person.
       var existing = (data.cr1||[]).filter(function(r){ return (r.email||'').toLowerCase() === email.toLowerCase() && (r.name||'').toLowerCase() === participantName.toLowerCase(); })[0];
       if (existing) {
-        submitBtn.disabled=false; submitBtn.textContent = 'Submit & Reserve My Spot ✦';
+        submitBtn.disabled=false; submitBtn.textContent = 'Submit Waiver & Confirm My Spot ✦';
         alert(existing.type==='confirmed'
           ? '“' + participantName + '” is already registered for Create & Recharge with ' + email + '. Check your inbox for the confirmation.'
           : '“' + participantName + '” is already on the Create & Recharge waitlist (position #' + (existing.wlPosition||'?') + ').');
@@ -9072,7 +9072,7 @@ document.addEventListener('DOMContentLoaded', function() {
         p_is_pair:false, p_friend_name:null, p_friend_email:null,
         p_max_spots:CR_MAX_SPOTS
       }).then(function(res){
-        submitBtn.disabled=false; submitBtn.textContent = 'Submit & Reserve My Spot ✦';
+        submitBtn.disabled=false; submitBtn.textContent = 'Submit Waiver & Confirm My Spot ✦';
         if (res.error || !res.data || !res.data.length) {
           console.error('[book_create_recharge_session] RPC failed', res.error);
           alert('Something went wrong saving your registration. Please try again, or email auricmovement@outlook.com.');
@@ -9131,7 +9131,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         buildCRSpots(); updateEventCardSpots();
       }, function(err){
-        submitBtn.disabled=false; submitBtn.textContent = 'Submit & Reserve My Spot ✦';
+        submitBtn.disabled=false; submitBtn.textContent = 'Submit Waiver & Confirm My Spot ✦';
         console.error('[book_create_recharge_session] RPC error', err);
         alert('Something went wrong saving your registration. Please try again, or email auricmovement@outlook.com.');
       });
