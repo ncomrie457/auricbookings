@@ -3984,7 +3984,7 @@
         </div>
         <div style="margin-top:1.25rem;display:flex;justify-content:flex-end;gap:.75rem;">
           <button type="button" id="cr-join-waitlist-btn" class="btn btn-secondary hidden">Join Waitlist &#8594;</button>
-          <button type="button" id="cr-to-waiver-btn" class="btn btn-primary">Continue to Waiver &#8594;</button>
+          <button type="button" id="cr-to-waiver-btn" class="btn btn-primary">Continue to Payment &#8594;</button>
         </div>
       </div>
 
@@ -4075,8 +4075,8 @@
             </div>
             <div id="cr-clauses-container" role="group" aria-label="Waiver clauses"></div>
 
-            <!-- Cancellation & Credit Policy Acknowledgment -->
-            <div style="margin:1.25rem 0;padding:1rem 1.25rem;background:#faf5ee;border:2px solid var(--gold);border-radius:10px;">
+            <!-- Cancellation & Credit Policy Acknowledgment (hidden after payment — agreed at checkout) -->
+            <div id="cr-refund-block" style="margin:1.25rem 0;padding:1rem 1.25rem;background:#faf5ee;border:2px solid var(--gold);border-radius:10px;">
               <h3 style="font-size:.85rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brown);margin-bottom:.6rem;">&#9888; Refund Policy &mdash; Create &amp; Recharge</h3>
               <p style="font-size:.85rem;color:#3d322a;line-height:1.6;margin:0 0 .5rem;">By booking this session, you agree to the following:</p>
               <ul style="font-size:.85rem;color:#3d322a;line-height:1.7;margin:0 0 .75rem;padding-left:1.25rem;">
@@ -8894,8 +8894,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  var crToWaiverBtn = document.getElementById('cr-to-waiver-btn');
-  if (crToWaiverBtn) crToWaiverBtn.addEventListener('click', function(){
+  // ── Flow order (Aug 2026): Register → refund-gated PAYMENT → (Stripe) →
+  //    ?paid=recharge → WAIVER → confirmed. `crAlreadyPaid` is set true when the
+  //    customer returns from Stripe, so "Continue" skips payment and the waiver
+  //    books their already-paid spot.
+  var crAlreadyPaid = false;
+
+  function crValidateRegister(){
     var name  = document.getElementById('cr-reg-name').value.trim();
     var email = document.getElementById('cr-reg-email').value.trim();
     var ok = true;
@@ -8903,7 +8908,6 @@ document.addEventListener('DOMContentLoaded', function() {
     else { document.getElementById('cr-reg-name-err').textContent=''; }
     if (!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ document.getElementById('cr-reg-email-err').textContent='Please enter a valid email.'; ok=false; }
     else { document.getElementById('cr-reg-email-err').textContent=''; }
-    // Minor details are required when bringing a child.
     var minor = crMinorState();
     if (minor.isMinor){
       if (!minor.names || minor.names.length < 2){ document.getElementById('cr-minor-name-err').textContent='Please enter your child’s full name.'; ok=false; }
@@ -8914,10 +8918,16 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('cr-minor-name-err').textContent='';
       document.getElementById('cr-minor-rel-err').textContent='';
     }
-    if (!ok) return;
+    return { ok:ok, name:name, email:email, minor:minor };
+  }
+
+  // Show the waiver step. Used AFTER payment for confirmed guests (everyone signs
+  // once they've paid), and directly for waitlist joins (who don't pay).
+  function crEnterWaiver(){
+    var name = document.getElementById('cr-reg-name').value.trim();
+    var minor = crMinorState();
     document.getElementById('cr-waiver-name-display').textContent = name;
     document.getElementById('cr-waiver-name-stmt').textContent    = name;
-    // Wire the minor-consent block for the waiver step.
     var consent = document.getElementById('cr-minor-consent');
     var minorAgree = document.getElementById('cr-minor-agree');
     if (minor.isMinor){
@@ -8929,11 +8939,42 @@ document.addEventListener('DOMContentLoaded', function() {
       if (consent) consent.classList.add('hidden');
       if (minorAgree) minorAgree.checked = false;
     }
+    // Refund policy was agreed at the payment step for paying guests → hide it and
+    // auto-satisfy the gate here. Waitlist joins (no payment) still agree here.
+    var refundBlock = document.getElementById('cr-refund-block');
+    var refundChk   = document.getElementById('cr-refund-policy-agree');
+    if (crAlreadyPaid){
+      if (refundBlock) refundBlock.classList.add('hidden');
+      if (refundChk) refundChk.checked = true;
+    } else {
+      if (refundBlock) refundBlock.classList.remove('hidden');
+      if (refundChk) refundChk.checked = false;
+    }
     buildCRClauses();
     crShowStep('cr-step-waiver');
     var layout=document.getElementById('cr-page-layout'); if(layout) layout.classList.add('waiver-active');
+    if (typeof crUpdateSubmitEnabled === 'function') crUpdateSubmitEnabled();
     document.getElementById('cr-step-waiver').scrollIntoView({behavior:'smooth'});
     announce('Waiver loaded. '+CR_CLAUSE_TEXTS.length+' clauses to review.');
+  }
+
+  var crToWaiverBtn = document.getElementById('cr-to-waiver-btn');
+  if (crToWaiverBtn) crToWaiverBtn.addEventListener('click', function(){
+    var v = crValidateRegister();
+    if (!v.ok) return;
+    // Returned from Stripe already → straight to the waiver (no second payment).
+    if (crAlreadyPaid){ crEnterWaiver(); return; }
+    // Not paid yet → capture details, then refund-gated payment. The waiver
+    // happens when Stripe returns them to ?paid=recharge.
+    var phoneEl = document.getElementById('cr-reg-phone');
+    var pending = {
+      name: v.name, email: v.email,
+      phone: phoneEl ? phoneEl.value.trim() : '',
+      isMinor: v.minor.isMinor, minorNames: v.minor.names||'', minorRel: v.minor.rel||'',
+      ts: new Date().toISOString()
+    };
+    try { localStorage.setItem('cr_pending', JSON.stringify(pending)); } catch(e){}
+    showCRPayGate(pending);
   });
 
   var crSelAll = document.getElementById('cr-select-all-btn');
@@ -9020,7 +9061,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var notes = composeCRNotes();
       var refundAckTime = now.toLocaleString();
       var ackLine = 'REFUND POLICY ACKNOWLEDGED: ' + refundAckTime + '\nText agreed to: ' + CR_REFUND_POLICY_TEXT;
-      var ticketLine = 'TICKET: Create & Recharge ($' + CR_EVENT.price + ')';
+      var ticketLine = 'TICKET: Create & Recharge ($' + CR_EVENT.price + ')' + (crAlreadyPaid ? ' — PAID via Stripe' : '');
       var phoneLine = phone ? 'PHONE (for class reminders): ' + phone : '';
       var notesWithAck = ticketLine + '\n\n' + ackLine + (phoneLine ? '\n\n' + phoneLine : '') + (notes ? '\n\n' + notes : '');
 
@@ -9048,14 +9089,22 @@ document.addEventListener('DOMContentLoaded', function() {
           crShowStep('cr-step-confirmed');
           var layoutC=document.getElementById('cr-page-layout'); if(layoutC) layoutC.classList.remove('waiver-active');
           document.getElementById('cr-step-confirmed').scrollIntoView({behavior:'smooth'});
-          announce('Waiver signed! Complete payment to confirm your spot.');
-          // Force payment after waiver (matches Mat & Chat — overlay with the Stripe Buy Button)
-          showCRPaymentOverlay(record);
+          if (crAlreadyPaid){
+            // They already paid (came back from Stripe) — the waiver was the last step.
+            announce('Waiver signed! You are all set. 🤍');
+            try { localStorage.removeItem('cr_pending'); } catch(e){}
+            if (window.history && window.history.replaceState){ var _u=new URL(window.location.href); _u.searchParams.delete('paid'); window.history.replaceState({},'',_u.pathname+_u.search+_u.hash); }
+            showCRPaymentReceivedOverlay();
+          } else {
+            announce('Waiver signed! Complete payment to confirm your spot.');
+            // Legacy fallback (e.g. if reached without the pay-first flow).
+            showCRPaymentOverlay(record);
+          }
           if(typeof emailjs!=='undefined'){
             emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
               admin_email: ADMIN_EMAIL, from_name:participantName, participant_email:email, to_email:email,
               session_label:'Create & Recharge — August 15th',
-              arrival_time:CR_EVENT.arrival, registration_type:'Waiver signed — payment pending',
+              arrival_time:CR_EVENT.arrival, registration_type:(crAlreadyPaid ? 'PAID + waiver signed ✓' : 'Waiver signed — payment pending'),
               sign_time:timeStr, clauses_agreed:CR_CLAUSE_TEXTS.length+' of '+CR_CLAUSE_TEXTS.length, cancel_code:code
             }).then(function(){ console.log('[admin notif] create&recharge sent for', code); })
               .catch(function(err){ console.error('[admin notif] create&recharge FAILED for', code, err); });
@@ -9090,7 +9139,10 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   function resetCRForm(){
-    crCheckedClauses={}; crCheckedCount=0; crLastSubmission=null;
+    crCheckedClauses={}; crCheckedCount=0; crLastSubmission=null; crAlreadyPaid=false;
+    var _rb=document.getElementById('cr-refund-block'); if(_rb) _rb.classList.remove('hidden');
+    var _pb=document.getElementById('cr-paid-banner'); if(_pb) _pb.remove();
+    var _cta=document.getElementById('cr-to-waiver-btn'); if(_cta) _cta.textContent='Continue to Payment →';
     ['cr-reg-name','cr-reg-email','cr-reg-phone','cr-h-notes','cr-h-allergies','cr-sig-input','cr-minor-name'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
     ['cr-h-spine','cr-h-joint','cr-h-pregnant','cr-h-osteo','cr-h-dizzy','cr-final-agree','cr-refund-policy-agree','cr-minor-agree'].forEach(function(id){ var el=document.getElementById(id); if(el) el.checked=false; });
     var expSel = document.querySelector('input[name="cr-experience"]:checked'); if(expSel) expSel.checked=false;
@@ -9123,7 +9175,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var crPrivacyBtn = document.getElementById('cr-open-privacy-btn'); if (crPrivacyBtn) crPrivacyBtn.addEventListener('click', function(){ openModal('privacy-modal'); });
   var crTermsBtn   = document.getElementById('cr-open-terms-btn');   if (crTermsBtn)   crTermsBtn.addEventListener('click', function(){ openModal('terms-modal'); });
   var crPolBtn     = document.getElementById('cr-open-policies-btn'); if (crPolBtn)     crPolBtn.addEventListener('click', function(){ openModal('policies-modal'); });
-  var crWlBtn      = document.getElementById('cr-join-waitlist-btn'); if (crWlBtn)      crWlBtn.addEventListener('click', function(){ var b=document.getElementById('cr-to-waiver-btn'); if(b) b.click(); });
+  var crWlBtn      = document.getElementById('cr-join-waitlist-btn'); if (crWlBtn)      crWlBtn.addEventListener('click', function(){ var v=crValidateRegister(); if(!v.ok) return; crEnterWaiver(); });
 
   var crCard = document.getElementById('event-card-recharge');
   if (crCard) crCard.addEventListener('click', function(e){
@@ -9337,6 +9389,64 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   // Forced payment overlay shown right after the waiver is signed (mirrors showMCPaymentOverlay).
+  // Refund-gated payment step (NEW flow): shown after Register, BEFORE the waiver.
+  // The Stripe Buy Button is disabled until the refund-policy box is ticked, so the
+  // Stripe redirect can't fire without recorded consent. Stripe returns the customer
+  // to ?paid=recharge, where the waiver is shown.
+  function showCRPayGate(pending){
+    var existing = document.getElementById('cr-paygate-overlay'); if (existing) existing.remove();
+    var overlay = document.createElement('div');
+    overlay.id = 'cr-paygate-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(44,26,14,.85);backdrop-filter:blur(8px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;overflow-y:auto;animation:fadeIn .3s;';
+    overlay.innerHTML =
+      '<div style="background:#fdfbf7;border-radius:16px;padding:1.75rem 1.5rem;max-width:440px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.4);max-height:92vh;overflow-y:auto;">' +
+        '<div style="text-align:center;font-family:Georgia,serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#9a6535;font-weight:bold;margin-bottom:6px;">Create &amp; Recharge &middot; $'+CR_EVENT.price+'</div>' +
+        '<h2 style="font-family:\'Cormorant Garamond\',serif;font-style:italic;font-size:1.6rem;color:var(--brown);text-align:center;margin:0 0 1rem;font-weight:500;">Review &amp; pay</h2>' +
+        '<div style="background:#faf5ee;border:2px solid var(--gold);border-radius:10px;padding:.9rem 1rem;margin-bottom:1rem;">' +
+          '<h3 style="font-size:.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--brown);margin:0 0 .5rem;">&#9888; Refund Policy</h3>' +
+          '<p style="font-size:.82rem;color:#3d322a;line-height:1.6;margin:0 0 .6rem;">'+CR_REFUND_POLICY_TEXT+'</p>' +
+          '<label style="display:flex;align-items:flex-start;gap:.55rem;padding:.6rem .7rem;background:#fff;border:1px solid var(--gold);border-radius:8px;cursor:pointer;font-size:.83rem;color:#3d322a;">' +
+            '<input type="checkbox" id="cr-paygate-refund" style="margin-top:.15rem;accent-color:var(--gold);width:18px;height:18px;flex-shrink:0;">' +
+            '<span>I have read and agree to the cancellation &amp; credit policy above. <span style="color:var(--red);">*</span></span>' +
+          '</label>' +
+        '</div>' +
+        '<p id="cr-paygate-hint" style="text-align:center;font-size:.78rem;color:var(--text-muted);margin:0 0 .6rem;">Tick the box above to enable payment.</p>' +
+        '<div id="cr-paygate-btnwrap" style="pointer-events:none;opacity:.4;filter:grayscale(.4);display:flex;justify-content:center;transition:opacity .2s;">' +
+          mcPaymentHtml({ buyBtnId: CR_BUY_BTN_ID }, CR_STRIPE_PUBLISHABLE, CR_EVENT.price, null, pending && pending.email) +
+        '</div>' +
+        '<p style="text-align:center;color:var(--text-muted);font-size:.72rem;margin:.8rem 0 .5rem;">After paying, you&rsquo;ll return here to sign your waiver.</p>' +
+        '<button type="button" id="cr-paygate-cancel" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.78rem;text-decoration:underline;font-family:\'Jost\',sans-serif;padding:.4rem;display:block;margin:0 auto;">Back</button>' +
+      '</div>';
+    document.body.appendChild(overlay);
+    var chk = document.getElementById('cr-paygate-refund');
+    var wrap = document.getElementById('cr-paygate-btnwrap');
+    var hint = document.getElementById('cr-paygate-hint');
+    chk.addEventListener('change', function(){
+      if (this.checked){
+        wrap.style.pointerEvents='auto'; wrap.style.opacity='1'; wrap.style.filter='none';
+        if (hint) hint.style.display='none';
+        try { var p = JSON.parse(localStorage.getItem('cr_pending')||'{}'); p.refundAck = new Date().toISOString(); p.refundText = CR_REFUND_POLICY_TEXT; localStorage.setItem('cr_pending', JSON.stringify(p)); } catch(e){}
+      } else {
+        wrap.style.pointerEvents='none'; wrap.style.opacity='.4'; wrap.style.filter='grayscale(.4)';
+        if (hint) hint.style.display='';
+      }
+    });
+    document.getElementById('cr-paygate-cancel').addEventListener('click', function(){ overlay.remove(); });
+  }
+
+  // Green "payment received — finish your waiver" banner, shown on ?paid=recharge.
+  function showCRPaidBanner(){
+    if (document.getElementById('cr-paid-banner')) return;
+    var b = document.createElement('div');
+    b.id = 'cr-paid-banner';
+    b.style.cssText = 'background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:10px;padding:.7rem 1rem;margin:0 0 1rem;font-size:.9rem;text-align:center;font-family:\'Jost\',sans-serif;';
+    b.innerHTML = '&#10003; <strong>Payment received!</strong> One last step &mdash; please complete your waiver below to confirm your spot.';
+    var wv = document.getElementById('cr-step-waiver');
+    var reg = document.getElementById('cr-step-register');
+    var target = (wv && !wv.classList.contains('hidden')) ? wv : reg;
+    if (target && target.parentNode) target.insertBefore(b, target.firstChild);
+  }
+
   function showCRPaymentOverlay(record){
     var existing = document.getElementById('payment-countdown-overlay');
     if (existing) existing.remove();
@@ -9400,7 +9510,43 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   if (new URLSearchParams(window.location.search).get('paid') === 'recharge') {
-    setTimeout(showCRPaymentReceivedOverlay, 400);
+    // Customer just paid — Stripe sent them back here. Show the WAIVER (everyone
+    // signs after payment). Their details were saved to localStorage before Stripe.
+    crAlreadyPaid = true;
+    var crPend = null;
+    try { crPend = JSON.parse(localStorage.getItem('cr_pending') || 'null'); } catch(e){}
+    if (typeof showAllPanels === 'function') { try { showAllPanels('tab-recharge'); } catch(e){} }
+    var crCtaBtn = document.getElementById('cr-to-waiver-btn');
+    if (crCtaBtn) crCtaBtn.textContent = 'Continue to Waiver →';
+    setTimeout(function(){
+      if (crPend && crPend.name){
+        var nEl=document.getElementById('cr-reg-name');  if(nEl) nEl.value = crPend.name||'';
+        var eEl=document.getElementById('cr-reg-email'); if(eEl) eEl.value = crPend.email||'';
+        var pEl=document.getElementById('cr-reg-phone'); if(pEl) pEl.value = crPend.phone||'';
+        if (crPend.isMinor){
+          var my=document.querySelector('input[name="cr-minor"][value="yes"]'); if(my){ my.checked=true; my.dispatchEvent(new Event('change')); }
+          var mn=document.getElementById('cr-minor-name'); if(mn) mn.value = crPend.minorNames||'';
+          var mr=document.querySelector('input[name="cr-minor-rel"][value="'+(crPend.minorRel||'')+'"]'); if(mr) mr.checked=true;
+        }
+        crEnterWaiver();
+        showCRPaidBanner();
+        // Heads-up to admin the moment payment lands — so if they close the tab
+        // before signing the waiver, you still know who paid and can follow up.
+        if (typeof emailjs !== 'undefined'){
+          emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
+            admin_email: ADMIN_EMAIL, from_name: crPend.name, participant_email: crPend.email, to_email: crPend.email,
+            session_label:'Create & Recharge — August 15th', arrival_time: CR_EVENT.arrival,
+            registration_type:'PAYMENT received — waiver pending', sign_time: new Date().toLocaleString(),
+            clauses_agreed:'—', cancel_code:'(awaiting waiver)'
+          }).catch(function(){});
+        }
+      } else {
+        // No saved details (paid on another device) — let them re-enter, then
+        // "Continue to Waiver" (crAlreadyPaid=true means no second payment).
+        crShowStep('cr-step-register');
+        showCRPaidBanner();
+      }
+    }, 500);
   }
 
   buildCRSpots();
