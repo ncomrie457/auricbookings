@@ -4605,10 +4605,20 @@ document.addEventListener('DOMContentLoaded', function() {
   // ============================================================
   var PAST_EVENT_VIDEOS = [
     {
+      file:     'matchat-recap.mp4',        // self-hosted video in the repo
+      title:    'Mat & Chat Recap',
+      date:     'August 1, 2026',
+      subtitle: 'Mat & Chat · New York',
+      sortDate: '2026-08-01'
+      // eventId omitted on purpose so this shows as its own card AND the
+      // Mat & Chat photo gallery still appears separately (same as Juneteenth).
+    },
+    {
       file:     'juneteenth-recap.mp4',     // self-hosted video in the repo
       title:    'Juneteenth Recap',
       date:     'June 19, 2026',
-      subtitle: 'Pilates x Niara · New York'
+      subtitle: 'Pilates x Niara · New York',
+      sortDate: '2026-06-19'
       // eventId omitted on purpose so this shows as its own card AND the
       // Juneteenth photo gallery still appears separately. Add eventId:'pilates'
       // if you'd rather the video replace the photo-gallery card.
@@ -4989,11 +4999,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (homeSection) homeSection.style.display = '';
 
-    // Build the combined list: manual videos first (newest first as authored),
-    // then any auto-generated pending placeholders.
+    // Build the combined list, then sort newest → oldest so each event's recap
+    // video sits next to that event (video before its own photo gallery on the
+    // same date). Videos carry a sortDate ('YYYY-MM-DD'); galleries/placeholders
+    // carry a sortDate Date from collectRecapPending. order 0=video, 1=gallery
+    // breaks same-date ties so the video shows first.
     var renderList = [];
-    PAST_EVENT_VIDEOS.forEach(function(v){ renderList.push({ kind:'video', data:v }); });
-    pending.forEach(function(p){ renderList.push({ kind:'pending', data:p }); });
+    PAST_EVENT_VIDEOS.forEach(function(v){
+      var d = v.sortDate ? new Date(v.sortDate + 'T00:00:00') : (v.date ? new Date(v.date) : new Date(0));
+      renderList.push({ kind:'video', data:v, sortDate:d, order:0 });
+    });
+    pending.forEach(function(p){
+      renderList.push({ kind:'pending', data:p, sortDate:(p.sortDate || new Date(0)), order:1 });
+    });
+    renderList.sort(function(a,b){ return (b.sortDate - a.sortDate) || (a.order - b.order); });
 
     function buildNode(item){
       return item.kind === 'video' ? renderVideoCard(item.data) : renderRecapPending(item.data);
