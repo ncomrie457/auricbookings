@@ -4929,10 +4929,11 @@ Can't wait to move and connect with you!</textarea>
     function applyCap(){
       var sb=getSb(); if(!sb) return;
       try {
-        sb.from('reformer_registrations').select('session,is_paid').then(function(res){
+        // Aggregate counts only (no PII leaves the DB) via a security-definer function.
+        sb.rpc('reformer_spot_counts').then(function(res){
           if(!res || res.error || !res.data) return;              // any hiccup → leave both open
           var paid={ '1pm':0, '2pm':0 };
-          res.data.forEach(function(r){ if(r.is_paid && paid[r.session]!==undefined) paid[r.session]++; });
+          res.data.forEach(function(r){ if(paid[r.session]!==undefined) paid[r.session]=Number(r.paid)||0; });
           Array.prototype.forEach.call(document.querySelectorAll('#rf-step-time .rf-time'), function(btn){
             var s=btn.getAttribute('data-session');
             if(paid[s]>=6){
