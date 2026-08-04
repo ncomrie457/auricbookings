@@ -1,0 +1,202 @@
+<!--
+  ════════════════════════════════════════════════════════════
+   Riddim & Kompa on the Reformer — Booking Confirmation Email
+   (matches the flyer: warm cream + brown, brick-red accent)
+   ────────────────────────────────────────────────────────────
+   COPY THIS ENTIRE FILE (Cmd+A → Cmd+C) and paste into:
+     EmailJS → Email Templates → (your reformer template) →
+     switch to the "Code"/HTML view → paste over everything → Save.
+
+   Suggested EmailJS Subject:
+     You're booked — Riddim & Kompa on the Reformer ✦ Auric Movement
+
+   EmailJS variables used (leave these exactly as-is; fill blanks with
+   real values when sending). Any you don't send will simply show empty:
+     {{from_name}}      — attendee first name
+     {{session_time}}   — e.g. "1:00 PM" or "2:00 PM"
+     {{calendar_url}}   — Add-to-calendar link for their session
+     {{amount}}         — e.g. "$45.00"  (receipt line; optional)
+     {{refund_policy_text}} — the refund policy text they agreed to
+  ════════════════════════════════════════════════════════════
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You're booked — Riddim &amp; Kompa on the Reformer</title>
+</head>
+<body style="margin:0;padding:0;background-color:#efe6d6;font-family:Georgia,'Times New Roman',serif;color:#3a2c1e;">
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#efe6d6;padding:32px 16px;">
+  <tr>
+    <td align="center">
+
+      <!-- Outer container -->
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#fdfbf7;border-radius:14px;overflow:hidden;box-shadow:0 6px 30px rgba(90,58,26,0.16);max-width:600px;width:100%;">
+
+        <!-- Branded header (echoes the flyer) -->
+        <tr>
+          <td align="center" style="background-color:#f7f0e3;padding:40px 30px 30px;border-bottom:1px solid #e6d8c2;">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:#a5794a;letter-spacing:4px;text-transform:uppercase;font-weight:bold;margin-bottom:14px;">Auric Movement &middot; West Hempstead, NY</div>
+            <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:34px;line-height:1.12;color:#5A3A1A;font-weight:bold;">Riddim &amp; Kompa<br>on the Reformer</div>
+            <div style="width:60px;height:3px;background-color:#b0432e;border-radius:2px;margin:20px auto 16px;"></div>
+            <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:18px;color:#8a6a45;">You&rsquo;re in &mdash; see you on the reformer.</div>
+          </td>
+        </tr>
+
+        <!-- Greeting -->
+        <tr>
+          <td style="padding:34px 42px 6px;">
+            <p style="font-family:Georgia,serif;font-size:16px;line-height:1.7;color:#3a2c1e;margin:0 0 14px 0;">
+              Hi {{from_name}},
+            </p>
+            <p style="font-family:Georgia,serif;font-size:16px;line-height:1.75;color:#3a2c1e;margin:0;">
+              Your spot is confirmed &mdash; a 45-minute reformer session set to riddim &amp; kompa, built to align, strengthen, and recharge. We can&rsquo;t wait to move with you.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Session details -->
+        <tr>
+          <td style="padding:24px 42px 8px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border-left:3px solid #c79a54;border-radius:0 8px 8px 0;">
+              <tr>
+                <td style="padding:20px 24px;">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:12px;">Session Details</div>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;width:110px;"><strong>Date:</strong></td>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">Sunday, September 13</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Your time:</strong></td>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{session_time}} &middot; 45 minutes</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;vertical-align:top;"><strong>Where:</strong></td>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.55;">Valley Studio<br>45 Cherry Valley Ave<br>West Hempstead, NY 11552</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Getting there -->
+        <tr>
+          <td style="padding:16px 42px 8px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4ecdd;border:1px solid #e0cfae;border-radius:8px;">
+              <tr>
+                <td style="padding:18px 24px;">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">&#128205; Getting There</div>
+                  <p style="font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.65;margin:0;">
+                    Valley Studio is at <strong>45 Cherry Valley Ave, West Hempstead</strong>. Street parking is available nearby &mdash; give yourself a few minutes to settle in before we begin.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Add to calendar -->
+        <tr>
+          <td style="padding:22px 42px 10px;" align="center">
+            <a href="{{calendar_url}}" style="display:inline-block;background-color:#b0432e;color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:13px 30px;border-radius:8px;">Add to Calendar &rarr;</a>
+          </td>
+        </tr>
+
+        <!-- Divider -->
+        <tr><td style="padding:12px 42px;"><div style="border-top:1px solid #e6d8c2;"></div></td></tr>
+
+        <!-- What to bring + goodie bag -->
+        <tr>
+          <td style="padding:0 42px 18px;">
+            <h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:22px;color:#5A3A1A;margin:0 0 12px 0;font-weight:500;">What to bring</h2>
+            <p style="font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0 0 10px 0;">Just wear something comfy to move in &mdash; grippy socks are a plus, and all equipment is provided. Come hydrated and ready to flow.</p>
+            <p style="font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0;">&#127873; Every spot includes a <strong>complimentary goodie bag</strong> &mdash; a little something from us to you.</p>
+          </td>
+        </tr>
+
+        <!-- Lateness note -->
+        <tr>
+          <td style="padding:0 42px 20px;">
+            <p style="font-family:Georgia,serif;font-size:13px;color:#7a6650;line-height:1.65;margin:0;font-style:italic;">
+              A gentle note: please arrive a few minutes before {{session_time}} so we can begin on time. Spots are held first come, first served, and late arrivals can disrupt the flow for everyone.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Receipt -->
+        <tr>
+          <td style="padding:0 42px 22px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border-radius:8px;">
+              <tr>
+                <td style="padding:20px 24px;">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:12px;">&#128179; Your Receipt</div>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;width:140px;"><strong>Amount paid:</strong></td>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{amount}}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Session:</strong></td>
+                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">Riddim &amp; Kompa on the Reformer &middot; {{session_time}}</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Refund policy -->
+        <tr>
+          <td style="padding:0 42px 28px;">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#a99a86;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">Refund Policy</div>
+            <p style="font-family:Georgia,serif;font-size:12px;color:#7a6650;line-height:1.65;margin:0;white-space:pre-line;">{{refund_policy_text}}</p>
+          </td>
+        </tr>
+
+        <!-- With gratitude panel -->
+        <tr>
+          <td style="padding:6px 42px 26px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:linear-gradient(135deg,#6b4423 0%,#5A3A1A 60%,#4a2f14 100%);background-color:#5A3A1A;border-radius:12px;">
+              <tr>
+                <td align="center" style="padding:30px 26px;">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#ffffff;letter-spacing:4px;text-transform:uppercase;font-weight:bold;margin-bottom:12px;">
+                    With Gratitude <span style="color:#e6b98f;">&#9829;</span>
+                  </div>
+                  <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:21px;line-height:1.5;color:#ffffff;margin:0;">
+                    Thank you for moving with us.<br>See you on the reformer.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background-color:#5A3A1A;padding:28px 34px;" align="center">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#ffffff;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">Niara Comrie</div>
+            <div style="font-family:Georgia,serif;font-size:12px;color:#e9ddca;line-height:1.8;">
+              IG / TikTok <a href="https://instagram.com/auricmovement" style="color:#e6b98f;text-decoration:none;">@auricmovement</a><br>
+              <a href="https://book.auricmovement.com" style="color:#e6b98f;text-decoration:none;">book.auricmovement.com</a>
+            </div>
+            <div style="border-top:1px solid #7a5a38;margin-top:20px;padding-top:16px;">
+              <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:15px;color:#f3ece0;">Align. Strengthen. Recharge.</div>
+            </div>
+          </td>
+        </tr>
+
+      </table>
+      <!-- /Outer container -->
+
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

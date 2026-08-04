@@ -5003,6 +5003,9 @@ Can't wait to move and connect with you!</textarea>
       if(_rfParams.get('paid')==='reformer'){
         var _s=_rfParams.get('s'); if(_s!=='1pm'&&_s!=='2pm') _s='1pm';
         showConfirmed(_s);
+      } else if(_rfParams.get('book')==='reformer'){
+        // Deep link (e.g. from the shared iMessage flyer) → open the booking popup.
+        setTimeout(function(){ resetFlow(); openOverlay(); }, 400);
       }
     } catch(e){}
   });
