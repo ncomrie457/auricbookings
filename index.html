@@ -7105,12 +7105,15 @@ document.addEventListener('DOMContentLoaded', function() {
     var sessionsContainer = document.createElement('div'); sessionsContainer.id = 'admin-sessions-container';
     var mcContainer       = document.createElement('div'); mcContainer.id       = 'admin-mc-container';
     var crContainer       = document.createElement('div'); crContainer.id       = 'admin-cr-container';
+    var reformerContainer = document.createElement('div'); reformerContainer.id = 'admin-reformer-container';
     var corpContainer     = document.createElement('div'); corpContainer.id     = 'admin-corp-container';
     body.appendChild(sessionsContainer);
     body.appendChild(mcContainer);
     body.appendChild(crContainer);
+    body.appendChild(reformerContainer);
     body.appendChild(corpContainer);
     if (typeof renderCRSection === 'function') renderCRSection(crContainer);
+    if (typeof renderReformerSection === 'function') renderReformerSection(reformerContainer);
     if (typeof renderWaitlistNotify === 'function') renderWaitlistNotify();
     if (typeof renderSignedAgreements === 'function') renderSignedAgreements();
 
@@ -9748,6 +9751,43 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       container.innerHTML=''; container.appendChild(block);
     });
+  }
+
+  // Riddim & Kompa on the Reformer — read-only roster in the admin panel.
+  // Reads through a password-gated security-definer function so the table
+  // itself never needs public read access. Fails safe (bookings unaffected).
+  function renderReformerSection(container){
+    if(!container) return;
+    var block = document.createElement('div'); block.className='admin-session-block' + (isEventPast('2026-09-13')?' collapsed':'');
+    function render(rows, err){
+      var paid  = rows.filter(function(r){ return r.is_paid; }).length;
+      var paid1 = rows.filter(function(r){ return r.session==='1pm' && r.is_paid; }).length;
+      var paid2 = rows.filter(function(r){ return r.session==='2pm' && r.is_paid; }).length;
+      block.innerHTML = '<h3 style="color:var(--gold-text);">Riddim &amp; Kompa on the Reformer — Sep 13th · '+paid+' paid / '+rows.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(1 PM '+paid1+'/6 · 2 PM '+paid2+'/6)</span></h3>';
+      if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
+      if(!rows.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
+      rows.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
+      rows.forEach(function(rec){
+        var item=document.createElement('div'); item.className='admin-sub-item';
+        var badge = rec.is_paid
+          ? '<span class="atype" style="background:#e8f5e9;color:#2e7d32;">paid</span>'
+          : '<span class="atype" style="background:#fef9e7;color:#7a6320;">pending</span>';
+        var ref = rec.referred_by ? '<br><span style="font-size:.75rem;color:#8a5a2a;">\u{1F91D} Referred by '+escapeHTML(rec.referred_by)+'</span>' : '';
+        var sig = rec.signature ? '<br><span style="font-size:.72rem;color:var(--text-muted);">\u{270D}\u{FE0F} Signed: '+escapeHTML(rec.signature)+'</span>' : '';
+        var when = '';
+        try { when = rec.created_at ? new Date(rec.created_at).toLocaleString() : ''; } catch(e){}
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+'</div>'+
+          '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span></div>';
+        block.appendChild(item);
+      });
+    }
+    container.innerHTML=''; container.appendChild(block);
+    try {
+      supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(res){
+        if(res && res.error){ render([], true); return; }
+        render((res && res.data) || [], false);
+      }, function(){ render([], true); });
+    } catch(e){ render([], true); }
   }
   window.crAdminWaiverPDF = function(code){
     getCRData(function(data){
