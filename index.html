@@ -4635,6 +4635,9 @@ Can't wait to move and connect with you!</textarea>
   #reformer-overlay .rf-err{color:#b03636;font-size:.8rem;text-align:left;margin:.15rem 0 .6rem;min-height:1em;}
   #reformer-overlay .rf-chosen{font-size:.82rem;color:#3d322a;text-align:left;margin:0 0 1rem;background:#f4ecdd;border-radius:9px;padding:.5rem .7rem;}
   #reformer-overlay .rf-chosen a{color:#9a6535;text-decoration:underline;cursor:pointer;}
+  #reformer-overlay .rf-conf-banner{background:#e7f3e7;border:1px solid #b6d8b6;color:#2f6b34;font-weight:600;border-radius:10px;padding:.8rem 1rem;margin:0 0 1rem;font-size:.95rem;}
+  #reformer-overlay .rf-time.rf-soldout{position:relative;}
+  #reformer-overlay .rf-time .rf-soldout-tag{color:#b03636;font-weight:600;}
   #reformer-overlay .rf-getting{text-align:left;margin-top:1.3rem;padding-top:1.1rem;border-top:1px solid var(--border);}
   #reformer-overlay .rf-getting h4{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:var(--brown);margin:0 0 .35rem;font-weight:600;}
   #reformer-overlay .rf-getting p{font-size:.82rem;color:#3d322a;line-height:1.5;margin:0 0 .3rem;}
@@ -4660,7 +4663,7 @@ Can't wait to move and connect with you!</textarea>
     <div class="rf-eyebrow">Auric Movement</div>
     <h2 class="rf-title">Riddim &amp; Kompa on the Reformer</h2>
     <p class="rf-meta">Sunday, September 13 &middot; Valley Studio, West Hempstead</p>
-    <p class="rf-meta"><strong>$45</strong> &middot; 45-minute session &middot; only <strong>6 spots</strong> each</p>
+    <p class="rf-meta"><strong>$45</strong> &middot; 45-minute session &middot; limited spots</p>
     <p class="rf-goodie">Every spot includes a complimentary goodie bag &#127873;</p>
 
     <!-- STEP 1 · pick your time -->
@@ -4699,6 +4702,17 @@ Can't wait to move and connect with you!</textarea>
         <stripe-buy-button buy-button-id="buy_btn_1U0ql7Cyx5PIptEiXHPOsmj2" publishable-key="pk_live_51TSmNuCyx5PIptEi8SCgMFB3I7ECVFeAzDOwjj1ZLrVZX1scB6cH8wAjNor3SFilMwMuqo0aFsbsckjYLU33iSAp00tmUxBVlK"></stripe-buy-button>
       </div>
       <p class="rf-policy" style="margin-top:.9rem;">You&rsquo;ll get a Stripe receipt by email. Questions? auricmovement@outlook.com</p>
+      <div style="margin-top:1rem;border-top:1px solid var(--border);padding-top:.9rem;">
+        <button type="button" id="rf-pay-later" class="rf-close-link" style="margin-top:0;">I&rsquo;ll pay later</button>
+        <p id="rf-pay-later-note" class="rf-policy" style="display:none;margin-top:.7rem;color:#8a5a2a;">Got it &mdash; we&rsquo;ve saved your details. Heads up: <strong>spots aren&rsquo;t held and are released first come, first served until payment is received</strong>, so pay soon to secure your place. You can pay anytime from this page.</p>
+      </div>
+    </div>
+
+    <!-- STEP 4 · payment confirmed (shown on return from Stripe via ?paid=reformer) -->
+    <div id="rf-step-confirmed" style="display:none;">
+      <div class="rf-conf-banner">&#10004; Payment received &mdash; you&rsquo;re booked!</div>
+      <p class="rf-meta" style="margin:0 0 1rem;">See you Sunday, September 13 for your <strong id="rf-conf-label"></strong>. A goodie bag is waiting &#127873;</p>
+      <a id="rf-conf-cal" class="rf-btn" style="text-decoration:none;display:block;" href="#" target="_blank" rel="noopener noreferrer">Add to Google Calendar</a>
     </div>
 
     <!-- Getting there -->
@@ -4778,9 +4792,10 @@ Can't wait to move and connect with you!</textarea>
     function resetFlow(){
       chosen=null; chosenLabel=''; waiverOpened=false;
       stepTime.style.display=''; stepForm.style.display='none'; stepPay.style.display='none';
+      var cf=document.getElementById('rf-step-confirmed'); if(cf) cf.style.display='none';
       if(stepForm.reset) stepForm.reset();
       waiverEl.checked=false; waiverEl.disabled=true; refundEl.checked=false;
-      formErr.textContent=''; syncContinue();
+      formErr.textContent=''; syncContinue(); applyCap();
     }
     card.addEventListener('click', function(e){ e.preventDefault(); resetFlow(); openOverlay(); });
     document.getElementById('reformer-close').addEventListener('click', closeOverlay);
@@ -4904,6 +4919,57 @@ Can't wait to move and connect with you!</textarea>
       stepForm.style.display='none'; stepPay.style.display='';
       stepPay.scrollIntoView({behavior:'smooth', block:'nearest'});
     });
+
+    // "I'll pay later" — reveal the spot-not-held warning (details already saved)
+    document.getElementById('rf-pay-later').addEventListener('click', function(){
+      document.getElementById('rf-pay-later-note').style.display='block';
+    });
+
+    // ── Sold-out cap: hide a session once 6 paid bookings exist (fails OPEN) ──
+    function applyCap(){
+      var sb=getSb(); if(!sb) return;
+      try {
+        sb.from('reformer_registrations').select('session,is_paid').then(function(res){
+          if(!res || res.error || !res.data) return;              // any hiccup → leave both open
+          var paid={ '1pm':0, '2pm':0 };
+          res.data.forEach(function(r){ if(r.is_paid && paid[r.session]!==undefined) paid[r.session]++; });
+          Array.prototype.forEach.call(document.querySelectorAll('#rf-step-time .rf-time'), function(btn){
+            var s=btn.getAttribute('data-session');
+            if(paid[s]>=6){
+              btn.disabled=true; btn.classList.add('rf-soldout');
+              if(!btn.querySelector('.rf-soldout-tag')){
+                var t=document.createElement('small'); t.className='rf-soldout-tag'; t.textContent='Sold out'; btn.appendChild(t);
+              }
+            }
+          });
+        }, function(){});
+      } catch(e){}
+    }
+
+    // ── Payment confirmation (Stripe returns to ?paid=reformer&s=1pm|2pm) ──
+    var RF_CAL_DETAILS='Auric+Movement+%7C+Riddim+%26+Kompa+on+the+Reformer.+Please+arrive+a+few+minutes+early.+Valley+Studio.';
+    var RF_CAL_LOC='45+Cherry+Valley+Ave%2C+West+Hempstead%2C+NY+11552';
+    var RF_CAL_TEXT='Riddim+%26+Kompa+on+the+Reformer+%E2%9C%A6+Auric+Movement';
+    var SESSION_META={
+      '1pm':{ label:'1:00 PM session', cal:'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+RF_CAL_TEXT+'&dates=20260913T170000Z/20260913T174500Z&details='+RF_CAL_DETAILS+'&location='+RF_CAL_LOC },
+      '2pm':{ label:'2:00 PM session', cal:'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+RF_CAL_TEXT+'&dates=20260913T180000Z/20260913T184500Z&details='+RF_CAL_DETAILS+'&location='+RF_CAL_LOC }
+    };
+    function showConfirmed(sessionKey){
+      var meta=SESSION_META[sessionKey]||SESSION_META['1pm'];
+      document.getElementById('rf-conf-label').textContent=meta.label;
+      document.getElementById('rf-conf-cal').href=meta.cal;
+      stepTime.style.display='none'; stepForm.style.display='none'; stepPay.style.display='none';
+      document.getElementById('rf-step-confirmed').style.display='';
+      openOverlay();
+      try { var arr=JSON.parse(localStorage.getItem('auric_reformer')||'[]'); if(arr.length){ arr[arr.length-1].is_paid=true; localStorage.setItem('auric_reformer', JSON.stringify(arr)); } } catch(e){}
+    }
+    try {
+      var _rfParams=new URLSearchParams(location.search);
+      if(_rfParams.get('paid')==='reformer'){
+        var _s=_rfParams.get('s'); if(_s!=='1pm'&&_s!=='2pm') _s='1pm';
+        showConfirmed(_s);
+      }
+    } catch(e){}
   });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>

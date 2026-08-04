@@ -22,6 +22,7 @@ const TABLES = [
   'matchat_registrations',
   'pilates_registrations',
   'create_recharge_registrations',
+  'reformer_registrations',
 ];
 
 export default {
