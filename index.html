@@ -4316,6 +4316,10 @@
         <label for="admin-donor-recharge" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Create &amp; Recharge &mdash; Donors</label>
         <input type="text" id="admin-donor-recharge" data-event-donors="recharge" placeholder="e.g., partner or sponsor names" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
       </div>
+      <div style="margin-bottom:.75rem;">
+        <label for="admin-donor-reformer" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Riddim &amp; Kompa on the Reformer &mdash; Donors</label>
+        <input type="text" id="admin-donor-reformer" data-event-donors="reformer" placeholder="e.g., partner or sponsor names" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
+      </div>
       <div id="admin-event-donors-status" style="margin-top:.5rem;font-size:.78rem;color:var(--text-muted);"></div>
     </div>
 
@@ -4331,6 +4335,7 @@
             <option value="pilates">Pilates x Niara (both sessions)</option>
             <option value="matchat">Mat &amp; Chat</option>
             <option value="recharge">Create &amp; Recharge</option>
+            <option value="reformer">Riddim &amp; Kompa on the Reformer (both sessions)</option>
           </select>
         </div>
         <div>
@@ -4679,6 +4684,7 @@ Can't wait to move and connect with you!</textarea>
       <div class="rf-field"><label for="rf-name">Full name</label><input type="text" id="rf-name" autocomplete="name" placeholder="Your name"></div>
       <div class="rf-field"><label for="rf-email">Email</label><input type="email" id="rf-email" autocomplete="email" placeholder="you@email.com"></div>
       <div class="rf-field"><label for="rf-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="rf-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
+      <div class="rf-field"><label for="rf-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="rf-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:9px;font-family:'Jost',sans-serif;font-size:.92rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
       <div class="rf-ack">
         <input type="checkbox" id="rf-refund">
         <label for="rf-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">All sales are final &mdash; no refunds or credits. Can&rsquo;t make it? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names.</span></label>
@@ -4781,6 +4787,7 @@ Can't wait to move and connect with you!</textarea>
     var nameEl   = document.getElementById('rf-name');
     var emailEl  = document.getElementById('rf-email');
     var refEl    = document.getElementById('rf-referral');
+    var healthEl = document.getElementById('rf-health');
     var refundEl = document.getElementById('rf-refund');
     var waiverEl = document.getElementById('rf-waiver');
     var signEl   = document.getElementById('rf-sign');
@@ -4906,6 +4913,7 @@ Can't wait to move and connect with you!</textarea>
       saveRegistration({
         name:name, email:email, session:chosen, session_label:chosenLabel,
         referred_by: refEl.value.trim() || null,
+        health: (healthEl && healthEl.value.trim()) || null,
         signature:sign, clauses_agreed: RF_CLAUSES.length,
         refund_ack:true, refund_policy_text:RF_REFUND_TEXT,
         waiver_agreed:true, is_paid:false, created_at:nowIso, event:'riddim-kompa-reformer-2026-09-13'
@@ -5989,7 +5997,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function applyEventBadges() {
     getEventConfig(function(cfg){
-      var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat', recharge: 'event-card-recharge', rnb: 'event-card-rnb' };
+      var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat', recharge: 'event-card-recharge', rnb: 'event-card-rnb', reformer: 'event-card-reformer' };
       Object.keys(cards).forEach(function(key){
         var card = document.getElementById(cards[key]);
         if (!card) return;
@@ -7805,6 +7813,21 @@ document.addEventListener('DOMContentLoaded', function() {
           });
           callback(confirmed);
         });
+      } else if (eventType === 'reformer') {
+        // Paid reformer registrants, via the password-gated roster function.
+        var RF_SESS = {
+          '1pm': { label: 'Riddim & Kompa on the Reformer — 1 PM', date: 'Sunday, September 13th', arrival: '12:55 PM', start: '1:00 PM' },
+          '2pm': { label: 'Riddim & Kompa on the Reformer — 2 PM', date: 'Sunday, September 13th', arrival: '1:55 PM', start: '2:00 PM' }
+        };
+        try {
+          supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(res){
+            var rows = (res && res.data) || [];
+            var confirmed = rows.filter(function(r){ return r.is_paid && r.email; }).map(function(rec){
+              return { rec: { name: rec.name, email: rec.email }, sess: RF_SESS[rec.session] || RF_SESS['1pm'] };
+            });
+            callback(confirmed);
+          }, function(){ callback([]); });
+        } catch(e){ callback([]); }
       } else { callback([]); }
     }
 
@@ -9773,10 +9796,11 @@ document.addEventListener('DOMContentLoaded', function() {
           ? '<span class="atype" style="background:#e8f5e9;color:#2e7d32;">paid</span>'
           : '<span class="atype" style="background:#fef9e7;color:#7a6320;">pending</span>';
         var ref = rec.referred_by ? '<br><span style="font-size:.75rem;color:#8a5a2a;">\u{1F91D} Referred by '+escapeHTML(rec.referred_by)+'</span>' : '';
+        var health = rec.health ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;white-space:pre-line;"><strong style="color:var(--gold-text);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">\u{1FA79} Health disclosure:</strong><br>'+escapeHTML(rec.health)+'</div>' : '';
         var sig = rec.signature ? '<br><span style="font-size:.72rem;color:var(--text-muted);">\u{270D}\u{FE0F} Signed: '+escapeHTML(rec.signature)+'</span>' : '';
         var when = '';
         try { when = rec.created_at ? new Date(rec.created_at).toLocaleString() : ''; } catch(e){}
-        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+'</div>'+
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span></div>';
         block.appendChild(item);
       });
