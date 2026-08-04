@@ -4663,7 +4663,7 @@ Can't wait to move and connect with you!</textarea>
     <div class="rf-eyebrow">Auric Movement</div>
     <h2 class="rf-title">Riddim &amp; Kompa on the Reformer</h2>
     <p class="rf-meta">Sunday, September 13 &middot; Valley Studio, West Hempstead</p>
-    <p class="rf-meta"><strong>$45</strong> &middot; 45-minute session &middot; only <strong>6 spots</strong> each</p>
+    <p class="rf-meta"><strong>$45</strong> &middot; 45-minute session &middot; limited spots</p>
     <p class="rf-goodie">Every spot includes a complimentary goodie bag &#127873;</p>
 
     <!-- STEP 1 · pick your time -->
@@ -4702,6 +4702,10 @@ Can't wait to move and connect with you!</textarea>
         <stripe-buy-button buy-button-id="buy_btn_1U0ql7Cyx5PIptEiXHPOsmj2" publishable-key="pk_live_51TSmNuCyx5PIptEi8SCgMFB3I7ECVFeAzDOwjj1ZLrVZX1scB6cH8wAjNor3SFilMwMuqo0aFsbsckjYLU33iSAp00tmUxBVlK"></stripe-buy-button>
       </div>
       <p class="rf-policy" style="margin-top:.9rem;">You&rsquo;ll get a Stripe receipt by email. Questions? auricmovement@outlook.com</p>
+      <div style="margin-top:1rem;border-top:1px solid var(--border);padding-top:.9rem;">
+        <button type="button" id="rf-pay-later" class="rf-close-link" style="margin-top:0;">I&rsquo;ll pay later</button>
+        <p id="rf-pay-later-note" class="rf-policy" style="display:none;margin-top:.7rem;color:#8a5a2a;">Got it &mdash; we&rsquo;ve saved your details. Heads up: <strong>spots aren&rsquo;t held and are released first come, first served until payment is received</strong>, so pay soon to secure your place. You can pay anytime from this page.</p>
+      </div>
     </div>
 
     <!-- STEP 4 · payment confirmed (shown on return from Stripe via ?paid=reformer) -->
@@ -4914,6 +4918,11 @@ Can't wait to move and connect with you!</textarea>
       document.getElementById('rf-buy-2pm').style.display = (chosen==='2pm')?'block':'none';
       stepForm.style.display='none'; stepPay.style.display='';
       stepPay.scrollIntoView({behavior:'smooth', block:'nearest'});
+    });
+
+    // "I'll pay later" — reveal the spot-not-held warning (details already saved)
+    document.getElementById('rf-pay-later').addEventListener('click', function(){
+      document.getElementById('rf-pay-later-note').style.display='block';
     });
 
     // ── Sold-out cap: hide a session once 6 paid bookings exist (fails OPEN) ──
