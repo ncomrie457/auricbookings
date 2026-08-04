@@ -8999,6 +8999,9 @@ document.addEventListener('DOMContentLoaded', function() {
       }).then(function(res){
         if (res.error || !res.data || !res.data.length){ onDone(pending, null); return; }
         var row=res.data[0]; pending.code=code; pending.type=row.out_type; pending.wlPosition=row.out_wl_position; crSavePending(pending);
+        // Record the referrer in its own column right away, so it's captured even
+        // if they never finish the waiver.
+        if (pending.referral){ supabase.from('create_recharge_registrations').update({ referred_by: pending.referral }).eq('code', code).then(function(){}, function(){}); }
         buildCRSpots(); updateEventCardSpots();
         onDone(pending, null);
       }, function(){ onDone(pending, null); });
@@ -9122,9 +9125,11 @@ document.addEventListener('DOMContentLoaded', function() {
       var uTicket='TICKET: Create & Recharge ($'+CR_EVENT.price+') — PAID via Stripe';
       var uPhone=phone?('PHONE (for class reminders): '+phone):'';
       var uNotesFull=uTicket+'\n\n'+uAck+(uPhone?('\n\n'+uPhone):'')+(uNotes?('\n\n'+uNotes):'');
+      var uRefEl=document.getElementById('cr-reg-referral'); var uReferral=uRefEl?uRefEl.value.trim():'';
       supabase.from('create_recharge_registrations').update({
         name:participantName, phone:(phone||null), signature:sig,
         clauses_agreed:CR_CLAUSE_TEXTS.length, notes:uNotesFull,
+        referred_by:(uReferral||null),
         is_paid:true, paid_at:uNow.toISOString()
       }).eq('code', _crPend.code).then(function(res){
         submitBtn.disabled=false; submitBtn.textContent = 'Submit Waiver & Confirm My Spot ✦';
