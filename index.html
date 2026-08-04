@@ -3962,6 +3962,11 @@
           <input type="tel" id="cr-reg-phone" placeholder="(555) 123-4567" autocomplete="tel">
           <p style="font-size:.75rem;color:var(--text-muted);margin-top:.3rem;line-height:1.5;">For class day reminders &mdash; we&rsquo;ll text you 24 hours before. Never shared, opt-out anytime.</p>
         </div>
+        <div class="field">
+          <label for="cr-reg-referral">Did someone refer you? <span style="font-weight:400;color:var(--text-muted);font-size:.78rem;">(optional)</span></label>
+          <input type="text" id="cr-reg-referral" placeholder="Their name (so we can thank them 🤍)" autocomplete="off">
+          <p style="font-size:.75rem;color:var(--text-muted);margin-top:.3rem;line-height:1.5;">If a friend sent you, drop their name &mdash; they&rsquo;ll earn an Auric Club mark when you attend.</p>
+        </div>
 
         <!-- Bringing a minor? -->
         <div class="field" style="margin-bottom:1rem;">
@@ -8826,6 +8831,9 @@ document.addEventListener('DOMContentLoaded', function() {
     var lines = [];
     var minor = crMinorState();
     if (minor.isMinor) lines.push('⚠️ MINOR TICKET — attendee is a minor (age 12–17): ' + minor.names + '. Guardian who signed the waiver: ' + (document.getElementById('cr-reg-name').value.trim()) + ' (' + minor.rel + ').');
+    var refEl = document.getElementById('cr-reg-referral');
+    var referral = refEl ? refEl.value.trim() : '';
+    if (referral) lines.push('🤝 REFERRED BY: ' + referral + ' — credit an Auric Club referral mark when this guest attends.');
     var exp = document.querySelector('input[name="cr-experience"]:checked');
     if (exp) lines.push('Pilates experience: ' + exp.value);
     var flags = [];
@@ -9005,9 +9013,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Not paid yet → capture details, create the payment-pending row, then show
     // refund-gated payment. The waiver happens when Stripe returns them to ?paid=recharge.
     var phoneEl = document.getElementById('cr-reg-phone');
+    var refEl0 = document.getElementById('cr-reg-referral');
     var pending = {
       name: v.name, email: v.email,
       phone: phoneEl ? phoneEl.value.trim() : '',
+      referral: refEl0 ? refEl0.value.trim() : '',
       isMinor: v.minor.isMinor, minorNames: v.minor.names||'', minorRel: v.minor.rel||'',
       ts: new Date().toISOString()
     };
@@ -9239,7 +9249,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var _pb=document.getElementById('cr-paid-banner'); if(_pb) _pb.remove();
     var _cta=document.getElementById('cr-to-waiver-btn'); if(_cta) _cta.textContent='Continue to Payment →';
     var _intro2=document.getElementById('cr-intro'); if(_intro2) _intro2.style.display='';
-    ['cr-reg-name','cr-reg-email','cr-reg-phone','cr-h-notes','cr-h-allergies','cr-sig-input','cr-minor-name'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+    ['cr-reg-name','cr-reg-email','cr-reg-phone','cr-reg-referral','cr-h-notes','cr-h-allergies','cr-sig-input','cr-minor-name'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
     ['cr-h-spine','cr-h-joint','cr-h-pregnant','cr-h-osteo','cr-h-dizzy','cr-final-agree','cr-refund-policy-agree','cr-minor-agree'].forEach(function(id){ var el=document.getElementById(id); if(el) el.checked=false; });
     var expSel = document.querySelector('input[name="cr-experience"]:checked'); if(expSel) expSel.checked=false;
     // Reset minor question back to "No" and hide its fields/consent.
@@ -9642,6 +9652,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var nEl=document.getElementById('cr-reg-name');  if(nEl) nEl.value = crPend.name||'';
         var eEl=document.getElementById('cr-reg-email'); if(eEl) eEl.value = crPend.email||'';
         var pEl=document.getElementById('cr-reg-phone'); if(pEl) pEl.value = crPend.phone||'';
+        var rEl=document.getElementById('cr-reg-referral'); if(rEl) rEl.value = crPend.referral||'';
         if (crPend.isMinor){
           var my=document.querySelector('input[name="cr-minor"][value="yes"]'); if(my){ my.checked=true; my.dispatchEvent(new Event('change')); }
           var mn=document.getElementById('cr-minor-name'); if(mn) mn.value = crPend.minorNames||'';
