@@ -4652,12 +4652,15 @@ Can't wait to move and connect with you!</textarea>
   #rf-waiver-modal .rf-wm-card{background:#fff;border-radius:14px;max-width:520px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,.45);font-family:'Jost',sans-serif;overflow:hidden;}
   #rf-waiver-modal h3{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--brown);margin:0;padding:1.1rem 1.25rem .6rem;text-align:center;}
   #rf-waiver-scroll{overflow-y:auto;padding:0 1.25rem;flex:1;text-align:left;}
+  #rf-waiver-scroll:focus{outline:2px solid var(--gold);outline-offset:-2px;}
+  #rf-waiver-scroll:focus-visible{outline:2px solid var(--gold);outline-offset:-2px;}
   #rf-waiver-scroll .rf-cl{font-size:.8rem;color:#3d322a;line-height:1.5;margin:0 0 .7rem;padding-bottom:.7rem;border-bottom:1px solid #f0e8da;}
   #rf-waiver-scroll .rf-cl b{color:#9a6535;}
   #rf-waiver-modal .rf-wm-foot{padding:.9rem 1.25rem 1.1rem;border-top:1px solid var(--border);background:#fdfbf7;}
   #rf-waiver-modal .rf-wm-hint{font-size:.74rem;color:var(--text-muted);text-align:center;margin:0 0 .6rem;}
-  #rf-waiver-modal .rf-wm-btns{display:flex;gap:.6rem;}
-  #rf-waiver-modal .rf-wm-btns button{flex:1;padding:.7rem;border-radius:999px;font-family:'Jost',sans-serif;font-weight:600;font-size:.9rem;cursor:pointer;border:1px solid var(--border);}
+  #rf-waiver-modal .rf-wm-btns{display:flex;gap:.6rem;flex-wrap:wrap;}
+  #rf-waiver-modal .rf-wm-btns button{flex:1 1 auto;min-width:120px;padding:.7rem;border-radius:999px;font-family:'Jost',sans-serif;font-weight:600;font-size:.9rem;cursor:pointer;border:1px solid var(--border);}
+  #rf-waiver-modal #rf-waiver-jump{background:#f4ecdd;color:#7a5a2a;border-color:#e0cfae;}
   #rf-waiver-modal #rf-waiver-agree{background:var(--brown);color:#fff;border-color:var(--brown);}
   #rf-waiver-modal #rf-waiver-agree:disabled{opacity:.45;cursor:not-allowed;}
   #rf-waiver-modal #rf-waiver-cancel{background:#fff;color:#3d322a;}
@@ -4734,14 +4737,15 @@ Can't wait to move and connect with you!</textarea>
 </div>
 
 <!-- Scrollable liability waiver sub-modal -->
-<div id="rf-waiver-modal" aria-modal="true" role="dialog" aria-label="Liability waiver">
+<div id="rf-waiver-modal" aria-modal="true" role="dialog" aria-labelledby="rf-waiver-title">
   <div class="rf-wm-card">
-    <h3>Liability Waiver &amp; Release</h3>
-    <div id="rf-waiver-scroll"></div>
+    <h3 id="rf-waiver-title">Liability Waiver &amp; Release</h3>
+    <div id="rf-waiver-scroll" tabindex="0" role="region" aria-labelledby="rf-waiver-title"></div>
     <div class="rf-wm-foot">
-      <p class="rf-wm-hint" id="rf-waiver-hint">Scroll to the bottom to enable &ldquo;I agree.&rdquo;</p>
+      <p class="rf-wm-hint" id="rf-waiver-hint" aria-live="polite">Read to the end &mdash; use the scroll bar, arrow keys, or the button below.</p>
       <div class="rf-wm-btns">
         <button type="button" id="rf-waiver-cancel">Close</button>
+        <button type="button" id="rf-waiver-jump">Jump to end</button>
         <button type="button" id="rf-waiver-agree" disabled>I&rsquo;ve read this &mdash; I agree</button>
       </div>
     </div>
@@ -4852,19 +4856,32 @@ Can't wait to move and connect with you!</textarea>
         d.innerHTML='<b>'+(i+1)+'.</b> '+t; wmScroll.appendChild(d);
       });
     }
+    var wmJump = document.getElementById('rf-waiver-jump');
     function openWaiverModal(){
       buildWaiver(); wm.style.display='flex';
-      wmScroll.scrollTop=0; wmAgree.disabled=true; wmHint.style.display='';
-      // if content is short enough to not scroll, enable immediately
-      setTimeout(checkScrolled, 50);
+      wmScroll.scrollTop=0; wmAgree.disabled=true;
+      wmHint.textContent='Read to the end — use the scroll bar, arrow keys, or the "Jump to end" button.';
+      // Move focus into the dialog so keyboard users can scroll (arrows / Page Down / End).
+      setTimeout(function(){ wmScroll.focus(); checkScrolled(); }, 30);
     }
-    function closeWaiverModal(){ wm.style.display='none'; }
+    function closeWaiverModal(){
+      wm.style.display='none';
+      var link=document.getElementById('rf-open-waiver'); if(link) link.focus(); // return focus
+    }
     function checkScrolled(){
       if(wmScroll.scrollTop + wmScroll.clientHeight >= wmScroll.scrollHeight - 8){
-        wmAgree.disabled=false; wmHint.style.display='none';
+        if(wmAgree.disabled){
+          wmAgree.disabled=false;
+          wmHint.textContent='Thank you — you can now agree.';
+        }
       }
     }
     wmScroll.addEventListener('scroll', checkScrolled);
+    wmJump.addEventListener('click', function(){
+      wmScroll.scrollTop = wmScroll.scrollHeight;   // accessible alternative to manual scrolling
+      checkScrolled();
+      wmAgree.focus();
+    });
     document.getElementById('rf-open-waiver').addEventListener('click', openWaiverModal);
     document.getElementById('rf-open-waiver').addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openWaiverModal(); }});
     document.getElementById('rf-waiver-cancel').addEventListener('click', closeWaiverModal);
@@ -4872,6 +4889,15 @@ Can't wait to move and connect with you!</textarea>
     wmAgree.addEventListener('click', function(){
       waiverOpened=true; waiverEl.disabled=false; waiverEl.checked=true;
       closeWaiverModal(); syncContinue();
+    });
+    // Keyboard: keep Tab inside the dialog while it's open (Esc handled globally).
+    wm.addEventListener('keydown', function(e){
+      if(e.key!=='Tab') return;
+      var focusable=[wmScroll, document.getElementById('rf-waiver-cancel'), wmJump];
+      if(!wmAgree.disabled) focusable.push(wmAgree);
+      var first=focusable[0], last=focusable[focusable.length-1];
+      if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+      else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
     });
 
     // Lazy Supabase client for a best-effort registration record
