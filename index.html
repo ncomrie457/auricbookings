@@ -1651,6 +1651,11 @@
       transition: transform .6s ease;
     }
 
+    /* Riddim & Kompa card: show the whole illustrated flyer (not a crop).
+       Frame background matches the flyer's cream (#f8f1e7) so the letterbox is seamless. */
+    #event-card-reformer .bq-event-photo { background: #f8f1e7; }
+    #event-card-reformer .bq-event-photo img { object-fit: contain; }
+
     /* Wrapper around the larger booking-page flyer (so the Sold Out badge can position absolutely) */
     .bq-flyer-wrap {
       position: relative;
@@ -4603,37 +4608,303 @@ Can't wait to move and connect with you!</textarea>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<!-- Reformer Pilates — pick-your-time booking overlay -->
+<!-- Riddim & Kompa on the Reformer — pick-time → waiver gate → Stripe booking overlay -->
+<style>
+  #reformer-overlay .rf-modal{background:#fdfbf7;border-radius:16px;padding:1.75rem 1.5rem;max-width:460px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.4);max-height:92vh;overflow-y:auto;text-align:center;font-family:'Jost',sans-serif;position:relative;}
+  #reformer-overlay .rf-x{position:absolute;top:.7rem;right:.9rem;background:none;border:none;font-size:1.4rem;line-height:1;color:#b0a08e;cursor:pointer;padding:.2rem;}
+  #reformer-overlay .rf-eyebrow{font-family:Georgia,serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#9a6535;font-weight:bold;}
+  #reformer-overlay h2.rf-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.6rem;color:var(--brown);margin:.4rem 0 .25rem;font-weight:500;line-height:1.15;}
+  #reformer-overlay .rf-meta{font-size:.9rem;color:#3d322a;margin:0 0 .2rem;line-height:1.5;}
+  #reformer-overlay .rf-goodie{font-size:.8rem;color:var(--text-muted);margin:.15rem 0 1.15rem;line-height:1.5;}
+  #reformer-overlay .rf-time{display:block;width:100%;text-align:left;border:1px solid var(--border);border-radius:12px;padding:.95rem 1.1rem;margin-bottom:.75rem;background:#faf5ee;font-family:'Jost',sans-serif;font-weight:600;color:var(--brown);font-size:.98rem;cursor:pointer;transition:border-color .15s,background .15s;}
+  #reformer-overlay .rf-time:hover:not(:disabled){border-color:var(--gold);background:#f6efe4;}
+  #reformer-overlay .rf-time:disabled{opacity:.5;cursor:not-allowed;}
+  #reformer-overlay .rf-time small{display:block;font-weight:400;color:var(--text-muted);font-size:.78rem;margin-top:.15rem;}
+  #reformer-overlay .rf-field{text-align:left;margin:0 0 .8rem;}
+  #reformer-overlay .rf-field label{display:block;font-size:.82rem;font-weight:600;color:var(--brown);margin-bottom:.3rem;}
+  #reformer-overlay .rf-field input[type=text],#reformer-overlay .rf-field input[type=email]{width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:9px;font-family:'Jost',sans-serif;font-size:.92rem;background:#fff;color:#2c1a0e;}
+  #reformer-overlay .rf-field input:focus{outline:none;border-color:var(--gold);}
+  #reformer-overlay .rf-opt{font-weight:400;color:var(--text-muted);font-size:.76rem;}
+  #reformer-overlay .rf-ack{display:flex;gap:.6rem;align-items:flex-start;text-align:left;background:#faf5ee;border:1px solid var(--border);border-radius:10px;padding:.75rem .85rem;margin:0 0 .8rem;}
+  #reformer-overlay .rf-ack input{margin-top:.15rem;accent-color:var(--gold);width:18px;height:18px;flex-shrink:0;}
+  #reformer-overlay .rf-ack label{font-size:.82rem;color:#3d322a;line-height:1.45;}
+  #reformer-overlay .rf-ack a{color:#9a6535;font-weight:600;text-decoration:underline;cursor:pointer;}
+  #reformer-overlay .rf-policy{font-size:.76rem;color:var(--text-muted);line-height:1.5;margin:.35rem 0 0;}
+  #reformer-overlay .rf-btn{display:block;width:100%;margin-top:.4rem;padding:.8rem 1rem;border:none;border-radius:999px;background:var(--brown);color:#fff;font-family:'Jost',sans-serif;font-size:.95rem;font-weight:600;letter-spacing:.02em;cursor:pointer;}
+  #reformer-overlay .rf-btn:disabled{opacity:.45;cursor:not-allowed;}
+  #reformer-overlay .rf-err{color:#b03636;font-size:.8rem;text-align:left;margin:.15rem 0 .6rem;min-height:1em;}
+  #reformer-overlay .rf-chosen{font-size:.82rem;color:#3d322a;text-align:left;margin:0 0 1rem;background:#f4ecdd;border-radius:9px;padding:.5rem .7rem;}
+  #reformer-overlay .rf-chosen a{color:#9a6535;text-decoration:underline;cursor:pointer;}
+  #reformer-overlay .rf-getting{text-align:left;margin-top:1.3rem;padding-top:1.1rem;border-top:1px solid var(--border);}
+  #reformer-overlay .rf-getting h4{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:var(--brown);margin:0 0 .35rem;font-weight:600;}
+  #reformer-overlay .rf-getting p{font-size:.82rem;color:#3d322a;line-height:1.5;margin:0 0 .3rem;}
+  #reformer-overlay .rf-getting a.rf-map{color:#9a6535;font-weight:600;text-decoration:underline;}
+  #reformer-overlay .rf-close-link{background:none;border:none;color:var(--text-muted);text-decoration:underline;font-size:.8rem;margin-top:1.1rem;cursor:pointer;font-family:'Jost',sans-serif;}
+  #rf-waiver-modal{display:none;position:fixed;inset:0;z-index:10000;background:rgba(20,12,6,.6);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1rem;}
+  #rf-waiver-modal .rf-wm-card{background:#fff;border-radius:14px;max-width:520px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,.45);font-family:'Jost',sans-serif;overflow:hidden;}
+  #rf-waiver-modal h3{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--brown);margin:0;padding:1.1rem 1.25rem .6rem;text-align:center;}
+  #rf-waiver-scroll{overflow-y:auto;padding:0 1.25rem;flex:1;text-align:left;}
+  #rf-waiver-scroll .rf-cl{font-size:.8rem;color:#3d322a;line-height:1.5;margin:0 0 .7rem;padding-bottom:.7rem;border-bottom:1px solid #f0e8da;}
+  #rf-waiver-scroll .rf-cl b{color:#9a6535;}
+  #rf-waiver-modal .rf-wm-foot{padding:.9rem 1.25rem 1.1rem;border-top:1px solid var(--border);background:#fdfbf7;}
+  #rf-waiver-modal .rf-wm-hint{font-size:.74rem;color:var(--text-muted);text-align:center;margin:0 0 .6rem;}
+  #rf-waiver-modal .rf-wm-btns{display:flex;gap:.6rem;}
+  #rf-waiver-modal .rf-wm-btns button{flex:1;padding:.7rem;border-radius:999px;font-family:'Jost',sans-serif;font-weight:600;font-size:.9rem;cursor:pointer;border:1px solid var(--border);}
+  #rf-waiver-modal #rf-waiver-agree{background:var(--brown);color:#fff;border-color:var(--brown);}
+  #rf-waiver-modal #rf-waiver-agree:disabled{opacity:.45;cursor:not-allowed;}
+  #rf-waiver-modal #rf-waiver-cancel{background:#fff;color:#3d322a;}
+</style>
 <div id="reformer-overlay" style="display:none;position:fixed;inset:0;background:rgba(44,26,14,.85);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);z-index:9999;align-items:center;justify-content:center;padding:1rem;overflow-y:auto;">
-  <div style="background:#fdfbf7;border-radius:16px;padding:1.75rem 1.5rem;max-width:440px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.4);max-height:92vh;overflow-y:auto;text-align:center;font-family:'Jost',sans-serif;">
-    <div style="font-family:Georgia,serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#9a6535;font-weight:bold;">Auric Movement</div>
-    <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.6rem;color:var(--brown);margin:.4rem 0 .25rem;font-weight:500;line-height:1.15;">Riddim &amp; Kompa on the Reformer</h2>
-    <p style="font-size:.9rem;color:#3d322a;margin:0 0 .25rem;line-height:1.5;">Sunday, September 13 &middot; Valley Studio, West Hempstead</p>
-    <p style="font-size:.9rem;color:#3d322a;margin:0 0 .35rem;line-height:1.5;"><strong>$45</strong> &middot; 45-minute session &middot; only <strong>6 spots</strong> each</p>
-    <p style="font-size:.8rem;color:var(--text-muted);margin:0 0 1.25rem;line-height:1.5;">Every spot includes a complimentary goodie bag &#127873; &mdash; pick your time:</p>
-    <div style="border:1px solid var(--border);border-radius:12px;padding:1rem 1rem 1.1rem;margin-bottom:1rem;background:#faf5ee;">
-      <div style="font-weight:600;color:var(--brown);font-size:.95rem;margin-bottom:.6rem;">&#128336; 1:00 PM &mdash; 1:45 PM</div>
-      <stripe-buy-button buy-button-id="buy_btn_1U0qlXCyx5PIptEipZUAdX6Z" publishable-key="pk_live_51TSmNuCyx5PIptEi8SCgMFB3I7ECVFeAzDOwjj1ZLrVZX1scB6cH8wAjNor3SFilMwMuqo0aFsbsckjYLU33iSAp00tmUxBVlK"></stripe-buy-button>
+  <div class="rf-modal">
+    <button type="button" class="rf-x" id="reformer-close" aria-label="Close">&times;</button>
+    <div class="rf-eyebrow">Auric Movement</div>
+    <h2 class="rf-title">Riddim &amp; Kompa on the Reformer</h2>
+    <p class="rf-meta">Sunday, September 13 &middot; Valley Studio, West Hempstead</p>
+    <p class="rf-meta"><strong>$45</strong> &middot; 45-minute session &middot; only <strong>6 spots</strong> each</p>
+    <p class="rf-goodie">Every spot includes a complimentary goodie bag &#127873;</p>
+
+    <!-- STEP 1 · pick your time -->
+    <div id="rf-step-time">
+      <p class="rf-meta" style="margin-bottom:.7rem;font-weight:600;color:var(--brown);">Pick your time:</p>
+      <button type="button" class="rf-time" data-session="1pm" data-label="1:00 PM session">&#128336; 1:00 PM &mdash; 1:45 PM<small>45-minute reformer session</small></button>
+      <button type="button" class="rf-time" data-session="2pm" data-label="2:00 PM session">&#128337; 2:00 PM &mdash; 2:45 PM<small>45-minute reformer session</small></button>
     </div>
-    <div style="border:1px solid var(--border);border-radius:12px;padding:1rem 1rem 1.1rem;background:#faf5ee;">
-      <div style="font-weight:600;color:var(--brown);font-size:.95rem;margin-bottom:.6rem;">&#128337; 2:00 PM &mdash; 2:45 PM</div>
-      <stripe-buy-button buy-button-id="buy_btn_1U0ql7Cyx5PIptEiXHPOsmj2" publishable-key="pk_live_51TSmNuCyx5PIptEi8SCgMFB3I7ECVFeAzDOwjj1ZLrVZX1scB6cH8wAjNor3SFilMwMuqo0aFsbsckjYLU33iSAp00tmUxBVlK"></stripe-buy-button>
+
+    <!-- STEP 2 · details + refund + waiver gate -->
+    <form id="rf-step-form" style="display:none;" novalidate>
+      <div class="rf-chosen">Booking: <strong id="rf-chosen-label"></strong> &middot; <a id="rf-change-time" role="button" tabindex="0">change time</a></div>
+      <div class="rf-field"><label for="rf-name">Full name</label><input type="text" id="rf-name" autocomplete="name" placeholder="Your name"></div>
+      <div class="rf-field"><label for="rf-email">Email</label><input type="email" id="rf-email" autocomplete="email" placeholder="you@email.com"></div>
+      <div class="rf-field"><label for="rf-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="rf-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
+      <div class="rf-ack">
+        <input type="checkbox" id="rf-refund">
+        <label for="rf-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">All sales are final &mdash; no refunds or credits. Can&rsquo;t make it? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names.</span></label>
+      </div>
+      <div class="rf-ack">
+        <input type="checkbox" id="rf-waiver" disabled>
+        <label for="rf-waiver">I have read and agree to the <a id="rf-open-waiver" role="button" tabindex="0">liability waiver</a>. <span class="rf-opt">(open it to continue)</span></label>
+      </div>
+      <div class="rf-field"><label for="rf-sign">Signature &mdash; type your full name</label><input type="text" id="rf-sign" autocomplete="off" placeholder="Type your full name to sign"></div>
+      <div class="rf-err" id="rf-form-err" role="alert"></div>
+      <button type="submit" class="rf-btn" id="rf-continue" disabled>Continue to payment &rarr;</button>
+    </form>
+
+    <!-- STEP 3 · pay -->
+    <div id="rf-step-pay" style="display:none;">
+      <p class="rf-meta" style="margin-bottom:1rem;">&#10004; You&rsquo;re all set, <strong id="rf-pay-name"></strong>. Complete payment to lock your <strong id="rf-pay-label"></strong> spot:</p>
+      <div id="rf-buy-1pm" style="display:none;">
+        <stripe-buy-button buy-button-id="buy_btn_1U0qlXCyx5PIptEipZUAdX6Z" publishable-key="pk_live_51TSmNuCyx5PIptEi8SCgMFB3I7ECVFeAzDOwjj1ZLrVZX1scB6cH8wAjNor3SFilMwMuqo0aFsbsckjYLU33iSAp00tmUxBVlK"></stripe-buy-button>
+      </div>
+      <div id="rf-buy-2pm" style="display:none;">
+        <stripe-buy-button buy-button-id="buy_btn_1U0ql7Cyx5PIptEiXHPOsmj2" publishable-key="pk_live_51TSmNuCyx5PIptEi8SCgMFB3I7ECVFeAzDOwjj1ZLrVZX1scB6cH8wAjNor3SFilMwMuqo0aFsbsckjYLU33iSAp00tmUxBVlK"></stripe-buy-button>
+      </div>
+      <p class="rf-policy" style="margin-top:.9rem;">You&rsquo;ll get a Stripe receipt by email. Questions? auricmovement@outlook.com</p>
     </div>
-    <button type="button" id="reformer-close" style="background:none;border:none;color:var(--text-muted);text-decoration:underline;font-size:.8rem;margin-top:1.1rem;cursor:pointer;font-family:'Jost',sans-serif;">Close</button>
+
+    <!-- Getting there -->
+    <div class="rf-getting">
+      <h4>Getting there</h4>
+      <p><strong>Valley Studio</strong><br>45 Cherry Valley Ave, West Hempstead, NY 11552</p>
+      <p><a class="rf-map" href="https://maps.google.com/?q=45+Cherry+Valley+Ave+West+Hempstead+NY+11552" target="_blank" rel="noopener noreferrer">Open in Google Maps &rarr;</a></p>
+      <p style="color:var(--text-muted);">Street parking is available nearby.</p>
+    </div>
+
+    <button type="button" class="rf-close-link" id="reformer-close2">Close</button>
   </div>
 </div>
+
+<!-- Scrollable liability waiver sub-modal -->
+<div id="rf-waiver-modal" aria-modal="true" role="dialog" aria-label="Liability waiver">
+  <div class="rf-wm-card">
+    <h3>Liability Waiver &amp; Release</h3>
+    <div id="rf-waiver-scroll"></div>
+    <div class="rf-wm-foot">
+      <p class="rf-wm-hint" id="rf-waiver-hint">Scroll to the bottom to enable &ldquo;I agree.&rdquo;</p>
+      <div class="rf-wm-btns">
+        <button type="button" id="rf-waiver-cancel">Close</button>
+        <button type="button" id="rf-waiver-agree" disabled>I&rsquo;ve read this &mdash; I agree</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-  (function(){
-    var card=document.getElementById('event-card-reformer');
-    var ov=document.getElementById('reformer-overlay');
-    if(!card||!ov) return;
-    function open(){ ov.style.display='flex'; document.body.style.overflow='hidden'; }
-    function close(){ ov.style.display='none'; document.body.style.overflow=''; }
-    card.addEventListener('click', function(e){ e.preventDefault(); open(); });
-    var cbtn=document.getElementById('reformer-close'); if(cbtn) cbtn.addEventListener('click', close);
-    ov.addEventListener('click', function(e){ if(e.target===ov) close(); });
-    document.addEventListener('keydown', function(e){ if(e.key==='Escape' && ov.style.display==='flex') close(); });
-  })();
+  document.addEventListener('DOMContentLoaded', function(){
+    var card = document.getElementById('event-card-reformer');
+    var ov   = document.getElementById('reformer-overlay');
+    if(!card || !ov) return;
+
+    // Individual attendee liability clauses (mirrors the site's mat/reformer waiver).
+    var RF_CLAUSES = [
+      "I understand that participation in reformer Pilates and movement sessions offered by Auric Movement LLC involves physical activity and inherent risks, including but not limited to muscle strain, sprains, fractures, falls, and other injuries.",
+      "I acknowledge that I am voluntarily participating in this session and assume all risks of injury or harm that may result from my participation, whether foreseeable or unforeseeable.",
+      "I represent that I am physically and mentally fit to participate and have no medical conditions that would prevent safe participation, or I have obtained clearance from a licensed healthcare provider.",
+      "I agree to disclose any known medical conditions, allergies, injuries, or physical limitations to my instructor before the session.",
+      "I understand that the instructors and staff of Auric Movement LLC are not licensed medical professionals and that no session is a substitute for professional medical advice, diagnosis, or treatment.",
+      "I agree to follow all instructions, safety guidelines, and rules provided by Auric Movement LLC staff, and to use the reformer and studio equipment only as directed.",
+      "I understand that I may stop participation at any time if I feel pain, discomfort, or distress, and I agree to immediately notify my instructor.",
+      "I release, discharge, and hold harmless Auric Movement LLC, its owners, instructors, employees, agents, affiliates, and the host studio (Valley Studio) from any and all claims, liabilities, damages, or expenses arising from my participation.",
+      "I waive any right to bring a lawsuit or legal claim against the Released Parties for any injury, illness, or loss sustained during or as a result of my participation.",
+      "I understand that this waiver extends to any claims arising from the negligence of the Released Parties, excluding gross negligence or willful misconduct.",
+      "I consent to the use of any photographs, video, or audio recordings taken during the session for promotional, educational, or marketing purposes by Auric Movement LLC, unless I submit a written opt-out request.",
+      "I understand that personal belongings brought to the session are my responsibility and that Auric Movement LLC is not liable for any lost, stolen, or damaged items.",
+      "I agree that any disputes arising from this waiver or my participation shall be resolved through binding arbitration under the rules of the American Arbitration Association, in New York, and not through court litigation.",
+      "I acknowledge that this waiver is governed by and construed in accordance with the laws of the State of New York, and that if any provision is found unenforceable, the remaining provisions remain in full effect.",
+      "I confirm that I am at least 18 years of age, or that I have obtained parental or guardian consent if I am a minor.",
+      "I understand that late arrivals may not be admitted for safety reasons, and that no refunds or credits are issued for late arrivals or no-shows.",
+      "I understand that complimentary items — which may include a goodie bag, light snacks, and/or soft drinks — may be provided as a courtesy. I am responsible for disclosing any food allergies in advance and assume full responsibility for any items I receive or consume, releasing the Released Parties from any resulting liability.",
+      "I acknowledge that I have had sufficient opportunity to read this waiver, ask questions, and seek independent legal advice before signing, and I sign it freely and voluntarily."
+    ];
+    var RF_REFUND_TEXT = 'All sales are final — no refunds or credits. Spot transfers to a friend are welcome up to 24 hours before the event — email auricmovement@outlook.com with both names.';
+
+    var chosen = null;         // '1pm' | '2pm'
+    var chosenLabel = '';
+    var waiverOpened = false;  // has the sub-modal been opened + agreed
+
+    var stepTime = document.getElementById('rf-step-time');
+    var stepForm = document.getElementById('rf-step-form');
+    var stepPay  = document.getElementById('rf-step-pay');
+    var nameEl   = document.getElementById('rf-name');
+    var emailEl  = document.getElementById('rf-email');
+    var refEl    = document.getElementById('rf-referral');
+    var refundEl = document.getElementById('rf-refund');
+    var waiverEl = document.getElementById('rf-waiver');
+    var signEl   = document.getElementById('rf-sign');
+    var contBtn  = document.getElementById('rf-continue');
+    var formErr  = document.getElementById('rf-form-err');
+
+    function openOverlay(){ ov.style.display='flex'; document.body.style.overflow='hidden'; }
+    function closeOverlay(){ ov.style.display='none'; document.body.style.overflow=''; }
+    function resetFlow(){
+      chosen=null; chosenLabel=''; waiverOpened=false;
+      stepTime.style.display=''; stepForm.style.display='none'; stepPay.style.display='none';
+      if(stepForm.reset) stepForm.reset();
+      waiverEl.checked=false; waiverEl.disabled=true; refundEl.checked=false;
+      formErr.textContent=''; syncContinue();
+    }
+    card.addEventListener('click', function(e){ e.preventDefault(); resetFlow(); openOverlay(); });
+    document.getElementById('reformer-close').addEventListener('click', closeOverlay);
+    document.getElementById('reformer-close2').addEventListener('click', closeOverlay);
+    ov.addEventListener('click', function(e){ if(e.target===ov) closeOverlay(); });
+    document.addEventListener('keydown', function(e){
+      if(e.key!=='Escape') return;
+      if(document.getElementById('rf-waiver-modal').style.display==='flex'){ closeWaiverModal(); return; }
+      if(ov.style.display==='flex') closeOverlay();
+    });
+
+    // STEP 1 → pick a time
+    Array.prototype.forEach.call(document.querySelectorAll('#rf-step-time .rf-time'), function(btn){
+      btn.addEventListener('click', function(){
+        chosen = btn.getAttribute('data-session');
+        chosenLabel = btn.getAttribute('data-label');
+        document.getElementById('rf-chosen-label').textContent = chosenLabel;
+        stepTime.style.display='none'; stepForm.style.display='';
+        setTimeout(function(){ nameEl.focus(); }, 60);
+      });
+    });
+    document.getElementById('rf-change-time').addEventListener('click', function(){
+      stepForm.style.display='none'; stepTime.style.display='';
+    });
+
+    // Gate: name + email + refund + waiver + signature all required
+    function syncContinue(){
+      var ok = nameEl.value.trim().length>1 &&
+               /.+@.+\..+/.test(emailEl.value.trim()) &&
+               refundEl.checked && waiverEl.checked &&
+               signEl.value.trim().length>1;
+      contBtn.disabled = !ok;
+    }
+    [nameEl,emailEl,signEl].forEach(function(el){ el.addEventListener('input', syncContinue); });
+    refundEl.addEventListener('change', syncContinue);
+    waiverEl.addEventListener('change', syncContinue);
+
+    // Waiver sub-modal
+    var wm = document.getElementById('rf-waiver-modal');
+    var wmScroll = document.getElementById('rf-waiver-scroll');
+    var wmAgree = document.getElementById('rf-waiver-agree');
+    var wmHint = document.getElementById('rf-waiver-hint');
+    function buildWaiver(){
+      if(wmScroll.childElementCount) return;
+      RF_CLAUSES.forEach(function(t,i){
+        var d=document.createElement('div'); d.className='rf-cl';
+        d.innerHTML='<b>'+(i+1)+'.</b> '+t; wmScroll.appendChild(d);
+      });
+    }
+    function openWaiverModal(){
+      buildWaiver(); wm.style.display='flex';
+      wmScroll.scrollTop=0; wmAgree.disabled=true; wmHint.style.display='';
+      // if content is short enough to not scroll, enable immediately
+      setTimeout(checkScrolled, 50);
+    }
+    function closeWaiverModal(){ wm.style.display='none'; }
+    function checkScrolled(){
+      if(wmScroll.scrollTop + wmScroll.clientHeight >= wmScroll.scrollHeight - 8){
+        wmAgree.disabled=false; wmHint.style.display='none';
+      }
+    }
+    wmScroll.addEventListener('scroll', checkScrolled);
+    document.getElementById('rf-open-waiver').addEventListener('click', openWaiverModal);
+    document.getElementById('rf-open-waiver').addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openWaiverModal(); }});
+    document.getElementById('rf-waiver-cancel').addEventListener('click', closeWaiverModal);
+    wm.addEventListener('click', function(e){ if(e.target===wm) closeWaiverModal(); });
+    wmAgree.addEventListener('click', function(){
+      waiverOpened=true; waiverEl.disabled=false; waiverEl.checked=true;
+      closeWaiverModal(); syncContinue();
+    });
+
+    // Lazy Supabase client for a best-effort registration record
+    var rfSb = null;
+    function getSb(){
+      if(rfSb) return rfSb;
+      try { if(window.supabase && window.supabase.createClient){
+        rfSb = window.supabase.createClient('https://qvmiwyxerotkqpbuhpun.supabase.co','sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ');
+      }} catch(e){}
+      return rfSb;
+    }
+    function saveRegistration(rec){
+      // Local backup — always
+      try {
+        var key='auric_reformer';
+        var arr=JSON.parse(localStorage.getItem(key)||'[]'); arr.push(rec);
+        localStorage.setItem(key, JSON.stringify(arr));
+      } catch(e){}
+      // Best-effort DB insert (no-op if the table isn't present; never blocks the sale)
+      try {
+        var sb=getSb();
+        if(sb) sb.from('reformer_registrations').insert([rec]).then(function(){},function(){});
+      } catch(e){}
+    }
+
+    // STEP 2 → submit gate, reveal Stripe button
+    stepForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      if(!chosen){ formErr.textContent='Please pick a session time first.'; return; }
+      var name=nameEl.value.trim(), email=emailEl.value.trim(), sign=signEl.value.trim();
+      if(name.length<2){ formErr.textContent='Please enter your full name.'; nameEl.focus(); return; }
+      if(!/.+@.+\..+/.test(email)){ formErr.textContent='Please enter a valid email.'; emailEl.focus(); return; }
+      if(!refundEl.checked){ formErr.textContent='Please confirm you understand the refund policy.'; return; }
+      if(!waiverEl.checked){ formErr.textContent='Please open and agree to the liability waiver.'; return; }
+      if(sign.length<2){ formErr.textContent='Please type your full name to sign.'; signEl.focus(); return; }
+      formErr.textContent='';
+
+      var nowIso=new Date().toISOString();
+      saveRegistration({
+        name:name, email:email, session:chosen, session_label:chosenLabel,
+        referred_by: refEl.value.trim() || null,
+        signature:sign, clauses_agreed: RF_CLAUSES.length,
+        refund_ack:true, refund_policy_text:RF_REFUND_TEXT,
+        waiver_agreed:true, is_paid:false, created_at:nowIso, event:'riddim-kompa-reformer-2026-09-13'
+      });
+
+      // Reveal pay step with the correct Stripe button
+      document.getElementById('rf-pay-name').textContent = name.split(' ')[0];
+      document.getElementById('rf-pay-label').textContent = chosenLabel;
+      document.getElementById('rf-buy-1pm').style.display = (chosen==='1pm')?'block':'none';
+      document.getElementById('rf-buy-2pm').style.display = (chosen==='2pm')?'block':'none';
+      stepForm.style.display='none'; stepPay.style.display='';
+      stepPay.scrollIntoView({behavior:'smooth', block:'nearest'});
+    });
+  });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script async src="https://js.stripe.com/v3/buy-button.js"></script>
