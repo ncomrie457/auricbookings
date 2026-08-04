@@ -4376,6 +4376,16 @@ Can't wait to move and connect with you!</textarea>
       <p style="color:#a9b48c;font-size:.75rem;letter-spacing:.08em;margin:.75rem 0 0;">@auricmovement</p>
     </div>
   </div>
+
+  <!-- The Auric Circle — community business shout-outs -->
+  <div style="max-width:560px;margin:1.75rem auto 0;background:#f4ecdb;border-radius:14px;padding:2rem 1.5rem;text-align:center;font-family:'Jost',sans-serif;">
+    <div style="font-size:1.7rem;color:#c79a54;line-height:1;">&#10022;</div>
+    <div style="letter-spacing:.26em;font-size:.68rem;text-transform:uppercase;color:#a5794a;font-weight:700;margin-top:.5rem;">Community over competition</div>
+    <h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:2.1rem;color:#5A3A1A;margin:.35rem 0 0;font-weight:700;">The Auric Circle</h2>
+    <p style="font-size:.88rem;color:#5a4a3a;line-height:1.6;margin:.75rem auto 0;max-width:400px;">A few people we love &mdash; talented women from our community whose work is worth knowing. Consider this your warm introduction. &#10022;</p>
+    <div id="auric-circle-list" style="margin-top:1.5rem;display:flex;flex-direction:column;gap:1rem;text-align:left;"></div>
+    <p style="font-size:.78rem;color:#8a7358;line-height:1.6;margin:1.5rem auto 0;max-width:400px;">Have a business and want to be featured? Come to an Auric event &#129293; &mdash; the Circle grows from our community.</p>
+  </div>
 </div>
 
 <footer class="bq-footer" role="contentinfo">
@@ -5037,6 +5047,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   renderVideoSections();
+
+  // ── The Auric Circle — community business shout-outs ──────────────────────
+  // Add/remove businesses here. Each renders as a card in the Auric Club tab.
+  var AURIC_CIRCLE = [
+    { emoji:'💄', category:'Luxury Hair', name:'Belle Beauty Salon Spa',
+      desc:'Luxury hair services &amp; extensions &mdash; a full-service beauty shop on Long Island.',
+      linkText:'bellebeautysalonspa.com', url:'https://bellebeautysalonspa.com', accent:'#c2456b' },
+    { emoji:'💅', category:'Luxury Press-On Nails', name:'SJ Tips',
+      desc:'Handcrafted luxury press-on nails &mdash; salon looks, made to last, delivered to you.',
+      linkText:'@sjtipsllc &middot; Instagram &amp; TikTok', url:'https://www.instagram.com/sjtipsllc', accent:'#e0559a' },
+    { emoji:'💪', category:'Fitness &amp; Events', name:'Kamaye Alethia',
+      desc:'WBFF fitness competitor &amp; NYC trainer who hosts her own events &mdash; movement, community, and serious inspiration.',
+      linkText:'@kamayealethia_wbff &middot; Instagram', url:'https://www.instagram.com/kamayealethia_wbff', accent:'#2f9e57' }
+  ];
+  (function renderAuricCircle(){
+    var el = document.getElementById('auric-circle-list'); if(!el) return;
+    el.innerHTML = AURIC_CIRCLE.map(function(b){
+      return '<a href="'+b.url+'" target="_blank" rel="noopener noreferrer" style="display:block;text-decoration:none;background:#fff;border:1px solid #e6d8c2;border-left:4px solid '+b.accent+';border-radius:10px;padding:.9rem 1rem;transition:box-shadow .2s;">' +
+        '<span style="display:inline-block;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:#fff;background:'+b.accent+';padding:.22rem .6rem;border-radius:20px;">'+b.emoji+' '+b.category+'</span>' +
+        '<div style="font-family:\'Cormorant Garamond\',Georgia,serif;font-weight:700;font-size:1.35rem;color:#5A3A1A;margin:.5rem 0 .15rem;">'+b.name+'</div>' +
+        '<div style="font-size:.83rem;color:#5a4a3a;line-height:1.5;">'+b.desc+'</div>' +
+        '<div style="font-size:.82rem;color:'+b.accent+';font-weight:600;margin-top:.5rem;">'+b.linkText+' &rarr;</div>' +
+      '</a>';
+    }).join('');
+  })();
 
   var EMAILJS_PUBLIC_KEY  = 'xr1kT3l8rFhNodudq';
   var EMAILJS_SERVICE_ID  = 'service_9n4adla';
