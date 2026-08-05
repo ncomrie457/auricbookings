@@ -9910,10 +9910,15 @@ document.addEventListener('DOMContentLoaded', function() {
     if(RF_TMPL_CONFIRM.indexOf('REPLACE')!==-1){ alert('Set RF_TMPL_CONFIRM to your real EmailJS template id first (create it from RIDDIM_KOMPA_CONFIRMATION_TEMPLATE.html).'); return; }
     if(!confirm('Send the confirmation email to '+rec.name+' ('+rec.email+') and mark them paid?')) return;
     var sess = RF_ADMIN_SESS[rec.session] || RF_ADMIN_SESS['1pm'];
+    var when=''; try { when = rec.created_at ? new Date(rec.created_at).toLocaleString() : ''; } catch(e){}
     emailjs.send(EMAILJS_SERVICE_RESEND, RF_TMPL_CONFIRM, {
       from_name: rec.name, to_email: rec.email,
-      session_time: sess.time, calendar_url: sess.cal,
-      amount: '$45.00',
+      arrival_time: sess.arrival, class_time: sess.time, calendar_url: sess.cal,
+      receipt_amount: '$45.00',
+      receipt_code: 'RK-' + rec.id,
+      receipt_signed_as: rec.signature || rec.name,
+      receipt_signed_at: when,
+      refund_policy_ack_at: when,
       refund_policy_text: rec.refund_policy_text || window.__RF_REFUND_TEXT || 'All sales are final — no refunds or credits.'
     }).then(function(){ alert('✅ Confirmation sent to '+rec.email); }, function(){ alert('⚠️ Could not send. Check EmailJS dashboard.'); });
     supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: true })
