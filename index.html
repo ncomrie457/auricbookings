@@ -9850,11 +9850,12 @@ document.addEventListener('DOMContentLoaded', function() {
           ? btn('rfAdminSetPaid('+id+',false)','#fff4e5','#f0c890','#a86617','⏳ Mark unpaid')
           : btn('rfAdminSetPaid('+id+',true)','#e8f5e9','#a5d6a7','#2e7d32','✅ Mark paid');
         var waiverBtn = rec.signature ? btn('rfAdminWaiver('+id+')','#eef4fb','#b5d4f4','#185fa5','\u{1F4C4} Waiver') : '';
+        var clearHealthBtn = rec.health ? btn('rfAdminClearHealth('+id+')','#fef4e5','#f0c890','#a86617','\u{1FA79} Clear health') : '';
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
-          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+waiverBtn+editBtn+removeBtn+'</div></div>';
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+waiverBtn+clearHealthBtn+editBtn+removeBtn+'</div></div>';
         block.appendChild(item);
       });
     }
@@ -9878,6 +9879,14 @@ document.addEventListener('DOMContentLoaded', function() {
     supabase.rpc('reformer_remove', { pass: ADMIN_PASSWORD, rid: id })
       .then(function(res){ if(res&&res.error){ alert('Could not remove — run the reformer admin SQL first.'); return; } rfRefresh(); },
             function(){ alert('Could not remove. Try again.'); });
+  };
+  window.rfAdminClearHealth = function(id){
+    var rec = rfRosterById[id]; if(!rec){ return; }
+    if(!rec.health){ return; }
+    if(!confirm('Clear the health disclosure for ' + (rec.name || 'this person') + '?\n\nThis removes ONLY the health note (kept for class prep, deleted within 48 hours). Their spot, waiver, and payment are untouched. This cannot be undone.')) return;
+    supabase.rpc('reformer_clear_health', { pass: ADMIN_PASSWORD, rid: id })
+      .then(function(res){ if(res&&res.error){ alert('Could not clear — run the reformer_clear_health SQL first.'); return; } rfRefresh(); },
+            function(){ alert('Could not clear the health note.'); });
   };
   window.rfAdminEdit = function(id){
     var rec = rfRosterById[id]; if(!rec){ return; }
