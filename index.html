@@ -4260,6 +4260,8 @@
             <option value="s1">Pilates x Niara &#8212; Session 1 (1:00 PM)</option>
             <option value="s2">Pilates x Niara &#8212; Session 2 (2:00 PM)</option>
             <option value="mc1">Mat &amp; Chat &#8212; August 1st</option>
+            <option value="rk1pm">Riddim &amp; Kompa on the Reformer &#8212; 1 PM</option>
+            <option value="rk2pm">Riddim &amp; Kompa on the Reformer &#8212; 2 PM</option>
           </select>
         </div>
         <div>
@@ -4291,9 +4293,13 @@
           <input type="checkbox" data-event-badge="recharge" data-field="is_collab">
           <span>Create &amp; Recharge &mdash; Collab</span>
         </label>
-        <label class="mc-health-row" style="margin-bottom:0;">
+        <label class="mc-health-row" style="margin-bottom:.45rem;">
           <input type="checkbox" data-event-badge="rnb" data-field="is_collab">
           <span>R&amp;B Pilates &mdash; Collab</span>
+        </label>
+        <label class="mc-health-row" style="margin-bottom:0;">
+          <input type="checkbox" data-event-badge="reformer" data-field="is_collab">
+          <span>Riddim &amp; Kompa on the Reformer &mdash; Collab</span>
         </label>
       </div>
       <div id="admin-event-badges-status" style="margin-top:.5rem;font-size:.78rem;color:var(--text-muted);"></div>
@@ -6889,8 +6895,21 @@ document.addEventListener('DOMContentLoaded', function() {
     var nowIso = now.toISOString();
 
     // Build the row directly (skipping the diff-based saveData) so we can mark it paid and surface real errors
-    var row, table, label;
-    if (event === 'mc1') {
+    var row, table, label, isReformer = false;
+    if (event === 'rk1pm' || event === 'rk2pm') {
+      isReformer = true;
+      table = 'reformer_registrations';
+      var rkSess = (event === 'rk1pm') ? '1pm' : '2pm';
+      var rkLabel = (rkSess === '1pm') ? '1:00 PM session' : '2:00 PM session';
+      label = 'Riddim & Kompa on the Reformer — ' + (rkSess === '1pm' ? '1 PM' : '2 PM');
+      row = {
+        name: name, email: email, session: rkSess, session_label: rkLabel,
+        signature: name, clauses_agreed: (window.__RF_CLAUSES ? window.__RF_CLAUSES.length : 18),
+        refund_ack: true, waiver_agreed: true,
+        is_paid: true, paid_at: nowIso, created_at: nowIso,
+        event: 'riddim-kompa-reformer-2026-09-13'
+      };
+    } else if (event === 'mc1') {
       table = 'matchat_registrations';
       label = 'Mat & Chat';
       row = {
@@ -6920,12 +6939,15 @@ document.addEventListener('DOMContentLoaded', function() {
       };
     }
 
-    supabase.from(table).insert([row]).select().then(function(res){
+    // Reformer table allows insert but not public select, so skip .select() there.
+    var insertQ = supabase.from(table).insert([row]);
+    if (!isReformer) insertQ = insertQ.select();
+    insertQ.then(function(res){
       if (res.error) {
         status.innerHTML='<span style="color:var(--red);">\u274c Failed: ' + res.error.message + '</span>';
         return;
       }
-      if (!res.data || !res.data.length) {
+      if (!isReformer && (!res.data || !res.data.length)) {
         status.innerHTML='<span style="color:var(--red);">\u274c Insert returned no rows. Check Supabase RLS policies.</span>';
         return;
       }
@@ -6933,7 +6955,7 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('admin-add-name').value='';
       document.getElementById('admin-add-email').value='';
       renderAdmin();
-      if (event === 'mc1') buildMCSpots(); else buildSessionCards();
+      if (event === 'mc1') buildMCSpots(); else if (!isReformer) buildSessionCards();
     }, function(err){
       status.innerHTML='<span style="color:var(--red);">\u274c Network error: ' + (err && err.message || 'unknown') + '</span>';
     });
