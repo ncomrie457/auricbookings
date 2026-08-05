@@ -1,22 +1,20 @@
 <!--
   ════════════════════════════════════════════════════════════
    Riddim & Kompa on the Reformer — Booking Confirmation Email
-   (matches the flyer: warm cream + brown, brick-red accent)
+   (Mat & Chat structure; warm cream + brown with a half
+    Jamaica / half Haiti flag treatment)
    ────────────────────────────────────────────────────────────
    COPY THIS ENTIRE FILE (Cmd+A → Cmd+C) and paste into:
      EmailJS → Email Templates → (your reformer template) →
      switch to the "Code"/HTML view → paste over everything → Save.
 
    Suggested EmailJS Subject:
-     You're booked — Riddim & Kompa on the Reformer ✦ Auric Movement
+     You're in — Riddim & Kompa on the Reformer ✦ Auric Movement
 
-   EmailJS variables used (leave these exactly as-is; fill blanks with
-   real values when sending). Any you don't send will simply show empty:
-     {{from_name}}      — attendee first name
-     {{session_time}}   — e.g. "1:00 PM" or "2:00 PM"
-     {{calendar_url}}   — Add-to-calendar link for their session
-     {{amount}}         — e.g. "$45.00"  (receipt line; optional)
-     {{refund_policy_text}} — the refund policy text they agreed to
+   EmailJS variables (same names as Mat & Chat):
+     {{from_name}} {{arrival_time}} {{class_time}} {{calendar_url}}
+     {{receipt_amount}} {{receipt_code}} {{receipt_signed_as}}
+     {{receipt_signed_at}} {{refund_policy_text}} {{refund_policy_ack_at}}
   ════════════════════════════════════════════════════════════
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -24,7 +22,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>You're booked — Riddim &amp; Kompa on the Reformer</title>
+  <title>You're in — Riddim &amp; Kompa on the Reformer</title>
 </head>
 <body style="margin:0;padding:0;background-color:#efe6d6;font-family:Georgia,'Times New Roman',serif;color:#3a2c1e;">
 
@@ -32,14 +30,12 @@
   <tr>
     <td align="center">
 
-      <!-- Outer container -->
       <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#fdfbf7;border-radius:14px;overflow:hidden;box-shadow:0 6px 30px rgba(90,58,26,0.16);max-width:600px;width:100%;">
 
         <!-- Flag accent stripe: Jamaica (green · gold · black) + Haiti (blue · red) -->
         <tr>
           <td style="padding:0;font-size:0;line-height:0;">
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-              <!-- Left half (50%) = Jamaica · Right half (50%) = Haiti -->
               <tr>
                 <td width="17%" style="height:6px;background-color:#009b3a;font-size:0;line-height:0;">&nbsp;</td>
                 <td width="17%" style="height:6px;background-color:#fed100;font-size:0;line-height:0;">&nbsp;</td>
@@ -51,74 +47,62 @@
           </td>
         </tr>
 
-        <!-- Branded header (echoes the flyer) -->
+        <!-- Header -->
         <tr>
-          <td align="center" style="background-color:#f7f0e3;padding:40px 30px 30px;border-bottom:1px solid #e6d8c2;">
-            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:#a5794a;letter-spacing:4px;text-transform:uppercase;font-weight:bold;margin-bottom:14px;">Auric Movement &middot; West Hempstead, NY</div>
-            <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:34px;line-height:1.12;color:#5A3A1A;font-weight:bold;">Riddim &amp; Kompa<br>on the Reformer</div>
-            <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:20px auto 16px;">
-              <tr>
-                <td width="22" style="height:4px;background-color:#009b3a;font-size:0;line-height:0;">&nbsp;</td>
-                <td width="22" style="height:4px;background-color:#fed100;font-size:0;line-height:0;">&nbsp;</td>
-                <td width="22" style="height:4px;background-color:#151515;font-size:0;line-height:0;">&nbsp;</td>
-                <td width="33" style="height:4px;background-color:#00209f;font-size:0;line-height:0;">&nbsp;</td>
-                <td width="33" style="height:4px;background-color:#d21034;font-size:0;line-height:0;">&nbsp;</td>
-              </tr>
-            </table>
-            <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:18px;color:#8a6a45;">You&rsquo;re in &mdash; see you on the reformer.</div>
-            <img src="https://book.auricmovement.com/riddim-kompa-icon.png" alt="A happy reformer-goer waving the Jamaican and Haitian flags" width="280" style="display:block;margin:16px auto 0;max-width:280px;width:100%;height:auto;border:0;outline:none;">
+          <td align="center" style="background-color:#f7f0e3;padding:38px 30px 28px;border-bottom:1px solid #e6d8c2;">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:#a5794a;letter-spacing:4px;text-transform:uppercase;font-weight:bold;">Auric Movement</div>
+            <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:34px;line-height:1.12;color:#5A3A1A;font-weight:bold;margin-top:12px;">Riddim &amp; Kompa<br>on the Reformer</div>
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:#8a6a45;letter-spacing:2.5px;text-transform:uppercase;margin-top:16px;">Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect</div>
+            <img src="https://book.auricmovement.com/riddim-kompa-icon.png" alt="Jamaican and Haitian flags on a reformer" width="260" style="display:block;margin:18px auto 4px;max-width:260px;width:100%;height:auto;border:0;outline:none;">
+            <div style="display:inline-block;background-color:#0a7d33;color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;padding:8px 20px;border-radius:20px;margin-top:8px;">&#10003; Spot Confirmed</div>
           </td>
         </tr>
 
         <!-- Greeting -->
         <tr>
           <td style="padding:34px 42px 6px;">
-            <p style="font-family:Georgia,serif;font-size:16px;line-height:1.7;color:#3a2c1e;margin:0 0 14px 0;">
-              Hi {{from_name}},
-            </p>
+            <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:24px;color:#5A3A1A;margin:0 0 14px 0;">You&rsquo;re in, {{from_name}}.</p>
             <p style="font-family:Georgia,serif;font-size:16px;line-height:1.75;color:#3a2c1e;margin:0;">
-              Your spot is confirmed &mdash; a 45-minute reformer session set to riddim &amp; kompa, built to align, strengthen, and recharge. We can&rsquo;t wait to move with you.
+              Your payment is in and your spot for <strong>Riddim &amp; Kompa on the Reformer &mdash; Sunday, September 13th</strong> is officially secured. We can&rsquo;t wait to move and connect with you. Here&rsquo;s everything you need.
             </p>
           </td>
         </tr>
 
-        <!-- Session details -->
+        <!-- One Last Thing — song prompt -->
         <tr>
-          <td style="padding:24px 42px 8px;">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border-left:3px solid #c79a54;border-radius:0 8px 8px 0;">
+          <td style="padding:20px 42px 8px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border:1px solid #e6d8c2;border-radius:10px;">
               <tr>
-                <td style="padding:20px 24px;">
-                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:12px;">Session Details</div>
-                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-                    <tr>
-                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;width:110px;"><strong>Date:</strong></td>
-                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">Sunday, September 13</td>
-                    </tr>
-                    <tr>
-                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Your time:</strong></td>
-                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{session_time}} &middot; 45 minutes</td>
-                    </tr>
-                    <tr>
-                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;vertical-align:top;"><strong>Where:</strong></td>
-                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.55;">Valley Studio<br>45 Cherry Valley Ave<br>West Hempstead, NY 11552</td>
-                    </tr>
-                  </table>
+                <td style="padding:24px 26px;" align="center">
+                  <div style="font-size:26px;line-height:1;">&#127925;</div>
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#9a6535;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin:10px 0 8px;">One Last Thing</div>
+                  <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:22px;line-height:1.4;color:#5A3A1A;margin:0;">
+                    What&rsquo;s the one riddim or kompa track you need to hear on the reformer?
+                  </p>
+                  <p style="font-family:Georgia,serif;font-size:13px;line-height:1.6;color:#6d5f45;margin:12px 0 0 0;">
+                    Just reply to this email with your pick and we&rsquo;ll add it to the playlist. &#129293;<br>
+                    And while you&rsquo;re here &mdash; what do you hope to leave feeling?
+                  </p>
                 </td>
               </tr>
             </table>
           </td>
         </tr>
 
-        <!-- Getting there -->
+        <!-- Your Session -->
         <tr>
-          <td style="padding:16px 42px 8px;">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4ecdd;border:1px solid #e0cfae;border-radius:8px;">
+          <td style="padding:24px 42px 8px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border-left:3px solid #c79a54;border-radius:0 8px 8px 0;">
               <tr>
-                <td style="padding:18px 24px;">
-                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">&#128205; Getting There</div>
-                  <p style="font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.65;margin:0;">
-                    Valley Studio is at <strong>45 Cherry Valley Ave, West Hempstead</strong>. Street parking is available nearby &mdash; give yourself a few minutes to settle in before we begin.
-                  </p>
+                <td style="padding:20px 24px;">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:12px;">Your Session</div>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;width:120px;"><strong>Event:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">Riddim &amp; Kompa on the Reformer</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Date:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">Sunday, September 13th</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Arrival:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{arrival_time}}</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Class starts:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{class_time}}</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;vertical-align:top;"><strong>Location:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.55;">Valley Studio<br>45 Cherry Valley Ave<br>West Hempstead, NY 11552</td></tr>
+                  </table>
                 </td>
               </tr>
             </table>
@@ -128,30 +112,13 @@
         <!-- Add to calendar -->
         <tr>
           <td style="padding:22px 42px 10px;" align="center">
-            <a href="{{calendar_url}}" style="display:inline-block;background-color:#b0432e;color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:13px 30px;border-radius:8px;">Add to Calendar &rarr;</a>
+            <a href="{{calendar_url}}" style="display:inline-block;background-color:#b0432e;color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:13px 30px;border-radius:8px;">&#128197; Add to My Calendar</a>
+            <p style="font-family:Georgia,serif;font-size:12px;color:#8a8078;margin:12px 0 0 0;">Works with Apple, Google &amp; Outlook calendars.</p>
           </td>
         </tr>
 
         <!-- Divider -->
         <tr><td style="padding:12px 42px;"><div style="border-top:1px solid #e6d8c2;"></div></td></tr>
-
-        <!-- What to bring + goodie bag -->
-        <tr>
-          <td style="padding:0 42px 18px;">
-            <h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:22px;color:#5A3A1A;margin:0 0 12px 0;font-weight:500;">What to bring</h2>
-            <p style="font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0 0 10px 0;">Just wear something comfy to move in &mdash; grippy socks are a plus, and all equipment is provided. Come hydrated and ready to flow.</p>
-            <p style="font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0;">&#127873; Every spot includes a <strong>complimentary goodie bag</strong> &mdash; a little something from us to you.</p>
-          </td>
-        </tr>
-
-        <!-- Lateness note -->
-        <tr>
-          <td style="padding:0 42px 20px;">
-            <p style="font-family:Georgia,serif;font-size:13px;color:#7a6650;line-height:1.65;margin:0;font-style:italic;">
-              A gentle note: please arrive a few minutes before {{session_time}} so we can begin on time. Spots are held first come, first served, and late arrivals can disrupt the flow for everyone.
-            </p>
-          </td>
-        </tr>
 
         <!-- Receipt -->
         <tr>
@@ -159,16 +126,12 @@
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border-radius:8px;">
               <tr>
                 <td style="padding:20px 24px;">
-                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:12px;">&#128179; Your Receipt</div>
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#2e7d32;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:12px;">&#10003; Payment Received &mdash; Receipt</div>
                   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-                    <tr>
-                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;width:140px;"><strong>Amount paid:</strong></td>
-                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{amount}}</td>
-                    </tr>
-                    <tr>
-                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Session:</strong></td>
-                      <td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">Riddim &amp; Kompa on the Reformer &middot; {{session_time}}</td>
-                    </tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;width:150px;"><strong>Amount paid:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{receipt_amount}}</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Confirmation code:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{receipt_code}}</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Waiver signed by:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{receipt_signed_as}}</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Signed at:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{receipt_signed_at}}</td></tr>
                   </table>
                 </td>
               </tr>
@@ -176,48 +139,57 @@
           </td>
         </tr>
 
+        <!-- What to bring -->
+        <tr>
+          <td style="padding:0 42px 18px;">
+            <h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:22px;color:#5A3A1A;margin:0 0 12px 0;font-weight:500;">What to bring</h2>
+            <p style="font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.8;margin:0;">
+              &bull;&nbsp; Comfortable, fitted clothes you can move in (grippy socks recommended)<br>
+              &bull;&nbsp; All equipment is provided &mdash; plus a complimentary goodie bag &#127873;
+            </p>
+          </td>
+        </tr>
+
+        <!-- Lateness note -->
+        <tr>
+          <td style="padding:0 42px 20px;">
+            <p style="font-family:Georgia,serif;font-size:13px;color:#7a6650;line-height:1.65;margin:0;font-style:italic;">
+              &#9200; Please arrive at {{arrival_time}}. Class begins at {{class_time}} with a <strong>5-minute grace period only</strong> &mdash; late arrivals can&rsquo;t be admitted. We want you to have the full experience.
+            </p>
+          </td>
+        </tr>
+
         <!-- Refund policy -->
         <tr>
           <td style="padding:0 42px 28px;">
-            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#a99a86;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">Refund Policy</div>
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#a99a86;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">Refund Policy &mdash; Acknowledged {{refund_policy_ack_at}}</div>
             <p style="font-family:Georgia,serif;font-size:12px;color:#7a6650;line-height:1.65;margin:0;white-space:pre-line;">{{refund_policy_text}}</p>
           </td>
         </tr>
 
-        <!-- With gratitude panel -->
+        <!-- Closing -->
         <tr>
-          <td style="padding:6px 42px 26px;">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:linear-gradient(90deg,#0a7d33 0%,#0a7d33 49%,#fed100 49%,#fed100 51%,#0a2a9c 51%,#0a2a9c 100%);background-color:#0a7d33;border-radius:12px;">
-              <tr>
-                <td align="center" style="padding:30px 26px;">
-                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#ffffff;letter-spacing:4px;text-transform:uppercase;font-weight:bold;margin-bottom:12px;">
-                    With Gratitude <span style="color:#fed100;">&#9829;</span>
-                  </div>
-                  <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:21px;line-height:1.5;color:#ffffff;margin:0;">
-                    Thank you for moving with us.<br>See you on the reformer.
-                  </p>
-                </td>
-              </tr>
-            </table>
+          <td style="padding:0 42px 30px;">
+            <p style="font-family:Georgia,serif;font-size:15px;color:#3a2c1e;line-height:1.75;margin:0 0 10px 0;">See you on the reformer &mdash; come ready to move, breathe, and connect.</p>
+            <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:20px;color:#5A3A1A;margin:0;">&mdash; Niara</p>
           </td>
         </tr>
 
-        <!-- Footer -->
+        <!-- Footer (half Jamaica / half Haiti) -->
         <tr>
           <td style="background:linear-gradient(90deg,#0a7d33 0%,#0a7d33 49%,#fed100 49%,#fed100 51%,#0a2a9c 51%,#0a2a9c 100%);background-color:#0a7d33;padding:28px 34px;" align="center">
-            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#ffffff;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">Niara Comrie</div>
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#ffffff;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">Auric Movement</div>
             <div style="font-family:Georgia,serif;font-size:12px;color:#ffffff;line-height:1.8;">
-              IG / TikTok <a href="https://instagram.com/auricmovement" style="color:#ffe9a8;text-decoration:none;">@auricmovement</a><br>
-              <a href="https://book.auricmovement.com" style="color:#ffe9a8;text-decoration:none;">book.auricmovement.com</a>
+              Pilates events in NYC, hosted with intention.<br>
+              <a href="mailto:auricmovement@outlook.com" style="color:#ffe9a8;text-decoration:none;">auricmovement@outlook.com</a> &middot; <a href="https://book.auricmovement.com" style="color:#ffe9a8;text-decoration:none;">book.auricmovement.com</a>
             </div>
             <div style="border-top:1px solid rgba(255,255,255,0.35);margin-top:20px;padding-top:16px;">
-              <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:15px;color:#ffffff;">Align. Strengthen. Recharge.</div>
+              <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:15px;color:#ffffff;">&#10022; Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect &#10022;</div>
             </div>
           </td>
         </tr>
 
       </table>
-      <!-- /Outer container -->
 
     </td>
   </tr>
