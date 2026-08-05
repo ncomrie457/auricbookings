@@ -2790,20 +2790,6 @@
         <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
       </button>
 
-      <!-- R&B Pilates (Auric Movement x Black Women Benefit) — external Square registration -->
-      <a href="https://checkout.square.site/merchant/MLG7XXEZXJMCV/checkout/WLZHEZ6YVPMJN2OHMLVY7B2S" target="_blank" rel="noopener noreferrer" id="event-card-rnb" class="bq-event scroll-reveal" data-event-date="2026-08-22" data-event-name="R&amp;B Pilates">
-        <div class="bq-event-photo">
-          <picture>
-            <source srcset="rnb-pilates-flyer.webp?v=1" type="image/webp">
-            <img src="rnb-pilates-flyer.png?v=1" alt="R&amp;B Pilates &#8212; August 22nd, Washington DC" loading="lazy" decoding="async">
-          </picture>
-        </div>
-        <div class="bq-event-date">08.22.26 &#183; R&amp;B Pilates</div>
-        <div class="bq-event-name">R&amp;B <em>Pilates</em></div>
-        <div class="bq-event-sub">Fundraiser &#183; Washington, DC &#183; $40 early bird</div>
-        <span class="bq-event-link">Register <span aria-hidden="true">&#8594;</span></span>
-      </a>
-
       <!-- Reformer Pilates — Sept 13. Opens a time-picker overlay with Stripe buy buttons. -->
       <button type="button" id="event-card-reformer" class="bq-event scroll-reveal" data-event-date="2026-09-13" data-event-name="Reformer Pilates">
         <div class="bq-event-photo">
@@ -4291,10 +4277,6 @@
         <label class="mc-health-row" style="margin-bottom:.45rem;">
           <input type="checkbox" data-event-badge="recharge" data-field="is_collab">
           <span>Create &amp; Recharge &mdash; Collab</span>
-        </label>
-        <label class="mc-health-row" style="margin-bottom:.45rem;">
-          <input type="checkbox" data-event-badge="rnb" data-field="is_collab">
-          <span>R&amp;B Pilates &mdash; Collab</span>
         </label>
         <label class="mc-health-row" style="margin-bottom:0;">
           <input type="checkbox" data-event-badge="reformer" data-field="is_collab">
@@ -6041,7 +6023,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function applyEventBadges() {
     getEventConfig(function(cfg){
-      var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat', recharge: 'event-card-recharge', rnb: 'event-card-rnb', reformer: 'event-card-reformer' };
+      var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat', recharge: 'event-card-recharge', reformer: 'event-card-reformer' };
       Object.keys(cards).forEach(function(key){
         var card = document.getElementById(cards[key]);
         if (!card) return;
