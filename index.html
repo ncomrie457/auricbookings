@@ -2860,6 +2860,88 @@
   <div class="bq-events-wrap">
 
 
+    <!-- ────────────────────────────────────────────────────────
+         Next Up — spotlight for the soonest upcoming event (homepage).
+         Reads the real event cards below as the single source of truth:
+         auto-picks the soonest event whose registration is open, and its
+         "Reserve" button triggers that card's existing booking flow.
+    ──────────────────────────────────────────────────────── -->
+    <style>
+      .bq-nextup{max-width:1000px;margin:0 auto 3.5rem;display:grid;grid-template-columns:280px 1fr;gap:2.2rem;
+        background:var(--cream-light);border:1px solid var(--border);border-radius:20px;overflow:hidden;
+        box-shadow:0 24px 60px -34px rgba(var(--warm-shadow),.4);}
+      .bq-nextup-media{display:block;align-self:stretch;border:0;padding:0;background:none;cursor:pointer;}
+      .bq-nextup-media img{width:100%;height:100%;object-fit:cover;display:block;}
+      .bq-nextup-body{padding:2rem 2.2rem 2rem 0;display:flex;flex-direction:column;justify-content:center;}
+      .bq-nextup-eyebrow{font-family:'Jost',sans-serif;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;
+        color:var(--gold-text);font-weight:600;}
+      .bq-nextup-name{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:2.15rem;color:var(--brown);
+        line-height:1.06;margin:.45rem 0 .55rem;}
+      .bq-nextup-name em{font-style:italic;color:var(--gold-text);}
+      .bq-nextup-meta{font-family:'Jost',sans-serif;font-size:.95rem;color:var(--text-muted);line-height:1.6;margin-bottom:1.3rem;}
+      .bq-nextup-meta strong{color:var(--brown);font-weight:600;}
+      .bq-nextup-actions{display:flex;gap:1.4rem;align-items:center;flex-wrap:wrap;}
+      .bq-nextup-btn{padding:.9rem 2.1rem;border-radius:999px;background:var(--brown);color:#fff;border:1px solid var(--brown);
+        cursor:pointer;font-family:'Jost',sans-serif;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;
+        font-weight:600;transition:background .25s ease,border-color .25s ease;}
+      .bq-nextup-btn:hover{background:var(--gold);border-color:var(--gold);}
+      .bq-nextup-all{font-family:'Jost',sans-serif;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;
+        color:var(--gold-text);text-decoration:none;font-weight:600;border-bottom:1px solid var(--gold);padding-bottom:2px;}
+      @media (max-width:720px){
+        .bq-nextup{grid-template-columns:1fr;margin:0 1rem 2.5rem;}
+        .bq-nextup-media img{height:230px;}
+        .bq-nextup-body{padding:1.6rem;}
+        .bq-nextup-name{font-size:1.8rem;}
+      }
+    </style>
+    <section id="bq-nextup" class="bq-nextup scroll-reveal" aria-labelledby="bq-nextup-name" hidden>
+      <button type="button" class="bq-nextup-media" id="bq-nextup-media" aria-hidden="true" tabindex="-1">
+        <img id="bq-nextup-img" src="" alt="" loading="lazy" decoding="async">
+      </button>
+      <div class="bq-nextup-body">
+        <div class="bq-nextup-eyebrow">&#10022; Next up</div>
+        <h2 class="bq-nextup-name" id="bq-nextup-name"></h2>
+        <div class="bq-nextup-meta" id="bq-nextup-meta"></div>
+        <div class="bq-nextup-actions">
+          <button type="button" class="bq-nextup-btn" id="bq-nextup-reserve">Reserve your spot</button>
+          <a class="bq-nextup-all bq-tab-next-link" href="#tab-events" data-nav-tab="btn-events">View all events <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </div>
+    </section>
+    <script>
+      /* Populate the "Next up" spotlight from the soonest bookable event card. */
+      document.addEventListener('DOMContentLoaded', function(){
+        var mount = document.getElementById('bq-nextup');
+        if(!mount) return;
+        var ids = ['event-card-recharge','event-card-reformer','event-card-matchat','event-card-pilates'];
+        var today = new Date(); today.setHours(0,0,0,0);
+        var best=null, bestDate=null;
+        ids.forEach(function(id){
+          var c=document.getElementById(id);
+          if(!c) return;
+          var ds=c.getAttribute('data-event-date'); if(!ds) return;
+          var dt=new Date(ds+'T00:00:00'); if(isNaN(dt.getTime())) return;
+          if(dt<today) return;                              // already past
+          var opens=c.getAttribute('data-reg-opens');       // registration not open yet → skip
+          if(opens){ var od=new Date(opens+'T00:00:00'); if(!isNaN(od.getTime()) && od>today) return; }
+          if(!bestDate || dt<bestDate){ best=c; bestDate=dt; }
+        });
+        if(!best) return;                                    // nothing upcoming → stay hidden
+        var img=best.querySelector('.bq-event-photo img');
+        var nameEl=best.querySelector('.bq-event-name');
+        var subEl=best.querySelector('.bq-event-sub');
+        var si=document.getElementById('bq-nextup-img');
+        if(img && si){ si.src=img.currentSrc||img.getAttribute('src'); si.alt=(nameEl?nameEl.textContent.trim():'Upcoming event'); }
+        if(nameEl) document.getElementById('bq-nextup-name').innerHTML=nameEl.innerHTML;
+        var dateStr=bestDate.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+        document.getElementById('bq-nextup-meta').innerHTML='<strong>'+dateStr+'</strong>'+(subEl?'<br>'+subEl.innerHTML:'');
+        function go(){ best.click(); window.scrollTo({top:0,behavior:'smooth'}); }
+        var rb=document.getElementById('bq-nextup-reserve'); if(rb) rb.addEventListener('click', go);
+        var media=document.getElementById('bq-nextup-media'); if(media) media.addEventListener('click', go);
+        mount.hidden=false;
+      });
+    </script>
+
     <!-- Featured past-event videos (homepage) -->
     <section class="bq-videos-wrap" aria-labelledby="bq-videos-head-title" id="homepage-videos-section">
       <div class="bq-videos-head">
