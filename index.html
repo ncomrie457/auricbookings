@@ -9881,9 +9881,13 @@ document.addEventListener('DOMContentLoaded', function() {
           : btn('rfAdminSetPaid('+id+',true)','#e8f5e9','#a5d6a7','#2e7d32','✅ Mark paid');
         var waiverBtn = rec.signature ? btn('rfAdminWaiver('+id+')','#eef4fb','#b5d4f4','#185fa5','\u{1F4C4} Waiver') : '';
         var clearHealthBtn = rec.health ? btn('rfAdminClearHealth('+id+')','#fef4e5','#f0c890','#a86617','\u{1FA79} Clear health') : '';
-        var timeBtn = (rec.session==='1pm')
-          ? btn("rfAdminSetSession("+id+",'2pm')",'#f4ecdd','#e0cfae','#7a5a2a','\u{1F551} Move to 2 PM')
-          : btn("rfAdminSetSession("+id+",'1pm')",'#f4ecdd','#e0cfae','#7a5a2a','\u{1F550} Move to 1 PM');
+        function timeOpt(sess,label){
+          if(rec.session===sess){
+            return '<span style="display:inline-block;background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;font-family:\'Jost\',sans-serif;">'+label+' ✓</span>';
+          }
+          return btn("rfAdminSetSession("+id+",'"+sess+"')",'#f4ecdd','#e0cfae','#7a5a2a','→ Move to '+label);
+        }
+        var timeBtn = timeOpt('1pm','1 PM') + timeOpt('2pm','2 PM');
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
