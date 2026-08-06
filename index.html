@@ -4657,6 +4657,7 @@ Can't wait to move and connect with you!</textarea>
   #reformer-overlay .rf-conf-banner{background:#e7f3e7;border:1px solid #b6d8b6;color:#2f6b34;font-weight:600;border-radius:10px;padding:.8rem 1rem;margin:0 0 1rem;font-size:.95rem;}
   #reformer-overlay .rf-time.rf-soldout{position:relative;}
   #reformer-overlay .rf-time .rf-soldout-tag{color:#b03636;font-weight:600;}
+  #reformer-overlay .rf-time .rf-left-tag{display:block;color:#b0432e;font-weight:600;font-size:.76rem;margin-top:.2rem;}
   #reformer-overlay .rf-getting{text-align:left;margin-top:1.3rem;padding-top:1.1rem;border-top:1px solid var(--border);}
   #reformer-overlay .rf-getting h4{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:var(--brown);margin:0 0 .35rem;font-weight:600;}
   #reformer-overlay .rf-getting p{font-size:.82rem;color:#3d322a;line-height:1.5;margin:0 0 .3rem;}
@@ -4983,13 +4984,20 @@ Can't wait to move and connect with you!</textarea>
           if(!res || res.error || !res.data) return;              // any hiccup → leave both open
           var paid={ '1pm':0, '2pm':0 };
           res.data.forEach(function(r){ if(paid[r.session]!==undefined) paid[r.session]=Number(r.paid)||0; });
+          var CAP=6;
           Array.prototype.forEach.call(document.querySelectorAll('#rf-step-time .rf-time'), function(btn){
             var s=btn.getAttribute('data-session');
-            if(paid[s]>=6){
+            var old=btn.querySelector('.rf-left-tag'); if(old) old.remove();
+            var remaining = CAP - (paid[s]||0);
+            if(remaining<=0){
               btn.disabled=true; btn.classList.add('rf-soldout');
               if(!btn.querySelector('.rf-soldout-tag')){
                 var t=document.createElement('small'); t.className='rf-soldout-tag'; t.textContent='Sold out'; btn.appendChild(t);
               }
+            } else if(remaining<=2){
+              var l=document.createElement('small'); l.className='rf-left-tag';
+              l.textContent='⚡ Almost sold out — only ' + remaining + ' spot' + (remaining===1?'':'s') + ' left';
+              btn.appendChild(l);
             }
           });
         }, function(){});
