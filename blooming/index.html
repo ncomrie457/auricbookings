@@ -248,6 +248,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script>
     (function(){
       var SB_URL = 'https://qvmiwyxerotkqpbuhpun.supabase.co';
@@ -258,6 +259,20 @@
           sb = window.supabase.createClient(SB_URL, SB_KEY);
         }
       } catch(e){}
+
+      // EmailJS — sends the confirmation email. Runs here in the browser,
+      // completely separate from Supabase (Supabase only stores the signup).
+      var EMAILJS_SERVICE  = 'service_ieahnue';    // Resend-backed (book@auricmovement.com)
+      var EMAILJS_TEMPLATE = 'template_4hcwb8o';   // Something's Blooming interest confirmation
+      try { if (window.emailjs) emailjs.init({ publicKey: 'xr1kT3l8rFhNodudq' }); } catch(e){}
+      function sendConfirmation(name, email){
+        try {
+          if (window.emailjs) {
+            emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, { name: name, email: email })
+              .then(function(){}, function(err){ console.warn('EmailJS send failed:', err); });
+          }
+        } catch(e){ console.warn('EmailJS error:', e); }
+      }
 
       var form = document.getElementById('interest-form');
       var btn = document.getElementById('bl-submit');
@@ -295,6 +310,9 @@
           var arr = JSON.parse(localStorage.getItem('auric_blooming_interest') || '[]');
           arr.push(rec); localStorage.setItem('auric_blooming_interest', JSON.stringify(arr));
         } catch(e){}
+
+        // Fire the confirmation email (best-effort; never blocks the signup).
+        sendConfirmation(name, email);
 
         function done(){
           form.style.display = 'none';
