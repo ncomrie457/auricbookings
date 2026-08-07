@@ -2652,6 +2652,7 @@
 
 
 
+
 <a href="#main-content" class="skip-link">Skip to main content</a>
 <div id="sr-announce" aria-live="polite" aria-atomic="true" class="sr-only" role="status"></div>
 <div class="bq-grain" aria-hidden="true"></div>
@@ -4179,102 +4180,32 @@
           </div>
         </div>
 
-        <div id="cr-spots-display" style="margin-bottom:1rem;padding:.75rem 1rem;background:#faf5ee;border-radius:10px;font-size:.85rem;color:#3d322a;text-align:center;"></div>
-        <div class="privacy-bar">
-          By registering you agree to our <button type="button" id="cr-open-privacy-btn" style="background:none;border:none;color:var(--gold-text);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Privacy Policy</button>, <button type="button" id="cr-open-terms-btn" style="background:none;border:none;color:var(--gold-text);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Terms &amp; Refund Policy</button>, and <button type="button" id="cr-open-policies-btn" style="background:none;border:none;color:var(--gold-text);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Class Policies</button> <span style="color:var(--text-muted);">(lateness &amp; medical)</span>.
+        <!-- Pilates experience (dropdown) — sits right after the "bringing a child?" question -->
+        <div class="field" style="margin-bottom:1.1rem;">
+          <label for="cr-experience">Pilates Experience</label>
+          <p style="font-size:.78rem;color:var(--text-muted);margin:0 0 .5rem;line-height:1.5;">Helps your instructor plan the class for you.</p>
+          <select id="cr-experience" style="width:100%;padding:.7rem .85rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.92rem;background:var(--white);color:#3d322a;box-sizing:border-box;">
+            <option value="" disabled selected>Select one&hellip;</option>
+            <option value="First time">First time</option>
+            <option value="A handful of classes">A handful of classes</option>
+            <option value="Regular practice">Regular practice</option>
+          </select>
         </div>
-        <div style="margin-top:1.25rem;display:flex;justify-content:flex-end;gap:.75rem;">
-          <button type="button" id="cr-join-waitlist-btn" class="btn btn-secondary hidden">Join Waitlist &#8594;</button>
-          <button type="button" id="cr-to-waiver-btn" class="btn btn-primary">Continue to Waiver &#8594;</button>
-        </div>
-      </div>
 
-      <!-- STEP 2: Waiver -->
-      <div id="cr-step-waiver" class="card hidden">
-        <!-- Summary box -->
-        <div style="background:#faf5ee;border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.25rem;margin-bottom:1.25rem;">
-          <p style="font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--brown);margin-bottom:.6rem;">Your Booking Summary</p>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;font-size:.85rem;color:#3d322a;margin-bottom:.5rem;">
-            <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Event</span><strong>Create &amp; Recharge</strong></div>
-            <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Date</span><strong>August 15th</strong></div>
-            <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Time</span><strong>11:35 AM</strong></div>
-            <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Price</span><strong>$65</strong></div>
-          </div>
-          <p style="font-size:.8rem;color:#3d322a;margin-bottom:.75rem;">&#128205; 300 W 38th Street, 2F &#183; New York, NY 10018</p>
-          <div style="border-top:1px solid var(--border);padding-top:.75rem;">
-            <p style="font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--brown);margin-bottom:.3rem;">Complete Your Booking</p>
-            <p style="font-size:.8rem;color:#3d322a;line-height:1.55;margin:0;">Check all clauses and sign your name below to complete your waiver and confirm your spot.</p>
-          </div>
+        <!-- Health disclosure — single optional note (matches Riddim & Kompa) -->
+        <div class="field" style="margin-bottom:1.1rem;">
+          <label for="cr-h-notes">Anything we should know before class? <span style="font-weight:400;color:var(--text-muted);font-size:.78rem;">(optional)</span></label>
+          <textarea id="cr-h-notes" rows="2" style="width:100%;padding:.65rem .85rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.88rem;background:var(--cream-light);color:#3d322a;resize:vertical;box-sizing:border-box;line-height:1.5;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea>
         </div>
 
         <div>
           <div>
 
-            <!-- Pilates Experience -->
-            <div class="field" style="margin-bottom:1.1rem;">
-              <label style="display:block;font-size:.85rem;color:var(--brown);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;">Pilates Experience</label>
-              <p style="font-size:.78rem;color:var(--text-muted);margin:0 0 .55rem;line-height:1.5;">Helps your instructor plan the class for you.</p>
-              <label class="mc-health-row"><input type="radio" name="cr-experience" value="First time"><span>First time</span></label>
-              <label class="mc-health-row"><input type="radio" name="cr-experience" value="A handful of classes"><span>A handful of classes</span></label>
-              <label class="mc-health-row"><input type="radio" name="cr-experience" value="Regular practice"><span>Regular practice</span></label>
+            <p class="subtitle">Please open and read the full liability waiver, then confirm below to continue.</p>
+            <div class="final-check" style="align-items:flex-start;">
+              <input type="checkbox" id="cr-waiver-agree" disabled style="margin-top:.15rem;">
+              <label for="cr-waiver-agree">I have read and agree to the <a id="cr-open-waiver" role="button" tabindex="0" style="color:var(--gold-text);font-weight:600;text-decoration:underline;cursor:pointer;">liability waiver</a> <span style="color:var(--text-muted);font-weight:400;">(open it to continue)</span>, and to Auric Movement&rsquo;s <a id="cr-open-privacy-btn" role="button" tabindex="0" style="color:var(--gold-text);font-weight:600;text-decoration:underline;cursor:pointer;">Privacy Policy</a>, <a id="cr-open-terms-btn" role="button" tabindex="0" style="color:var(--gold-text);font-weight:600;text-decoration:underline;cursor:pointer;">Terms &amp; Refund Policy</a>, and <a id="cr-open-policies-btn" role="button" tabindex="0" style="color:var(--gold-text);font-weight:600;text-decoration:underline;cursor:pointer;">Class Policies</a>.</label>
             </div>
-
-            <!-- Health Disclosure — Section 1: Clearance required -->
-            <div class="field" style="margin-bottom:1.1rem;">
-              <label style="display:block;font-size:.85rem;color:var(--brown);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;">Health Disclosure</label>
-              <p style="font-size:.82rem;color:#3d322a;margin:0 0 .85rem;line-height:1.55;">For your safety, please share anything your instructor should know. This information is reviewed for class preparation and <strong>permanently deleted within 48 hours</strong>.</p>
-              <p style="font-size:.78rem;color:var(--text-muted);margin:0 0 .65rem;line-height:1.5;"><strong style="color:#3d322a;">Have you had any of the following in the past 3 months?</strong><br><em>Physician clearance required if yes.</em></p>
-              <label class="mc-health-row"><input type="checkbox" id="cr-h-spine"><span>Spine, neck, or back surgery or injury</span></label>
-              <label class="mc-health-row"><input type="checkbox" id="cr-h-joint"><span>Recent joint surgery or significant injury</span></label>
-              <label class="mc-health-row"><input type="checkbox" id="cr-h-pregnant"><span>Pregnancy</span></label>
-              <label class="mc-health-row"><input type="checkbox" id="cr-h-osteo"><span>Severe osteoporosis or bone density issues</span></label>
-            </div>
-
-            <!-- Health Disclosure — Section 2: Disclosure only -->
-            <div class="field" style="margin-bottom:1.1rem;">
-              <p style="font-size:.78rem;color:var(--text-muted);margin:0 0 .55rem;line-height:1.5;"><strong style="color:#3d322a;">Do you experience any of the following?</strong><br><em>Disclosure only.</em></p>
-              <label class="mc-health-row"><input type="checkbox" id="cr-h-dizzy"><span>Dizziness, balance problems, or vertigo</span></label>
-            </div>
-
-            <!-- Health Disclosure — Section 3: Free text -->
-            <div class="field" style="margin-bottom:1rem;">
-              <label for="cr-h-notes" style="display:block;font-size:.78rem;color:var(--text-muted);margin:0 0 .4rem;line-height:1.5;"><strong style="color:#3d322a;">Is there anything else about your body or fitness that would help me plan the class for you?</strong><br><em>e.g., chronic issues, areas to avoid, modifications you typically use.</em></label>
-              <textarea id="cr-h-notes" rows="3" style="width:100%;padding:.65rem .85rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.88rem;background:var(--cream-light);color:#3d322a;resize:vertical;box-sizing:border-box;line-height:1.5;" placeholder="Optional &mdash; share anything you'd like the instructor to know."></textarea>
-            </div>
-
-            <!-- Health Disclosure — Section 4: Food allergies -->
-            <div class="field" style="margin-bottom:1.1rem;padding:.85rem 1rem;background:#faf5ee;border-left:3px solid var(--gold);border-radius:0 8px 8px 0;">
-              <label for="cr-h-allergies" style="display:block;font-size:.78rem;color:#3d322a;margin:0 0 .55rem;line-height:1.5;">
-                <strong>&#x1F36A; Light refreshments will be offered after class.</strong><br>
-                <em style="color:var(--text-muted);">Please disclose any food allergies &mdash; including <strong>airborne sensitivities</strong> (peanuts, tree nuts, sesame, shellfish, etc.) &mdash; so Auric Movement can choose safe refreshments and accommodate everyone.</em>
-              </label>
-              <textarea id="cr-h-allergies" rows="2" style="width:100%;padding:.65rem .85rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.88rem;background:var(--white);color:#3d322a;resize:vertical;box-sizing:border-box;line-height:1.5;" placeholder="e.g., peanut allergy (airborne sensitivity), gluten intolerance, dairy-free, none"></textarea>
-            </div>
-
-            <!-- Policy footer -->
-            <div style="margin-bottom:1.5rem;padding:.7rem .85rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.75rem;color:#3d322a;line-height:1.55;">
-              <strong style="color:var(--gold-text);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">Policy</strong><br>
-              If you checked any item in the first section, you must provide written physician clearance before attending. This information will be reviewed for class preparation and <strong>deleted within 48 hours</strong>.
-            </div>
-
-            <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.5rem;margin-bottom:.4rem;">
-              <h2>Liability Waiver &amp; Release</h2>
-              <span style="font-size:.85rem;color:var(--text-muted);">Signing as <strong id="cr-waiver-name-display"></strong></span>
-            </div>
-            <p class="subtitle">Read each clause carefully and check the box to confirm. All 19 clauses must be acknowledged before signing. You may select all at once or check them individually.</p>
-            <div class="progress-section">
-              <div class="progress-label">
-                <span><span id="cr-confirmed-count">0</span>/19 confirmed</span>
-                <span id="cr-remaining-text">19 remaining</span>
-              </div>
-              <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="19" id="cr-progress-track">
-                <div class="progress-fill" id="cr-progress-fill"></div>
-              </div>
-            </div>
-            <div style="margin-bottom:.75rem;">
-              <button type="button" id="cr-select-all-btn" class="btn btn-secondary" style="font-size:.82rem;padding:.5rem 1rem;width:100%;justify-content:center;">&#10003; Select All Clauses</button>
-            </div>
-            <div id="cr-clauses-container" role="group" aria-label="Waiver clauses"></div>
 
             <!-- Cancellation & Credit Policy Acknowledgment (hidden after payment — agreed at checkout) -->
             <div id="cr-refund-block" style="margin:1.25rem 0;padding:1rem 1.25rem;background:#faf5ee;border:2px solid var(--gold);border-radius:10px;">
@@ -4318,7 +4249,8 @@
                 <input type="text" id="cr-sig-input" placeholder="Type your full legal name to sign" aria-required="true" disabled>
                 <div id="cr-sig-err" class="err-msg" role="alert"></div>
               </div>
-              <button type="button" id="cr-submit-btn" class="btn btn-primary btn-full" disabled>Submit Waiver &amp; Confirm My Spot &#10022;</button>
+              <button type="button" id="cr-submit-btn" class="btn btn-primary btn-full" disabled>Continue to Payment &rarr;</button>
+              <button type="button" id="cr-join-waitlist-btn" class="btn btn-secondary btn-full hidden" style="margin-top:.6rem;">Join Waitlist &#8594;</button>
             </div>
           </div>
         </div>
@@ -4853,6 +4785,23 @@ Can't wait to move and connect with you!</textarea>
   #rf-waiver-modal #rf-waiver-agree{background:var(--brown);color:#fff;border-color:var(--brown);}
   #rf-waiver-modal #rf-waiver-agree:disabled{opacity:.45;cursor:not-allowed;}
   #rf-waiver-modal #rf-waiver-cancel{background:#fff;color:#3d322a;}
+  /* Create & Recharge liability-waiver sub-modal (mirrors #rf-waiver-modal) */
+  #cr-waiver-modal{display:none;position:fixed;inset:0;z-index:10001;background:rgba(20,12,6,.6);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1rem;}
+  #cr-waiver-modal .rf-wm-card{background:#fff;border-radius:14px;max-width:520px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,.45);font-family:'Jost',sans-serif;overflow:hidden;}
+  #cr-waiver-modal h3{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--brown);margin:0;padding:1.1rem 1.25rem .6rem;text-align:center;}
+  #cr-waiver-scroll{overflow-y:auto;padding:0 1.25rem;flex:1;text-align:left;}
+  #cr-waiver-scroll:focus{outline:2px solid var(--gold);outline-offset:-2px;}
+  #cr-waiver-scroll:focus-visible{outline:2px solid var(--gold);outline-offset:-2px;}
+  #cr-waiver-scroll .rf-cl{font-size:.8rem;color:#3d322a;line-height:1.5;margin:0 0 .7rem;padding-bottom:.7rem;border-bottom:1px solid #f0e8da;}
+  #cr-waiver-scroll .rf-cl b{color:#9a6535;}
+  #cr-waiver-modal .rf-wm-foot{padding:.9rem 1.25rem 1.1rem;border-top:1px solid var(--border);background:#fdfbf7;}
+  #cr-waiver-modal .rf-wm-hint{font-size:.74rem;color:var(--text-muted);text-align:center;margin:0 0 .6rem;}
+  #cr-waiver-modal .rf-wm-btns{display:flex;gap:.6rem;flex-wrap:wrap;}
+  #cr-waiver-modal .rf-wm-btns button{flex:1 1 auto;min-width:120px;padding:.7rem;border-radius:999px;font-family:'Jost',sans-serif;font-weight:600;font-size:.9rem;cursor:pointer;border:1px solid var(--border);}
+  #cr-waiver-modal #cr-waiver-jump{background:#f4ecdd;color:#7a5a2a;border-color:#e0cfae;}
+  #cr-waiver-modal #cr-waiver-agree-btn{background:var(--brown);color:#fff;border-color:var(--brown);}
+  #cr-waiver-modal #cr-waiver-agree-btn:disabled{opacity:.45;cursor:not-allowed;}
+  #cr-waiver-modal #cr-waiver-cancel{background:#fff;color:#3d322a;}
 </style>
 <div id="reformer-overlay" style="display:none;position:fixed;inset:0;background:rgba(44,26,14,.85);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);z-index:9999;align-items:center;justify-content:center;padding:1rem;overflow-y:auto;">
   <div class="rf-modal">
@@ -4942,6 +4891,22 @@ Can't wait to move and connect with you!</textarea>
         <button type="button" id="rf-waiver-cancel">Close</button>
         <button type="button" id="rf-waiver-jump">Jump to end</button>
         <button type="button" id="rf-waiver-agree" disabled>I&rsquo;ve read this &mdash; I agree</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scrollable liability waiver sub-modal — Create & Recharge -->
+<div id="cr-waiver-modal" aria-modal="true" role="dialog" aria-labelledby="cr-waiver-modal-title">
+  <div class="rf-wm-card">
+    <h3 id="cr-waiver-modal-title">Liability Waiver &amp; Release</h3>
+    <div id="cr-waiver-scroll" tabindex="0" role="region" aria-labelledby="cr-waiver-modal-title"></div>
+    <div class="rf-wm-foot">
+      <p class="rf-wm-hint" id="cr-waiver-hint" aria-live="polite">Read to the end &mdash; use the scroll bar, arrow keys, or the button below.</p>
+      <div class="rf-wm-btns">
+        <button type="button" id="cr-waiver-cancel">Close</button>
+        <button type="button" id="cr-waiver-jump">Jump to end</button>
+        <button type="button" id="cr-waiver-agree-btn" disabled>I&rsquo;ve read this &mdash; I agree</button>
       </div>
     </div>
   </div>
@@ -9507,7 +9472,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var confirmed = (data.cr1||[]).filter(function(r){ return r.type==='confirmed'; }).length;
       var remaining = CR_MAX_SPOTS - confirmed;
       var el = document.getElementById('cr-spots-display');
-      var waiverBtn = document.getElementById('cr-to-waiver-btn');
+      var waiverBtn = document.getElementById('cr-submit-btn'); // single-page: the "Continue to Payment" button
       var wlBtn = document.getElementById('cr-join-waitlist-btn');
       if (remaining <= 0) {
         if (el) el.innerHTML = '<span style="color:#9a6535;font-weight:700;">Waitlist only — this event is full</span>';
@@ -9530,19 +9495,12 @@ document.addEventListener('DOMContentLoaded', function() {
     var refEl = document.getElementById('cr-reg-referral');
     var referral = refEl ? refEl.value.trim() : '';
     if (referral) lines.push('🤝 REFERRED BY: ' + referral + ' — credit an Auric Club referral mark when this guest attends.');
-    var exp = document.querySelector('input[name="cr-experience"]:checked');
-    if (exp) lines.push('Pilates experience: ' + exp.value);
-    var flags = [];
-    if (document.getElementById('cr-h-spine').checked)    flags.push('Spine/neck/back surgery or injury (clearance required)');
-    if (document.getElementById('cr-h-joint').checked)    flags.push('Recent joint surgery or significant injury (clearance required)');
-    if (document.getElementById('cr-h-pregnant').checked) flags.push('Pregnancy (clearance required)');
-    if (document.getElementById('cr-h-osteo').checked)    flags.push('Severe osteoporosis / bone density (clearance required)');
-    if (document.getElementById('cr-h-dizzy').checked)    flags.push('Dizziness / balance / vertigo');
-    if (flags.length) lines.push('Health flags: ' + flags.join('; '));
-    var notes = document.getElementById('cr-h-notes').value.trim();
+    var exp = document.getElementById('cr-experience');
+    if (exp && exp.value) lines.push('Pilates experience: ' + exp.value);
+    // Single free-text health note (the detailed condition checkboxes/allergies field were removed).
+    var notesEl = document.getElementById('cr-h-notes');
+    var notes = notesEl ? notesEl.value.trim() : '';
     if (notes) lines.push('Notes: ' + notes);
-    var allergies = document.getElementById('cr-h-allergies').value.trim();
-    if (allergies) lines.push('Food allergies: ' + allergies);
     return lines.join('\n');
   }
 
@@ -9553,6 +9511,7 @@ document.addEventListener('DOMContentLoaded', function() {
   ]);
   function buildCRClauses(){
     var container = document.getElementById('cr-clauses-container');
+    if(!container) return; // clauses are now presented in the scrollable #cr-waiver-modal
     container.innerHTML=''; crCheckedClauses={}; crCheckedCount=0; updateCRProgress();
     var selBtn = document.getElementById('cr-select-all-btn');
     if (selBtn){ selBtn.textContent = '✓ Select All Clauses'; selBtn.disabled=false; }
@@ -9571,6 +9530,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   function updateCRProgress(){
+    if(!document.getElementById('cr-confirmed-count')) return; // progress UI removed (waiver modal handles review)
     crCheckedCount = Object.keys(crCheckedClauses).length;
     document.getElementById('cr-confirmed-count').textContent = crCheckedCount;
     document.getElementById('cr-remaining-text').textContent  = (CR_CLAUSE_TEXTS.length-crCheckedCount)+' remaining';
@@ -9599,6 +9559,7 @@ document.addEventListener('DOMContentLoaded', function() {
     r.addEventListener('change', function(){
       var box = document.getElementById('cr-minor-fields');
       if (box) box.classList.toggle('hidden', this.value !== 'yes');
+      if (typeof crSyncWaiverDisplays === 'function') crSyncWaiverDisplays();
     });
   });
 
@@ -9631,24 +9592,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Show the waiver step. Used AFTER payment for confirmed guests (everyone signs
   // once they've paid), and directly for waitlist joins (who don't pay).
-  function crEnterWaiver(){
-    var name = document.getElementById('cr-reg-name').value.trim();
+  // Keep the "Signing as" names + minor-consent block in sync with the identity
+  // fields. Safe to call on every keystroke — it never resets the waiver gate.
+  function crSyncWaiverDisplays(){
+    var nameEl = document.getElementById('cr-reg-name');
+    var name = nameEl ? nameEl.value.trim() : '';
     var minor = crMinorState();
-    document.getElementById('cr-waiver-name-display').textContent = name;
-    document.getElementById('cr-waiver-name-stmt').textContent    = name;
+    var nd = document.getElementById('cr-waiver-name-display'); if (nd) nd.textContent = name;
+    var ns = document.getElementById('cr-waiver-name-stmt');    if (ns) ns.textContent = name;
     var consent = document.getElementById('cr-minor-consent');
     var minorAgree = document.getElementById('cr-minor-agree');
     if (minor.isMinor){
-      document.getElementById('cr-minor-name-display').textContent = minor.names;
-      document.getElementById('cr-minor-rel-display').textContent  = minor.rel;
+      var mnd = document.getElementById('cr-minor-name-display'); if (mnd) mnd.textContent = minor.names;
+      var mrd = document.getElementById('cr-minor-rel-display');  if (mrd) mrd.textContent  = minor.rel;
       var signedBy = document.getElementById('cr-waiver-name-display-2'); if (signedBy) signedBy.textContent = name;
       if (consent) consent.classList.remove('hidden');
     } else {
       if (consent) consent.classList.add('hidden');
       if (minorAgree) minorAgree.checked = false;
     }
-    // Refund policy was agreed at the payment step for paying guests → hide it and
-    // auto-satisfy the gate here. Waitlist joins (no payment) still agree here.
+    if (typeof crUpdateSubmitEnabled === 'function') crUpdateSubmitEnabled();
+  }
+
+  // Reset the waiver gate for a fresh visit: refund block visibility, waiver-modal
+  // agreement, final-agree + signature locked. Called when the C&R page opens.
+  function crResetWaiverGate(){
     var refundBlock = document.getElementById('cr-refund-block');
     var refundChk   = document.getElementById('cr-refund-policy-agree');
     if (crAlreadyPaid){
@@ -9659,13 +9627,21 @@ document.addEventListener('DOMContentLoaded', function() {
       if (refundChk) refundChk.checked = false;
     }
     buildCRClauses();
-    crShowStep('cr-step-waiver');
-    // Seamless waiver view — hide the event intro/description so this reads as
-    // just "sign your waiver" (esp. on the ?paid=recharge return).
+    var _wa=document.getElementById('cr-waiver-agree'); if(_wa) _wa.checked=false;
+    var _fa=document.getElementById('cr-final-agree'); if(_fa){ _fa.checked=false; _fa.disabled=true; }
+    var _si=document.getElementById('cr-sig-input'); if(_si){ _si.value=''; _si.disabled=true; }
+    crSyncWaiverDisplays();
+  }
+
+  // Show the single-page C&R form ready to fill. Used by legacy pay-first returns
+  // (?paid=recharge) and waitlist entry — now everything lives on one page.
+  function crEnterWaiver(){
+    crResetWaiverGate();
+    crShowStep('cr-step-register');
+    // Seamless view — hide the event intro/description (esp. on the ?paid=recharge return).
     var _intro=document.getElementById('cr-intro'); if(_intro) _intro.style.display='none';
     var layout=document.getElementById('cr-page-layout'); if(layout) layout.classList.add('waiver-active');
-    if (typeof crUpdateSubmitEnabled === 'function') crUpdateSubmitEnabled();
-    document.getElementById('cr-step-waiver').scrollIntoView({behavior:'smooth'});
+    var _reg=document.getElementById('cr-step-register'); if(_reg) _reg.scrollIntoView({behavior:'smooth'});
     announce('Waiver loaded. '+CR_CLAUSE_TEXTS.length+' clauses to review.');
   }
 
@@ -9722,17 +9698,23 @@ document.addEventListener('DOMContentLoaded', function() {
   var crFinalAgree = document.getElementById('cr-final-agree');
   if (crFinalAgree) crFinalAgree.addEventListener('change', function(){
     var si = document.getElementById('cr-sig-input');
-    if(this.checked && crCheckedCount===CR_CLAUSE_TEXTS.length){ si.disabled=false; si.focus(); }
-    else { si.disabled=true; si.value=''; document.getElementById('cr-submit-btn').disabled=true; }
+    var waiverEl = document.getElementById('cr-waiver-agree');
+    if(this.checked && waiverEl && waiverEl.checked){ si.disabled=false; si.focus(); }
+    else { si.disabled=true; si.value=''; }
+    crUpdateSubmitEnabled();
   });
   // Enable submit only when signature + refund policy (+ minor consent, if applicable) are all set.
   function crUpdateSubmitEnabled(){
     var sigOk    = ((document.getElementById('cr-sig-input').value) || '').trim().length >= 2;
     var refundOk = document.getElementById('cr-refund-policy-agree').checked;
+    var waiverEl = document.getElementById('cr-waiver-agree');
+    var waiverOk = !!(waiverEl && waiverEl.checked);
+    var finalEl  = document.getElementById('cr-final-agree');
+    var finalOk  = !!(finalEl && finalEl.checked);
     var minorAgreeEl = document.getElementById('cr-minor-agree');
     var minorOk  = !crMinorState().isMinor || (minorAgreeEl && minorAgreeEl.checked);
     var btn = document.getElementById('cr-submit-btn');
-    if (btn) btn.disabled = !(sigOk && refundOk && minorOk);
+    if (btn) btn.disabled = !(sigOk && refundOk && waiverOk && finalOk && minorOk);
   }
   var crSig = document.getElementById('cr-sig-input');
   if (crSig) crSig.addEventListener('input', function(){
@@ -9750,8 +9732,79 @@ document.addEventListener('DOMContentLoaded', function() {
     if (this.checked) document.getElementById('cr-minor-agree-err').textContent = '';
   });
 
-  var crSubmitBtn = document.getElementById('cr-submit-btn');
-  if (crSubmitBtn) crSubmitBtn.addEventListener('click', function(){
+  // ── Scrollable liability-waiver sub-modal (mirrors Riddim & Kompa reformer) ──
+  (function(){
+    var crWm       = document.getElementById('cr-waiver-modal');
+    var crWmScroll = document.getElementById('cr-waiver-scroll');
+    var crWmAgree  = document.getElementById('cr-waiver-agree-btn');
+    var crWmHint   = document.getElementById('cr-waiver-hint');
+    var crWmJump   = document.getElementById('cr-waiver-jump');
+    var crWmCancel = document.getElementById('cr-waiver-cancel');
+    var crOpenLink = document.getElementById('cr-open-waiver');
+    var crWaiverChk= document.getElementById('cr-waiver-agree');
+    if(!crWm || !crWmScroll || !crWmAgree || !crOpenLink || !crWaiverChk) return;
+
+    function crBuildWaiver(){
+      if(crWmScroll.childElementCount) return;
+      CR_CLAUSE_TEXTS.forEach(function(t,i){
+        var d=document.createElement('div'); d.className='rf-cl';
+        d.innerHTML='<b>'+(i+1)+'.</b> '+t; crWmScroll.appendChild(d);
+      });
+    }
+    function crCheckScrolled(){
+      if(crWmScroll.scrollTop + crWmScroll.clientHeight >= crWmScroll.scrollHeight - 8){
+        if(crWmAgree.disabled){
+          crWmAgree.disabled=false;
+          crWmHint.textContent='Thank you — you can now agree.';
+        }
+      }
+    }
+    function crOpenWaiverModal(){
+      crBuildWaiver(); crWm.style.display='flex';
+      crWmScroll.scrollTop=0; crWmAgree.disabled=true;
+      crWmHint.textContent='Read to the end — use the scroll bar, arrow keys, or the "Jump to end" button.';
+      setTimeout(function(){ crWmScroll.focus(); crCheckScrolled(); }, 30);
+    }
+    function crCloseWaiverModal(){
+      crWm.style.display='none';
+      if(crOpenLink) crOpenLink.focus();
+    }
+    crWmScroll.addEventListener('scroll', crCheckScrolled);
+    crWmJump.addEventListener('click', function(){
+      crWmScroll.scrollTop = crWmScroll.scrollHeight;
+      crCheckScrolled(); crWmAgree.focus();
+    });
+    crOpenLink.addEventListener('click', crOpenWaiverModal);
+    crOpenLink.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); crOpenWaiverModal(); }});
+    crWmCancel.addEventListener('click', crCloseWaiverModal);
+    crWm.addEventListener('click', function(e){ if(e.target===crWm) crCloseWaiverModal(); });
+    crWmAgree.addEventListener('click', function(){
+      crWaiverChk.checked=true;
+      var fa=document.getElementById('cr-final-agree'); if(fa) fa.disabled=false;
+      crCloseWaiverModal();
+      if(typeof crUpdateSubmitEnabled==='function') crUpdateSubmitEnabled();
+    });
+    document.addEventListener('keydown', function(e){
+      if(e.key==='Escape' && crWm.style.display==='flex') crCloseWaiverModal();
+    });
+    crWm.addEventListener('keydown', function(e){
+      if(e.key!=='Tab') return;
+      var focusable=[crWmScroll, crWmCancel, crWmJump];
+      if(!crWmAgree.disabled) focusable.push(crWmAgree);
+      var first=focusable[0], last=focusable[focusable.length-1];
+      if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+      else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+    });
+  })();
+
+  function crDoSubmit(){
+    // Single-page form: re-run the register-level validation (name/email/minor)
+    // before the waiver checks, since there is no longer a separate register step.
+    var reg = crValidateRegister();
+    if (!reg.ok) {
+      var _reg=document.getElementById('cr-step-register'); if(_reg) _reg.scrollIntoView({behavior:'smooth', block:'start'});
+      return;
+    }
     var name  = document.getElementById('cr-reg-name').value.trim();
     var email = document.getElementById('cr-reg-email').value.trim();
     var phoneEl = document.getElementById('cr-reg-phone');
@@ -9799,7 +9852,7 @@ document.addEventListener('DOMContentLoaded', function() {
         referred_by:(uReferral||null),
         is_paid:true, paid_at:uNow.toISOString()
       }).eq('code', _crPend.code).then(function(res){
-        submitBtn.disabled=false; submitBtn.textContent = 'Submit Waiver & Confirm My Spot ✦';
+        submitBtn.disabled=false; submitBtn.textContent = 'Continue to Payment →';
         if (res && res.error){ console.error('[CR waiver update] failed', res.error); alert('Something went wrong saving your waiver. Please try again, or email auricmovement@outlook.com.'); return; }
         document.getElementById('cr-conf-name').textContent = participantName;
         document.getElementById('cr-conf-time').textContent = uTime;
@@ -9819,7 +9872,7 @@ document.addEventListener('DOMContentLoaded', function() {
           }).catch(function(){});
         }
         buildCRSpots(); updateEventCardSpots();
-      }, function(err){ submitBtn.disabled=false; submitBtn.textContent='Submit Waiver & Confirm My Spot ✦'; console.error('[CR waiver update] error', err); alert('Something went wrong saving your waiver. Please try again, or email auricmovement@outlook.com.'); });
+      }, function(err){ submitBtn.disabled=false; submitBtn.textContent='Continue to Payment →'; console.error('[CR waiver update] error', err); alert('Something went wrong saving your waiver. Please try again, or email auricmovement@outlook.com.'); });
       return;
     }
 
@@ -9828,7 +9881,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // parent and their child (different names) but can't double-book the same person.
       var existing = (data.cr1||[]).filter(function(r){ return (r.email||'').toLowerCase() === email.toLowerCase() && (r.name||'').toLowerCase() === participantName.toLowerCase(); })[0];
       if (existing) {
-        submitBtn.disabled=false; submitBtn.textContent = 'Submit Waiver & Confirm My Spot ✦';
+        submitBtn.disabled=false; submitBtn.textContent = 'Continue to Payment →';
         alert(existing.type==='confirmed'
           ? '“' + participantName + '” is already registered for Create & Recharge with ' + email + '. Check your inbox for the confirmation.'
           : '“' + participantName + '” is already on the Create & Recharge waitlist (position #' + (existing.wlPosition||'?') + ').');
@@ -9849,7 +9902,7 @@ document.addEventListener('DOMContentLoaded', function() {
         p_is_pair:false, p_friend_name:null, p_friend_email:null,
         p_max_spots:CR_MAX_SPOTS
       }).then(function(res){
-        submitBtn.disabled=false; submitBtn.textContent = 'Submit Waiver & Confirm My Spot ✦';
+        submitBtn.disabled=false; submitBtn.textContent = 'Continue to Payment →';
         if (res.error || !res.data || !res.data.length) {
           console.error('[book_create_recharge_session] RPC failed', res.error);
           alert('Something went wrong saving your registration. Please try again, or email auricmovement@outlook.com.');
@@ -9913,22 +9966,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         buildCRSpots(); updateEventCardSpots();
       }, function(err){
-        submitBtn.disabled=false; submitBtn.textContent = 'Submit Waiver & Confirm My Spot ✦';
+        submitBtn.disabled=false; submitBtn.textContent = 'Continue to Payment →';
         console.error('[book_create_recharge_session] RPC error', err);
         alert('Something went wrong saving your registration. Please try again, or email auricmovement@outlook.com.');
       });
     });
-  });
+  }
+  var crSubmitBtn = document.getElementById('cr-submit-btn');
+  if (crSubmitBtn) crSubmitBtn.addEventListener('click', crDoSubmit);
 
   function resetCRForm(){
     crCheckedClauses={}; crCheckedCount=0; crLastSubmission=null; crAlreadyPaid=false;
     var _rb=document.getElementById('cr-refund-block'); if(_rb) _rb.classList.remove('hidden');
     var _pb=document.getElementById('cr-paid-banner'); if(_pb) _pb.remove();
-    var _cta=document.getElementById('cr-to-waiver-btn'); if(_cta) _cta.textContent='Continue to Waiver →';
     var _intro2=document.getElementById('cr-intro'); if(_intro2) _intro2.style.display='';
-    ['cr-reg-name','cr-reg-email','cr-reg-phone','cr-reg-referral','cr-h-notes','cr-h-allergies','cr-sig-input','cr-minor-name'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
-    ['cr-h-spine','cr-h-joint','cr-h-pregnant','cr-h-osteo','cr-h-dizzy','cr-final-agree','cr-refund-policy-agree','cr-minor-agree'].forEach(function(id){ var el=document.getElementById(id); if(el) el.checked=false; });
-    var expSel = document.querySelector('input[name="cr-experience"]:checked'); if(expSel) expSel.checked=false;
+    ['cr-reg-name','cr-reg-email','cr-reg-phone','cr-reg-referral','cr-h-notes','cr-sig-input','cr-minor-name'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+    ['cr-final-agree','cr-refund-policy-agree','cr-minor-agree','cr-waiver-agree'].forEach(function(id){ var el=document.getElementById(id); if(el) el.checked=false; });
+    var _cfa=document.getElementById('cr-final-agree'); if(_cfa) _cfa.disabled=true;
+    var expSel = document.getElementById('cr-experience'); if(expSel) expSel.value='';
     // Reset minor question back to "No" and hide its fields/consent.
     var minorNo = document.querySelector('input[name="cr-minor"][value="no"]'); if(minorNo) minorNo.checked=true;
     var relSel = document.querySelector('input[name="cr-minor-rel"]:checked'); if(relSel) relSel.checked=false;
@@ -9937,6 +9992,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var si=document.getElementById('cr-sig-input'); if(si) si.disabled=true;
     var sb=document.getElementById('cr-submit-btn'); if(sb) sb.disabled=true;
     var layout=document.getElementById('cr-page-layout'); if(layout) layout.classList.remove('waiver-active');
+    if (typeof crResetWaiverGate === 'function') crResetWaiverGate();
     buildCRSpots(); crShowStep('cr-step-register');
   }
   ['cr-new-btn','cr-new-btn-wl'].forEach(function(id){ var el=document.getElementById(id); if(el) el.addEventListener('click', resetCRForm); });
@@ -9958,13 +10014,26 @@ document.addEventListener('DOMContentLoaded', function() {
   var crPrivacyBtn = document.getElementById('cr-open-privacy-btn'); if (crPrivacyBtn) crPrivacyBtn.addEventListener('click', function(){ openModal('privacy-modal'); });
   var crTermsBtn   = document.getElementById('cr-open-terms-btn');   if (crTermsBtn)   crTermsBtn.addEventListener('click', function(){ openModal('terms-modal'); });
   var crPolBtn     = document.getElementById('cr-open-policies-btn'); if (crPolBtn)     crPolBtn.addEventListener('click', function(){ openModal('policies-modal'); });
-  var crWlBtn      = document.getElementById('cr-join-waitlist-btn'); if (crWlBtn)      crWlBtn.addEventListener('click', function(){ var v=crValidateRegister(); if(!v.ok) return; crEnterWaiver(); });
+  // Single-page: the waitlist button submits the same completed form (the RPC
+  // returns type 'waitlist' when the session is full and routes to the waitlist step).
+  var crWlBtn      = document.getElementById('cr-join-waitlist-btn'); if (crWlBtn)      crWlBtn.addEventListener('click', crDoSubmit);
+
+  // Keep the "Signing as" + minor-consent block live as the identity fields change.
+  var crNameInput = document.getElementById('cr-reg-name'); if (crNameInput) crNameInput.addEventListener('input', crSyncWaiverDisplays);
+  var crMinorNameInput = document.getElementById('cr-minor-name'); if (crMinorNameInput) crMinorNameInput.addEventListener('input', crSyncWaiverDisplays);
+  document.querySelectorAll('input[name="cr-minor-rel"]').forEach(function(r){ r.addEventListener('change', crSyncWaiverDisplays); });
+
+  function crOpenPage(){
+    // Everything is on one page now — set up the waiver UI when the page opens.
+    if (typeof crResetWaiverGate === 'function') crResetWaiverGate();
+    buildCRSpots();
+  }
 
   var crCard = document.getElementById('event-card-recharge');
   if (crCard) crCard.addEventListener('click', function(e){
     if (this.classList.contains('is-locked')) { e.preventDefault(); return false; }
     showAllPanels('tab-recharge');
-    buildCRSpots();
+    crOpenPage();
     window.scrollTo({top:0,behavior:'smooth'});
   });
 
@@ -10471,61 +10540,20 @@ document.addEventListener('DOMContentLoaded', function() {
     var crPend = null;
     try { crPend = JSON.parse(localStorage.getItem('cr_pending') || 'null'); } catch(e){}
     if (typeof showAllPanels === 'function') { try { showAllPanels('tab-recharge'); } catch(e){} }
-    if (crPend && crPend.waiverSigned && crPend.code) {
-      // Waiver-first: the waiver was already signed before paying — this return means
-      // they're fully done. Mark paid and show the confirmation (no waiver to re-show).
+    // Waiver is signed BEFORE payment now, so returning here means they're fully
+    // done. Just mark paid and show the "you're confirmed" overlay with Add-to-Calendar.
+    if (crPend && crPend.code){
       try { supabase.from('create_recharge_registrations').update({ is_paid:true, paid_at:new Date().toISOString() }).eq('code', crPend.code).then(function(){ try{ if(typeof renderAdmin==='function') renderAdmin(); }catch(e){} }, function(){}); } catch(e){}
-      var _cn=document.getElementById('cr-conf-name'); if(_cn) _cn.textContent=(crPend.isMinor?crPend.minorNames:crPend.name)||'';
-      var _ct=document.getElementById('cr-conf-time'); if(_ct) _ct.textContent=crPend.waiverAt||new Date().toLocaleString();
-      if (typeof crShowStep==='function') crShowStep('cr-step-confirmed');
-      var _lay=document.getElementById('cr-page-layout'); if(_lay) _lay.classList.remove('waiver-active');
-      var _cintro=document.getElementById('cr-intro'); if(_cintro) _cintro.style.display='none';
-      try { localStorage.removeItem('cr_pending'); } catch(e){}
-      if (window.history && window.history.replaceState){ var _u2=new URL(window.location.href); _u2.searchParams.delete('paid'); window.history.replaceState({},'',_u2.pathname+_u2.search+_u2.hash); }
-      showCRPaymentReceivedOverlay();
-      buildCRSpots(); updateEventCardSpots();
-    } else {
-    var crCtaBtn = document.getElementById('cr-to-waiver-btn');
-    if (crCtaBtn) crCtaBtn.textContent = 'Continue to Waiver →';
-    setTimeout(function(){
-      // Re-assert the Create & Recharge page in case other init routing ran after us.
-      if (typeof showAllPanels === 'function') { try { showAllPanels('tab-recharge'); } catch(e){} }
-      // Prefill from the saved registration (set before Stripe) so nobody re-types
-      // anything. Real payers always have this; a directly-opened link won't, but
-      // the waiver still shows so it can be reviewed.
-      if (crPend && crPend.name){
-        var nEl=document.getElementById('cr-reg-name');  if(nEl) nEl.value = crPend.name||'';
-        var eEl=document.getElementById('cr-reg-email'); if(eEl) eEl.value = crPend.email||'';
-        var pEl=document.getElementById('cr-reg-phone'); if(pEl) pEl.value = crPend.phone||'';
-        var rEl=document.getElementById('cr-reg-referral'); if(rEl) rEl.value = crPend.referral||'';
-        if (crPend.isMinor){
-          var my=document.querySelector('input[name="cr-minor"][value="yes"]'); if(my){ my.checked=true; my.dispatchEvent(new Event('change')); }
-          var mn=document.getElementById('cr-minor-name'); if(mn) mn.value = crPend.minorNames||'';
-          var mr=document.querySelector('input[name="cr-minor-rel"][value="'+(crPend.minorRel||'')+'"]'); if(mr) mr.checked=true;
-        }
-      }
-      // Always go straight to the waiver on this link (with an Add-to-Calendar).
-      crEnterWaiver();
-      showCRPaidBanner();
-      // Mark the payment-pending row as PAID so the admin panel flips it to
-      // "paid — waiver pending" the moment they return from Stripe.
-      if (crPend && crPend.code){
-        supabase.from('create_recharge_registrations')
-          .update({ is_paid:true, paid_at:new Date().toISOString() })
-          .eq('code', crPend.code).then(function(){ try{ if(typeof renderAdmin==='function') renderAdmin(); }catch(e){} }, function(){});
-      }
-      // Heads-up to admin the moment payment lands — so if they close the tab before
-      // signing, you still know who paid and can follow up with the waiver.
-      if (crPend && crPend.email && typeof emailjs !== 'undefined'){
-        emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
-          admin_email: ADMIN_EMAIL, from_name: crPend.name, participant_email: crPend.email, to_email: crPend.email,
-          session_label:'Create & Recharge — August 15th', arrival_time: CR_EVENT.arrival,
-          registration_type:'PAYMENT received — waiver pending', sign_time: new Date().toLocaleString(),
-          clauses_agreed:'—', cancel_code:'(awaiting waiver)'
-        }).catch(function(){});
-      }
-    }, 500);
     }
+    var _cn=document.getElementById('cr-conf-name'); if(_cn && crPend) _cn.textContent=(crPend.isMinor?crPend.minorNames:crPend.name)||'';
+    var _ct=document.getElementById('cr-conf-time'); if(_ct) _ct.textContent=(crPend&&crPend.waiverAt)||new Date().toLocaleString();
+    if (typeof crShowStep==='function') crShowStep('cr-step-confirmed');
+    var _lay=document.getElementById('cr-page-layout'); if(_lay) _lay.classList.remove('waiver-active');
+    var _cintro=document.getElementById('cr-intro'); if(_cintro) _cintro.style.display='none';
+    try { localStorage.removeItem('cr_pending'); } catch(e){}
+    if (window.history && window.history.replaceState){ var _u2=new URL(window.location.href); _u2.searchParams.delete('paid'); window.history.replaceState({},'',_u2.pathname+_u2.search+_u2.hash); }
+    showCRPaymentReceivedOverlay();
+    buildCRSpots(); updateEventCardSpots();
   }
 
   buildCRSpots();
@@ -10784,6 +10812,7 @@ document.addEventListener('DOMContentLoaded', function() {
           if (btnEv) btnEv.click();
         } else {
           switchTab('btn-events'); showAllPanels('tab-recharge');
+          if (typeof crResetWaiverGate === 'function') crResetWaiverGate();
           if (typeof buildCRSpots === 'function') buildCRSpots();
         }
       }
