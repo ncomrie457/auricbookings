@@ -265,13 +265,26 @@
       var EMAILJS_SERVICE  = 'service_ieahnue';    // Resend-backed (book@auricmovement.com)
       var EMAILJS_TEMPLATE = 'template_4hcwb8o';   // Something's Blooming interest confirmation
       try { if (window.emailjs) emailjs.init({ publicKey: 'xr1kT3l8rFhNodudq' }); } catch(e){}
+      // Add ?debug=1 to the URL to see the exact email-send result on screen.
+      var EMAIL_DEBUG = /[?&]debug=1/.test(location.search);
       function sendConfirmation(name, email){
+        if (!window.emailjs) {
+          console.warn('EmailJS SDK not loaded');
+          if (EMAIL_DEBUG) alert('DEBUG: EmailJS SDK did NOT load (window.emailjs is undefined). The CDN script is being blocked from loading.');
+          return;
+        }
         try {
-          if (window.emailjs) {
-            emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, { name: name, email: email, to_email: email })
-              .then(function(){}, function(err){ console.warn('EmailJS send failed:', err); });
-          }
-        } catch(e){ console.warn('EmailJS error:', e); }
+          emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, { name: name, email: email, to_email: email })
+            .then(function(resp){
+              if (EMAIL_DEBUG) alert('DEBUG: EmailJS SUCCESS — status ' + (resp && resp.status) + ' ' + (resp && resp.text));
+            }, function(err){
+              console.warn('EmailJS send failed:', err);
+              if (EMAIL_DEBUG) alert('DEBUG: EmailJS FAILED — status ' + (err && err.status) + ' — ' + ((err && (err.text || err.message)) || JSON.stringify(err)));
+            });
+        } catch(e){
+          console.warn('EmailJS error:', e);
+          if (EMAIL_DEBUG) alert('DEBUG: EmailJS threw an error — ' + (e && e.message));
+        }
       }
 
       var form = document.getElementById('interest-form');
