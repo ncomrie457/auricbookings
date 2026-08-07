@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Payment received — Create &amp; Recharge</title>
+<!-- Instant redirect to the confirmation handler (marks paid + shows the
+     "You're confirmed" overlay with Add-to-Calendar). Same origin, so the
+     saved booking details in localStorage carry over. -->
+<script>location.replace('/?paid=recharge');</script>
+<meta http-equiv="refresh" content="0;url=/?paid=recharge">
+<style>
+  body{font-family:'Jost',Georgia,serif;background:#f1e9da;color:#5A3A1A;text-align:center;padding:4rem 1.5rem;}
+  .sp{width:34px;height:34px;border:3px solid #e6dbc8;border-top-color:#9c6b34;border-radius:50%;margin:1.5rem auto;animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  a{color:#9c6b34;}
+</style>
+</head>
+<body>
+  <h1 style="font-size:1.4rem;font-weight:600;">Payment received 🤍</h1>
+  <div class="sp"></div>
+  <p>Taking you to your confirmation…</p>
+  <p style="font-size:.85rem;margin-top:1rem;">If nothing happens, <a href="/?paid=recharge">tap here to continue</a>.</p>
+</body>
+</html>
