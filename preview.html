@@ -4182,39 +4182,28 @@
           </div>
         </div>
 
+        <!-- Pilates experience (dropdown) — sits right after the "bringing a child?" question -->
+        <div class="field" style="margin-bottom:1.1rem;">
+          <label for="cr-experience">Pilates Experience</label>
+          <p style="font-size:.78rem;color:var(--text-muted);margin:0 0 .5rem;line-height:1.5;">Helps your instructor plan the class for you.</p>
+          <select id="cr-experience" style="width:100%;padding:.7rem .85rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.92rem;background:var(--white);color:#3d322a;box-sizing:border-box;">
+            <option value="" disabled selected>Select one&hellip;</option>
+            <option value="First time">First time</option>
+            <option value="A handful of classes">A handful of classes</option>
+            <option value="Regular practice">Regular practice</option>
+          </select>
+        </div>
+
+        <!-- Health disclosure — single optional note (matches Riddim & Kompa) -->
+        <div class="field" style="margin-bottom:1.1rem;">
+          <label for="cr-h-notes">Anything we should know before class? <span style="font-weight:400;color:var(--text-muted);font-size:.78rem;">(optional)</span></label>
+          <textarea id="cr-h-notes" rows="2" style="width:100%;padding:.65rem .85rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.88rem;background:var(--cream-light);color:#3d322a;resize:vertical;box-sizing:border-box;line-height:1.5;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea>
+        </div>
+
         <div id="cr-spots-display" style="margin-bottom:1rem;padding:.75rem 1rem;background:#faf5ee;border-radius:10px;font-size:.85rem;color:#3d322a;text-align:center;"></div>
-        <div class="privacy-bar">
-          By registering you agree to our <button type="button" id="cr-open-privacy-btn" style="background:none;border:none;color:var(--gold-text);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Privacy Policy</button>, <button type="button" id="cr-open-terms-btn" style="background:none;border:none;color:var(--gold-text);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Terms &amp; Refund Policy</button>, and <button type="button" id="cr-open-policies-btn" style="background:none;border:none;color:var(--gold-text);cursor:pointer;font-size:.8rem;text-decoration:underline;font-family:'Jost',sans-serif;padding:0;">Class Policies</button> <span style="color:var(--text-muted);">(lateness &amp; medical)</span>.
-        </div>
-        <!-- Booking summary (single-page form: everything below is one continuous form) -->
-        <div style="background:#faf5ee;border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.25rem;margin:0 0 1.25rem;">
-          <p style="font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--brown);margin-bottom:.6rem;">Your Booking Summary</p>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;font-size:.85rem;color:#3d322a;margin-bottom:.5rem;">
-            <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Event</span><strong>Create &amp; Recharge</strong></div>
-            <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Date</span><strong>August 15th</strong></div>
-            <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Time</span><strong>11:35 AM</strong></div>
-            <div><span style="color:var(--text-muted);font-size:.75rem;display:block;">Price</span><strong>$65</strong></div>
-          </div>
-          <p style="font-size:.8rem;color:#3d322a;margin:0;">&#128205; 300 W 38th Street, 2F &#183; New York, NY 10018</p>
-        </div>
 
         <div>
           <div>
-
-            <!-- Pilates Experience -->
-            <div class="field" style="margin-bottom:1.1rem;">
-              <label style="display:block;font-size:.85rem;color:var(--brown);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;">Pilates Experience</label>
-              <p style="font-size:.78rem;color:var(--text-muted);margin:0 0 .55rem;line-height:1.5;">Helps your instructor plan the class for you.</p>
-              <label class="mc-health-row"><input type="radio" name="cr-experience" value="First time"><span>First time</span></label>
-              <label class="mc-health-row"><input type="radio" name="cr-experience" value="A handful of classes"><span>A handful of classes</span></label>
-              <label class="mc-health-row"><input type="radio" name="cr-experience" value="Regular practice"><span>Regular practice</span></label>
-            </div>
-
-            <!-- Health disclosure — single optional note (matches Riddim & Kompa) -->
-            <div class="field" style="margin-bottom:1.1rem;">
-              <label for="cr-h-notes">Anything we should know before class? <span style="font-weight:400;color:var(--text-muted);font-size:.78rem;">(optional)</span></label>
-              <textarea id="cr-h-notes" rows="2" style="width:100%;padding:.65rem .85rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.88rem;background:var(--cream-light);color:#3d322a;resize:vertical;box-sizing:border-box;line-height:1.5;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea>
-            </div>
 
             <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.5rem;margin-bottom:.4rem;">
               <h2>Liability Waiver &amp; Release</h2>
@@ -4223,7 +4212,7 @@
             <p class="subtitle">Please open and read the full liability waiver, then confirm below to continue.</p>
             <div class="final-check" style="align-items:flex-start;">
               <input type="checkbox" id="cr-waiver-agree" disabled style="margin-top:.15rem;">
-              <label for="cr-waiver-agree">I have read and agree to the <a id="cr-open-waiver" role="button" tabindex="0" style="color:var(--gold-text);font-weight:600;text-decoration:underline;cursor:pointer;">liability waiver</a>. <span style="color:var(--text-muted);font-weight:400;">(open it to continue)</span></label>
+              <label for="cr-waiver-agree">I have read and agree to the <a id="cr-open-waiver" role="button" tabindex="0" style="color:var(--gold-text);font-weight:600;text-decoration:underline;cursor:pointer;">liability waiver</a> <span style="color:var(--text-muted);font-weight:400;">(open it to continue)</span>, and to Auric Movement&rsquo;s <a id="cr-open-privacy-btn" role="button" tabindex="0" style="color:var(--gold-text);font-weight:600;text-decoration:underline;cursor:pointer;">Privacy Policy</a>, <a id="cr-open-terms-btn" role="button" tabindex="0" style="color:var(--gold-text);font-weight:600;text-decoration:underline;cursor:pointer;">Terms &amp; Refund Policy</a>, and <a id="cr-open-policies-btn" role="button" tabindex="0" style="color:var(--gold-text);font-weight:600;text-decoration:underline;cursor:pointer;">Class Policies</a>.</label>
             </div>
 
             <!-- Cancellation & Credit Policy Acknowledgment (hidden after payment — agreed at checkout) -->
@@ -9514,8 +9503,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var refEl = document.getElementById('cr-reg-referral');
     var referral = refEl ? refEl.value.trim() : '';
     if (referral) lines.push('🤝 REFERRED BY: ' + referral + ' — credit an Auric Club referral mark when this guest attends.');
-    var exp = document.querySelector('input[name="cr-experience"]:checked');
-    if (exp) lines.push('Pilates experience: ' + exp.value);
+    var exp = document.getElementById('cr-experience');
+    if (exp && exp.value) lines.push('Pilates experience: ' + exp.value);
     // Single free-text health note (the detailed condition checkboxes/allergies field were removed).
     var notesEl = document.getElementById('cr-h-notes');
     var notes = notesEl ? notesEl.value.trim() : '';
@@ -10002,7 +9991,7 @@ document.addEventListener('DOMContentLoaded', function() {
     ['cr-reg-name','cr-reg-email','cr-reg-phone','cr-reg-referral','cr-h-notes','cr-sig-input','cr-minor-name'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
     ['cr-final-agree','cr-refund-policy-agree','cr-minor-agree','cr-waiver-agree'].forEach(function(id){ var el=document.getElementById(id); if(el) el.checked=false; });
     var _cfa=document.getElementById('cr-final-agree'); if(_cfa) _cfa.disabled=true;
-    var expSel = document.querySelector('input[name="cr-experience"]:checked'); if(expSel) expSel.checked=false;
+    var expSel = document.getElementById('cr-experience'); if(expSel) expSel.value='';
     // Reset minor question back to "No" and hide its fields/consent.
     var minorNo = document.querySelector('input[name="cr-minor"][value="no"]'); if(minorNo) minorNo.checked=true;
     var relSel = document.querySelector('input[name="cr-minor-rel"]:checked'); if(relSel) relSel.checked=false;
