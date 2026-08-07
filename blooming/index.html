@@ -268,7 +268,7 @@
       function sendConfirmation(name, email){
         try {
           if (window.emailjs) {
-            emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, { name: name, email: email })
+            emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, { name: name, email: email, to_email: email })
               .then(function(){}, function(err){ console.warn('EmailJS send failed:', err); });
           }
         } catch(e){ console.warn('EmailJS error:', e); }

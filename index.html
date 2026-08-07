@@ -7346,14 +7346,17 @@ document.addEventListener('DOMContentLoaded', function() {
     var mcContainer       = document.createElement('div'); mcContainer.id       = 'admin-mc-container';
     var crContainer       = document.createElement('div'); crContainer.id       = 'admin-cr-container';
     var reformerContainer = document.createElement('div'); reformerContainer.id = 'admin-reformer-container';
+    var bloomContainer    = document.createElement('div'); bloomContainer.id    = 'admin-bloom-container';
     var corpContainer     = document.createElement('div'); corpContainer.id     = 'admin-corp-container';
     body.appendChild(sessionsContainer);
     body.appendChild(mcContainer);
     body.appendChild(crContainer);
     body.appendChild(reformerContainer);
+    body.appendChild(bloomContainer);
     body.appendChild(corpContainer);
     if (typeof renderCRSection === 'function') renderCRSection(crContainer);
     if (typeof renderReformerSection === 'function') renderReformerSection(reformerContainer);
+    if (typeof renderBloomingSection === 'function') renderBloomingSection(bloomContainer);
     if (typeof renderWaitlistNotify === 'function') renderWaitlistNotify();
     if (typeof renderSignedAgreements === 'function') renderSignedAgreements();
 
@@ -10156,6 +10159,41 @@ document.addEventListener('DOMContentLoaded', function() {
       }, function(){ render([], true); });
     } catch(e){ render([], true); }
   }
+
+  // ─── Something's Blooming — interest list roster ───────────────────────
+  function renderBloomingSection(container){
+    if(!container) return;
+    var block = document.createElement('div'); block.className='admin-session-block';
+    function render(rows, err){
+      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F338} Something\u2019s Blooming \u2014 Interest List \u00b7 '+rows.length+' signed up</h3>';
+      if(err){ block.innerHTML += '<div class="empty-state">Interest list unavailable \u2014 run the blooming_interest read/delete policy SQL to view it here. (Signups are still being saved.)</div>'; return; }
+      if(!rows.length){ block.innerHTML += '<div class="empty-state">No signups yet.</div>'; return; }
+      rows.forEach(function(rec){
+        var item=document.createElement('div'); item.className='admin-sub-item';
+        var when=''; try{ when=rec.created_at?new Date(rec.created_at).toLocaleString():''; }catch(e){}
+        var phone = rec.phone ? '<br><span style="font-size:.75rem;color:var(--text-muted);">\u{1F4DE} '+escapeHTML(rec.phone)+'</span>' : '';
+        var removeBtn='<button onclick="bloomAdminRemove(\''+String(rec.id).replace(/'/g,"\\'")+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F5D1} Remove</button>';
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span><br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+phone+'</div>'+
+          '<div style="text-align:right"><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span><br><div style="margin-top:.3rem;">'+removeBtn+'</div></div>';
+        block.appendChild(item);
+      });
+    }
+    container.innerHTML=''; container.appendChild(block);
+    try {
+      supabase.from('blooming_interest').select('*').order('created_at').then(function(res){
+        if(res && res.error){ render([], true); return; }
+        render((res && res.data) || [], false);
+      }, function(){ render([], true); });
+    } catch(e){ render([], true); }
+  }
+  window.bloomAdminRemove = function(id){
+    if(!id) return;
+    if(!confirm('Remove this signup from the Something\u2019s Blooming interest list?')) return;
+    supabase.from('blooming_interest').delete().eq('id', id).then(function(res){
+      if(res&&res.error){ alert('Could not remove \u2014 run the blooming_interest delete policy SQL first.'); return; }
+      renderAdmin();
+    }, function(){ alert('Could not remove. Try again.'); });
+  };
   // Reformer admin actions — all go through password-gated RPCs (table stays private).
   window.rfAdminSetPaid = function(id, val){
     supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: !!val })
