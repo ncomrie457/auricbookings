@@ -4417,9 +4417,13 @@
           <input type="checkbox" data-event-badge="rnb" data-field="is_collab">
           <span>R&amp;B Pilates &mdash; Collab</span>
         </label>
-        <label class="mc-health-row" style="margin-bottom:0;">
+        <label class="mc-health-row" style="margin-bottom:.45rem;">
           <input type="checkbox" data-event-badge="reformer" data-field="is_collab">
           <span>Riddim &amp; Kompa on the Reformer &mdash; Collab</span>
+        </label>
+        <label class="mc-health-row" style="margin-bottom:0;">
+          <input type="checkbox" data-event-badge="blooming" data-field="is_collab">
+          <span>Something&rsquo;s Blooming &mdash; Collab</span>
         </label>
       </div>
       <div id="admin-event-badges-status" style="margin-top:.5rem;font-size:.78rem;color:var(--text-muted);"></div>
@@ -4446,6 +4450,10 @@
         <label for="admin-donor-reformer" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Riddim &amp; Kompa on the Reformer &mdash; Donors</label>
         <input type="text" id="admin-donor-reformer" data-event-donors="reformer" placeholder="e.g., partner or sponsor names" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
       </div>
+      <div style="margin-bottom:.75rem;">
+        <label for="admin-donor-blooming" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Something&rsquo;s Blooming &mdash; Donors</label>
+        <input type="text" id="admin-donor-blooming" data-event-donors="blooming" placeholder="e.g., partner or sponsor names" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
+      </div>
       <div id="admin-event-donors-status" style="margin-top:.5rem;font-size:.78rem;color:var(--text-muted);"></div>
     </div>
 
@@ -4462,6 +4470,7 @@
             <option value="matchat">Mat &amp; Chat</option>
             <option value="recharge">Create &amp; Recharge</option>
             <option value="reformer">Riddim &amp; Kompa on the Reformer (both sessions)</option>
+            <option value="blooming">Something&rsquo;s Blooming (interest list)</option>
           </select>
         </div>
         <div>
@@ -6213,7 +6222,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function applyEventBadges() {
     getEventConfig(function(cfg){
-      var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat', recharge: 'event-card-recharge', rnb: 'event-card-rnb', reformer: 'event-card-reformer' };
+      var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat', recharge: 'event-card-recharge', rnb: 'event-card-rnb', reformer: 'event-card-reformer', blooming: 'event-card-blooming' };
       Object.keys(cards).forEach(function(key){
         var card = document.getElementById(cards[key]);
         if (!card) return;
@@ -8059,6 +8068,17 @@ document.addEventListener('DOMContentLoaded', function() {
             var rows = (res && res.data) || [];
             var confirmed = rows.filter(function(r){ return r.is_paid && r.email; }).map(function(rec){
               return { rec: { name: rec.name, email: rec.email }, sess: RF_SESS[rec.session] || RF_SESS['1pm'] };
+            });
+            callback(confirmed);
+          }, function(){ callback([]); });
+        } catch(e){ callback([]); }
+      } else if (eventType === 'blooming') {
+        // Something's Blooming — everyone on the interest list.
+        try {
+          supabase.from('blooming_interest').select('*').order('created_at').then(function(res){
+            var rows = (res && res.data) || [];
+            var confirmed = rows.filter(function(r){ return r.email; }).map(function(rec){
+              return { rec: { name: rec.name, email: rec.email }, sess: { label: 'Something’s Blooming', date: 'Saturday, December 13th', arrival: 'TBD', start: 'TBD' } };
             });
             callback(confirmed);
           }, function(){ callback([]); });
