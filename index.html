@@ -8052,7 +8052,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       } else if (eventType === 'recharge') {
         getCRData(function(data){
-          var confirmed = (data.cr1 || []).filter(function(r){ return r.type === 'confirmed'; }).map(function(rec){
+          // Paid registrants only — never remind unpaid/pending sign-ups.
+          var confirmed = (data.cr1 || []).filter(function(r){ return r.type === 'confirmed' && r.isPaid; }).map(function(rec){
             return { rec: rec, sess: { label: CR_EVENT.label, date: CR_EVENT.eventDate, arrival: CR_EVENT.arrival, start: CR_EVENT.start } };
           });
           callback(confirmed);
