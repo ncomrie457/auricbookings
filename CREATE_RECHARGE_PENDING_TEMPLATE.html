@@ -5,7 +5,7 @@
    1. EmailJS → Email Templates → Create New Template → paste this
       into the Content (code/HTML) view → Save.
    2. Settings tab:
-        • Subject:    Your Create & Recharge spot — complete your payment
+        • Subject:    Your Create & Recharge spot — $10 off, complete your payment
         • From Name:  Auric Movement
         • From Email: book@auricmovement.com   (uncheck "Use Default")
         • Reply To:   auricmovement@outlook.com
@@ -13,6 +13,10 @@
         • To Email:   {{to_email}}
    3. Copy the new template's ID (template_xxxxxxx) and send it to
       Claude to set CR_TMPL_PENDING in index.html.
+
+   NOTE: Create the coupon "CREATEWITHUS" ($10 off) in Stripe → Products →
+   Coupons, and enable "Allow promotion codes" on your Payment Link so
+   customers can enter it at checkout.
 
    Variables: {{from_name}} {{to_email}} {{event_date}} {{class_time}}
               {{receipt_amount}} {{pay_url}}
@@ -38,21 +42,15 @@
 
       <!-- Body -->
       <tr><td style="padding:34px 40px 8px;">
-        <div style="font-family:Georgia,serif;font-size:10px;color:#b0432e;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">&#9203; Final Payment Reminder</div>
-        <h1 style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:27px;line-height:1.25;color:#5A3A1A;margin:0 0 14px 0;font-weight:600;">Your spot is still on hold, {{from_name}}.</h1>
-        <p style="font-family:Georgia,serif;font-size:15px;line-height:1.7;color:#2c2c33;margin:0 0 16px 0;">
-          We&rsquo;re now just <strong>5 days away</strong> from <strong>Create &amp; Recharge</strong>, and your spot is <strong>still unpaid</strong> &mdash; so it isn&rsquo;t locked in yet. Please complete your payment below to secure it.
+        <div style="font-family:Georgia,serif;font-size:10px;color:#7a6320;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">&#9203; Payment Pending</div>
+        <h1 style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:27px;line-height:1.25;color:#5A3A1A;margin:0 0 12px 0;font-weight:600;">Your spot is being held, {{from_name}}.</h1>
+        <p style="font-family:Georgia,serif;font-size:15px;line-height:1.7;color:#2c2c33;margin:0 0 18px 0;">
+          You reserved a place at <strong>Create &amp; Recharge</strong>, but your payment isn&rsquo;t complete yet &mdash; so your spot isn&rsquo;t locked in. Finish your payment below to secure it &mdash; and here&rsquo;s <strong>$10 off</strong> to make it easy. Spots are limited and unpaid holds are released.
         </p>
-        <!-- Urgency callout -->
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fdecea;border:1px solid #f2c4bd;border-radius:10px;margin:0 0 18px 0;">
-          <tr><td style="padding:13px 18px;font-family:Georgia,serif;font-size:14px;line-height:1.6;color:#8a2b1e;">
-            &#9888;&#65039; <strong>Heads up:</strong> we&rsquo;ll release your spot <strong>tomorrow</strong> if we don&rsquo;t receive payment. Spots are limited &mdash; secure yours now.
-          </td></tr>
-        </table>
       </td></tr>
 
       <!-- Details -->
-      <tr><td style="padding:0 40px 22px;">
+      <tr><td style="padding:0 40px 18px;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4efe4;border-left:4px solid #c9a463;border-radius:0 10px 10px 0;">
           <tr><td style="padding:16px 20px;">
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -65,10 +63,19 @@
         </table>
       </td></tr>
 
+      <!-- Promo code -->
+      <tr><td style="padding:0 40px 20px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fff8ec;border:1px dashed #c9a463;border-radius:10px;">
+          <tr><td align="center" style="padding:15px 18px;font-family:Georgia,serif;font-size:15px;color:#5A3A1A;line-height:1.5;">
+            &#127903;&#65039; <strong>$10 off</strong> &mdash; use code <strong style="letter-spacing:2px;color:#7a6320;font-size:16px;">CREATEWITHUS</strong> at checkout
+          </td></tr>
+        </table>
+      </td></tr>
+
       <!-- CTA -->
-      <tr><td align="center" style="padding:4px 40px 30px;">
+      <tr><td align="center" style="padding:0 40px 30px;">
         <a href="{{pay_url}}" style="display:inline-block;background-color:#5A3A1A;color:#ffffff;font-family:Georgia,serif;font-size:15px;font-weight:bold;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;padding:15px 34px;border-radius:8px;">Complete Payment &rarr;</a>
-        <p style="font-family:Georgia,serif;font-size:12px;color:#7a6e63;margin:14px 0 0 0;">Secure checkout by Stripe. Your spot is confirmed the moment payment goes through.</p>
+        <p style="font-family:Georgia,serif;font-size:12px;color:#7a6e63;margin:14px 0 0 0;">Enter code <strong>CREATEWITHUS</strong> at checkout for $10 off. Secure checkout by Stripe &mdash; your spot is confirmed the moment payment goes through.</p>
       </td></tr>
 
       <!-- Footer -->
