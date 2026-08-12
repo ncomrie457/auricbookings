@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Signature Request — Auric Movement</title>
+  <title>Create &amp; Recharge — Collaboration Agreement</title>
   <meta name="robots" content="noindex, nofollow">
   <style>
     :root{ --brown:#5A3A1A; --gold:#b07840; --gold-text:#9a6535; --cream:#f8f4ec; --ink:#2c2420; --peri:#7d86c4; --border:#e6ddce; }
@@ -35,12 +35,19 @@
     .done .check{ font-size:2.5rem; color:var(--gold); }
     .stamp{ font-family:'Helvetica Neue',Arial,sans-serif; font-size:.8rem; color:var(--gold-text); letter-spacing:.04em; margin-top:.5rem; }
     .muted{ font-size:.8rem; color:#8a7d6a; }
+    .doc-head{ text-align:center; border-bottom:2px solid var(--gold); padding-bottom:1.3rem; margin-bottom:1.7rem; }
+    .doc-head .eyebrow{ font-family:'Helvetica Neue',Arial,sans-serif; font-size:.72rem; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:var(--gold-text); margin-bottom:.55rem; }
+    .doc-head h1{ font-family:'Cormorant Garamond',Georgia,serif; font-style:normal; font-weight:600; color:var(--brown); font-size:2.3rem; text-align:center; margin:.1rem 0 .15rem; letter-spacing:.01em; }
+    .doc-head .doc-sub{ font-family:'Cormorant Garamond',Georgia,serif; font-style:italic; font-size:1.2rem; color:var(--gold-text); }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="brand">Auric Movement <span style="color:var(--gold);">&times;</span> Georgina Arroyo</div>
-    <h1>Signature Request</h1>
+    <div class="doc-head">
+      <div class="eyebrow">Auric Movement <span style="color:var(--gold);">&times;</span> Georgina Arroyo</div>
+      <h1>Create &amp; Recharge</h1>
+      <div class="doc-sub">Collaboration Agreement</div>
+    </div>
 
     <div id="form-view">
       <div class="card">
@@ -64,7 +71,7 @@ Auric Movement LLC serves as instructor for the Pilates mat class and handles al
 Both parties will promote the event on their own social media channels, posting at least once before the event.
 
 3. COMPENSATION
-Event costs are deducted from gross registration revenue before any split. Those costs are venue rental ($240), mat rental ($25), and Georgina's art materials ($<input type="text" id="art-cost" class="fillin" inputmode="decimal" autocomplete="off" placeholder="amount" aria-label="Art materials cost">).
+Event costs are deducted from gross registration revenue before any split. Those costs are venue rental ($240), mat rental ($<input type="text" id="mat-cost" class="fillin" inputmode="decimal" autocomplete="off" placeholder="amount" aria-label="Mat rental cost">), and Georgina's art materials ($<input type="text" id="art-cost" class="fillin" inputmode="decimal" autocomplete="off" placeholder="amount" aria-label="Art materials cost">).
 Remaining net revenue is split 60% to Auric Movement LLC and 40% to Georgina Arroyo, paid within 14 days of the event.
 Grip socks and thank-you cards are Auric Movement's hospitality spend and are paid from its share, not deducted off the top.
 No other costs are deducted off the top unless both parties agree in writing beforehand.
@@ -200,14 +207,17 @@ By typing my full legal name and drawing my signature below, I, Georgina Arroyo,
     var nameEl = document.getElementById('signer-name');
     var agreeEl = document.getElementById('agree-check');
     var artEl = document.getElementById('art-cost');
+    var matEl = document.getElementById('mat-cost');
     var btn = document.getElementById('sign-btn');
     function updateBtn(){
       var artOk = !artEl || artEl.value.trim().length > 0;
-      btn.disabled = !(nameEl.value.trim().length >= 2 && hasDrawn && agreeEl.checked && artOk);
+      var matOk = !matEl || matEl.value.trim().length > 0;
+      btn.disabled = !(nameEl.value.trim().length >= 2 && hasDrawn && agreeEl.checked && artOk && matOk);
     }
     nameEl.addEventListener('input', updateBtn);
     agreeEl.addEventListener('change', updateBtn);
     if(artEl) artEl.addEventListener('input', updateBtn);
+    if(matEl) matEl.addEventListener('input', updateBtn);
 
     function two(n){ return (n<10?'0':'')+n; }
     function stampNow(){
@@ -222,6 +232,7 @@ By typing my full legal name and drawing my signature below, I, Georgina Arroyo,
       if(name.length < 2){ err.textContent = 'Please enter your full legal name.'; return; }
       if(!hasDrawn){ err.textContent = 'Please draw your signature.'; return; }
       if(!agreeEl.checked){ err.textContent = 'Please check the agreement box.'; return; }
+      if(matEl && matEl.value.trim().length === 0){ err.textContent = 'Please fill in the mat rental amount in Section 3.'; return; }
       if(artEl && artEl.value.trim().length === 0){ err.textContent = 'Please fill in the art materials amount in Section 3.'; return; }
       if(!(window.jspdf && window.jspdf.jsPDF)){ err.textContent = 'Could not load the PDF library — check your connection and try again.'; return; }
 
@@ -229,6 +240,8 @@ By typing my full legal name and drawing my signature below, I, Georgina Arroyo,
       var sigImg = canvas.toDataURL('image/png');
       // Build agreement text with the filled-in art-materials amount substituted for the input field.
       var agClone = document.getElementById('agreement-text').cloneNode(true);
+      var miNode = agClone.querySelector('#mat-cost');
+      if(miNode){ var sp2 = document.createElement('span'); sp2.textContent = (matEl ? matEl.value.trim() : '') || '______'; miNode.parentNode.replaceChild(sp2, miNode); }
       var ciNode = agClone.querySelector('#art-cost');
       if(ciNode){ var sp = document.createElement('span'); sp.textContent = (artEl ? artEl.value.trim() : '') || '______'; ciNode.parentNode.replaceChild(sp, ciNode); }
       var agreementText = agClone.innerText;
