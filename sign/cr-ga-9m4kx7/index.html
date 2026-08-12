@@ -114,6 +114,9 @@ By typing my full legal name and drawing my signature below, I, Georgina Arroyo,
 
       <div class="card">
         <h2>Sign Here</h2>
+        <div style="background:#f6f0e4;border:1px solid var(--border);border-radius:10px;padding:.75rem .95rem;margin-bottom:1.1rem;font-size:.85rem;color:#3d322a;line-height:1.55;">
+          Issued &amp; signed by <strong>Auric Movement LLC</strong> &mdash; Niara Comrie, Managing Member. Georgina, please counter-sign below to execute the agreement.
+        </div>
         <div class="row">
           <label for="signer-name">Full legal name</label>
           <input type="text" id="signer-name" placeholder="First and last name" autocomplete="name">
@@ -304,6 +307,20 @@ By typing my full legal name and drawing my signature below, I, Georgina Arroyo,
         doc.text(stamp.readable, margin, y); y += 13;
         doc.setFontSize(8); doc.setTextColor(140,125,100);
         doc.text('UTC: ' + stamp.iso, margin, y);
+        y += 34;
+
+        // Issuing party signature block (Auric Movement LLC — Niara Comrie)
+        if(y > doc.internal.pageSize.getHeight() - 110){ doc.addPage(); y = margin; }
+        doc.setDrawColor(230,221,206); doc.setLineWidth(1); doc.line(margin, y, W-margin, y); y += 22;
+        doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(154,101,53);
+        doc.text('FOR AURIC MOVEMENT LLC', margin, y); y += 24;
+        doc.setFont('times','italic'); doc.setFontSize(17); doc.setTextColor(45,36,32);
+        doc.text('Niara Comrie', margin, y); y += 8;
+        doc.setDrawColor(216,203,180); doc.setLineWidth(0.75); doc.line(margin, y, margin+240, y); y += 16;
+        doc.setFont('times','normal'); doc.setFontSize(10); doc.setTextColor(45,36,32);
+        doc.text('Niara Comrie, Managing Member — Auric Movement LLC', margin, y); y += 14;
+        doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(140,125,100);
+        doc.text('Issued & executed by Auric Movement LLC — ' + stamp.readable, margin, y);
 
         var safe = name.replace(/[^a-z0-9]+/gi,'-').toLowerCase();
         var fname = 'signed-agreement-' + safe + '.pdf';
