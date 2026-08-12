@@ -8,7 +8,15 @@
   <style>
     :root{ --brown:#5A3A1A; --gold:#b07840; --gold-text:#9a6535; --cream:#f8f4ec; --ink:#2c2420; --peri:#7d86c4; --border:#e6ddce; }
     *{ box-sizing:border-box; }
-    body{ margin:0; background:linear-gradient(180deg,#faf6ee 0%,var(--cream) 30%); color:var(--ink); font-family:Georgia,'Times New Roman',serif; line-height:1.6; min-height:100vh; }
+    body{ margin:0;
+      background:
+        radial-gradient(38% 30% at 13% 15%, rgba(125,134,196,.34), rgba(125,134,196,0) 70%),
+        radial-gradient(34% 26% at 87% 21%, rgba(125,134,196,.28), rgba(125,134,196,0) 70%),
+        radial-gradient(42% 30% at 17% 83%, rgba(125,134,196,.26), rgba(125,134,196,0) 70%),
+        radial-gradient(36% 28% at 89% 87%, rgba(125,134,196,.24), rgba(125,134,196,0) 70%),
+        #eef0ea;
+      background-attachment:fixed;
+      color:var(--ink); font-family:Georgia,'Times New Roman',serif; line-height:1.6; min-height:100vh; }
     .wrap{ max-width:720px; margin:0 auto; padding:2rem 1.25rem 4rem; }
     .brand{ text-align:center; font-family:'Helvetica Neue',Arial,sans-serif; font-size:.72rem; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:var(--peri); margin-bottom:.4rem; }
     h1{ font-family:'Cormorant Garamond',Georgia,serif; font-style:italic; font-weight:500; color:var(--brown); font-size:2rem; text-align:center; margin:.2rem 0 1.5rem; }
