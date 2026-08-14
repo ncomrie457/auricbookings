@@ -119,8 +119,8 @@
 
   <!-- STEP 1: Form -->
   <div id="step-form" class="card">
-    <h2>Let's get you signed in</h2>
-    <p class="subtitle">A quick sign-off so we can move safely together — it takes about a minute. Add your details, choose your event, then check off each point and sign at the bottom.</p>
+    <h2>Sign Your Waiver</h2>
+    <p class="subtitle">Enter your details and select your event, then read each clause carefully and check the box to acknowledge it. All clauses must be acknowledged before you can sign. This is a legally binding Liability Waiver &amp; Release.</p>
 
     <div class="field">
       <label for="reg-name">Full Legal Name <span class="required" aria-hidden="true">*</span></label>
@@ -156,16 +156,16 @@
 
     <div class="progress-section hidden" id="progress-section">
       <div class="progress-label">
-        <span><span id="confirmed-count">0</span>/<span id="total-count">7</span> confirmed</span>
-        <span id="remaining-text">7 remaining</span>
+        <span><span id="confirmed-count">0</span>/<span id="total-count">19</span> confirmed</span>
+        <span id="remaining-text">19 remaining</span>
       </div>
-      <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="7" id="progress-track">
+      <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="19" id="progress-track">
         <div class="progress-fill" id="progress-fill"></div>
       </div>
     </div>
 
     <div style="margin-bottom:.75rem;" class="hidden" id="select-all-wrap">
-      <button type="button" id="select-all-btn" class="btn btn-secondary" style="font-size:.82rem;padding:.5rem 1rem;width:100%;justify-content:center;">✓ I agree to all of these</button>
+      <button type="button" id="select-all-btn" class="btn btn-secondary" style="font-size:.82rem;padding:.5rem 1rem;width:100%;justify-content:center;">✓ Select All Clauses</button>
     </div>
 
     <div id="clauses-hint" style="padding:1rem 1.1rem;border:2px dashed var(--border);border-radius:10px;background:var(--cream-light);color:var(--text-muted);font-size:.9rem;text-align:center;">👆 Choose your event to load your waiver.</div>
@@ -280,7 +280,7 @@
     <div class="modal-body">
       <p><em>Effective Date: May 2026</em></p>
       <h4>1. Acceptance of Waiver</h4>
-      <p>By signing this liability waiver electronically, you acknowledge that you have read, understood, and agreed to each acknowledgment contained in it. Your electronic signature is the legal equivalent of your handwritten signature and is legally binding under the Electronic Signatures in Global and National Commerce Act (E-SIGN Act), 15 U.S.C. § 7001.</p>
+      <p>By signing this liability waiver electronically, you acknowledge that you have read, understood, and agreed to all 19 clauses contained in it (20 clauses for Create &amp; Recharge). Your electronic signature is the legal equivalent of your handwritten signature and is legally binding under the Electronic Signatures in Global and National Commerce Act (E-SIGN Act), 15 U.S.C. § 7001.</p>
       <h4>2. Code of Conduct</h4>
       <p>All participants are expected to treat instructors, staff, and fellow participants with respect. Auric Movement LLC is a welcoming, inclusive space. Disruptive, disrespectful, or unsafe behavior will result in removal from the session.</p>
       <h4>3. Right to Refuse Entry</h4>
@@ -315,30 +315,40 @@ document.addEventListener('DOMContentLoaded', function() {
     'sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ'
   );
   var STORAGE_KEY     = 'auric_standalone_waivers';
-  var TOTAL_CLAUSES   = 7;
+  var TOTAL_CLAUSES   = 19;
   var _lastWaivers = { waivers: [] };
 
   if (typeof emailjs !== 'undefined') emailjs.init(EMAILJS_PUBLIC_KEY);
 
-  // Plain-English acknowledgments. Each still carries the full legal substance of the
-  // original release (assumption of risk, medical disclaimer, release + waiver of suit,
-  // negligence carve-out, media release, personal property, arbitration/venue/age/etc.),
-  // just grouped and written to actually be readable. The lead-in sentence (up to the
-  // first period) is bolded in the UI; the PDF prints the plain text.
+  // Comprehensive express-assumption-of-risk and release clauses. Each is acknowledged
+  // individually (conspicuous, separately-checked) to maximize enforceability. Keep the
+  // legal wording intact — edits here change the substance of the release.
   var clauseTexts = [
-    "Movement carries risk, and I'm taking part by choice. Pilates, movement, and wellness sessions with Auric Movement LLC involve physical activity and inherent risks — including muscle strain, sprains, fractures, and other injury. I'm participating voluntarily and accept these risks, whether foreseeable or not.",
-    "I'm able to participate, and I'll speak up. I'm physically and mentally fit to take part, or I've been cleared by a healthcare provider. I'll tell my instructor about any injuries, conditions, allergies, or limitations before we begin, and I'll ease off or stop if I feel pain or discomfort.",
-    "My instructors aren't medical professionals. Auric Movement's instructors and staff are not licensed medical providers, and no session replaces professional medical advice, diagnosis, or treatment.",
-    "I release Auric Movement, and I won't sue. I release and hold harmless Auric Movement LLC — its owners, instructors, employees, agents, collaborators, and affiliates — from any claims, liabilities, damages, or expenses arising from my participation, and I waive my right to bring a lawsuit against them. This covers ordinary negligence, but not gross negligence or willful misconduct.",
-    "I'm okay with photos and video. I consent to photographs, video, or audio captured during sessions being used for promotional or educational purposes — unless I opt out by telling my instructor or emailing auricmovement@outlook.com.",
-    "My belongings are my responsibility. Auric Movement isn't liable for lost, stolen, or damaged personal items — including anything in a complimentary gift bag, which I accept and use at my own risk.",
-    "The legal basics. I'm at least 18, or I have parent/guardian consent. This agreement is governed by New York law; any dispute is resolved through binding arbitration (American Arbitration Association, New York County); and if any part is unenforceable, the rest still applies. This waiver stays in effect for my future sessions unless I revoke it in writing, and I've had the chance to read it, ask questions, and seek legal advice."
+    "I understand that participation in wellness, movement, and/or energy-based sessions offered by Auric Movement LLC involves physical activity and inherent risks, including but not limited to muscle strain, sprains, fractures, and other injuries.",
+    "I acknowledge that I am voluntarily participating in these sessions and assume all risks of injury or harm that may result from my participation, whether foreseeable or unforeseeable.",
+    "I represent that I am physically and mentally fit to participate and have no medical conditions that would prevent safe participation, or I have obtained clearance from a licensed healthcare provider.",
+    "I agree to disclose any known medical conditions, allergies, injuries, or physical limitations to my instructor before each session.",
+    "I understand that the instructors and staff of Auric Movement LLC are not licensed medical professionals and that no session is a substitute for professional medical advice, diagnosis, or treatment.",
+    "I agree to follow all instructions, safety guidelines, and rules provided by Auric Movement LLC staff during sessions.",
+    "I understand that I may stop participation at any time if I feel pain, discomfort, or distress, and I agree to immediately notify my instructor.",
+    "I release, discharge, and hold harmless Auric Movement LLC, its owners, instructors, employees, agents, and affiliates from any and all claims, liabilities, damages, or expenses arising from my participation.",
+    "I waive any right to bring a lawsuit or legal claim against Auric Movement LLC, its owners, instructors, employees, agents, or affiliates for any injury, illness, or loss sustained during or as a result of my participation.",
+    "I understand that this waiver extends to any claims arising from the negligence of Auric Movement LLC, its owners, instructors, employees, agents, or affiliates, excluding gross negligence or willful misconduct.",
+    "I consent to the use of any photographs, video recordings, or audio recordings taken during sessions for promotional, educational, or marketing purposes by Auric Movement LLC, unless I submit a written opt-out request.",
+    "I understand that personal belongings brought to sessions are my responsibility and that Auric Movement LLC is not liable for any lost, stolen, or damaged items.",
+    "I agree that any disputes arising from this waiver or my participation shall be resolved through binding arbitration in accordance with the rules of the American Arbitration Association, and not through court litigation.",
+    "I acknowledge that this waiver is governed by and construed in accordance with the laws of the State of New York.",
+    "I understand that if any provision of this waiver is found to be unenforceable, the remaining provisions shall remain in full force and effect.",
+    "I confirm that I am at least 18 years of age, or that I have obtained parental or guardian consent if I am a minor.",
+    "I agree that this waiver remains in effect for all future sessions and activities with Auric Movement LLC unless I submit a written revocation.",
+    "I acknowledge that I have had sufficient opportunity to read this waiver, ask questions, and seek independent legal advice before signing.",
+    "I understand that a complimentary gift bag may be provided as a courtesy. I acknowledge that I assume full responsibility for any items received and their use. I release the Released Parties from any liability arising from the receipt or use of gift bag contents."
   ];
 
   // Create & Recharge adds one collab/art-specific clause (mirrors the booking flow):
   // covers art-material risk and extends the release to Georgina Arroyo & collaborators.
   var CR_ART_CLAUSE =
-    "Create & Recharge includes art-making. This event is co-hosted with Georgina Arroyo and includes creative, art-based activities. I understand art materials carry small risks of their own — cuts, skin irritation, or allergic reactions to paints, adhesives, or supplies, and staining of clothing — and I accept them. Every release and protection in this waiver also covers Auric Movement's co-hosts, collaborators, and guest instructors, including Georgina Arroyo. I'll let my instructor know of any allergies.";
+    "I understand that Create & Recharge is co-hosted with Georgina Arroyo and includes creative and art-based activities. I acknowledge the inherent risks of using art materials and tools — including cuts, skin irritation, or allergic reactions to paints, adhesives, or other supplies, and staining of clothing or belongings — and I voluntarily assume all such risks. I agree that every release, waiver, and hold-harmless provision in this agreement also protects Auric Movement LLC's collaborators, co-hosts, and guest instructors, including Georgina Arroyo, to the same extent as the Released Parties. I agree to disclose any known allergies or sensitivities to my instructor before participating.";
 
   // Per-event waiver config. extraClauses are appended to the base set above.
   var WAIVER_EVENTS = {
@@ -471,7 +481,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var fa = document.getElementById('final-agree'); if (fa) fa.checked = false;
     var si = document.getElementById('sig-input'); if (si) { si.value=''; si.disabled=true; }
     var sb = document.getElementById('submit-btn'); if (sb) sb.disabled = true;
-    var sa = document.getElementById('select-all-btn'); if (sa) { sa.textContent='✓ I agree to all of these'; sa.disabled=false; }
+    var sa = document.getElementById('select-all-btn'); if (sa) { sa.textContent='✓ Select All Clauses'; sa.disabled=false; }
     document.getElementById('progress-track').setAttribute('aria-valuemax', TOTAL_CLAUSES);
     buildClauses();
   }
@@ -489,12 +499,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var cb = document.createElement('input'); cb.type='checkbox'; cb.id='cb-'+i;
       cb.setAttribute('aria-label','Agree to clause '+(i+1)+' of '+TOTAL_CLAUSES);
       var lbl = document.createElement('label'); lbl.htmlFor='cb-'+i; lbl.className='clause-text';
-      // Bold the lead-in sentence (everything up to the first period) for scannability.
-      var dot = text.indexOf('. ');
-      var lead = dot > 0 ? text.slice(0, dot + 1) : '';
-      var rest = dot > 0 ? text.slice(dot + 2) : text;
-      lbl.innerHTML = '<span class="clause-num">'+(i+1)+'.</span> ' +
-        (lead ? '<strong>'+escapeHTML(lead)+'</strong> ' : '') + escapeHTML(rest);
+      lbl.innerHTML = '<span class="clause-num">'+(i+1)+'.</span> '+escapeHTML(text);
       cb.addEventListener('change', function(){
         if (this.checked){ checkedClauses[i]=true; div.classList.add('checked'); }
         else { delete checkedClauses[i]; div.classList.remove('checked'); }
@@ -528,7 +533,7 @@ document.addEventListener('DOMContentLoaded', function() {
     checkboxes.forEach(function(cb){
       if (!cb.checked) { cb.checked = true; cb.dispatchEvent(new Event('change')); }
     });
-    this.textContent = '✓ All set — thank you';
+    this.textContent = '✓ All Clauses Selected';
     this.disabled = true;
     announce('All ' + TOTAL_CLAUSES + ' clauses selected.');
   });
@@ -673,7 +678,7 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById(id).textContent = '';
     });
     var sa = document.getElementById('select-all-btn');
-    sa.textContent = '✓ I agree to all of these'; sa.disabled = false;
+    sa.textContent = '✓ Select All Clauses'; sa.disabled = false;
     applyEventSelection('');  // clears clauses, hides progress, shows the "select event" hint
     document.getElementById('step-confirmed').classList.add('hidden');
     document.getElementById('step-form').classList.remove('hidden');
