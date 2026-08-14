@@ -19,9 +19,10 @@
     :focus-visible { outline:3px solid var(--gold); outline-offset:3px; border-radius:4px; }
     .hidden { display:none !important; }
 
-    .hero { background:var(--cream-light); border-bottom:1px solid var(--border); text-align:center; padding:1.25rem 1.5rem; }
-    .hero-title { font-family:'Playfair Display',serif; font-style:italic; font-weight:700; font-size:1.3rem; color:var(--brown); letter-spacing:.02em; }
-    .hero-sub { font-size:.85rem; color:var(--text-muted); margin-top:.4rem; letter-spacing:.05em; text-transform:uppercase; font-weight:600; }
+    .hero { background:var(--cream-light); border-bottom:1px solid var(--border); text-align:center; padding:1.5rem 1.5rem 1.35rem; }
+    .hero-mark { display:block; margin:0 auto .55rem; border-radius:50%; }
+    .hero-title { font-family:'Playfair Display',serif; font-style:italic; font-weight:700; font-size:1.35rem; color:var(--brown); letter-spacing:.02em; }
+    .hero-sub { font-size:.78rem; color:var(--text-muted); margin-top:.35rem; letter-spacing:.14em; text-transform:uppercase; font-weight:600; }
 
     .wrap { max-width:720px; margin:0 auto; padding:2rem 1.25rem 4rem; }
     .card { background:var(--white); border:1px solid var(--border); border-radius:16px; padding:2rem 1.75rem; box-shadow:0 2px 12px rgba(92,74,58,.06); }
@@ -31,8 +32,9 @@
     .field { margin-bottom:1.1rem; }
     label { display:block; font-weight:600; margin-bottom:.35rem; color:#3d322a; font-size:.9rem; }
     .required { color:var(--red); margin-left:2px; }
-    input[type="text"],input[type="email"] { width:100%; padding:.8rem 1rem; border:2px solid var(--border); border-radius:10px; font-size:.95rem; font-family:'Jost',sans-serif; color:var(--text); background:var(--cream-light); transition:border .2s; }
-    input[type="text"]:focus,input[type="email"]:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(176,120,64,.15); outline:none; }
+    input[type="text"],input[type="email"],textarea,select { width:100%; padding:.8rem 1rem; border:2px solid var(--border); border-radius:10px; font-size:.95rem; font-family:'Jost',sans-serif; color:var(--text); background:var(--cream-light); transition:border .2s; }
+    textarea { resize:vertical; min-height:80px; line-height:1.5; }
+    input[type="text"]:focus,input[type="email"]:focus,textarea:focus,select:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(176,120,64,.15); outline:none; }
     .err-msg { color:var(--red); font-size:.8rem; margin-top:.3rem; min-height:1.1rem; }
 
     .btn { display:inline-flex; align-items:center; gap:.5rem; padding:.85rem 1.75rem; border:none; border-radius:10px; font-size:.95rem; font-family:'Jost',sans-serif; font-weight:600; cursor:pointer; transition:all .2s; min-height:44px; text-decoration:none; }
@@ -108,6 +110,7 @@
 <div id="sr-announce" aria-live="polite" aria-atomic="true" class="sr-only" role="status"></div>
 
 <section class="hero">
+  <img src="logo-am-gold-64.png" alt="" width="44" height="44" class="hero-mark" aria-hidden="true">
   <div class="hero-title">Auric Movement</div>
   <div class="hero-sub">Liability Waiver &amp; Release</div>
 </section>
@@ -116,8 +119,8 @@
 
   <!-- STEP 1: Form -->
   <div id="step-form" class="card">
-    <h2>Sign Your Waiver</h2>
-    <p class="subtitle">Select your event above to load its waiver, then read each clause carefully and check the box to confirm. All clauses must be acknowledged before signing.</p>
+    <h2>Let's get you signed in</h2>
+    <p class="subtitle">A quick sign-off so we can move safely together — it takes about a minute. Add your details, choose your event, then check off each point and sign at the bottom.</p>
 
     <div class="field">
       <label for="reg-name">Full Legal Name <span class="required" aria-hidden="true">*</span></label>
@@ -145,22 +148,27 @@
       <label for="reg-date" style="display:block;margin-top:.7rem;">Event Date &amp; Time</label>
       <input type="text" id="reg-date" placeholder="e.g. August 20th at 10:00 AM">
     </div>
+    <div class="field">
+      <label for="reg-note">Anything we should know before class? <span style="font-weight:400;color:var(--text-muted);">(optional)</span></label>
+      <p style="font-size:.8rem;color:var(--text-muted);margin:-.15rem 0 .45rem;line-height:1.5;">Injuries, recent surgeries, pregnancy, allergies — anything that helps us support you. Seen only by your instructor.</p>
+      <textarea id="reg-note" rows="3" placeholder="Optional — leave blank if nothing comes to mind"></textarea>
+    </div>
 
     <div class="progress-section hidden" id="progress-section">
       <div class="progress-label">
-        <span><span id="confirmed-count">0</span>/<span id="total-count">19</span> confirmed</span>
-        <span id="remaining-text">19 remaining</span>
+        <span><span id="confirmed-count">0</span>/<span id="total-count">7</span> confirmed</span>
+        <span id="remaining-text">7 remaining</span>
       </div>
-      <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="19" id="progress-track">
+      <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="7" id="progress-track">
         <div class="progress-fill" id="progress-fill"></div>
       </div>
     </div>
 
     <div style="margin-bottom:.75rem;" class="hidden" id="select-all-wrap">
-      <button type="button" id="select-all-btn" class="btn btn-secondary" style="font-size:.82rem;padding:.5rem 1rem;width:100%;justify-content:center;">✓ Select All Clauses</button>
+      <button type="button" id="select-all-btn" class="btn btn-secondary" style="font-size:.82rem;padding:.5rem 1rem;width:100%;justify-content:center;">✓ I agree to all of these</button>
     </div>
 
-    <div id="clauses-hint" style="padding:1rem 1.1rem;border:2px dashed var(--border);border-radius:10px;background:var(--cream-light);color:var(--text-muted);font-size:.9rem;text-align:center;">👆 Select your event above to load the waiver.</div>
+    <div id="clauses-hint" style="padding:1rem 1.1rem;border:2px dashed var(--border);border-radius:10px;background:var(--cream-light);color:var(--text-muted);font-size:.9rem;text-align:center;">👆 Choose your event to load your waiver.</div>
     <div id="clauses-container" role="group" aria-label="Waiver clauses"></div>
 
     <div class="sig-section">
@@ -239,19 +247,19 @@
       <p><em>Effective Date: May 2026 · Last updated: May 2026</em></p>
       <p>Auric Movement LLC ("we," "us," or "our") is committed to protecting your personal information in accordance with the New York SHIELD Act, the federal CAN-SPAM Act, and other applicable laws.</p>
       <h4>1. Information We Collect</h4>
-      <p>We collect your full legal name and email address when you sign a liability waiver. If you provide an event name or event date, we collect those as well. We also record the date and time of your signed waiver. For certain events, we may ask you to disclose health information (see Section 2 below).</p>
-      <h4>2. Health Information</h4>
-      <p>For certain events, you may be asked to disclose health conditions (such as recent surgeries, injuries, pregnancy, chronic conditions, current medications, or other relevant medical information) so your instructor can ensure your safety during physical activity. This information is treated as confidential and is used solely by your instructor to provide safe and appropriate guidance. We do not share health information with any third parties. Health disclosure data will be permanently deleted within 30 days after the event concludes. By voluntarily disclosing health information, you consent to its limited use as described in this Policy. Auric Movement LLC is not a healthcare provider, and this information is not covered by HIPAA; however, we apply reasonable safeguards consistent with the New York SHIELD Act to protect it.</p>
+      <p>We collect your full legal name and email address when you sign a liability waiver. If you provide an event name or event date, we collect those as well. We also record the date and time of your signed waiver. The waiver includes one optional free-text note (see Section 2 below); anything you choose to write there is collected too.</p>
+      <h4>2. Optional Note</h4>
+      <p>The waiver includes a single optional note field where you may, if you wish, share anything that helps us support you safely during physical activity — for example an injury, allergy, pregnancy, or other limitation. Completing it is entirely voluntary and you may leave it blank. We do not require a detailed health questionnaire. Anything you share is treated as confidential, is seen only by your instructor, and is used solely to provide safe and appropriate guidance. We do not share it with any third parties, and you may ask us to delete it at any time by emailing auricmovement@outlook.com. Auric Movement LLC is not a healthcare provider and this information is not covered by HIPAA; however, we apply reasonable safeguards consistent with the New York SHIELD Act to protect it.</p>
       <h4>3. How We Use Your Information</h4>
-      <p>Your information is used solely to: (a) maintain a record of signed liability waivers; (b) confirm receipt of your signed waiver; (c) contact you regarding the event you have signed up for, if applicable; and (d) allow your instructor to safely modify activity based on any health disclosures.</p>
+      <p>Your information is used solely to: (a) maintain a record of signed liability waivers; (b) confirm receipt of your signed waiver; (c) contact you regarding the event you have signed up for, if applicable; and (d) allow your instructor to safely modify activity based on any note you provide.</p>
       <h4>4. How Your Data Is Stored</h4>
-      <p>Waiver records are stored via Supabase (a secure third-party database service) and transmitted via EmailJS to our inbox at auricmovement@outlook.com. Data is not transferred outside the United States. Waiver records, including health information, will be retained as required for legal and liability purposes and deleted thereafter upon request.</p>
+      <p>Waiver records are stored via Supabase (a secure third-party database service) and transmitted via EmailJS to our inbox at auricmovement@outlook.com. Data is not transferred outside the United States. Waiver records, including any optional note you provide, will be retained as required for legal and liability purposes and deleted thereafter upon request.</p>
       <h4>5. We Do Not Sell Your Data</h4>
-      <p>We do not sell, rent, trade, or share your personal information &#8212; including health information &#8212; with any third parties for marketing purposes.</p>
+      <p>We do not sell, rent, trade, or share your personal information &#8212; including any optional note you provide &#8212; with any third parties for marketing purposes.</p>
       <h4>6. Cookies</h4>
       <p>This site uses essential cookies only for functionality (such as saving your progress through the waiver form). No tracking or advertising cookies are used.</p>
       <h4>7. Your Rights (NY SHIELD Act)</h4>
-      <p>You have the right to request access to, correction of, or deletion of your personal information, including health disclosures. Email us at auricmovement@outlook.com. We will respond within 30 days.</p>
+      <p>You have the right to request access to, correction of, or deletion of your personal information, including any optional note you provide. Email us at auricmovement@outlook.com. We will respond within 30 days.</p>
       <h4>8. Data Security</h4>
       <p>We implement reasonable administrative and technical safeguards consistent with the New York SHIELD Act, including encryption in transit, access controls, and limited retention periods.</p>
       <h4>9. Minors</h4>
@@ -272,7 +280,7 @@
     <div class="modal-body">
       <p><em>Effective Date: May 2026</em></p>
       <h4>1. Acceptance of Waiver</h4>
-      <p>By signing this liability waiver electronically, you acknowledge that you have read, understood, and agreed to all 19 clauses contained in it. Your electronic signature is the legal equivalent of your handwritten signature and is legally binding under the Electronic Signatures in Global and National Commerce Act (E-SIGN Act), 15 U.S.C. § 7001.</p>
+      <p>By signing this liability waiver electronically, you acknowledge that you have read, understood, and agreed to each acknowledgment contained in it. Your electronic signature is the legal equivalent of your handwritten signature and is legally binding under the Electronic Signatures in Global and National Commerce Act (E-SIGN Act), 15 U.S.C. § 7001.</p>
       <h4>2. Code of Conduct</h4>
       <p>All participants are expected to treat instructors, staff, and fellow participants with respect. Auric Movement LLC is a welcoming, inclusive space. Disruptive, disrespectful, or unsafe behavior will result in removal from the session.</p>
       <h4>3. Right to Refuse Entry</h4>
@@ -307,37 +315,30 @@ document.addEventListener('DOMContentLoaded', function() {
     'sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ'
   );
   var STORAGE_KEY     = 'auric_standalone_waivers';
-  var TOTAL_CLAUSES   = 19;
+  var TOTAL_CLAUSES   = 7;
   var _lastWaivers = { waivers: [] };
 
   if (typeof emailjs !== 'undefined') emailjs.init(EMAILJS_PUBLIC_KEY);
 
+  // Plain-English acknowledgments. Each still carries the full legal substance of the
+  // original release (assumption of risk, medical disclaimer, release + waiver of suit,
+  // negligence carve-out, media release, personal property, arbitration/venue/age/etc.),
+  // just grouped and written to actually be readable. The lead-in sentence (up to the
+  // first period) is bolded in the UI; the PDF prints the plain text.
   var clauseTexts = [
-    "I understand that participation in wellness, movement, and/or energy-based sessions offered by Auric Movement LLC involves physical activity and inherent risks, including but not limited to muscle strain, sprains, fractures, and other injuries.",
-    "I acknowledge that I am voluntarily participating in these sessions and assume all risks of injury or harm that may result from my participation, whether foreseeable or unforeseeable.",
-    "I represent that I am physically and mentally fit to participate and have no medical conditions that would prevent safe participation, or I have obtained clearance from a licensed healthcare provider.",
-    "I agree to disclose any known medical conditions, allergies, injuries, or physical limitations to my instructor before each session.",
-    "I understand that the instructors and staff of Auric Movement LLC are not licensed medical professionals and that no session is a substitute for professional medical advice, diagnosis, or treatment.",
-    "I agree to follow all instructions, safety guidelines, and rules provided by Auric Movement LLC staff during sessions.",
-    "I understand that I may stop participation at any time if I feel pain, discomfort, or distress, and I agree to immediately notify my instructor.",
-    "I release, discharge, and hold harmless Auric Movement LLC, its owners, instructors, employees, agents, and affiliates from any and all claims, liabilities, damages, or expenses arising from my participation.",
-    "I waive any right to bring a lawsuit or legal claim against Auric Movement LLC, its owners, instructors, employees, agents, or affiliates for any injury, illness, or loss sustained during or as a result of my participation.",
-    "I understand that this waiver extends to any claims arising from the negligence of Auric Movement LLC, its owners, instructors, employees, agents, or affiliates, excluding gross negligence or willful misconduct.",
-    "I consent to the use of any photographs, video recordings, or audio recordings taken during sessions for promotional, educational, or marketing purposes by Auric Movement LLC, unless I submit a written opt-out request.",
-    "I understand that personal belongings brought to sessions are my responsibility and that Auric Movement LLC is not liable for any lost, stolen, or damaged items.",
-    "I agree that any disputes arising from this waiver or my participation shall be resolved through binding arbitration in accordance with the rules of the American Arbitration Association, and not through court litigation.",
-    "I acknowledge that this waiver is governed by and construed in accordance with the laws of the State of New York.",
-    "I understand that if any provision of this waiver is found to be unenforceable, the remaining provisions shall remain in full force and effect.",
-    "I confirm that I am at least 18 years of age, or that I have obtained parental or guardian consent if I am a minor.",
-    "I agree that this waiver remains in effect for all future sessions and activities with Auric Movement LLC unless I submit a written revocation.",
-    "I acknowledge that I have had sufficient opportunity to read this waiver, ask questions, and seek independent legal advice before signing.",
-    "I understand that a complimentary gift bag may be provided as a courtesy. I acknowledge that I assume full responsibility for any items received and their use. I release the Released Parties from any liability arising from the receipt or use of gift bag contents."
+    "Movement carries risk, and I'm taking part by choice. Pilates, movement, and wellness sessions with Auric Movement LLC involve physical activity and inherent risks — including muscle strain, sprains, fractures, and other injury. I'm participating voluntarily and accept these risks, whether foreseeable or not.",
+    "I'm able to participate, and I'll speak up. I'm physically and mentally fit to take part, or I've been cleared by a healthcare provider. I'll tell my instructor about any injuries, conditions, allergies, or limitations before we begin, and I'll ease off or stop if I feel pain or discomfort.",
+    "My instructors aren't medical professionals. Auric Movement's instructors and staff are not licensed medical providers, and no session replaces professional medical advice, diagnosis, or treatment.",
+    "I release Auric Movement, and I won't sue. I release and hold harmless Auric Movement LLC — its owners, instructors, employees, agents, collaborators, and affiliates — from any claims, liabilities, damages, or expenses arising from my participation, and I waive my right to bring a lawsuit against them. This covers ordinary negligence, but not gross negligence or willful misconduct.",
+    "I'm okay with photos and video. I consent to photographs, video, or audio captured during sessions being used for promotional or educational purposes — unless I opt out by telling my instructor or emailing auricmovement@outlook.com.",
+    "My belongings are my responsibility. Auric Movement isn't liable for lost, stolen, or damaged personal items — including anything in a complimentary gift bag, which I accept and use at my own risk.",
+    "The legal basics. I'm at least 18, or I have parent/guardian consent. This agreement is governed by New York law; any dispute is resolved through binding arbitration (American Arbitration Association, New York County); and if any part is unenforceable, the rest still applies. This waiver stays in effect for my future sessions unless I revoke it in writing, and I've had the chance to read it, ask questions, and seek legal advice."
   ];
 
   // Create & Recharge adds one collab/art-specific clause (mirrors the booking flow):
   // covers art-material risk and extends the release to Georgina Arroyo & collaborators.
   var CR_ART_CLAUSE =
-    "I understand that Create & Recharge is co-hosted with Georgina Arroyo and includes creative and art-based activities. I acknowledge the inherent risks of using art materials and tools — including cuts, skin irritation, or allergic reactions to paints, adhesives, or other supplies, and staining of clothing or belongings — and I voluntarily assume all such risks. I agree that every release, waiver, and hold-harmless provision in this agreement also protects Auric Movement LLC's collaborators, co-hosts, and guest instructors, including Georgina Arroyo, to the same extent as the Released Parties. I agree to disclose any known allergies or sensitivities to my instructor before participating.";
+    "Create & Recharge includes art-making. This event is co-hosted with Georgina Arroyo and includes creative, art-based activities. I understand art materials carry small risks of their own — cuts, skin irritation, or allergic reactions to paints, adhesives, or supplies, and staining of clothing — and I accept them. Every release and protection in this waiver also covers Auric Movement's co-hosts, collaborators, and guest instructors, including Georgina Arroyo. I'll let my instructor know of any allergies.";
 
   // Per-event waiver config. extraClauses are appended to the base set above.
   var WAIVER_EVENTS = {
@@ -364,16 +365,18 @@ document.addEventListener('DOMContentLoaded', function() {
     return {
       name: r.name, email: r.email, signature: r.signature || '',
       eventName: r.event_name || '', eventDate: r.event_date || '',
+      notes: r.notes || '',
       time: r.time_str, timestamp: r.timestamp_iso,
-      code: r.code, clausesAgreed: r.clauses_agreed || 19
+      code: r.code, clausesAgreed: r.clauses_agreed || TOTAL_CLAUSES
     };
   }
   function _wRecToRow(rec){
     return {
       name: rec.name, email: rec.email, signature: rec.signature || null,
       event_name: rec.eventName || null, event_date: rec.eventDate || null,
+      notes: rec.notes || null,
       time_str: rec.time, timestamp_iso: rec.timestamp,
-      code: rec.code, clauses_agreed: rec.clausesAgreed || 19
+      code: rec.code, clauses_agreed: rec.clausesAgreed || TOTAL_CLAUSES
     };
   }
 
@@ -468,7 +471,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var fa = document.getElementById('final-agree'); if (fa) fa.checked = false;
     var si = document.getElementById('sig-input'); if (si) { si.value=''; si.disabled=true; }
     var sb = document.getElementById('submit-btn'); if (sb) sb.disabled = true;
-    var sa = document.getElementById('select-all-btn'); if (sa) { sa.textContent='✓ Select All Clauses'; sa.disabled=false; }
+    var sa = document.getElementById('select-all-btn'); if (sa) { sa.textContent='✓ I agree to all of these'; sa.disabled=false; }
     document.getElementById('progress-track').setAttribute('aria-valuemax', TOTAL_CLAUSES);
     buildClauses();
   }
@@ -486,7 +489,12 @@ document.addEventListener('DOMContentLoaded', function() {
       var cb = document.createElement('input'); cb.type='checkbox'; cb.id='cb-'+i;
       cb.setAttribute('aria-label','Agree to clause '+(i+1)+' of '+TOTAL_CLAUSES);
       var lbl = document.createElement('label'); lbl.htmlFor='cb-'+i; lbl.className='clause-text';
-      lbl.innerHTML = '<span class="clause-num">'+(i+1)+'.</span> '+text;
+      // Bold the lead-in sentence (everything up to the first period) for scannability.
+      var dot = text.indexOf('. ');
+      var lead = dot > 0 ? text.slice(0, dot + 1) : '';
+      var rest = dot > 0 ? text.slice(dot + 2) : text;
+      lbl.innerHTML = '<span class="clause-num">'+(i+1)+'.</span> ' +
+        (lead ? '<strong>'+escapeHTML(lead)+'</strong> ' : '') + escapeHTML(rest);
       cb.addEventListener('change', function(){
         if (this.checked){ checkedClauses[i]=true; div.classList.add('checked'); }
         else { delete checkedClauses[i]; div.classList.remove('checked'); }
@@ -520,7 +528,7 @@ document.addEventListener('DOMContentLoaded', function() {
     checkboxes.forEach(function(cb){
       if (!cb.checked) { cb.checked = true; cb.dispatchEvent(new Event('change')); }
     });
-    this.textContent = '✓ All Clauses Selected';
+    this.textContent = '✓ All set — thank you';
     this.disabled = true;
     announce('All ' + TOTAL_CLAUSES + ' clauses selected.');
   });
@@ -583,10 +591,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var eventName = document.getElementById('reg-event').value.trim();
     var eventDate = document.getElementById('reg-date').value.trim();
+    var noteEl = document.getElementById('reg-note');
+    var noteVal = noteEl ? noteEl.value.trim() : '';
     var now = new Date();
     var record = {
       name: name, email: email, signature: sig,
-      eventName: eventName, eventDate: eventDate,
+      eventName: eventName, eventDate: eventDate, notes: noteVal,
       time: now.toLocaleString(), timestamp: now.toISOString(),
       code: genCode(), clausesAgreed: TOTAL_CLAUSES, clauseList: activeClauses.slice()
     };
@@ -632,6 +642,7 @@ document.addEventListener('DOMContentLoaded', function() {
       registration_type: 'Standalone waiver signed',
       sign_time:         rec.time,
       clauses_agreed:    TOTAL_CLAUSES + ' of ' + TOTAL_CLAUSES,
+      health_note:       rec.notes || '—',
       cancel_code:       rec.code
     }).then(function(){
       el.innerHTML = '<div class="email-status email-sent">✅ Confirmation sent. You may download your waiver below.</div>';
@@ -648,6 +659,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('reg-event-select').value = '';
     document.getElementById('reg-event').value = '';
     document.getElementById('reg-date').value = '';
+    var rn = document.getElementById('reg-note'); if (rn) rn.value = '';
     document.getElementById('conf-event-row').classList.add('hidden');
     document.getElementById('conf-date-row').classList.add('hidden');
     document.getElementById('sig-input').value = '';
@@ -661,7 +673,7 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById(id).textContent = '';
     });
     var sa = document.getElementById('select-all-btn');
-    sa.textContent = '✓ Select All Clauses'; sa.disabled = false;
+    sa.textContent = '✓ I agree to all of these'; sa.disabled = false;
     applyEventSelection('');  // clears clauses, hides progress, shows the "select event" hint
     document.getElementById('step-confirmed').classList.add('hidden');
     document.getElementById('step-form').classList.remove('hidden');
@@ -713,6 +725,15 @@ document.addEventListener('DOMContentLoaded', function() {
       doc.text(doc.splitTextToSize(evt, contentW/2 - 14), margin+contentW/2, y+60);
     }
     y += 88;
+    if (rec.notes) {
+      checkPage(56);
+      doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(90,58,26);
+      doc.text('PARTICIPANT NOTE', margin, y); y += 5;
+      doc.setDrawColor(176,120,64); doc.setLineWidth(0.5); doc.line(margin, y, pageW-margin, y); y += 13;
+      doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(61,50,42);
+      var nlines = doc.splitTextToSize(rec.notes, contentW);
+      doc.text(nlines, margin, y); y += nlines.length * 11 + 14;
+    }
     doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(90,58,26);
     doc.text('AGREED CLAUSES', margin, y); y += 6;
     doc.setDrawColor(176,120,64); doc.setLineWidth(0.75); doc.line(margin, y, pageW-margin, y); y += 14;
@@ -787,9 +808,13 @@ document.addEventListener('DOMContentLoaded', function() {
           eventInfo = '<br><span style="font-size:.75rem;color:var(--gold);">' +
             escapeHTML([rec.eventName, rec.eventDate].filter(Boolean).join(' · ')) + '</span>';
         }
+        var noteInfo = '';
+        if (rec.notes) {
+          noteInfo = '<br><span style="font-size:.75rem;color:var(--brown);">📝 ' + escapeHTML(rec.notes) + '</span>';
+        }
         item.innerHTML =
           '<div><span class="aname">' + escapeHTML(rec.name) + '</span><br>' +
-          '<span class="aemail">' + escapeHTML(rec.email) + '</span>' + eventInfo + '</div>' +
+          '<span class="aemail">' + escapeHTML(rec.email) + '</span>' + eventInfo + noteInfo + '</div>' +
           '<span style="font-size:.75rem;color:var(--text-muted);">' + escapeHTML(rec.time) + '</span>';
         body.appendChild(item);
       });
@@ -803,11 +828,12 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('admin-csv-btn').addEventListener('click', function(){
     getData(function(data){
       var list = data.waivers || [];
-      var csv = 'Name,Email,Event,Event Date,Signed At,Code\n';
+      var csv = 'Name,Email,Event,Event Date,Note,Signed At,Code\n';
       list.forEach(function(rec){
         csv += '"' + rec.name.replace(/"/g,'""') + '","' + rec.email.replace(/"/g,'""') +
           '","' + ((rec.eventName||'').replace(/"/g,'""')) +
           '","' + ((rec.eventDate||'').replace(/"/g,'""')) +
+          '","' + ((rec.notes||'').replace(/"/g,'""')) +
           '","' + rec.time + '","' + (rec.code || '') + '"\n';
       });
       var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
