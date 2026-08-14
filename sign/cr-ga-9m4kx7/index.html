@@ -54,6 +54,11 @@
     .doc-head .eyebrow{ font-family:'Helvetica Neue',Arial,sans-serif; font-size:.72rem; font-weight:700; letter-spacing:.24em; text-transform:uppercase; color:var(--gold-text); margin-bottom:.75rem; }
     .doc-head h1{ font-family:'Helvetica Neue',Arial,sans-serif; font-style:normal; font-weight:800; color:var(--brown); font-size:2.7rem; line-height:1.0; text-align:center; margin:.1rem 0 .4rem; letter-spacing:.005em; text-transform:uppercase; }
     .doc-head .doc-sub{ font-family:'Helvetica Neue',Arial,sans-serif; font-weight:700; font-size:.82rem; letter-spacing:.2em; text-transform:uppercase; color:var(--gold-text); }
+    .toolbar{ display:flex; flex-wrap:wrap; gap:.6rem; align-items:center; justify-content:center; margin:0 0 1.35rem; }
+    .tbtn{ display:inline-flex; align-items:center; gap:.4rem; background:#fffdf9; border:1px solid var(--border); color:var(--brown); border-radius:10px; padding:.62rem 1rem; font-family:'Helvetica Neue',Arial,sans-serif; font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; box-shadow:0 8px 20px -16px rgba(90,58,26,.5); transition:background .2s,transform .1s; }
+    .tbtn:hover{ background:#f6f0e4; }
+    .tbtn:active{ transform:translateY(1px); }
+    .saved-msg{ font-family:'Helvetica Neue',Arial,sans-serif; font-size:.72rem; color:#5a7d5a; font-weight:700; letter-spacing:.04em; min-height:1em; width:100%; text-align:center; }
   </style>
 </head>
 <body>
@@ -65,6 +70,11 @@
     </div>
 
     <div id="form-view">
+      <div class="toolbar">
+        <button type="button" class="tbtn" id="save-btn">💾 Save my progress</button>
+        <button type="button" class="tbtn" id="download-copy-btn">📄 Download a copy (PDF)</button>
+        <span class="saved-msg" id="saved-msg"></span>
+      </div>
       <div class="card">
         <h2>Agreement</h2>
         <div class="agreement" id="agreement-text">Create &amp; Recharge — Collaboration Agreement
@@ -237,6 +247,88 @@ By typing my full legal name and drawing my signature below, I, Georgina Arroyo,
     if(artEl) artEl.addEventListener('input', updateBtn);
     if(matEl) matEl.addEventListener('input', updateBtn);
 
+    var emailEl = document.getElementById('signer-email');
+
+    // Build the agreement text with the filled-in amounts substituted for the input fields.
+    function getAgreementText(){
+      var agClone = document.getElementById('agreement-text').cloneNode(true);
+      var miNode = agClone.querySelector('#mat-cost');
+      if(miNode){ var sp2 = document.createElement('span'); sp2.textContent = (matEl ? matEl.value.trim() : '') || '______'; miNode.parentNode.replaceChild(sp2, miNode); }
+      var ciNode = agClone.querySelector('#art-cost');
+      if(ciNode){ var sp = document.createElement('span'); sp.textContent = (artEl ? artEl.value.trim() : '') || '______'; ciNode.parentNode.replaceChild(sp, ciNode); }
+      return agClone.innerText;
+    }
+
+    // ── Save progress (this device) ───────────────────────────────────────────
+    var PROGRESS_KEY = 'auric_cr_ga_sign_progress';
+    function collectProgress(){
+      return {
+        name: nameEl.value, email: emailEl ? emailEl.value : '',
+        mat: matEl ? matEl.value : '', art: artEl ? artEl.value : '',
+        agree: !!agreeEl.checked,
+        sig: hasDrawn ? canvas.toDataURL('image/png') : ''
+      };
+    }
+    function saveProgress(silent){
+      try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(collectProgress())); } catch(e){}
+      if(!silent){
+        var m = document.getElementById('saved-msg');
+        m.textContent = '✓ Saved to this device';
+        setTimeout(function(){ if(m.textContent === '✓ Saved to this device') m.textContent = ''; }, 2500);
+      }
+    }
+    function restoreProgress(){
+      var saved; try { saved = JSON.parse(localStorage.getItem(PROGRESS_KEY) || 'null'); } catch(e){ saved = null; }
+      if(!saved) return;
+      if(saved.name) nameEl.value = saved.name;
+      if(saved.email && emailEl) emailEl.value = saved.email;
+      if(saved.mat && matEl) matEl.value = saved.mat;
+      if(saved.art && artEl) artEl.value = saved.art;
+      if(saved.agree) agreeEl.checked = true;
+      if(saved.sig){
+        var img = new Image();
+        img.onload = function(){
+          var rect = canvas.getBoundingClientRect();
+          ctx.drawImage(img, 0, 0, rect.width, rect.height);
+          hasDrawn = true; document.getElementById('sig-hint').style.display = 'none'; updateBtn();
+        };
+        img.src = saved.sig;
+      }
+      updateBtn();
+      var m = document.getElementById('saved-msg'); m.textContent = '✓ Progress restored on this device';
+      setTimeout(function(){ if(m.textContent.indexOf('restored') > -1) m.textContent = ''; }, 3500);
+    }
+    // Auto-save as they go, plus an explicit button.
+    [nameEl, emailEl, matEl, artEl].forEach(function(el){ if(el) el.addEventListener('input', function(){ saveProgress(true); }); });
+    agreeEl.addEventListener('change', function(){ saveProgress(true); });
+    canvas.addEventListener('mouseup', function(){ if(hasDrawn) saveProgress(true); });
+    canvas.addEventListener('touchend', function(){ if(hasDrawn) saveProgress(true); });
+    document.getElementById('clear-sig').addEventListener('click', function(){ saveProgress(true); });
+    document.getElementById('save-btn').addEventListener('click', function(){ saveProgress(false); });
+
+    // ── Download an unsigned review copy (PDF) ────────────────────────────────
+    document.getElementById('download-copy-btn').addEventListener('click', function(){
+      var err = document.getElementById('err'); err.textContent = '';
+      if(!(window.jspdf && window.jspdf.jsPDF)){ err.textContent = 'Could not load the PDF library — check your connection and try again.'; return; }
+      var jsPDF = window.jspdf.jsPDF;
+      var doc = new jsPDF({ unit:'pt', format:'letter' });
+      var margin = 54, W = doc.internal.pageSize.getWidth(), y = margin;
+      doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(125,134,196);
+      doc.text('AURIC MOVEMENT  ×  GEORGINA ARROYO', margin, y); y += 22;
+      doc.setFont('times','italic'); doc.setFontSize(20); doc.setTextColor(90,58,26);
+      doc.text('Collaboration Agreement', margin, y); y += 18;
+      doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(154,101,53);
+      doc.text('UNSIGNED REVIEW COPY', margin, y); y += 16;
+      doc.setDrawColor(176,120,64); doc.setLineWidth(1); doc.line(margin, y, W-margin, y); y += 20;
+      doc.setFont('times','normal'); doc.setFontSize(10.5); doc.setTextColor(45,36,32);
+      var lines = doc.splitTextToSize(getAgreementText(), W - margin*2);
+      for(var i=0;i<lines.length;i++){
+        if(y > doc.internal.pageSize.getHeight() - margin){ doc.addPage(); y = margin; }
+        doc.text(lines[i], margin, y); y += 15;
+      }
+      doc.save('create-recharge-agreement-review-copy.pdf');
+    });
+
     function two(n){ return (n<10?'0':'')+n; }
     function stampNow(){
       var d = new Date();
@@ -256,13 +348,7 @@ By typing my full legal name and drawing my signature below, I, Georgina Arroyo,
 
       var stamp = stampNow();
       var sigImg = canvas.toDataURL('image/png');
-      // Build agreement text with the filled-in art-materials amount substituted for the input field.
-      var agClone = document.getElementById('agreement-text').cloneNode(true);
-      var miNode = agClone.querySelector('#mat-cost');
-      if(miNode){ var sp2 = document.createElement('span'); sp2.textContent = (matEl ? matEl.value.trim() : '') || '______'; miNode.parentNode.replaceChild(sp2, miNode); }
-      var ciNode = agClone.querySelector('#art-cost');
-      if(ciNode){ var sp = document.createElement('span'); sp.textContent = (artEl ? artEl.value.trim() : '') || '______'; ciNode.parentNode.replaceChild(sp, ciNode); }
-      var agreementText = agClone.innerText;
+      var agreementText = getAgreementText();
 
       try {
         var jsPDF = window.jspdf.jsPDF;
@@ -361,6 +447,7 @@ By typing my full legal name and drawing my signature below, I, Georgina Arroyo,
           }
         } catch(e){ if(window.console) console.error('save exception', e); }
 
+        try { localStorage.removeItem(PROGRESS_KEY); } catch(e){}
         document.getElementById('form-view').style.display = 'none';
         var dv = document.getElementById('done-view'); dv.style.display = 'block';
         document.getElementById('done-stamp').textContent = 'Signed by ' + name + ' · ' + stamp.readable;
@@ -374,6 +461,9 @@ By typing my full legal name and drawing my signature below, I, Georgina Arroyo,
         if(window.console) console.error(ex);
       }
     });
+
+    // Restore any saved progress from a previous visit on this device.
+    restoreProgress();
   })();
   </script>
 </body>
