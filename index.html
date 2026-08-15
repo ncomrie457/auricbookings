@@ -5431,6 +5431,12 @@ document.addEventListener('DOMContentLoaded', function() {
       soldOut: true,
       forcePast: true,  // show in Past Events the same day (recap goes up event evening)
       description: 'Our sold-out Mat &amp; Chat &mdash; a morning of mat Pilates, community, and good energy. We moved together, played a custom Auric bingo, and shared food, music, and connection.'
+    },
+    recharge: {
+      forcePast: true,  // show in Past Events the same day; photos go up over the coming days
+      pendingText: 'Photos Coming Soon',
+      pendingSub:  'Photos from this event are on the way.',
+      description: 'Our Create &amp; Recharge collaboration with artist Georgina Arroyo &mdash; a morning of setting intentions through art, then embodying them in a mat Pilates flow. We created, moved, and recharged together &mdash; and everyone left with something they made.'
     }
   };
 
@@ -5649,8 +5655,8 @@ document.addEventListener('DOMContentLoaded', function() {
           (p.soldOut ? '<span style="position:absolute;top:.7rem;left:.7rem;background:rgba(58,45,30,.92);color:#f0e4cc;font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:.28rem .62rem;border-radius:20px;box-shadow:0 2px 6px rgba(0,0,0,.25);z-index:3;">Sold Out</span>' : '') +
           '<div class="bq-recap-overlay">' +
             '<span class="bq-recap-mark" aria-hidden="true">✦</span>' +
-            '<span class="bq-recap-text">Recap Coming Soon</span>' +
-            '<span class="bq-recap-sub">A video from this event is on the way.</span>' +
+            '<span class="bq-recap-text">' + (p.pendingText || 'Recap Coming Soon') + '</span>' +
+            '<span class="bq-recap-sub">' + (p.pendingSub || 'A video from this event is on the way.') + '</span>' +
           '</div>' +
         '</div>' +
         (p.date ? '<div class="bq-video-date">' + p.date + '</div>' : '') +
@@ -5706,6 +5712,8 @@ document.addEventListener('DOMContentLoaded', function() {
         flyer:   flyer,
         soldOut: !!meta.soldOut,
         description: meta.description || '',
+        pendingText: meta.pendingText || '',
+        pendingSub:  meta.pendingSub || '',
         sortDate: eventDate
       });
     });
