@@ -224,6 +224,10 @@
       box-shadow: 0 0 0 6px rgba(176,120,64,.15);
     }
 
+    /* Past events stay in the DOM (Past Events reads them) but are hidden
+       from the upcoming events grid. */
+    .bq-event[data-past="true"] { display: none !important; }
+
     /* Event card hover lift */
     #event-card-pilates, #event-card-matchat, #event-card-recharge, #event-card-coming {
       will-change: transform, box-shadow;
@@ -2799,7 +2803,7 @@
       </button>
 
       <!-- Create & Recharge -->
-      <button type="button" id="event-card-recharge" class="bq-event scroll-reveal" data-event-date="2026-08-15" data-event-name="Create &amp; Recharge" data-reg-opens="2026-07-15">
+      <button type="button" id="event-card-recharge" class="bq-event scroll-reveal" data-event-date="2026-08-15" data-event-name="Create &amp; Recharge" data-reg-opens="2026-07-15" data-past="true">
         <div class="bq-event-photo">
           <picture>
             <source srcset="recharge-flyer.webp?v=3" type="image/webp">
@@ -2973,6 +2977,7 @@
         ids.forEach(function(id){
           var c=document.getElementById(id);
           if(!c) return;
+          if(c.getAttribute('data-past')==='true') return;  // event happened → not "next up"
           var ds=c.getAttribute('data-event-date'); if(!ds) return;
           var dt=new Date(ds+'T00:00:00'); if(isNaN(dt.getTime())) return;
           if(dt<today) return;                              // already past
@@ -3031,7 +3036,6 @@
       document.addEventListener('DOMContentLoaded', function(){
         var grid=document.getElementById('bq-allevents-grid'); if(!grid) return;
         var items=[
-          {id:'event-card-recharge', tag:'Now booking', cls:'ok'},
           {id:'event-card-rnb', tag:'Fundraiser', cls:'ok'},
           {id:'event-card-reformer', tag:'Almost sold out', cls:''}
         ];
