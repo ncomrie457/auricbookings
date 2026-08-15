@@ -5793,9 +5793,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   var EMAILJS_PUBLIC_KEY  = 'xr1kT3l8rFhNodudq';
   var EMAILJS_SERVICE_ID  = 'service_9n4adla';
-  // Resend-backed service (verified domain book@auricmovement.com) — used for
-  // customer-facing sends we've migrated for inbox deliverability. Other templates
-  // stay on EMAILJS_SERVICE_ID until their From address is switched to the domain.
+  // Resend-backed service (verified domain book@auricmovement.com). ALL sends now
+  // route through this to avoid using the Outlook account for automated mail (which
+  // triggered a Microsoft Services Agreement lock). NOTE: every template must have its
+  // From address set to book@auricmovement.com (or a verified @auricmovement.com
+  // address) in the EmailJS dashboard — Resend rejects sends from @outlook.com.
+  // EMAILJS_SERVICE_ID (Outlook) is retained only for reference; nothing sends through it.
   var EMAILJS_SERVICE_RESEND = 'service_ieahnue';
   var ADMIN_EMAIL         = 'auricmovement@outlook.com'; // where admin notifications go
   var TMPL_CONFIRM    = 'template_6i1srps'; // Pilates \u2014 Participant Confirmation
@@ -6852,7 +6855,7 @@ document.addEventListener('DOMContentLoaded', function() {
     el.innerHTML='<div class="email-status email-sent">Sending waiver confirmation...</div>';
     if(typeof emailjs==='undefined'){el.innerHTML='<div class="email-status email-failed">Email service unavailable. Waiver is saved.</div>';return;}
     var sess = SESSIONS.find(function(s){ return s.id === rec.session; });
-    emailjs.send(EMAILJS_SERVICE_ID, TMPL_CONFIRM, {
+    emailjs.send(EMAILJS_SERVICE_RESEND, TMPL_CONFIRM, {
       from_name:rec.name, to_email:rec.email, session_label:rec.sessionLabel,
       arrival_time:rec.arrival, class_time:rec.classStart, sign_time:rec.time,
       cancel_code:rec.code, clauses_agreed:TOTAL_CLAUSES+' of '+TOTAL_CLAUSES,
@@ -6861,7 +6864,7 @@ document.addEventListener('DOMContentLoaded', function() {
       stripe_url:sess.stripeUrl
     }).then(function(){ el.innerHTML='<div class="email-status email-sent">\u2705 Waiver confirmation sent to '+escapeHTML(rec.email)+'</div>'; })
       .catch(function(){ el.innerHTML='<div class="email-status email-failed">\u26a0\ufe0f Could not send email. Your waiver is still saved.</div>'; });
-    emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
+    emailjs.send(EMAILJS_SERVICE_RESEND, TMPL_ADMIN, {
       admin_email: ADMIN_EMAIL,
       from_name:rec.name, participant_email:rec.email, to_email:rec.email,
       session_label:rec.sessionLabel,
@@ -6877,13 +6880,13 @@ document.addEventListener('DOMContentLoaded', function() {
     el.innerHTML='<div class="email-status email-sent">Sending waitlist confirmation...</div>';
     if(typeof emailjs==='undefined'){el.innerHTML='<div class="email-status email-failed">Email service unavailable.</div>';return;}
     // Send to participant
-    emailjs.send(EMAILJS_SERVICE_ID, TMPL_WAITLIST, {
+    emailjs.send(EMAILJS_SERVICE_RESEND, TMPL_WAITLIST, {
       from_name:rec.name, to_email:rec.email, session_label:rec.sessionLabel,
       arrival_time:rec.arrival, wl_position:rec.wlPosition, cancel_code:rec.code
     }).then(function(){ el.innerHTML='<div class="email-status email-sent">\u2705 Waitlist confirmation sent to '+escapeHTML(rec.email)+'</div>'; })
       .catch(function(){ el.innerHTML='<div class="email-status email-failed">\u26a0\ufe0f Could not send email. You are still on the waitlist.</div>'; });
     // Send admin notification
-    emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
+    emailjs.send(EMAILJS_SERVICE_RESEND, TMPL_ADMIN, {
       admin_email: ADMIN_EMAIL,
       from_name:rec.name, participant_email:rec.email, to_email:rec.email,
       session_label:rec.sessionLabel,
@@ -6900,7 +6903,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var sess=SESSIONS.find(function(s){return s.id===sessionId;});
       if(!wl.length||typeof emailjs==='undefined') return;
       wl.forEach(function(person){
-        emailjs.send(EMAILJS_SERVICE_ID, TMPL_WL_OPEN, {
+        emailjs.send(EMAILJS_SERVICE_RESEND, TMPL_WL_OPEN, {
           from_name:person.name, to_email:person.email,
           session_label:sess.label, arrival_time:sess.arrival,
           register_url:window.location.href.split('?')[0],
@@ -7093,7 +7096,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
       if (btn) btn.textContent = 'Sending… (' + (i+1) + '/' + list.length + ')';
-      emailjs.send(EMAILJS_SERVICE_ID, templateId, { from_name: list[i].name, to_email: (list[i].email||'').trim() })
+      emailjs.send(EMAILJS_SERVICE_RESEND, templateId, { from_name: list[i].name, to_email: (list[i].email||'').trim() })
         .then(function(){ ok++; setTimeout(function(){ next(i+1); }, 1500); })
         .catch(function(e){ fail++; errs.push((list[i].email||'?') + ' — ' + ((e && (e.text || e.message)) || 'send failed')); console.error('[sendBatch] failed for', list[i].email, e); setTimeout(function(){ next(i+1); }, 1500); });
     })(0);
@@ -7734,7 +7737,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!foundPerson){ alert('Could not find registration.'); return; }
       if (!confirm('Send payment pending reminder to '+foundPerson.name+' ('+foundPerson.email+')?')) return;
       if (typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
-      emailjs.send(EMAILJS_SERVICE_ID, TMPL_PAYMENT_PENDING, {
+      emailjs.send(EMAILJS_SERVICE_RESEND, TMPL_PAYMENT_PENDING, {
         from_name:     foundPerson.name,
         to_email:      foundPerson.email,
         session_label: foundSess.label,
@@ -7758,7 +7761,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!foundPerson){ alert('Could not find registration.'); return; }
       if (!confirm('Send payment confirmation to '+foundPerson.name+' ('+foundPerson.email+')?')) return;
       if (typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
-      emailjs.send(EMAILJS_SERVICE_ID, TMPL_PAYMENT_CONFIRM, {
+      emailjs.send(EMAILJS_SERVICE_RESEND, TMPL_PAYMENT_CONFIRM, {
         from_name:     foundPerson.name,
         to_email:      foundPerson.email,
         session_label: foundSess.label,
@@ -7991,7 +7994,7 @@ document.addEventListener('DOMContentLoaded', function() {
           return;
         }
         var p = picked[i];
-        emailjs.send(EMAILJS_SERVICE_ID, MC_TMPL_FOUNDING, { from_name: p.name, to_email: p.email })
+        emailjs.send(EMAILJS_SERVICE_RESEND, MC_TMPL_FOUNDING, { from_name: p.name, to_email: p.email })
           .then(function(){
             sent++;
             // Tag on success so the roster reflects who's been emailed (and future auto-skip works).
@@ -8461,7 +8464,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!confirm('Email all ' + wl.length + ' person(s) on the Mat & Chat waitlist that a spot has opened?\n\nFirst to register gets it.')) return;
       var sent = 0;
       wl.forEach(function(person){
-        emailjs.send(EMAILJS_SERVICE_ID, MC_TMPL_WL_OPEN, {
+        emailjs.send(EMAILJS_SERVICE_RESEND, MC_TMPL_WL_OPEN, {
           from_name: person.name, to_email: person.email,
           session_label: 'Mat & Chat', arrival_time: '11:25 AM',
           register_url: window.location.href.split('?')[0].split('#')[0],
@@ -8765,7 +8768,7 @@ document.addEventListener('DOMContentLoaded', function() {
           // Force payment after waiver (Option 2 \u2014 Mat & Chat overlay shows the Stripe Buy Button)
           showMCPaymentOverlay(isPair ? { buyBtnId: MC_PAIR_BUY_BTN_ID } : bookedTier, MC_STRIPE_PUBLISHABLE, isPair ? MC_PAIR_PRICE : bookedTier.price, record);
           if(typeof emailjs!=='undefined'){
-            emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
+            emailjs.send(EMAILJS_SERVICE_RESEND, TMPL_ADMIN, {
               admin_email: ADMIN_EMAIL,
               from_name:name, participant_email:email, to_email:email,
               session_label:'Mat & Chat \u2014 August 1st' + (isPair?' (PAIR)':''),
@@ -8780,7 +8783,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 '&email=' + encodeURIComponent(friendEmail) +
                 '&event=' + encodeURIComponent('Mat & Chat') +
                 '&date='  + encodeURIComponent('August 1st \u00b7 11:30 AM');
-              emailjs.send(EMAILJS_SERVICE_ID, MC_TMPL_FRIEND_INVITE, {
+              emailjs.send(EMAILJS_SERVICE_RESEND, MC_TMPL_FRIEND_INVITE, {
                 friend_name:  friendName,
                 primary_name: name,
                 to_email:     friendEmail,
@@ -9219,9 +9222,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     if (typeof emailjs !== 'undefined') {
-      emailjs.send(EMAILJS_SERVICE_ID, TMPL_CORP_INQUIRY, params)
+      emailjs.send(EMAILJS_SERVICE_RESEND, TMPL_CORP_INQUIRY, params)
         .then(function(){
-          return emailjs.send(EMAILJS_SERVICE_ID, TMPL_CORP_CONFIRM, {
+          return emailjs.send(EMAILJS_SERVICE_RESEND, TMPL_CORP_CONFIRM, {
             contact_name: contactName, to_email: contactEmail, company_name: companyName
           });
         })
@@ -9388,7 +9391,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     if (typeof emailjs !== 'undefined') {
-      emailjs.send(EMAILJS_SERVICE_ID, TMPL_CORP_SIGNED, {
+      emailjs.send(EMAILJS_SERVICE_RESEND, TMPL_CORP_SIGNED, {
         company_name:  company, contact_name: name,
         contact_email: email, to_email: 'auricmovement@outlook.com',
         headcount:     headcount,
@@ -9982,7 +9985,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (window.history && window.history.replaceState){ var _u=new URL(window.location.href); _u.searchParams.delete('paid'); window.history.replaceState({},'',_u.pathname+_u.search+_u.hash); }
         showCRPaymentReceivedOverlay();
         if(typeof emailjs!=='undefined'){
-          emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
+          emailjs.send(EMAILJS_SERVICE_RESEND, TMPL_ADMIN, {
             admin_email:ADMIN_EMAIL, from_name:participantName, participant_email:email, to_email:email,
             session_label:'Create & Recharge — August 15th', arrival_time:CR_EVENT.arrival,
             registration_type:'PAID + waiver signed ✓', sign_time:uTime,
@@ -10054,7 +10057,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showCRPayGate(payPend, { refundDone:true });
           }
           if(typeof emailjs!=='undefined'){
-            emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
+            emailjs.send(EMAILJS_SERVICE_RESEND, TMPL_ADMIN, {
               admin_email: ADMIN_EMAIL, from_name:participantName, participant_email:email, to_email:email,
               session_label:'Create & Recharge — August 15th',
               arrival_time:CR_EVENT.arrival, registration_type:(crAlreadyPaid ? 'PAID + waiver signed ✓' : 'Waiver signed — payment pending'),
@@ -10075,7 +10078,7 @@ document.addEventListener('DOMContentLoaded', function() {
           else if (CR_TMPL_WAITLIST.indexOf('REPLACE') !== -1) { if(wlEl) wlEl.innerHTML = '<div class="email-status email-sent">✅ You\'re on the list! We\'ll be in touch by email.</div>'; }
           else {
             if(wlEl) wlEl.innerHTML = '<div class="email-status email-sent">Sending waitlist confirmation...</div>';
-            emailjs.send(EMAILJS_SERVICE_ID, CR_TMPL_WAITLIST, {
+            emailjs.send(EMAILJS_SERVICE_RESEND, CR_TMPL_WAITLIST, {
               from_name:participantName, to_email:email, session_label:CR_EVENT.label,
               arrival_time:CR_EVENT.arrival, wl_position:wlPos
             }).then(function(){ if(wlEl) wlEl.innerHTML = '<div class="email-status email-sent">✅ Waitlist confirmation sent to '+escapeHTML(email)+'</div>'; })
@@ -10585,7 +10588,7 @@ document.addEventListener('DOMContentLoaded', function() {
       (function next(){
         if(idx>=wl.length){ alert('Spot-opened email sent to '+sent+' Create & Recharge waitlister(s).'); return; }
         var person = wl[idx++];
-        emailjs.send(EMAILJS_SERVICE_ID, CR_TMPL_WL_OPEN, {
+        emailjs.send(EMAILJS_SERVICE_RESEND, CR_TMPL_WL_OPEN, {
           from_name:person.name, to_email:person.email,
           session_label:CR_EVENT.label, arrival_time:CR_EVENT.arrival,
           register_url:CR_REGISTER_URL,
@@ -11106,7 +11109,7 @@ document.addEventListener('DOMContentLoaded', function() {
       saveNotifyList(data, function() {
         // Send admin notification
         if (typeof emailjs !== 'undefined') {
-          emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
+          emailjs.send(EMAILJS_SERVICE_RESEND, TMPL_ADMIN, {
             admin_email: ADMIN_EMAIL,
             from_name: name, participant_email: email, to_email: email,
             session_label: 'Mat & Chat \u2014 August 1st Notify List',
