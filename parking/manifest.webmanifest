@@ -1,0 +1,13 @@
+{
+  "name": "NYC Parking Signs",
+  "short_name": "Parking Signs",
+  "description": "Every posted parking regulation on any New York City block, read from the city's live DOT sign data.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6f8",
+  "theme_color": "#12212e",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

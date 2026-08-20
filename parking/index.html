@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NYC Parking Signs — what the sign on your block actually says</title>
+<meta name="description" content="Look up every parking sign on any NYC block using the city's live DOT sign data. Alternate side, metered hours, commercial-only loading zones, and the suspension calendar.">
+<meta name="theme-color" content="#12212e">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <h1>NYC Parking Signs</h1>
+    <p class="tagline">Every posted regulation on any block, read straight from the city's live sign database.</p>
+    <div id="now-strip" class="now-strip" hidden></div>
+  </div>
+</header>
+
+<nav class="tabs wrap" role="tablist" aria-label="Sections">
+  <button role="tab" class="tab" data-panel="near" aria-selected="true">Near me</button>
+  <button role="tab" class="tab" data-panel="block" aria-selected="false">Find a block</button>
+  <button role="tab" class="tab" data-panel="guide" aria-selected="false">Sign guide</button>
+  <button role="tab" class="tab" data-panel="susp" aria-selected="false">Suspensions</button>
+</nav>
+
+<main class="wrap">
+
+  <!-- ---------------------------------------------------------- Near me -->
+  <section id="panel-near" class="panel" role="tabpanel">
+    <div id="watchlist" class="watchlist" hidden>
+      <h2>Blocks you're watching</h2>
+      <p class="hint">Re-checked against DOT every time you open this page. New or removed signs get flagged.</p>
+      <div id="watchlist-items"></div>
+    </div>
+
+    <div class="card lead">
+      <h2>What's posted around me?</h2>
+      <p>Uses your location to pull every sign DOT has within a few hundred feet, grouped by block face.</p>
+      <button id="locate" class="btn primary">Use my location</button>
+      <label class="radius">
+        Search radius
+        <select id="radius">
+          <option value="300">300 ft — this block</option>
+          <option value="600" selected>600 ft — block and neighbors</option>
+          <option value="1000">1000 ft — wider</option>
+        </select>
+      </label>
+    </div>
+    <div id="near-status" class="status" hidden></div>
+    <div id="near-results" class="results"></div>
+  </section>
+
+  <!-- ----------------------------------------------------- Find a block -->
+  <section id="panel-block" class="panel" role="tabpanel" hidden>
+    <div class="card lead">
+      <h2>Look up a street</h2>
+      <p>Type a street name the way DOT writes it — <em>Bedford Ave</em>, <em>West 44 Street</em>, <em>Grand Concourse</em> — then pick the block.</p>
+      <form id="street-form" class="street-form">
+        <input id="street-input" type="search" placeholder="Street name" autocomplete="off" required>
+        <button class="btn primary" type="submit">Search</button>
+      </form>
+    </div>
+    <div id="block-status" class="status" hidden></div>
+    <div id="block-picker" class="picker" hidden></div>
+    <div id="block-results" class="results"></div>
+  </section>
+
+  <!-- -------------------------------------------------------- Sign guide -->
+  <section id="panel-guide" class="panel" role="tabpanel" hidden>
+    <div class="card lead">
+      <h2>Every kind of parking sign in New York</h2>
+      <p>The families of regulation you'll actually see on a pole, what each one permits, and the part that gets people ticketed.</p>
+    </div>
+    <div id="guide-body" class="results"></div>
+  </section>
+
+  <!-- ------------------------------------------------------- Suspensions -->
+  <section id="panel-susp" class="panel" role="tabpanel" hidden>
+    <div id="susp-today" class="card lead"></div>
+
+    <div class="card">
+      <h2>Get told before it happens</h2>
+      <p>A page can't reach your phone while it's closed. A calendar subscription can — this file drops every suspension day into your calendar with an alert the evening before.</p>
+      <button id="ics" class="btn primary">Download calendar file (.ics)</button>
+      <button id="notify" class="btn">Enable in-page alerts</button>
+      <p class="hint" id="notify-hint"></p>
+    </div>
+
+    <div class="card">
+      <h2>Street events near a block</h2>
+      <p>Block parties, filming and races override whatever the pole says for the day. This checks the city's permitted-event list for the next 30 days.</p>
+      <form id="event-form" class="street-form">
+        <input id="event-input" type="search" placeholder="Street name" autocomplete="off" required>
+        <button class="btn primary" type="submit">Check</button>
+      </form>
+      <div id="event-results"></div>
+    </div>
+
+    <div id="susp-list" class="card"></div>
+  </section>
+
+</main>
+
+<footer class="wrap site-foot">
+  <h2>Where this comes from</h2>
+  <ul>
+    <li>Signs: <a href="https://data.cityofnewyork.us/Transportation/Parking-Regulation-Locations-and-Signs/nfid-uabd">NYC DOT — Parking Regulation Locations and Signs</a>, queried live on every search.</li>
+    <li>Events: <a href="https://data.cityofnewyork.us/City-Government/NYC-Permitted-Event-Information/tvpp-9vvx">NYC Permitted Event Information</a>.</li>
+    <li>Suspension calendar: <a href="https://www.nyc.gov/html/dot/downloads/pdf/asp-calendar-2026.pdf">DOT's published 2026 calendar</a>.</li>
+    <li>The city's own lookup: <a href="https://nycdotsigns.net/">nycdotsigns.net</a>. Live status by phone: 311.</li>
+  </ul>
+  <p class="disclaimer"><strong>The sign on the pole wins.</strong> DOT's database can lag a crew that installed something this morning, and it does not carry weather or emergency suspensions. Read this, then read the pole.</p>
+</footer>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
