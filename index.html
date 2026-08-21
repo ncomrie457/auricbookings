@@ -1865,6 +1865,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      margin-top: auto; /* pin Reserve to the bottom so buttons align across the row */
       gap: .5rem;
       font-family: 'Jost', sans-serif;
       font-size: .68rem;
@@ -4527,7 +4528,15 @@
         </label>
         <label class="mc-health-row" style="margin-bottom:.45rem;">
           <input type="checkbox" data-event-badge="reformer" data-field="is_collab">
-          <span>Riddim &amp; Kompa on the Reformer &mdash; Collab</span>
+          <span>Riddim &amp; Kompa on the Reformer &mdash; West Hempstead &mdash; Collab</span>
+        </label>
+        <label class="mc-health-row" style="margin-bottom:.45rem;">
+          <input type="checkbox" data-event-badge="reformer-bk" data-field="is_collab">
+          <span>Riddim &amp; Kompa on the Reformer &mdash; Brooklyn &mdash; Collab</span>
+        </label>
+        <label class="mc-health-row" style="margin-bottom:.45rem;">
+          <input type="checkbox" data-event-badge="turkey" data-field="is_collab">
+          <span>Turkey Burn! &mdash; Collab</span>
         </label>
         <label class="mc-health-row" style="margin-bottom:0;">
           <input type="checkbox" data-event-badge="blooming" data-field="is_collab">
@@ -4555,8 +4564,16 @@
         <input type="text" id="admin-donor-recharge" data-event-donors="recharge" placeholder="e.g., partner or sponsor names" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
       </div>
       <div style="margin-bottom:.75rem;">
-        <label for="admin-donor-reformer" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Riddim &amp; Kompa on the Reformer &mdash; Donors</label>
+        <label for="admin-donor-reformer" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Riddim &amp; Kompa &mdash; West Hempstead &mdash; Donors</label>
         <input type="text" id="admin-donor-reformer" data-event-donors="reformer" placeholder="e.g., partner or sponsor names" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
+      </div>
+      <div style="margin-bottom:.75rem;">
+        <label for="admin-donor-reformer-bk" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Riddim &amp; Kompa &mdash; Brooklyn &mdash; Donors</label>
+        <input type="text" id="admin-donor-reformer-bk" data-event-donors="reformer-bk" placeholder="e.g., partner or sponsor names" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
+      </div>
+      <div style="margin-bottom:.75rem;">
+        <label for="admin-donor-turkey" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Turkey Burn! &mdash; Donors</label>
+        <input type="text" id="admin-donor-turkey" data-event-donors="turkey" placeholder="e.g., partner or sponsor names" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
       </div>
       <div style="margin-bottom:.75rem;">
         <label for="admin-donor-blooming" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Something&rsquo;s Blooming &mdash; Donors</label>
@@ -4577,7 +4594,9 @@
             <option value="pilates">Pilates x Niara (both sessions)</option>
             <option value="matchat">Mat &amp; Chat</option>
             <option value="recharge">Create &amp; Recharge</option>
-            <option value="reformer">Riddim &amp; Kompa on the Reformer (both sessions)</option>
+            <option value="reformer">Riddim &amp; Kompa &mdash; West Hempstead (both sessions)</option>
+            <option value="reformer-bk">Riddim &amp; Kompa &mdash; Brooklyn (all sessions)</option>
+            <option value="turkey">Turkey Burn! (both sessions)</option>
             <option value="blooming">Something&rsquo;s Blooming (interest list)</option>
           </select>
         </div>
@@ -6709,7 +6728,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function applyEventBadges() {
     getEventConfig(function(cfg){
-      var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat', recharge: 'event-card-recharge', reformer: 'event-card-reformer', blooming: 'event-card-blooming' };
+      var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat', recharge: 'event-card-recharge', reformer: 'event-card-reformer', 'reformer-bk': 'event-card-reformer-bk', turkey: 'event-card-turkey', blooming: 'event-card-blooming' };
       Object.keys(cards).forEach(function(key){
         var card = document.getElementById(cards[key]);
         if (!card) return;
@@ -8550,6 +8569,18 @@ document.addEventListener('DOMContentLoaded', function() {
     ],
     pilates: [
       { label: 'How you want to feel', eyebrow: 'Set Your Intention', question: 'What do you hope to walk away feeling?', sub: "Reply and let us know — we'll hold space for it." }
+    ],
+    reformer: [
+      { label: 'Riddim/kompa track',   eyebrow: 'One Last Thing', question: "What's the one riddim or kompa track you need to hear on the reformer?", sub: "Reply with your pick and we'll add it to the playlist. 🎵" },
+      { label: 'How you want to feel', eyebrow: 'Set Your Intention', question: 'What do you hope to leave feeling?', sub: "Reply and let us know — we'll hold space for it." }
+    ],
+    'reformer-bk': [
+      { label: 'Riddim/kompa track',   eyebrow: 'One Last Thing', question: "What's the one riddim or kompa track you need to hear on the reformer?", sub: "Reply with your pick and we'll add it to the playlist. 🎵" },
+      { label: 'How you want to feel', eyebrow: 'Set Your Intention', question: 'What do you hope to leave feeling?', sub: "Reply and let us know — we'll hold space for it." }
+    ],
+    turkey: [
+      { label: 'Burn goal',            eyebrow: 'Before You Sweat', question: 'What are you most ready to shake off before the holiday?', sub: "Reply and let us know — come ready to move it out. 🔥" },
+      { label: 'Feel-good intention',  eyebrow: 'Set Your Intention', question: 'What do you hope to walk away feeling?', sub: "Reply and let us know — we'll hold space for it." }
     ]
   };
   function applyReminderQuestion(p){
@@ -8624,16 +8655,28 @@ document.addEventListener('DOMContentLoaded', function() {
           });
           callback(confirmed);
         });
-      } else if (eventType === 'reformer') {
-        // Paid reformer registrants, via the password-gated roster function.
+      } else if (eventType === 'reformer' || eventType === 'reformer-bk' || eventType === 'turkey') {
+        // Paid reformer-table registrants, via the password-gated roster function.
+        // The three events share reformer_registrations, so filter by the event column.
         var RF_SESS = {
-          '1pm': { label: 'Riddim & Kompa on the Reformer — 1 PM', date: 'Sunday, September 13th', arrival: '12:55 PM', start: '1:00 PM' },
-          '2pm': { label: 'Riddim & Kompa on the Reformer — 2 PM', date: 'Sunday, September 13th', arrival: '1:55 PM', start: '2:00 PM' }
+          '1pm':    { label: 'Riddim & Kompa on the Reformer — 1 PM', date: 'Sunday, September 13th', arrival: '12:55 PM', start: '1:00 PM' },
+          '2pm':    { label: 'Riddim & Kompa on the Reformer — 2 PM', date: 'Sunday, September 13th', arrival: '1:55 PM', start: '2:00 PM' },
+          'bk12':   { label: 'Riddim & Kompa on the Reformer — Brooklyn, 12 PM', date: 'Saturday, September 26th', arrival: '11:55 AM', start: '12:00 PM' },
+          'bk1':    { label: 'Riddim & Kompa on the Reformer — Brooklyn, 1 PM',  date: 'Saturday, September 26th', arrival: '12:55 PM', start: '1:00 PM' },
+          'bk2':    { label: 'Riddim & Kompa on the Reformer — Brooklyn, 2 PM',  date: 'Saturday, September 26th', arrival: '1:55 PM', start: '2:00 PM' },
+          'tb1230': { label: 'Turkey Burn! — 12:30 PM', date: 'Saturday, November 21st', arrival: '12:25 PM', start: '12:30 PM' },
+          'tb130':  { label: 'Turkey Burn! — 1:30 PM',  date: 'Saturday, November 21st', arrival: '1:25 PM', start: '1:30 PM' }
         };
+        var RF_EVENT_FILTER = {
+          'reformer':    function(ev){ return ev !== 'riddim-kompa-brooklyn-2026-09-26' && ev !== 'turkey-burn-2026-11-21'; },
+          'reformer-bk': function(ev){ return ev === 'riddim-kompa-brooklyn-2026-09-26'; },
+          'turkey':      function(ev){ return ev === 'turkey-burn-2026-11-21'; }
+        };
+        var keep = RF_EVENT_FILTER[eventType];
         try {
           supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(res){
             var rows = (res && res.data) || [];
-            var confirmed = rows.filter(function(r){ return r.is_paid && r.email; }).map(function(rec){
+            var confirmed = rows.filter(function(r){ return r.is_paid && r.email && keep(r.event); }).map(function(rec){
               return { rec: { name: rec.name, email: rec.email }, sess: RF_SESS[rec.session] || RF_SESS['1pm'] };
             });
             callback(confirmed);
