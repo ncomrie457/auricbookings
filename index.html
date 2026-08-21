@@ -10825,8 +10825,10 @@ document.addEventListener('DOMContentLoaded', function() {
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
+      var SLAB = { '1pm':'1 PM', '2pm':'2 PM' }; var _curSess=null;
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
+        if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; var _sh=document.createElement('div'); _sh.style.cssText='font-family:\'Jost\',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-text);margin:.9rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px dashed var(--border);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; block.appendChild(_sh); }
         var id = rec.id;
         var item=document.createElement('div'); item.className='admin-sub-item';
         var badge = rec.is_paid
@@ -10886,9 +10888,10 @@ document.addEventListener('DOMContentLoaded', function() {
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
-      var SLAB = { 'bk12':'12 PM','bk1':'1 PM','bk2':'2 PM' };
+      var SLAB = { 'bk12':'12 PM','bk1':'1 PM','bk2':'2 PM' }; var _curSess=null;
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
+        if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; var _sh=document.createElement('div'); _sh.style.cssText='font-family:\'Jost\',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-text);margin:.9rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px dashed var(--border);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; block.appendChild(_sh); }
         var id = rec.id;
         var item=document.createElement('div'); item.className='admin-sub-item';
         var badge = rec.is_paid ? '<span class="atype" style="background:#e8f5e9;color:#2e7d32;">paid</span>' : '<span class="atype" style="background:#fef9e7;color:#7a6320;">pending</span>';
@@ -10942,9 +10945,10 @@ document.addEventListener('DOMContentLoaded', function() {
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
-      var SLAB = { 'tb1230':'12:30 PM','tb130':'1:30 PM' };
+      var SLAB = { 'tb1230':'12:30 PM','tb130':'1:30 PM' }; var _curSess=null;
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
+        if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; var _sh=document.createElement('div'); _sh.style.cssText='font-family:\'Jost\',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-text);margin:.9rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px dashed var(--border);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; block.appendChild(_sh); }
         var id = rec.id;
         var item=document.createElement('div'); item.className='admin-sub-item';
         var badge = rec.is_paid ? '<span class="atype" style="background:#e8f5e9;color:#2e7d32;">paid</span>' : '<span class="atype" style="background:#fef9e7;color:#7a6320;">pending</span>';
