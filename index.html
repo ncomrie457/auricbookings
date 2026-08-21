@@ -4459,16 +4459,6 @@
       <div id="admin-notify-list-body"></div>
     </div>
 
-    <!-- Collaboration Agreement quick links (open → Save as PDF) -->
-    <div id="admin-collab-docs" style="margin-top:1.5rem;padding:1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:12px;">
-      <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--brown);margin-bottom:.4rem;">&#128196; Collaboration Agreements</h3>
-      <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:.85rem;line-height:1.5;">Open an agreement, then tap its &ldquo;Print / Save as PDF&rdquo; button to download a copy.</p>
-      <div style="display:flex;gap:.6rem;flex-wrap:wrap;">
-        <a href="/collab-agreement" target="_blank" rel="noopener" class="btn btn-secondary" style="font-size:.82rem;text-decoration:none;">&#127800; Curated Sunday &mdash; Something&rsquo;s Blooming &rarr;</a>
-        <a href="/sign/cr-ga-9m4kx7" target="_blank" rel="noopener" class="btn btn-secondary" style="font-size:.82rem;text-decoration:none;">&#127912; Georgina &mdash; Create &amp; Recharge &rarr;</a>
-      </div>
-    </div>
-
     <div id="admin-shared-lists" style="margin-top:1.5rem;padding:1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:12px;">
       <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--brown);margin-bottom:.4rem;">&#128279; Shared Lists for Collaborators</h3>
       <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:.85rem;line-height:1.5;">Passcode-protected, read-only pages you can send to a collaborator so they can see who signed up &mdash; without your admin access.</p>
@@ -7725,55 +7715,76 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
   }
+  // Waitlists are shown per-event, nested under each event (via #admin-<key>-wl
+  // sub-panels) so past-event waitlists sit under the past events and hide with them.
+  var WL_EVENT_MAP = {
+    'Pilates':           { id:'admin-sessions-wl', key:'sessions', label:'Pilates x Niara' },
+    'Mat & Chat':        { id:'admin-mc-wl',       key:'mc',       label:'Mat & Chat' },
+    'Create & Recharge': { id:'admin-cr-wl',       key:'cr',       label:'Create & Recharge' }
+  };
   function renderWaitlistNotify(){
-    var bodyEl = document.getElementById('admin-waitlist-body');
-    if (!bodyEl) return;
-    bodyEl.innerHTML = '<div style="color:var(--text-muted);font-size:.85rem;">Loading…</div>';
+    // Retire the old single consolidated box (kept in the DOM as a no-op).
+    var oldSec = document.getElementById('admin-waitlist-section'); if (oldSec) oldSec.style.display = 'none';
+    // Clear any existing per-event panels while we (re)load.
+    Object.keys(WL_EVENT_MAP).forEach(function(k){ var el=document.getElementById(WL_EVENT_MAP[k].id); if(el) el.innerHTML=''; });
     gatherAllWaitlist(function(items){
       _waitlistItems = items;
-      if (!items.length){ bodyEl.innerHTML = '<div class="empty-state">No one is on any waitlist right now.</div>'; return; }
-      var btnCss = 'background:#fff;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.25rem .6rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;';
-      var rows = items.map(function(it, i){
-        return '<label style="display:flex;align-items:center;gap:.6rem;padding:.5rem .25rem;border-bottom:1px solid #dce3f2;cursor:pointer;">'+
-          '<input type="checkbox" class="admin-wl-check" data-wl-index="'+i+'" checked onchange="updateWaitlistSendLabel()" style="width:16px;height:16px;flex-shrink:0;accent-color:#185fa5;">'+
-          '<span style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(it.name)+'</span> <span style="font-size:.72rem;color:var(--text-muted);">'+escapeHTML(it.email)+'</span></span>'+
-          '<span style="font-size:.68rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:#185fa5;background:#fff;border:1px solid #cfe0f5;border-radius:20px;padding:.15rem .5rem;white-space:nowrap;">'+escapeHTML(it.eventShort)+'</span>'+
-        '</label>';
-      }).join('');
-      bodyEl.innerHTML =
-        '<div style="display:flex;gap:.5rem;margin-bottom:.5rem;flex-wrap:wrap;">'+
-          '<button type="button" onclick="waitlistSelectAll(true)" style="'+btnCss+'">Select all</button>'+
-          '<button type="button" onclick="waitlistSelectAll(false)" style="'+btnCss+'">Clear</button>'+
-        '</div>'+ rows +
-        '<button type="button" id="admin-wl-send" onclick="notifySelectedWaitlist()" class="btn btn-primary" style="width:100%;margin-top:.75rem;">📣 Notify selected</button>'+
-        '<div id="admin-wl-status" style="margin-top:.5rem;font-size:.78rem;color:var(--text-muted);"></div>';
-      updateWaitlistSendLabel();
+      var groups = {};
+      items.forEach(function(it, i){ (groups[it.eventShort] = groups[it.eventShort] || []).push(i); });
+      Object.keys(WL_EVENT_MAP).forEach(function(evShort){
+        var info = WL_EVENT_MAP[evShort]; var el = document.getElementById(info.id); if(!el) return;
+        var idxs = groups[evShort] || [];
+        if(!idxs.length){ el.innerHTML=''; return; } // no one waitlisted for this event → show nothing
+        var scopeId = 'admin-wl-'+info.key;
+        var btnCss = 'background:#fff;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.25rem .6rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;';
+        var rows = idxs.map(function(i){
+          var it = items[i];
+          return '<label style="display:flex;align-items:center;gap:.6rem;padding:.5rem .25rem;border-bottom:1px solid #dce3f2;cursor:pointer;">'+
+            '<input type="checkbox" class="admin-wl-check" data-wl-index="'+i+'" checked onchange="updateWaitlistSendLabel(\''+scopeId+'\')" style="width:16px;height:16px;flex-shrink:0;accent-color:#185fa5;">'+
+            '<span style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(it.name)+'</span> <span style="font-size:.72rem;color:var(--text-muted);">'+escapeHTML(it.email)+'</span></span>'+
+          '</label>';
+        }).join('');
+        el.innerHTML =
+          '<div id="'+scopeId+'" style="margin:.5rem 0 0;padding:1rem 1.15rem;background:#eef4fb;border:1px solid #cfe0f5;border-radius:12px;">'+
+            '<h3 style="font-size:.78rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#185fa5;margin:0 0 .5rem;">📣 '+escapeHTML(info.label)+' — Waitlist ('+idxs.length+')</h3>'+
+            '<div style="display:flex;gap:.5rem;margin-bottom:.5rem;flex-wrap:wrap;">'+
+              '<button type="button" onclick="waitlistSelectAll(true,\''+scopeId+'\')" style="'+btnCss+'">Select all</button>'+
+              '<button type="button" onclick="waitlistSelectAll(false,\''+scopeId+'\')" style="'+btnCss+'">Clear</button>'+
+            '</div>'+ rows +
+            '<button type="button" id="'+scopeId+'-send" onclick="notifySelectedWaitlist(\''+scopeId+'\')" class="btn btn-primary" style="width:100%;margin-top:.75rem;">📣 Notify selected</button>'+
+            '<div id="'+scopeId+'-status" style="margin-top:.5rem;font-size:.78rem;color:var(--text-muted);"></div>'+
+          '</div>';
+        updateWaitlistSendLabel(scopeId);
+      });
     });
   }
-  window.waitlistSelectAll = function(on){
-    document.querySelectorAll('.admin-wl-check').forEach(function(cb){ cb.checked = !!on; });
-    updateWaitlistSendLabel();
+  window.waitlistSelectAll = function(on, scopeId){
+    var root = scopeId ? document.getElementById(scopeId) : document; if(!root) return;
+    root.querySelectorAll('.admin-wl-check').forEach(function(cb){ cb.checked = !!on; });
+    updateWaitlistSendLabel(scopeId);
   };
-  window.updateWaitlistSendLabel = function(){
-    var n = document.querySelectorAll('.admin-wl-check:checked').length;
-    var btn = document.getElementById('admin-wl-send');
+  window.updateWaitlistSendLabel = function(scopeId){
+    var root = scopeId ? document.getElementById(scopeId) : document; if(!root) return;
+    var n = root.querySelectorAll('.admin-wl-check:checked').length;
+    var btn = scopeId ? document.getElementById(scopeId+'-send') : document.getElementById('admin-wl-send');
     if (btn){ btn.textContent = '📣 Notify selected (' + n + ')'; btn.disabled = (n === 0); }
   };
-  window.notifySelectedWaitlist = function(){
-    var checked = Array.prototype.slice.call(document.querySelectorAll('.admin-wl-check:checked'));
+  window.notifySelectedWaitlist = function(scopeId){
+    var root = scopeId ? document.getElementById(scopeId) : document; if(!root) return;
+    var checked = Array.prototype.slice.call(root.querySelectorAll('.admin-wl-check:checked'));
     var chosen = checked.map(function(cb){ return _waitlistItems[parseInt(cb.getAttribute('data-wl-index'),10)]; }).filter(Boolean);
     if (!chosen.length){ alert('Select at least one person to notify.'); return; }
     if (typeof emailjs === 'undefined'){ alert('Email service unavailable.'); return; }
     var missing = chosen.filter(function(it){ return !it.tmpl || it.tmpl.indexOf('REPLACE') !== -1; });
     if (missing.length){ alert('One or more events don’t have a waitlist-open email template set yet. Set the template id first.'); return; }
     if (!confirm('Email ' + chosen.length + ' waitlister(s) that a spot has opened?\n\nFirst to register gets it.')) return;
-    var btn = document.getElementById('admin-wl-send');
-    var statusEl = document.getElementById('admin-wl-status');
-    btn.disabled = true;
+    var btn = scopeId ? document.getElementById(scopeId+'-send') : document.getElementById('admin-wl-send');
+    var statusEl = scopeId ? document.getElementById(scopeId+'-status') : document.getElementById('admin-wl-status');
+    if (btn) btn.disabled = true;
     var sent = 0, failed = 0, failedList = [];
     (function next(i){
       if (i >= chosen.length){
-        btn.disabled = false; updateWaitlistSendLabel();
+        if (btn) btn.disabled = false; updateWaitlistSendLabel(scopeId);
         var msg = '✅ Notified ' + sent + ' waitlister(s).';
         if (failed){ msg += '\n\n⚠️ ' + failed + ' failed: ' + failedList.join(', '); }
         if (statusEl) statusEl.textContent = msg.replace(/\n+/g,' ');
@@ -7909,6 +7920,12 @@ document.addEventListener('DOMContentLoaded', function() {
     mcContainer.setAttribute('data-event-date', '2026-08-01');
     sessionsContainer.setAttribute('data-event-date', '2026-06-19');
 
+    // Per-event waitlist sub-panels (filled by renderWaitlistNotify). Each carries the
+    // same date as its event so the filter shows/hides it together with that event.
+    var crWlContainer       = document.createElement('div'); crWlContainer.id       = 'admin-cr-wl';       crWlContainer.setAttribute('data-event-date','2026-08-15');
+    var mcWlContainer       = document.createElement('div'); mcWlContainer.id       = 'admin-mc-wl';       mcWlContainer.setAttribute('data-event-date','2026-08-01');
+    var sessionsWlContainer = document.createElement('div'); sessionsWlContainer.id = 'admin-sessions-wl'; sessionsWlContainer.setAttribute('data-event-date','2026-06-19');
+
     // Filter dropdown — All / Recent (upcoming) / Past. Sits at the top of the panel.
     var adminFilterBar = document.createElement('div');
     adminFilterBar.style.cssText = 'display:flex;align-items:center;justify-content:flex-end;gap:.6rem;margin:0 0 1.1rem;flex-wrap:wrap;';
@@ -7926,15 +7943,16 @@ document.addEventListener('DOMContentLoaded', function() {
     body.appendChild(turkeyContainer);     // Turkey Burn! — Nov 21
     body.appendChild(reformerBkContainer); // Riddim & Kompa — Brooklyn — Sep 26
     body.appendChild(reformerContainer);   // Riddim & Kompa — Valley — Sep 13
-    body.appendChild(crContainer);         // Create & Recharge — Aug 15
-    body.appendChild(mcContainer);         // Mat & Chat — Aug 1
-    body.appendChild(sessionsContainer);   // Pilates x Niara — Jun 19
+    body.appendChild(crContainer);         body.appendChild(crWlContainer);       // Create & Recharge — Aug 15 (+ waitlist)
+    body.appendChild(mcContainer);         body.appendChild(mcWlContainer);       // Mat & Chat — Aug 1 (+ waitlist)
+    body.appendChild(sessionsContainer);   body.appendChild(sessionsWlContainer); // Pilates x Niara — Jun 19 (+ waitlist)
     body.appendChild(corpContainer);       // Partner With Us — no date, always shown
 
-    // Apply / persist the event filter (Corporate has no date → never hidden).
+    // Apply / persist the event filter (any element tagged with data-event-date —
+    // event sections AND their waitlist sub-panels; Corporate has none → never hidden).
     function applyAdminEventFilter(v){
       adminEventFilterValue = v;
-      [bloomContainer,turkeyContainer,reformerBkContainer,reformerContainer,crContainer,mcContainer,sessionsContainer].forEach(function(c){
+      body.querySelectorAll('[data-event-date]').forEach(function(c){
         var d = c.getAttribute('data-event-date'); if(!d) return;
         var past = (typeof isEventPast === 'function') ? isEventPast(d) : false;
         var show = (v==='all') || (v==='past' && past) || (v==='recent' && !past);
@@ -10638,6 +10656,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var waitlist  = list.filter(function(r){ return r.type==='waitlist'; });
       var toMark = confirmed.filter(function(r){ return !/#attended/i.test(r.adminNotes||''); }).length;
       block.innerHTML = '<h3 style="color:var(--gold-text);">Create &amp; Recharge — Aug 15th · '+confirmed.length+'/'+CR_MAX_SPOTS+' spots · '+waitlist.length+' waitlisted</h3>'+'<button onclick="crAdminAddComp()" style="margin:.1rem .4rem .6rem 0;background:#f3ecfb;border:1px solid #d4bff4;color:#6a3ca5;border-radius:6px;padding:.3rem .7rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F381} Add comp attendee</button>'+(confirmed.length?'<button onclick="crBulkAttend()" style="margin:.1rem 0 .6rem;background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.3rem .7rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;">✓ Mark all attended ('+toMark+')</button>':'')+(waitlist.length?'<button onclick="crNotifyWaitlist()" style="margin:.1rem 0 .6rem .4rem;background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.3rem .7rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;">📣 Notify waitlist ('+waitlist.length+')</button>':'')+(confirmed.filter(function(r){return /#attended/i.test(r.adminNotes||'');}).length?'<button id="cr-thankyou-btn" onclick="crSendThankYou(this)" style="margin:.1rem 0 .6rem .4rem;background:#f3ecfb;border:1px solid #d4bff4;color:#6a3ca5;border-radius:6px;padding:.3rem .7rem;font-size:.75rem;cursor:pointer;font-family:\'Jost\',sans-serif;">💌 Thank attendees ('+confirmed.filter(function(r){return /#attended/i.test(r.adminNotes||'');}).length+')</button>':'');
+      block.innerHTML += '<div style="margin:.1rem 0 .8rem;"><a href="/sign/cr-ga-9m4kx7" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.4rem;background:#faf5ee;border:1px solid var(--border);color:var(--brown);border-radius:8px;padding:.4rem .8rem;font-size:.76rem;text-decoration:none;font-family:\'Jost\',sans-serif;font-weight:600;">\u{1F4C4} Collaboration agreement — Georgina (Create &amp; Recharge) &rarr;</a></div>';
       if(!list.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; }
       else {
         list.forEach(function(rec){
@@ -10856,6 +10875,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function render(rows, err){
       bloomRows = rows || [];
       block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F338} Something\u2019s Blooming \u2014 Interest List \u00b7 '+rows.length+' signed up</h3>';
+      block.innerHTML += '<div style="margin:.1rem 0 .8rem;"><a href="/collab-agreement" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.4rem;background:#faf5ee;border:1px solid var(--border);color:var(--brown);border-radius:8px;padding:.4rem .8rem;font-size:.76rem;text-decoration:none;font-family:\'Jost\',sans-serif;font-weight:600;">\u{1F4C4} Collaboration agreement \u2014 Curated Sunday &rarr;</a></div>';
       if(err){ block.innerHTML += '<div class="empty-state">Interest list unavailable \u2014 run the blooming_interest read/delete policy SQL to view it here. (Signups are still being saved.)</div>'; return; }
       if(!rows.length){ block.innerHTML += '<div class="empty-state">No signups yet.</div>'; return; }
       block.innerHTML += '<button onclick="bloomExportCSV()" style="margin:.1rem 0 .7rem;background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u2b07\ufe0f Export interest list (CSV) &mdash; share with your collaborator</button>';
