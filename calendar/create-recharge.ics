@@ -1,0 +1,16 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Auric Movement//Booking//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:cr@auricmovement.com
+DTSTAMP:20260815T120000Z
+DTSTART:20260815T153000Z
+DTEND:20260815T170000Z
+SUMMARY:Create & Recharge ✦ Auric Movement
+DESCRIPTION:Auric Movement | Create & Recharge. Arrival 11:30 AM\, art starts 11:35 AM. Inner Diamond Studio — 2nd floor of a walk-up at 300 W 38th St\, #2F.
+LOCATION:Inner Diamond Studio\, 300 W 38th Street\, 2F\, New York\, NY 10018
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR

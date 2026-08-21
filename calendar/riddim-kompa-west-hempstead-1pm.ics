@@ -1,0 +1,16 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Auric Movement//Booking//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:rk-wh-1pm@auricmovement.com
+DTSTAMP:20260815T120000Z
+DTSTART:20260913T170000Z
+DTEND:20260913T174500Z
+SUMMARY:Riddim & Kompa on the Reformer ✦ Auric Movement
+DESCRIPTION:Please arrive a few minutes early. Valley Studio\, West Hempstead.
+LOCATION:Valley Studio\, 45 Cherry Valley Ave\, West Hempstead\, NY 11552
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR
