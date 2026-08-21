@@ -4517,6 +4517,14 @@
       <div id="admin-event-badges-status" style="margin-top:.5rem;font-size:.78rem;color:var(--text-muted);"></div>
     </div>
 
+    <!-- Event Order (drag to reorder) -->
+    <div style="margin-top:1rem;padding:1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:12px;">
+      <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--brown);margin-bottom:.5rem;">&#8597; Event Order</h3>
+      <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:.85rem;line-height:1.5;">Drag to set the order events appear on the site (top = first). Saves automatically.</p>
+      <ul id="event-order-list" style="list-style:none;margin:0;padding:0;"></ul>
+      <div id="event-order-status" style="margin-top:.5rem;font-size:.78rem;color:var(--text-muted);"></div>
+    </div>
+
     <!-- Donor / Sponsor Recognition -->
     <div style="margin-top:1rem;padding:1.25rem;background:#fdf5f4;border:1px solid #f0d4d0;border-radius:12px;">
       <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--brown);margin-bottom:.5rem;">&#127873; Donor Recognition</h3>
@@ -6370,12 +6378,112 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         }
       });
+      // Apply the saved event order (Events grid + homepage) and populate the
+      // admin drag-to-reorder list.
+      try { applyEventOrder(cfg); renderEventOrderList(cfg); } catch(e) {}
       // Re-render past events recap cards now that event_config is cached
       // (so donor info shows up on Pilates Juneteenth after it becomes a past event)
       try { renderVideoSections(); } catch(e) {}
     });
   }
   applyEventBadges();
+
+  // ── Event ordering (admin drag-to-reorder) ────────────────────────────────
+  // Order persists in event_config.sort_index (run ADD_EVENT_ORDER.sql once).
+  // Falls back to localStorage (this device) if the column isn't present yet,
+  // and to DOM order otherwise. Applied for all visitors on load.
+  var EVENT_ORDER_LS = 'auric_event_order';
+
+  function getEventCardsInfo() {
+    var out = [];
+    document.querySelectorAll('#tab-events .bq-events > [id^="event-card-"]').forEach(function(card){
+      var nameEl = card.querySelector('.bq-event-name');
+      out.push({ key: card.id.replace('event-card-',''), cardId: card.id,
+                 name: nameEl ? nameEl.textContent.trim() : card.id });
+    });
+    return out;
+  }
+
+  function computeEventOrder(cfg) {
+    cfg = cfg || _eventConfigCache || {};
+    var lsOrder = [];
+    try { lsOrder = JSON.parse(localStorage.getItem(EVENT_ORDER_LS) || '[]'); } catch(e){}
+    var info = getEventCardsInfo();
+    info.forEach(function(it, i){
+      var si = (cfg[it.key] && typeof cfg[it.key].sort_index === 'number') ? cfg[it.key].sort_index : null;
+      if (si === null) { var li = lsOrder.indexOf(it.key); si = (li >= 0) ? li : (100 + i); }
+      it.sort = si; it.dom = i;
+    });
+    info.sort(function(a,b){ return (a.sort - b.sort) || (a.dom - b.dom); });
+    return info;
+  }
+
+  function applyEventOrder(cfg) {
+    var order = computeEventOrder(cfg);
+    var grid = document.querySelector('#tab-events .bq-events');
+    if (grid) order.forEach(function(it){ var c = document.getElementById(it.cardId); if (c) grid.appendChild(c); });
+    // Homepage "All Events" mini-grid — best effort (match by the Book button's target)
+    try {
+      var hg = document.getElementById('bq-allevents-grid');
+      if (hg) {
+        var rank = {}; order.forEach(function(it,i){ rank[it.key] = i; });
+        function keyOf(el){
+          var btn = el.querySelector('[data-target]');
+          if (btn) return btn.getAttribute('data-target').replace('event-card-','');
+          if (el.querySelector('a[href="/blooming"]')) return 'blooming';
+          return '';
+        }
+        Array.prototype.slice.call(hg.children)
+          .sort(function(a,b){ var ra=rank[keyOf(a)], rb=rank[keyOf(b)];
+            return (ra===undefined?999:ra) - (rb===undefined?999:rb); })
+          .forEach(function(c){ hg.appendChild(c); });
+      }
+    } catch(e){}
+  }
+
+  var _eventDragEl = null;
+  function renderEventOrderList(cfg) {
+    var ul = document.getElementById('event-order-list');
+    if (!ul) return;
+    ul.innerHTML = '';
+    computeEventOrder(cfg).forEach(function(it){
+      var li = document.createElement('li');
+      li.setAttribute('draggable','true');
+      li.setAttribute('data-key', it.key);
+      li.style.cssText = 'display:flex;align-items:center;gap:.6rem;padding:.6rem .75rem;margin-bottom:.4rem;background:#fff;border:1px solid var(--border);border-radius:8px;cursor:grab;font-family:\'Jost\',sans-serif;font-size:.85rem;color:#3d322a;';
+      li.innerHTML = '<span aria-hidden="true" style="color:var(--gold-text);font-size:1rem;line-height:1;">&#9776;</span><span>' + escapeHTML(it.name) + '</span>';
+      li.addEventListener('dragstart', function(e){ _eventDragEl = li; li.style.opacity = '.5'; if(e.dataTransfer) e.dataTransfer.effectAllowed = 'move'; });
+      li.addEventListener('dragend', function(){ if (_eventDragEl) _eventDragEl.style.opacity = ''; _eventDragEl = null; });
+      li.addEventListener('dragover', function(e){
+        e.preventDefault();
+        if (!_eventDragEl || _eventDragEl === li) return;
+        var r = li.getBoundingClientRect();
+        ul.insertBefore(_eventDragEl, ((e.clientY - r.top) < r.height/2) ? li : li.nextSibling);
+      });
+      li.addEventListener('drop', function(e){ e.preventDefault(); saveEventOrderFromList(ul); });
+      ul.appendChild(li);
+    });
+  }
+
+  function saveEventOrderFromList(ul) {
+    var keys = Array.prototype.slice.call(ul.querySelectorAll('li')).map(function(li){ return li.getAttribute('data-key'); });
+    try { localStorage.setItem(EVENT_ORDER_LS, JSON.stringify(keys)); } catch(e){}
+    keys.forEach(function(k,i){ if (!_eventConfigCache[k]) _eventConfigCache[k] = { event_id:k }; _eventConfigCache[k].sort_index = i; });
+    applyEventOrder(_eventConfigCache);
+    var status = document.getElementById('event-order-status');
+    if (status) status.textContent = 'Saving…';
+    var pending = keys.length, failed = false;
+    if (!pending) { if (status) status.textContent = ''; return; }
+    keys.forEach(function(k,i){
+      supabase.from('event_config').upsert({ event_id:k, sort_index:i, updated_at:new Date().toISOString() }, { onConflict:'event_id' })
+        .then(function(res){
+          if (res && res.error) failed = true;
+          if (--pending === 0 && status) status.textContent = failed
+            ? '⚠ Saved on this device. To save for all visitors, run ADD_EVENT_ORDER.sql in Supabase (adds the sort_index column).'
+            : '✓ Order saved.';
+        }, function(){ failed = true; if (--pending === 0 && status) status.textContent = '⚠ Saved on this device only (could not reach the database).'; });
+    });
+  }
 
   // Returns true if a given event date (YYYY-MM-DD) is in the past
   function isEventPast(dateStr) {
