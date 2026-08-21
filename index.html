@@ -1664,8 +1664,8 @@
 
     /* Riddim & Kompa card: show the whole illustrated flyer (not a crop).
        Frame background matches the flyer's cream (#f8f1e7) so the letterbox is seamless. */
-    #event-card-reformer .bq-event-photo { background: #f8f1e7; }
-    #event-card-reformer .bq-event-photo img { object-fit: contain; }
+    #event-card-reformer .bq-event-photo, #event-card-reformer-bk .bq-event-photo { background: #f8f1e7; }
+    #event-card-reformer .bq-event-photo img, #event-card-reformer-bk .bq-event-photo img { object-fit: contain; }
 
     /* Wrapper around the larger booking-page flyer (so the Sold Out badge can position absolutely) */
     .bq-flyer-wrap {
@@ -2837,6 +2837,17 @@
         <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
       </button>
 
+      <!-- Riddim & Kompa on the Reformer — Brooklyn, Sept 26. Opens the Brooklyn booking overlay. -->
+      <button type="button" id="event-card-reformer-bk" class="bq-event scroll-reveal" data-event-date="2026-09-26" data-event-name="Riddim &amp; Kompa &#8212; Brooklyn">
+        <div class="bq-event-photo">
+          <img src="riddim-kompa-brooklyn-flyer.png?v=1" alt="Riddim &amp; Kompa on the Reformer &#8212; Saturday, September 26 at Maison Luxe Wellness Pilates, Brooklyn &#183; $45, complimentary goodie bag" loading="lazy" decoding="async">
+        </div>
+        <div class="bq-event-date">09.26.26 &#183; Riddim &amp; Kompa</div>
+        <div class="bq-event-name">Riddim &amp; Kompa <em>on the Reformer</em></div>
+        <div class="bq-event-sub">Sat &#183; 12, 1 &amp; 2 PM (45 min) &#183; $45 &#183; Maison Luxe Wellness Pilates, Brooklyn</div>
+        <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
+      </button>
+
       <!-- Something's Blooming — Dec 13, Long Island. Interest list → /blooming -->
       <a href="/blooming" id="event-card-blooming" class="bq-event scroll-reveal" data-event-date="2026-12-13" data-event-name="Something&#8217;s Blooming">
         <div class="bq-event-photo">
@@ -2957,7 +2968,7 @@
       document.addEventListener('DOMContentLoaded', function(){
         var mount = document.getElementById('bq-nextup');
         if(!mount) return;
-        var ids = ['event-card-recharge','event-card-reformer','event-card-matchat','event-card-pilates'];
+        var ids = ['event-card-recharge','event-card-reformer','event-card-reformer-bk','event-card-matchat','event-card-pilates'];
         var today = new Date(); today.setHours(0,0,0,0);
         var best=null, bestDate=null;
         ids.forEach(function(id){
@@ -3022,7 +3033,8 @@
       document.addEventListener('DOMContentLoaded', function(){
         var grid=document.getElementById('bq-allevents-grid'); if(!grid) return;
         var items=[
-          {id:'event-card-reformer', tag:'Almost sold out', cls:''}
+          {id:'event-card-reformer', tag:'Almost sold out', cls:''},
+          {id:'event-card-reformer-bk', tag:'Now booking', cls:'ok'}
         ];
         var out='';
         items.forEach(function(it){
@@ -5027,6 +5039,185 @@ Can't wait to move and connect with you!</textarea>
     </div>
   </div>
 </div>
+
+<!-- ══════════ Riddim & Kompa on the Reformer — BROOKLYN booking overlay ══════════ -->
+<div id="reformer-bk-overlay" style="display:none;position:fixed;inset:0;background:rgba(44,26,14,.85);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);z-index:9999;align-items:center;justify-content:center;padding:1rem;overflow-y:auto;">
+  <div class="rf-modal">
+    <button type="button" class="rf-x" id="reformer-bk-close" aria-label="Close">&times;</button>
+    <div class="rf-eyebrow">Auric Movement</div>
+    <h2 class="rf-title">Riddim &amp; Kompa on the Reformer</h2>
+    <p class="rf-meta">Saturday, September 26 &middot; Maison Luxe Wellness Pilates, Brooklyn</p>
+    <p class="rf-meta"><strong>$45</strong> &middot; 45-minute session &middot; only 5 spots each</p>
+    <p class="rf-goodie">Every spot includes a complimentary goodie bag &#127873;</p>
+
+    <div id="rfbk-step-time">
+      <p class="rf-meta" style="margin-bottom:.7rem;font-weight:600;color:var(--brown);">Pick your time:</p>
+      <button type="button" class="rf-time" data-session="bk12" data-label="12:00 PM session">&#128340; 12:00 PM &mdash; 12:45 PM<small>45-minute reformer session</small></button>
+      <button type="button" class="rf-time" data-session="bk1" data-label="1:00 PM session">&#128336; 1:00 PM &mdash; 1:45 PM<small>45-minute reformer session</small></button>
+      <button type="button" class="rf-time" data-session="bk2" data-label="2:00 PM session">&#128337; 2:00 PM &mdash; 2:45 PM<small>45-minute reformer session</small></button>
+    </div>
+
+    <form id="rfbk-step-form" style="display:none;" novalidate>
+      <div class="rf-chosen">Booking: <strong id="rfbk-chosen-label"></strong> &middot; <a id="rfbk-change-time" role="button" tabindex="0">change time</a></div>
+      <div class="rf-field"><label for="rfbk-name">Full name</label><input type="text" id="rfbk-name" autocomplete="name" placeholder="Your name"></div>
+      <div class="rf-field"><label for="rfbk-email">Email</label><input type="email" id="rfbk-email" autocomplete="email" placeholder="you@email.com"></div>
+      <div class="rf-field"><label for="rfbk-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="rfbk-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
+      <div class="rf-field"><label for="rfbk-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="rfbk-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:9px;font-family:'Jost',sans-serif;font-size:.92rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
+      <div class="rf-ack">
+        <input type="checkbox" id="rfbk-refund">
+        <label for="rfbk-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">All sales are final &mdash; no refunds or credits. Can&rsquo;t make it? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names.</span></label>
+      </div>
+      <div class="rf-ack">
+        <input type="checkbox" id="rfbk-waiver" disabled>
+        <label for="rfbk-waiver">I have read and agree to the <a id="rfbk-open-waiver" role="button" tabindex="0">liability waiver</a>. <span class="rf-opt">(open it to continue)</span></label>
+      </div>
+      <div id="rfbk-waiver-box" style="display:none;max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:9px;padding:.75rem .85rem;margin:.2rem 0 .4rem;background:#fdfbf7;font-size:.82rem;line-height:1.6;color:#3d322a;"></div>
+      <div class="rf-field"><label for="rfbk-sign">Signature &mdash; type your full name</label><input type="text" id="rfbk-sign" autocomplete="off" placeholder="Type your full name to sign"></div>
+      <div class="rf-err" id="rfbk-form-err" role="alert"></div>
+      <button type="submit" class="rf-btn" id="rfbk-continue" disabled>Continue to payment &rarr;</button>
+    </form>
+
+    <div id="rfbk-step-pay" style="display:none;">
+      <p class="rf-meta" style="margin-bottom:1rem;">&#10004; You&rsquo;re all set, <strong id="rfbk-pay-name"></strong>. Complete payment to lock your <strong id="rfbk-pay-label"></strong> spot:</p>
+      <a id="rfbk-pay-btn" class="rf-btn" style="text-decoration:none;display:block;text-align:center;" href="#" target="_blank" rel="noopener noreferrer">Pay $45 &rarr;</a>
+      <p class="rf-policy" style="margin-top:.9rem;">You&rsquo;ll get a Stripe receipt by email. Questions? auricmovement@outlook.com</p>
+      <div style="margin-top:1rem;border-top:1px solid var(--border);padding-top:.9rem;">
+        <button type="button" id="rfbk-pay-later" class="rf-close-link" style="margin-top:0;">I&rsquo;ll pay later</button>
+        <p id="rfbk-pay-later-note" class="rf-policy" style="display:none;margin-top:.7rem;color:#8a5a2a;">Got it &mdash; we&rsquo;ve saved your details. Heads up: <strong>spots aren&rsquo;t held and are released first come, first served until payment is received</strong>, so pay soon to secure your place.</p>
+      </div>
+    </div>
+
+    <div class="rf-getting">
+      <h4>Getting there</h4>
+      <p><strong>Maison Luxe Wellness Pilates</strong><br>Brooklyn, NY</p>
+      <p><a class="rf-map" href="https://maps.google.com/?q=Maison+Luxe+Wellness+Pilates+Brooklyn+NY" target="_blank" rel="noopener noreferrer">Open in Google Maps &rarr;</a></p>
+    </div>
+
+    <button type="button" class="rf-close-link" id="reformer-bk-close2">Close</button>
+  </div>
+</div>
+
+<script>
+/* Riddim & Kompa on the Reformer — BROOKLYN booking flow (self-contained;
+   shares the reformer_registrations table via event='riddim-kompa-brooklyn-2026-09-26'). */
+document.addEventListener('DOMContentLoaded', function(){
+  var card = document.getElementById('event-card-reformer-bk');
+  var ov   = document.getElementById('reformer-bk-overlay');
+  if(!card || !ov) return;
+
+  var RKBK_EVENT = 'riddim-kompa-brooklyn-2026-09-26';
+  var RKBK_LINKS = {
+    'bk12': 'https://buy.stripe.com/6oU14m20W5mxbkwdMS9sk0a',
+    'bk1':  'https://buy.stripe.com/9B6cN44949CN60c9wC9sk08',
+    'bk2':  'https://buy.stripe.com/5kQ8wO350g1b2O0eQW9sk0b'
+  };
+  var RKBK_CAP = 5;
+
+  var _sb=null;
+  function sb(){
+    if(_sb) return _sb;
+    try { if(window.supabase && window.supabase.createClient){
+      _sb = window.supabase.createClient('https://qvmiwyxerotkqpbuhpun.supabase.co','sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ');
+    }} catch(e){}
+    return _sb;
+  }
+
+  var stepTime=document.getElementById('rfbk-step-time'),
+      stepForm=document.getElementById('rfbk-step-form'),
+      stepPay =document.getElementById('rfbk-step-pay'),
+      chosenLabelEl=document.getElementById('rfbk-chosen-label'),
+      nameEl=document.getElementById('rfbk-name'), emailEl=document.getElementById('rfbk-email'),
+      refEl=document.getElementById('rfbk-referral'), healthEl=document.getElementById('rfbk-health'),
+      refundEl=document.getElementById('rfbk-refund'), waiverEl=document.getElementById('rfbk-waiver'),
+      signEl=document.getElementById('rfbk-sign'), formErr=document.getElementById('rfbk-form-err'),
+      continueBtn=document.getElementById('rfbk-continue'),
+      waiverBox=document.getElementById('rfbk-waiver-box');
+  var chosen=null, chosenLabel='';
+
+  function openOv(){ ov.style.display='flex'; document.body.style.overflow='hidden'; applyCap(); }
+  function closeOv(){ ov.style.display='none'; document.body.style.overflow=''; }
+  card.addEventListener('click', openOv);
+  document.getElementById('reformer-bk-close').addEventListener('click', closeOv);
+  document.getElementById('reformer-bk-close2').addEventListener('click', closeOv);
+  ov.addEventListener('click', function(e){ if(e.target===ov) closeOv(); });
+
+  Array.prototype.forEach.call(stepTime.querySelectorAll('.rf-time'), function(btn){
+    btn.addEventListener('click', function(){
+      if(btn.disabled) return;
+      chosen=btn.getAttribute('data-session'); chosenLabel=btn.getAttribute('data-label');
+      chosenLabelEl.textContent=chosenLabel;
+      stepTime.style.display='none'; stepForm.style.display='';
+    });
+  });
+  document.getElementById('rfbk-change-time').addEventListener('click', function(){
+    stepForm.style.display='none'; stepTime.style.display=''; chosen=null;
+  });
+
+  document.getElementById('rfbk-open-waiver').addEventListener('click', function(){
+    if(!waiverBox.innerHTML){
+      var cl=(window.__RF_CLAUSES||[]);
+      var html=cl.map(function(c){ return '<p style="margin:0 0 .6rem;">'+c+'</p>'; }).join('');
+      html+='<p style="margin:.6rem 0 .2rem;font-weight:600;">Refund policy</p><p style="margin:0;">'+(window.__RF_REFUND_TEXT||'')+'</p>';
+      waiverBox.innerHTML=html;
+    }
+    var showing = waiverBox.style.display && waiverBox.style.display!=='none';
+    waiverBox.style.display = showing ? 'none' : 'block';
+    waiverEl.disabled=false;
+  });
+  function syncContinue(){ continueBtn.disabled = !(refundEl.checked && waiverEl.checked); }
+  refundEl.addEventListener('change', syncContinue);
+  waiverEl.addEventListener('change', syncContinue);
+
+  function applyCap(){
+    var c=sb(); if(!c) return;
+    try {
+      c.rpc('reformer_spot_counts').then(function(res){
+        if(!res||res.error||!res.data) return;
+        var paid={ 'bk12':0,'bk1':0,'bk2':0 };
+        res.data.forEach(function(r){ if(paid[r.session]!==undefined) paid[r.session]=Number(r.paid)||0; });
+        Array.prototype.forEach.call(stepTime.querySelectorAll('.rf-time'), function(btn){
+          var s=btn.getAttribute('data-session'); var rem=RKBK_CAP-(paid[s]||0);
+          var old=btn.querySelector('.rf-left-tag'); if(old) old.remove();
+          var so=btn.querySelector('.rf-soldout-tag'); if(so) so.remove();
+          btn.disabled=false; btn.classList.remove('rf-soldout');
+          if(rem<=0){ btn.disabled=true; btn.classList.add('rf-soldout'); var t=document.createElement('small'); t.className='rf-soldout-tag'; t.textContent='Sold out'; btn.appendChild(t); }
+          else if(rem<=2){ var l=document.createElement('small'); l.className='rf-left-tag'; l.textContent='⚡ Almost sold out — only '+rem+' spot'+(rem===1?'':'s')+' left'; btn.appendChild(l); }
+        });
+      }, function(){});
+    } catch(e){}
+  }
+
+  stepForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    if(!chosen){ formErr.textContent='Please pick a session time first.'; return; }
+    var name=nameEl.value.trim(), email=emailEl.value.trim(), sign=signEl.value.trim();
+    if(name.length<2){ formErr.textContent='Please enter your full name.'; nameEl.focus(); return; }
+    if(!/.+@.+\..+/.test(email)){ formErr.textContent='Please enter a valid email.'; emailEl.focus(); return; }
+    if(!refundEl.checked){ formErr.textContent='Please confirm you understand the refund policy.'; return; }
+    if(!waiverEl.checked){ formErr.textContent='Please open and agree to the liability waiver.'; return; }
+    if(sign.length<2){ formErr.textContent='Please type your full name to sign.'; signEl.focus(); return; }
+    formErr.textContent='';
+    var nowIso=new Date().toISOString();
+    var rec={
+      name:name, email:email, session:chosen, session_label:chosenLabel,
+      referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
+      signature:sign, clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:18),
+      refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
+      waiver_agreed:true, is_paid:false, created_at:nowIso, event:RKBK_EVENT
+    };
+    try { var k='auric_reformer_bk'; var a=JSON.parse(localStorage.getItem(k)||'[]'); a.push(rec); localStorage.setItem(k,JSON.stringify(a)); } catch(e){}
+    try { var c=sb(); if(c) c.from('reformer_registrations').insert([rec]).then(function(){},function(){}); } catch(e){}
+    document.getElementById('rfbk-pay-name').textContent=name.split(' ')[0];
+    document.getElementById('rfbk-pay-label').textContent=chosenLabel;
+    document.getElementById('rfbk-pay-btn').href = RKBK_LINKS[chosen] || '#';
+    stepForm.style.display='none'; stepPay.style.display='';
+    stepPay.scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
+  document.getElementById('rfbk-pay-later').addEventListener('click', function(){
+    document.getElementById('rfbk-pay-later-note').style.display='block';
+  });
+});
+</script>
 
 <script>
   document.addEventListener('DOMContentLoaded', function(){
@@ -7462,17 +7653,20 @@ document.addEventListener('DOMContentLoaded', function() {
     var mcContainer       = document.createElement('div'); mcContainer.id       = 'admin-mc-container';
     var crContainer       = document.createElement('div'); crContainer.id       = 'admin-cr-container';
     var reformerContainer = document.createElement('div'); reformerContainer.id = 'admin-reformer-container';
+    var reformerBkContainer = document.createElement('div'); reformerBkContainer.id = 'admin-reformer-bk-container';
     var bloomContainer    = document.createElement('div'); bloomContainer.id    = 'admin-bloom-container';
     var corpContainer     = document.createElement('div'); corpContainer.id     = 'admin-corp-container';
     // Ordered newest event first → oldest last (Corporate has no date, kept last).
-    body.appendChild(bloomContainer);     // Something's Blooming — Dec 13
-    body.appendChild(reformerContainer);  // Riddim & Kompa — Sep 13
-    body.appendChild(crContainer);        // Create & Recharge — Aug 15
-    body.appendChild(mcContainer);        // Mat & Chat — Aug 1
-    body.appendChild(sessionsContainer);  // Pilates x Niara — Jun 19
+    body.appendChild(bloomContainer);      // Something's Blooming — Dec 13
+    body.appendChild(reformerBkContainer); // Riddim & Kompa — Brooklyn — Sep 26
+    body.appendChild(reformerContainer);   // Riddim & Kompa — Valley — Sep 13
+    body.appendChild(crContainer);         // Create & Recharge — Aug 15
+    body.appendChild(mcContainer);         // Mat & Chat — Aug 1
+    body.appendChild(sessionsContainer);   // Pilates x Niara — Jun 19
     body.appendChild(corpContainer);
     if (typeof renderCRSection === 'function') renderCRSection(crContainer);
     if (typeof renderReformerSection === 'function') renderReformerSection(reformerContainer);
+    if (typeof renderReformerBkSection === 'function') renderReformerBkSection(reformerBkContainer);
     if (typeof renderBloomingSection === 'function') renderBloomingSection(bloomContainer);
     if (typeof renderWaitlistNotify === 'function') renderWaitlistNotify();
     if (typeof renderSignedAgreements === 'function') renderSignedAgreements();
@@ -10204,9 +10398,12 @@ document.addEventListener('DOMContentLoaded', function() {
   var rfAdminContainer = null;
   var RF_ADMIN_SESS = {
     '1pm': { time:'1:00 PM', arrival:'12:55 PM', cal:'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Riddim+%26+Kompa+on+the+Reformer+%E2%9C%A6+Auric+Movement&dates=20260913T170000Z/20260913T174500Z&details=Auric+Movement+%7C+Riddim+%26+Kompa+on+the+Reformer.+Please+arrive+a+few+minutes+early.+Valley+Studio.&location=45+Cherry+Valley+Ave%2C+West+Hempstead%2C+NY+11552' },
-    '2pm': { time:'2:00 PM', arrival:'1:55 PM', cal:'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Riddim+%26+Kompa+on+the+Reformer+%E2%9C%A6+Auric+Movement&dates=20260913T180000Z/20260913T184500Z&details=Auric+Movement+%7C+Riddim+%26+Kompa+on+the+Reformer.+Please+arrive+a+few+minutes+early.+Valley+Studio.&location=45+Cherry+Valley+Ave%2C+West+Hempstead%2C+NY+11552' }
+    '2pm': { time:'2:00 PM', arrival:'1:55 PM', cal:'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Riddim+%26+Kompa+on+the+Reformer+%E2%9C%A6+Auric+Movement&dates=20260913T180000Z/20260913T184500Z&details=Auric+Movement+%7C+Riddim+%26+Kompa+on+the+Reformer.+Please+arrive+a+few+minutes+early.+Valley+Studio.&location=45+Cherry+Valley+Ave%2C+West+Hempstead%2C+NY+11552' },
+    'bk12': { time:'12:00 PM', arrival:'11:55 AM', cal:'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Riddim+%26+Kompa+on+the+Reformer+%E2%9C%A6+Auric+Movement&dates=20260926T160000Z/20260926T164500Z&details=Auric+Movement+%7C+Riddim+%26+Kompa+on+the+Reformer.+Please+arrive+a+few+minutes+early.+Maison+Luxe+Wellness+Pilates%2C+Brooklyn.&location=Maison+Luxe+Wellness+Pilates%2C+Brooklyn%2C+NY' },
+    'bk1':  { time:'1:00 PM', arrival:'12:55 PM', cal:'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Riddim+%26+Kompa+on+the+Reformer+%E2%9C%A6+Auric+Movement&dates=20260926T170000Z/20260926T174500Z&details=Auric+Movement+%7C+Riddim+%26+Kompa+on+the+Reformer.+Please+arrive+a+few+minutes+early.+Maison+Luxe+Wellness+Pilates%2C+Brooklyn.&location=Maison+Luxe+Wellness+Pilates%2C+Brooklyn%2C+NY' },
+    'bk2':  { time:'2:00 PM', arrival:'1:55 PM', cal:'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Riddim+%26+Kompa+on+the+Reformer+%E2%9C%A6+Auric+Movement&dates=20260926T180000Z/20260926T184500Z&details=Auric+Movement+%7C+Riddim+%26+Kompa+on+the+Reformer.+Please+arrive+a+few+minutes+early.+Maison+Luxe+Wellness+Pilates%2C+Brooklyn.&location=Maison+Luxe+Wellness+Pilates%2C+Brooklyn%2C+NY' }
   };
-  function rfRefresh(){ if(rfAdminContainer) renderReformerSection(rfAdminContainer); }
+  function rfRefresh(){ if(rfAdminContainer) renderReformerSection(rfAdminContainer); if(rfBkAdminContainer) renderReformerBkSection(rfBkAdminContainer); }
   function renderReformerSection(container){
     if(!container) return;
     rfAdminContainer = container;
@@ -10214,14 +10411,16 @@ document.addEventListener('DOMContentLoaded', function() {
     function btn(onclick,bg,bd,fg,label){ return '<button onclick="'+onclick+'" style="background:'+bg+';border:1px solid '+bd+';color:'+fg+';border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">'+label+'</button>'; }
     function render(rows, err){
       rfRosterById = {};
-      var paid  = rows.filter(function(r){ return r.is_paid; }).length;
-      var paid1 = rows.filter(function(r){ return r.session==='1pm' && r.is_paid; }).length;
-      var paid2 = rows.filter(function(r){ return r.session==='2pm' && r.is_paid; }).length;
-      block.innerHTML = '<h3 style="color:var(--gold-text);">Riddim &amp; Kompa on the Reformer — Sep 13th · '+paid+' paid / '+rows.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(1 PM '+paid1+'/6 · 2 PM '+paid2+'/6)</span></h3>';
+      rows.forEach(function(r){ rfRosterById[r.id] = r; }); // keep ALL rows addressable (Valley + Brooklyn share admin actions)
+      var display = rows.filter(function(r){ return r.event !== 'riddim-kompa-brooklyn-2026-09-26'; }); // Valley section: exclude Brooklyn
+      var paid  = display.filter(function(r){ return r.is_paid; }).length;
+      var paid1 = display.filter(function(r){ return r.session==='1pm' && r.is_paid; }).length;
+      var paid2 = display.filter(function(r){ return r.session==='2pm' && r.is_paid; }).length;
+      block.innerHTML = '<h3 style="color:var(--gold-text);">Riddim &amp; Kompa on the Reformer — Sep 13th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(1 PM '+paid1+'/6 · 2 PM '+paid2+'/6)</span></h3>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
-      if(!rows.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
-      rows.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
-      rows.forEach(function(rec){
+      if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
+      display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
+      display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
         var id = rec.id;
         var item=document.createElement('div'); item.className='admin-sub-item';
@@ -10251,6 +10450,60 @@ document.addEventListener('DOMContentLoaded', function() {
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
           '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+editBtn+removeBtn+'</div></div>';
+        block.appendChild(item);
+      });
+    }
+    container.innerHTML=''; container.appendChild(block);
+    try {
+      supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(res){
+        if(res && res.error){ render([], true); return; }
+        render((res && res.data) || [], false);
+      }, function(){ render([], true); });
+    } catch(e){ render([], true); }
+  }
+
+  // ─── Riddim & Kompa — Brooklyn roster (shares reformer_registrations) ───
+  var rfBkAdminContainer = null;
+  function renderReformerBkSection(container){
+    if(!container) return;
+    rfBkAdminContainer = container;
+    var block = document.createElement('div'); block.className='admin-session-block' + (isEventPast('2026-09-26')?' collapsed':'');
+    function btn(onclick,bg,bd,fg,label){ return '<button onclick="'+onclick+'" style="background:'+bg+';border:1px solid '+bd+';color:'+fg+';border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">'+label+'</button>'; }
+    function render(rows, err){
+      rows.forEach(function(r){ rfRosterById[r.id] = r; });
+      var display = rows.filter(function(r){ return r.event === 'riddim-kompa-brooklyn-2026-09-26'; });
+      var CAP = 5, pd = { 'bk12':0,'bk1':0,'bk2':0 };
+      display.forEach(function(r){ if(r.is_paid && pd[r.session]!==undefined) pd[r.session]++; });
+      var paid = display.filter(function(r){ return r.is_paid; }).length;
+      block.innerHTML = '<h3 style="color:var(--gold-text);">Riddim &amp; Kompa — Brooklyn · Sep 26th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(12 PM '+pd.bk12+'/'+CAP+' · 1 PM '+pd.bk1+'/'+CAP+' · 2 PM '+pd.bk2+'/'+CAP+')</span></h3>';
+      if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
+      if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
+      display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
+      var SLAB = { 'bk12':'12 PM','bk1':'1 PM','bk2':'2 PM' };
+      display.forEach(function(rec){
+        rfRosterById[rec.id] = rec;
+        var id = rec.id;
+        var item=document.createElement('div'); item.className='admin-sub-item';
+        var badge = rec.is_paid ? '<span class="atype" style="background:#e8f5e9;color:#2e7d32;">paid</span>' : '<span class="atype" style="background:#fef9e7;color:#7a6320;">pending</span>';
+        var ref = rec.referred_by ? '<br><span style="font-size:.75rem;color:#8a5a2a;">\u{1F91D} Referred by '+escapeHTML(rec.referred_by)+'</span>' : '';
+        var health = rec.health ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;white-space:pre-line;"><strong style="color:var(--gold-text);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">\u{1FA79} Health disclosure:</strong><br>'+escapeHTML(rec.health)+'</div>' : '';
+        var sig = rec.signature ? '<br><span style="font-size:.72rem;color:var(--text-muted);">\u{270D}\u{FE0F} Signed: '+escapeHTML(rec.signature)+'</span>' : '';
+        var when = ''; try { when = rec.created_at ? new Date(rec.created_at).toLocaleString() : ''; } catch(e){}
+        var paidBtn = rec.is_paid
+          ? btn('rfAdminSetPaid('+id+',false)','#fff4e5','#f0c890','#a86617','⏳ Mark unpaid')
+          : btn('rfAdminSetPaid('+id+',true)','#e8f5e9','#a5d6a7','#2e7d32','✅ Mark paid');
+        var waiverBtn = rec.signature ? btn('rfAdminWaiver('+id+')','#eef4fb','#b5d4f4','#185fa5','\u{1F4C4} Waiver') : '';
+        var clearHealthBtn = rec.health ? btn('rfAdminClearHealth('+id+')','#fef4e5','#f0c890','#a86617','\u{1FA79} Clear health') : '';
+        function timeOpt(sess,label){
+          if(rec.session===sess){ return '<span style="display:inline-block;background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;font-family:\'Jost\',sans-serif;">'+label+' ✓</span>'; }
+          return btn("rfAdminSetSession("+id+",'"+sess+"')",'#f4ecdd','#e0cfae','#7a5a2a','→ '+label);
+        }
+        var timeBtn = timeOpt('bk12','12 PM') + timeOpt('bk1','1 PM') + timeOpt('bk2','2 PM');
+        var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
+        var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
+          '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+paidBtn+timeBtn+waiverBtn+clearHealthBtn+editBtn+removeBtn+'</div></div>';
         block.appendChild(item);
       });
     }
