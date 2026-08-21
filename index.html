@@ -7717,24 +7717,31 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   // Waitlists are shown per-event, nested under each event (via #admin-<key>-wl
   // sub-panels) so past-event waitlists sit under the past events and hide with them.
+  // Each event's waitlist panel is injected INSIDE that event's .admin-session-block,
+  // so it collapses/expands with the event and hides under the filter with it.
   var WL_EVENT_MAP = {
-    'Pilates':           { id:'admin-sessions-wl', key:'sessions', label:'Pilates x Niara' },
-    'Mat & Chat':        { id:'admin-mc-wl',       key:'mc',       label:'Mat & Chat' },
-    'Create & Recharge': { id:'admin-cr-wl',       key:'cr',       label:'Create & Recharge' }
+    'Pilates':           { container:'admin-sessions-container', key:'sessions', label:'Pilates x Niara' },
+    'Mat & Chat':        { container:'admin-mc-container',       key:'mc',       label:'Mat & Chat' },
+    'Create & Recharge': { container:'admin-cr-container',       key:'cr',       label:'Create & Recharge' }
   };
+  function injectWaitlistPanel(containerId, key, panelHTML, tries){
+    var cont = document.getElementById(containerId); if(!cont) return;
+    var block = cont.querySelector('.admin-session-block');
+    if(!block){ if(tries>0) setTimeout(function(){ injectWaitlistPanel(containerId,key,panelHTML,tries-1); }, 300); return; }
+    var prev = document.getElementById('admin-wl-'+key); if(prev && prev.parentNode) prev.parentNode.removeChild(prev);
+    var tmp = document.createElement('div'); tmp.innerHTML = panelHTML;
+    if(tmp.firstChild) block.appendChild(tmp.firstChild); // direct child → collapses with the block
+  }
   function renderWaitlistNotify(){
-    // Retire the old single consolidated box (kept in the DOM as a no-op).
     var oldSec = document.getElementById('admin-waitlist-section'); if (oldSec) oldSec.style.display = 'none';
-    // Clear any existing per-event panels while we (re)load.
-    Object.keys(WL_EVENT_MAP).forEach(function(k){ var el=document.getElementById(WL_EVENT_MAP[k].id); if(el) el.innerHTML=''; });
     gatherAllWaitlist(function(items){
       _waitlistItems = items;
       var groups = {};
       items.forEach(function(it, i){ (groups[it.eventShort] = groups[it.eventShort] || []).push(i); });
       Object.keys(WL_EVENT_MAP).forEach(function(evShort){
-        var info = WL_EVENT_MAP[evShort]; var el = document.getElementById(info.id); if(!el) return;
+        var info = WL_EVENT_MAP[evShort];
         var idxs = groups[evShort] || [];
-        if(!idxs.length){ el.innerHTML=''; return; } // no one waitlisted for this event → show nothing
+        if(!idxs.length) return; // no one waitlisted → nothing to inject
         var scopeId = 'admin-wl-'+info.key;
         var btnCss = 'background:#fff;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.25rem .6rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;';
         var rows = idxs.map(function(i){
@@ -7744,9 +7751,9 @@ document.addEventListener('DOMContentLoaded', function() {
             '<span style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(it.name)+'</span> <span style="font-size:.72rem;color:var(--text-muted);">'+escapeHTML(it.email)+'</span></span>'+
           '</label>';
         }).join('');
-        el.innerHTML =
-          '<div id="'+scopeId+'" class="admin-session-block collapsed" style="margin:.5rem 0 1.25rem;padding:1rem 1.15rem;background:#eef4fb;border:1px solid #cfe0f5;border-radius:12px;">'+
-            '<h3 style="color:#185fa5;border-color:#cfe0f5;">📣 '+escapeHTML(info.label)+' — Waitlist ('+idxs.length+')</h3>'+
+        var panelHTML =
+          '<div id="'+scopeId+'" style="margin:1rem 0 .2rem;padding:.9rem 1.05rem;background:#eef4fb;border:1px solid #cfe0f5;border-radius:10px;">'+
+            '<div style="font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#185fa5;margin:0 0 .5rem;">📣 Waitlist ('+idxs.length+')</div>'+
             '<div style="display:flex;gap:.5rem;margin-bottom:.5rem;flex-wrap:wrap;">'+
               '<button type="button" onclick="waitlistSelectAll(true,\''+scopeId+'\')" style="'+btnCss+'">Select all</button>'+
               '<button type="button" onclick="waitlistSelectAll(false,\''+scopeId+'\')" style="'+btnCss+'">Clear</button>'+
@@ -7754,7 +7761,8 @@ document.addEventListener('DOMContentLoaded', function() {
             '<button type="button" id="'+scopeId+'-send" onclick="notifySelectedWaitlist(\''+scopeId+'\')" class="btn btn-primary" style="width:100%;margin-top:.75rem;">📣 Notify selected</button>'+
             '<div id="'+scopeId+'-status" style="margin-top:.5rem;font-size:.78rem;color:var(--text-muted);"></div>'+
           '</div>';
-        updateWaitlistSendLabel(scopeId);
+        injectWaitlistPanel(info.container, info.key, panelHTML, 15);
+        setTimeout(function(){ updateWaitlistSendLabel(scopeId); }, 500);
       });
     });
   }
@@ -7920,12 +7928,6 @@ document.addEventListener('DOMContentLoaded', function() {
     mcContainer.setAttribute('data-event-date', '2026-08-01');
     sessionsContainer.setAttribute('data-event-date', '2026-06-19');
 
-    // Per-event waitlist sub-panels (filled by renderWaitlistNotify). Each carries the
-    // same date as its event so the filter shows/hides it together with that event.
-    var crWlContainer       = document.createElement('div'); crWlContainer.id       = 'admin-cr-wl';       crWlContainer.setAttribute('data-event-date','2026-08-15');
-    var mcWlContainer       = document.createElement('div'); mcWlContainer.id       = 'admin-mc-wl';       mcWlContainer.setAttribute('data-event-date','2026-08-01');
-    var sessionsWlContainer = document.createElement('div'); sessionsWlContainer.id = 'admin-sessions-wl'; sessionsWlContainer.setAttribute('data-event-date','2026-06-19');
-
     // Filter dropdown — All / Recent (upcoming) / Past. Sits at the top of the panel.
     var adminFilterBar = document.createElement('div');
     adminFilterBar.style.cssText = 'display:flex;align-items:center;justify-content:flex-end;gap:.6rem;margin:0 0 1.1rem;flex-wrap:wrap;';
@@ -7938,14 +7940,14 @@ document.addEventListener('DOMContentLoaded', function() {
       '</select>';
     body.appendChild(adminFilterBar);
 
-    // Ordered newest event first → oldest last (Corporate has no date, kept last).
-    body.appendChild(bloomContainer);      // Something's Blooming — Dec 13
-    body.appendChild(turkeyContainer);     // Turkey Burn! — Nov 21
-    body.appendChild(reformerBkContainer); // Riddim & Kompa — Brooklyn — Sep 26
+    // Upcoming events soonest-first, then past events most-recent-first; Corporate last.
     body.appendChild(reformerContainer);   // Riddim & Kompa — Valley — Sep 13
-    body.appendChild(crContainer);         body.appendChild(crWlContainer);       // Create & Recharge — Aug 15 (+ waitlist)
-    body.appendChild(mcContainer);         body.appendChild(mcWlContainer);       // Mat & Chat — Aug 1 (+ waitlist)
-    body.appendChild(sessionsContainer);   body.appendChild(sessionsWlContainer); // Pilates x Niara — Jun 19 (+ waitlist)
+    body.appendChild(reformerBkContainer); // Riddim & Kompa — Brooklyn — Sep 26
+    body.appendChild(turkeyContainer);     // Turkey Burn! — Nov 21
+    body.appendChild(bloomContainer);      // Something's Blooming — Dec 13
+    body.appendChild(crContainer);         // Create & Recharge — Aug 15
+    body.appendChild(mcContainer);         // Mat & Chat — Aug 1
+    body.appendChild(sessionsContainer);   // Pilates x Niara — Jun 19
     body.appendChild(corpContainer);       // Partner With Us — no date, always shown
 
     // Apply / persist the event filter (any element tagged with data-event-date —
