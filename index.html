@@ -4995,6 +4995,13 @@ Can't wait to move and connect with you!</textarea>
         <label for="rf-waiver">I have read and agree to the <a id="rf-open-waiver" role="button" tabindex="0">liability waiver</a>. <span class="rf-opt">(open it to continue)</span></label>
       </div>
       <div class="rf-field"><label for="rf-sign">Signature &mdash; type your full name</label><input type="text" id="rf-sign" autocomplete="off" placeholder="Type your full name to sign"></div>
+      <div class="rf-field">
+        <label for="rf-sigpad">And draw your signature</label>
+        <div style="position:relative;">
+          <canvas id="rf-sigpad" width="500" height="140" style="width:100%;height:140px;border:1px solid var(--border);border-radius:9px;background:#fff;touch-action:none;cursor:crosshair;display:block;"></canvas>
+          <button type="button" id="rf-sig-clear" style="position:absolute;top:6px;right:8px;background:#fff;border:1px solid var(--border);border-radius:6px;font-size:.72rem;padding:.2rem .55rem;cursor:pointer;font-family:'Jost',sans-serif;color:#8a5a2a;">Clear</button>
+        </div>
+      </div>
       <div class="rf-err" id="rf-form-err" role="alert"></div>
       <button type="submit" class="rf-btn" id="rf-continue" disabled>Continue to payment &rarr;</button>
     </form>
@@ -5039,6 +5046,40 @@ Can't wait to move and connect with you!</textarea>
     <button type="button" class="rf-close-link" id="reformer-close2">Close</button>
   </div>
 </div>
+
+<script>
+/* Shared drawn ("wet") signature pad + a safe reformer insert.
+   AuricSigPad(canvas, clearBtn) → { isEmpty(), toDataURL(), clear() }.
+   rfSafeInsert(client, rec): inserts into reformer_registrations; if the row is
+   rejected (e.g. signature_data column not yet added), retries without that field
+   so a booking is NEVER lost. */
+(function(){
+  window.AuricSigPad = function(canvas, clearBtn){
+    if(!canvas) return { isEmpty:function(){return true;}, toDataURL:function(){return '';}, clear:function(){} };
+    var ctx=canvas.getContext('2d'); var drawing=false, dirty=false;
+    ctx.lineWidth=2.2; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.strokeStyle='#2c1a0e';
+    function pos(e){ var r=canvas.getBoundingClientRect(); var t=e.touches&&e.touches[0]; var cx=(t?t.clientX:e.clientX)-r.left, cy=(t?t.clientY:e.clientY)-r.top; return { x:cx*(canvas.width/r.width), y:cy*(canvas.height/r.height) }; }
+    function start(e){ e.preventDefault(); drawing=true; var p=pos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); }
+    function move(e){ if(!drawing) return; e.preventDefault(); var p=pos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); dirty=true; }
+    function end(){ drawing=false; }
+    canvas.addEventListener('mousedown',start); canvas.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
+    canvas.addEventListener('touchstart',start,{passive:false}); canvas.addEventListener('touchmove',move,{passive:false}); canvas.addEventListener('touchend',end);
+    if(clearBtn) clearBtn.addEventListener('click',function(){ ctx.clearRect(0,0,canvas.width,canvas.height); dirty=false; });
+    return { isEmpty:function(){ return !dirty; }, toDataURL:function(){ return dirty ? canvas.toDataURL('image/png') : ''; }, clear:function(){ ctx.clearRect(0,0,canvas.width,canvas.height); dirty=false; } };
+  };
+  window.rfSafeInsert = function(client, rec){
+    if(!client) return;
+    function stripped(){ var r2={}; for(var k in rec){ if(k!=='signature_data') r2[k]=rec[k]; } return r2; }
+    try {
+      client.from('reformer_registrations').insert([rec]).then(function(res){
+        if(res && res.error && rec.signature_data){ try{ client.from('reformer_registrations').insert([stripped()]).then(function(){},function(){}); }catch(e){} }
+      }, function(){
+        if(rec.signature_data){ try{ client.from('reformer_registrations').insert([stripped()]).then(function(){},function(){}); }catch(e){} }
+      });
+    } catch(e){}
+  };
+})();
+</script>
 
 <!-- Scrollable liability waiver sub-modal -->
 <div id="rf-waiver-modal" aria-modal="true" role="dialog" aria-labelledby="rf-waiver-title">
@@ -5105,6 +5146,13 @@ Can't wait to move and connect with you!</textarea>
       </div>
       <div id="rfbk-waiver-box" style="display:none;max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:9px;padding:.75rem .85rem;margin:.2rem 0 .4rem;background:#fdfbf7;font-size:.82rem;line-height:1.6;color:#3d322a;"></div>
       <div class="rf-field"><label for="rfbk-sign">Signature &mdash; type your full name</label><input type="text" id="rfbk-sign" autocomplete="off" placeholder="Type your full name to sign"></div>
+      <div class="rf-field">
+        <label for="rfbk-sigpad">And draw your signature</label>
+        <div style="position:relative;">
+          <canvas id="rfbk-sigpad" width="500" height="140" style="width:100%;height:140px;border:1px solid var(--border);border-radius:9px;background:#fff;touch-action:none;cursor:crosshair;display:block;"></canvas>
+          <button type="button" id="rfbk-sig-clear" style="position:absolute;top:6px;right:8px;background:#fff;border:1px solid var(--border);border-radius:6px;font-size:.72rem;padding:.2rem .55rem;cursor:pointer;font-family:'Jost',sans-serif;color:#8a5a2a;">Clear</button>
+        </div>
+      </div>
       <div class="rf-err" id="rfbk-form-err" role="alert"></div>
       <button type="submit" class="rf-btn" id="rfbk-continue" disabled>Continue to payment &rarr;</button>
     </form>
@@ -5165,6 +5213,7 @@ document.addEventListener('DOMContentLoaded', function(){
       continueBtn=document.getElementById('rfbk-continue'),
       waiverBox=document.getElementById('rfbk-waiver-box');
   var chosen=null, chosenLabel='';
+  var bkSig=window.AuricSigPad(document.getElementById('rfbk-sigpad'), document.getElementById('rfbk-sig-clear'));
 
   function openOv(){ ov.style.display='flex'; document.body.style.overflow='hidden'; applyCap(); }
   function closeOv(){ ov.style.display='none'; document.body.style.overflow=''; }
@@ -5228,17 +5277,18 @@ document.addEventListener('DOMContentLoaded', function(){
     if(!refundEl.checked){ formErr.textContent='Please confirm you understand the refund policy.'; return; }
     if(!waiverEl.checked){ formErr.textContent='Please open and agree to the liability waiver.'; return; }
     if(sign.length<2){ formErr.textContent='Please type your full name to sign.'; signEl.focus(); return; }
+    if(bkSig.isEmpty()){ formErr.textContent='Please draw your signature in the box.'; return; }
     formErr.textContent='';
     var nowIso=new Date().toISOString();
     var rec={
       name:name, email:email, session:chosen, session_label:chosenLabel,
       referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
-      signature:sign, clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:18),
+      signature:sign, signature_data:bkSig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:18),
       refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
       waiver_agreed:true, is_paid:false, created_at:nowIso, event:RKBK_EVENT
     };
     try { var k='auric_reformer_bk'; var a=JSON.parse(localStorage.getItem(k)||'[]'); a.push(rec); localStorage.setItem(k,JSON.stringify(a)); } catch(e){}
-    try { var c=sb(); if(c) c.from('reformer_registrations').insert([rec]).then(function(){},function(){}); } catch(e){}
+    try { var c=sb(); if(c) window.rfSafeInsert(c, rec); } catch(e){}
     document.getElementById('rfbk-pay-name').textContent=name.split(' ')[0];
     document.getElementById('rfbk-pay-label').textContent=chosenLabel;
     document.getElementById('rfbk-pay-btn').href = RKBK_LINKS[chosen] || '#';
@@ -5285,6 +5335,13 @@ document.addEventListener('DOMContentLoaded', function(){
       </div>
       <div id="tb-waiver-box" style="display:none;max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:9px;padding:.75rem .85rem;margin:.2rem 0 .4rem;background:#fdfbf7;font-size:.82rem;line-height:1.6;color:#3d322a;"></div>
       <div class="rf-field"><label for="tb-sign">Signature &mdash; type your full name</label><input type="text" id="tb-sign" autocomplete="off" placeholder="Type your full name to sign"></div>
+      <div class="rf-field">
+        <label for="tb-sigpad">And draw your signature</label>
+        <div style="position:relative;">
+          <canvas id="tb-sigpad" width="500" height="140" style="width:100%;height:140px;border:1px solid var(--border);border-radius:9px;background:#fff;touch-action:none;cursor:crosshair;display:block;"></canvas>
+          <button type="button" id="tb-sig-clear" style="position:absolute;top:6px;right:8px;background:#fff;border:1px solid var(--border);border-radius:6px;font-size:.72rem;padding:.2rem .55rem;cursor:pointer;font-family:'Jost',sans-serif;color:#8a5a2a;">Clear</button>
+        </div>
+      </div>
       <div class="rf-err" id="tb-form-err" role="alert"></div>
       <button type="submit" class="rf-btn" id="tb-continue" disabled>Continue to payment &rarr;</button>
     </form>
@@ -5344,6 +5401,7 @@ document.addEventListener('DOMContentLoaded', function(){
       continueBtn=document.getElementById('tb-continue'),
       waiverBox=document.getElementById('tb-waiver-box');
   var chosen=null, chosenLabel='';
+  var tbSig=window.AuricSigPad(document.getElementById('tb-sigpad'), document.getElementById('tb-sig-clear'));
 
   function openOv(){ ov.style.display='flex'; document.body.style.overflow='hidden'; applyCap(); }
   function closeOv(){ ov.style.display='none'; document.body.style.overflow=''; }
@@ -5407,17 +5465,18 @@ document.addEventListener('DOMContentLoaded', function(){
     if(!refundEl.checked){ formErr.textContent='Please confirm you understand the refund policy.'; return; }
     if(!waiverEl.checked){ formErr.textContent='Please open and agree to the liability waiver.'; return; }
     if(sign.length<2){ formErr.textContent='Please type your full name to sign.'; signEl.focus(); return; }
+    if(tbSig.isEmpty()){ formErr.textContent='Please draw your signature in the box.'; return; }
     formErr.textContent='';
     var nowIso=new Date().toISOString();
     var rec={
       name:name, email:email, session:chosen, session_label:chosenLabel,
       referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
-      signature:sign, clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:18),
+      signature:sign, signature_data:tbSig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:18),
       refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
       waiver_agreed:true, is_paid:false, created_at:nowIso, event:TB_EVENT
     };
     try { var k='auric_turkey_burn'; var a=JSON.parse(localStorage.getItem(k)||'[]'); a.push(rec); localStorage.setItem(k,JSON.stringify(a)); } catch(e){}
-    try { var c=sb(); if(c) c.from('reformer_registrations').insert([rec]).then(function(){},function(){}); } catch(e){}
+    try { var c=sb(); if(c) window.rfSafeInsert(c, rec); } catch(e){}
     document.getElementById('tb-pay-name').textContent=name.split(' ')[0];
     document.getElementById('tb-pay-label').textContent=chosenLabel;
     document.getElementById('tb-pay-btn').href = TB_LINKS[chosen] || '#';
@@ -5476,6 +5535,7 @@ document.addEventListener('DOMContentLoaded', function(){
     var refundEl = document.getElementById('rf-refund');
     var waiverEl = document.getElementById('rf-waiver');
     var signEl   = document.getElementById('rf-sign');
+    var rfSig    = window.AuricSigPad(document.getElementById('rf-sigpad'), document.getElementById('rf-sig-clear'));
     var contBtn  = document.getElementById('rf-continue');
     var formErr  = document.getElementById('rf-form-err');
 
@@ -5600,7 +5660,7 @@ document.addEventListener('DOMContentLoaded', function(){
       // Best-effort DB insert (no-op if the table isn't present; never blocks the sale)
       try {
         var sb=getSb();
-        if(sb) sb.from('reformer_registrations').insert([rec]).then(function(){},function(){});
+        if(sb) window.rfSafeInsert(sb, rec);
       } catch(e){}
     }
 
@@ -5614,6 +5674,7 @@ document.addEventListener('DOMContentLoaded', function(){
       if(!refundEl.checked){ formErr.textContent='Please confirm you understand the refund policy.'; return; }
       if(!waiverEl.checked){ formErr.textContent='Please open and agree to the liability waiver.'; return; }
       if(sign.length<2){ formErr.textContent='Please type your full name to sign.'; signEl.focus(); return; }
+      if(rfSig.isEmpty()){ formErr.textContent='Please draw your signature in the box.'; return; }
       formErr.textContent='';
 
       var nowIso=new Date().toISOString();
@@ -5621,7 +5682,7 @@ document.addEventListener('DOMContentLoaded', function(){
         name:name, email:email, session:chosen, session_label:chosenLabel,
         referred_by: refEl.value.trim() || null,
         health: (healthEl && healthEl.value.trim()) || null,
-        signature:sign, clauses_agreed: RF_CLAUSES.length,
+        signature:sign, signature_data:rfSig.toDataURL(), clauses_agreed: RF_CLAUSES.length,
         refund_ack:true, refund_policy_text:RF_REFUND_TEXT,
         waiver_agreed:true, is_paid:false, created_at:nowIso, event:'riddim-kompa-reformer-2026-09-13'
       });
@@ -7410,7 +7471,8 @@ document.addEventListener('DOMContentLoaded', function() {
     doc.setDrawColor(200,186,168); doc.setLineWidth(0.5);
     doc.line(margin,y+30,margin+230,y+30); doc.line(margin+250,y+30,margin+410,y+30);
     doc.setFont('times','italic'); doc.setFontSize(15); doc.setTextColor(90,58,26);
-    doc.text('\u2726 '+rec.signature,margin+4,y+26);
+    if(rec.signatureData){ try{ doc.addImage(rec.signatureData,'PNG',margin+4,y-16,168,42); }catch(e){ doc.text('\u2726 '+rec.signature,margin+4,y+26); } }
+    else { doc.text('\u2726 '+rec.signature,margin+4,y+26); }
     doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(122,110,99);
     doc.text('Digital Signature',margin+4,y+40); doc.text('Date',margin+254,y+40);
     doc.setFontSize(9); doc.setTextColor(61,50,42); doc.text(rec.time,margin+254,y+26);
@@ -11084,7 +11146,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var sess = RF_ADMIN_SESS[rec.session] || RF_ADMIN_SESS['1pm'];
     var when=''; try { when = rec.created_at ? new Date(rec.created_at).toLocaleString() : ''; } catch(e){}
     generateWaiverPDF({
-      name: rec.name, email: rec.email, signature: rec.signature,
+      name: rec.name, email: rec.email, signature: rec.signature, signatureData: rec.signature_data || null,
       sessionLabel: rec.session_label || ('Riddim & Kompa on the Reformer — '+sess.time),
       arrival: sess.arrival, classStart: sess.time, eventDate: 'Sunday, September 13th',
       time: when, clausesAgreed: rec.clauses_agreed || (window.__RF_CLAUSES ? window.__RF_CLAUSES.length : 18),
