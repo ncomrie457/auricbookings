@@ -8027,7 +8027,7 @@ document.addEventListener('DOMContentLoaded', function() {
               '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
               '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
               '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+attendBtn+confirmBtn+pendingBtn+waiverBtn+removeBtn+'</div></div>';
-            block.appendChild(item);
+            (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
           });
         }
         sessionsContainer.appendChild(block);
@@ -10785,7 +10785,7 @@ document.addEventListener('DOMContentLoaded', function() {
             '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
             '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
             '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+attendBtn+confirmBtn+payReminderBtn+waiverBtn+editBtn+removeBtn+'</div></div>';
-          block.appendChild(item);
+          (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
         });
       }
       container.innerHTML=''; container.appendChild(block);
@@ -10825,10 +10825,10 @@ document.addEventListener('DOMContentLoaded', function() {
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
-      var SLAB = { '1pm':'1 PM', '2pm':'2 PM' }; var _curSess=null;
+      var SLAB = { '1pm':'1 PM', '2pm':'2 PM' }; var _curSess=null, _curSessBlock=null;
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
-        if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; var _sh=document.createElement('div'); _sh.style.cssText='font-family:\'Jost\',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-text);margin:.9rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px dashed var(--border);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; block.appendChild(_sh); }
+        if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.74rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); block.appendChild(_curSessBlock); }
         var id = rec.id;
         var item=document.createElement('div'); item.className='admin-sub-item';
         var badge = rec.is_paid
@@ -10857,7 +10857,7 @@ document.addEventListener('DOMContentLoaded', function() {
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
           '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+editBtn+removeBtn+'</div></div>';
-        block.appendChild(item);
+        (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
       });
     }
     container.innerHTML=''; container.appendChild(block);
@@ -10888,10 +10888,10 @@ document.addEventListener('DOMContentLoaded', function() {
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
-      var SLAB = { 'bk12':'12 PM','bk1':'1 PM','bk2':'2 PM' }; var _curSess=null;
+      var SLAB = { 'bk12':'12 PM','bk1':'1 PM','bk2':'2 PM' }; var _curSess=null, _curSessBlock=null;
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
-        if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; var _sh=document.createElement('div'); _sh.style.cssText='font-family:\'Jost\',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-text);margin:.9rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px dashed var(--border);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; block.appendChild(_sh); }
+        if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.74rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); block.appendChild(_curSessBlock); }
         var id = rec.id;
         var item=document.createElement('div'); item.className='admin-sub-item';
         var badge = rec.is_paid ? '<span class="atype" style="background:#e8f5e9;color:#2e7d32;">paid</span>' : '<span class="atype" style="background:#fef9e7;color:#7a6320;">pending</span>';
@@ -10915,7 +10915,7 @@ document.addEventListener('DOMContentLoaded', function() {
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
           '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+editBtn+removeBtn+'</div></div>';
-        block.appendChild(item);
+        (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
       });
     }
     container.innerHTML=''; container.appendChild(block);
@@ -10945,10 +10945,10 @@ document.addEventListener('DOMContentLoaded', function() {
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
-      var SLAB = { 'tb1230':'12:30 PM','tb130':'1:30 PM' }; var _curSess=null;
+      var SLAB = { 'tb1230':'12:30 PM','tb130':'1:30 PM' }; var _curSess=null, _curSessBlock=null;
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
-        if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; var _sh=document.createElement('div'); _sh.style.cssText='font-family:\'Jost\',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-text);margin:.9rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px dashed var(--border);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; block.appendChild(_sh); }
+        if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.74rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); block.appendChild(_curSessBlock); }
         var id = rec.id;
         var item=document.createElement('div'); item.className='admin-sub-item';
         var badge = rec.is_paid ? '<span class="atype" style="background:#e8f5e9;color:#2e7d32;">paid</span>' : '<span class="atype" style="background:#fef9e7;color:#7a6320;">pending</span>';
@@ -10971,7 +10971,7 @@ document.addEventListener('DOMContentLoaded', function() {
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
           '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+paidBtn+timeBtn+waiverBtn+clearHealthBtn+editBtn+removeBtn+'</div></div>';
-        block.appendChild(item);
+        (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
       });
     }
     container.innerHTML=''; container.appendChild(block);
@@ -11002,7 +11002,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var removeBtn='<button onclick="bloomAdminRemove(\''+String(rec.id).replace(/'/g,"\\'")+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F5D1} Remove</button>';
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span><br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+phone+'</div>'+
           '<div style="text-align:right"><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span><br><div style="margin-top:.3rem;">'+removeBtn+'</div></div>';
-        block.appendChild(item);
+        (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
       });
     }
     container.innerHTML=''; container.appendChild(block);
