@@ -1,0 +1,16 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Auric Movement//Booking//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:pil-2pm@auricmovement.com
+DTSTAMP:20260815T120000Z
+DTSTART:20260619T180000Z
+DTEND:20260619T190000Z
+SUMMARY:Pilates x Niara ✦ Auric Movement
+DESCRIPTION:The Space Pilates Studio\, 36 West 20th Street\, 2nd Floor. Press # then 3539 to be buzzed in.
+LOCATION:The Space Pilates Studio\, 36 West 20th Street\, 2nd Floor\, New York\, NY 10011
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR

@@ -1,0 +1,16 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Auric Movement//Booking//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:rk-bk-12pm@auricmovement.com
+DTSTAMP:20260815T120000Z
+DTSTART:20260926T160000Z
+DTEND:20260926T164500Z
+SUMMARY:Riddim & Kompa on the Reformer ✦ Auric Movement
+DESCRIPTION:Please arrive a few minutes early. Maison Luxe Wellness Pilates\, 958 Lafayette Ave\, Brooklyn.
+LOCATION:Maison Luxe Wellness Pilates\, 958 Lafayette Ave\, Brooklyn\, NY 11221
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR
