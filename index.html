@@ -10746,7 +10746,8 @@ document.addEventListener('DOMContentLoaded', function() {
   function renderReformerSection(container){
     if(!container) return;
     rfAdminContainer = container;
-    var block = document.createElement('div'); block.className='admin-session-block' + (isEventPast('2026-09-13')?' collapsed':'');
+    var _prevBlk = container.querySelector('.admin-session-block'); // preserve collapse state across re-renders
+    var block = document.createElement('div'); block.className='admin-session-block' + ((_prevBlk ? _prevBlk.classList.contains('collapsed') : isEventPast('2026-09-13'))?' collapsed':'');
     function btn(onclick,bg,bd,fg,label){ return '<button onclick="'+onclick+'" style="background:'+bg+';border:1px solid '+bd+';color:'+fg+';border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">'+label+'</button>'; }
     function render(rows, err){
       rfRosterById = {};
@@ -10807,7 +10808,8 @@ document.addEventListener('DOMContentLoaded', function() {
   function renderReformerBkSection(container){
     if(!container) return;
     rfBkAdminContainer = container;
-    var block = document.createElement('div'); block.className='admin-session-block' + (isEventPast('2026-09-26')?' collapsed':'');
+    var _prevBlk = container.querySelector('.admin-session-block'); // preserve collapse state across re-renders
+    var block = document.createElement('div'); block.className='admin-session-block' + ((_prevBlk ? _prevBlk.classList.contains('collapsed') : isEventPast('2026-09-26'))?' collapsed':'');
     function btn(onclick,bg,bd,fg,label){ return '<button onclick="'+onclick+'" style="background:'+bg+';border:1px solid '+bd+';color:'+fg+';border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">'+label+'</button>'; }
     function render(rows, err){
       rows.forEach(function(r){ rfRosterById[r.id] = r; });
@@ -10863,7 +10865,8 @@ document.addEventListener('DOMContentLoaded', function() {
   function renderReformerTbSection(container){
     if(!container) return;
     rfTbAdminContainer = container;
-    var block = document.createElement('div'); block.className='admin-session-block' + (isEventPast('2026-11-21')?' collapsed':'');
+    var _prevBlk = container.querySelector('.admin-session-block'); // preserve collapse state across re-renders
+    var block = document.createElement('div'); block.className='admin-session-block' + ((_prevBlk ? _prevBlk.classList.contains('collapsed') : isEventPast('2026-11-21'))?' collapsed':'');
     function btn(onclick,bg,bd,fg,label){ return '<button onclick="'+onclick+'" style="background:'+bg+';border:1px solid '+bd+';color:'+fg+';border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">'+label+'</button>'; }
     function render(rows, err){
       rows.forEach(function(r){ rfRosterById[r.id] = r; });
