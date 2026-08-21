@@ -4433,7 +4433,6 @@
       <h2>Registrations</h2>
       <div class="admin-actions">
         <button type="button" id="admin-csv-btn" class="btn btn-secondary">&#128229; CSV</button>
-        <button type="button" id="admin-cr-thankyou-btn" class="btn btn-primary">&#10022; Send Create &amp; Recharge Thank-You</button>
         <button type="button" id="admin-founding-btn" class="btn btn-primary">&#127873; Send Founding Four</button>
         <button type="button" id="admin-club-btn" class="btn btn-secondary">&#10022; Auric Club</button>
         <button type="button" id="admin-club-welcome-btn" class="btn btn-primary">&#10022; Send Club Welcome</button>
@@ -7491,12 +7490,55 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(function(e){ fail++; errs.push((list[i].email||'?') + ' — ' + ((e && (e.text || e.message)) || 'send failed')); console.error('[sendBatch] failed for', list[i].email, e); setTimeout(function(){ next(i+1); }, 1500); });
     })(0);
   }
+  // Auric Club welcome — opens a pick-list of attendees (all checked by default)
+  // so you can select / deselect who receives it, then sends to the chosen ones.
+  function showClubWelcomeSelector(list, srcBtn){
+    var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    var valid = (list||[]).filter(function(p){ return p && p.email && EMAIL_RE.test((p.email||'').trim()); });
+    if(!valid.length){ alert('No attendees with a valid email to send to yet.'); return; }
+    var ov=document.createElement('div');
+    ov.style.cssText='position:fixed;inset:0;background:rgba(44,26,14,.85);z-index:100000;display:flex;align-items:center;justify-content:center;padding:1rem;overflow-y:auto;';
+    var rows=valid.map(function(p,idx){
+      return '<label style="display:flex;align-items:flex-start;gap:.6rem;padding:.55rem .2rem;border-bottom:1px solid #efe9e0;font-family:\'Jost\',sans-serif;font-size:.86rem;color:#3d322a;cursor:pointer;">'
+        +'<input type="checkbox" class="cw-chk" data-idx="'+idx+'" checked style="margin-top:.15rem;width:17px;height:17px;accent-color:#6a3ca5;flex-shrink:0;">'
+        +'<span style="min-width:0;"><strong>'+escapeHTML(p.name||'(no name)')+'</strong><br><span style="color:#8a7a68;font-size:.78rem;word-break:break-all;">'+escapeHTML(p.email||'')+'</span></span></label>';
+    }).join('');
+    var modal=document.createElement('div');
+    modal.style.cssText='background:#fff;border-radius:14px;max-width:470px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,.4);overflow:hidden;';
+    modal.innerHTML='<div style="padding:1.1rem 1.3rem;border-bottom:1px solid #efe9e0;">'
+      +'<h3 style="margin:0;font-family:\'Cormorant Garamond\',serif;color:#6a3ca5;font-size:1.35rem;font-weight:600;">✦ Send Auric Club Welcome</h3>'
+      +'<p style="margin:.35rem 0 0;font-family:\'Jost\',sans-serif;font-size:.8rem;color:#8a7a68;line-height:1.5;">Everyone’s selected by default — uncheck anyone you want to skip.</p>'
+      +'<div style="margin-top:.6rem;font-family:\'Jost\',sans-serif;font-size:.78rem;"><a id="cw-all" role="button" tabindex="0" style="color:#6a3ca5;font-weight:600;cursor:pointer;text-decoration:underline;">Select all</a> &nbsp;·&nbsp; <a id="cw-none" role="button" tabindex="0" style="color:#6a3ca5;font-weight:600;cursor:pointer;text-decoration:underline;">Deselect all</a></div>'
+      +'</div>'
+      +'<div id="cw-list" style="overflow-y:auto;padding:.2rem 1.3rem;flex:1;">'+rows+'</div>'
+      +'<div style="padding:1rem 1.3rem;border-top:1px solid #efe9e0;display:flex;gap:.6rem;justify-content:flex-end;flex-wrap:wrap;">'
+      +'<button id="cw-cancel" style="background:#f0ece6;border:1px solid #ded5c6;color:#5a4a38;border-radius:8px;padding:.55rem 1rem;font-family:\'Jost\',sans-serif;font-size:.85rem;cursor:pointer;">Cancel</button>'
+      +'<button id="cw-send" style="background:#6a3ca5;border:1px solid #6a3ca5;color:#fff;border-radius:8px;padding:.55rem 1.2rem;font-family:\'Jost\',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;">Send to selected</button>'
+      +'</div>';
+    ov.appendChild(modal); document.body.appendChild(ov);
+    function close(){ if(ov.parentNode) ov.parentNode.removeChild(ov); }
+    ov.addEventListener('click',function(e){ if(e.target===ov) close(); });
+    modal.querySelector('#cw-cancel').addEventListener('click',close);
+    var sendBtn=modal.querySelector('#cw-send');
+    function updateCount(){ var n=modal.querySelectorAll('.cw-chk:checked').length; sendBtn.textContent='Send to selected ('+n+')'; sendBtn.disabled=!n; sendBtn.style.opacity=n?'1':'.5'; sendBtn.style.cursor=n?'pointer':'not-allowed'; }
+    modal.querySelector('#cw-all').addEventListener('click',function(){ modal.querySelectorAll('.cw-chk').forEach(function(c){c.checked=true;}); updateCount(); });
+    modal.querySelector('#cw-none').addEventListener('click',function(){ modal.querySelectorAll('.cw-chk').forEach(function(c){c.checked=false;}); updateCount(); });
+    modal.querySelectorAll('.cw-chk').forEach(function(c){ c.addEventListener('change', updateCount); });
+    updateCount();
+    sendBtn.addEventListener('click',function(){
+      var chosen=[];
+      modal.querySelectorAll('.cw-chk:checked').forEach(function(c){ chosen.push(valid[parseInt(c.getAttribute('data-idx'),10)]); });
+      if(!chosen.length) return;
+      close();
+      sendBatch(chosen, MC_TMPL_CLUB_WELCOME, 'the Auric Club welcome (with early access)', srcBtn);
+    });
+  }
   document.getElementById('admin-club-welcome-btn').addEventListener('click', function(){
     var btn = this;
     getData(function(data){
       var seen={}, list=[];
       SESSIONS.forEach(function(sess){ (data[sess.id]||[]).filter(function(r){return r.type==='confirmed';}).forEach(function(rec){ var k=(rec.email||'').toLowerCase(); if(k && !seen[k]){ seen[k]=1; list.push(rec); } }); });
-      sendBatch(list, MC_TMPL_CLUB_WELCOME, 'the Auric Club welcome (with early access)', btn);
+      showClubWelcomeSelector(list, btn);
     });
   });
   document.getElementById('admin-early-notify-btn').addEventListener('click', function(){
@@ -8263,16 +8305,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   };
-
-  // POST-EVENT THANK-YOU BLAST — Create & Recharge.
-  // This top-bar button triggers the same crSendThankYou() flow as the
-  // "💌 Thank attendees" button in the C&R roster, so behavior is identical
-  // wherever it's launched from (targets confirmed #attended, skips comp
-  // placeholder emails, sends via Resend).
-  document.getElementById('admin-cr-thankyou-btn').addEventListener('click', function(){
-    if (typeof window.crSendThankYou === 'function') window.crSendThankYou(this);
-    else alert('Create & Recharge sender is not ready yet — reload and try again.');
-  });
 
   // FOUNDING FOUR — emails the first confirmed Mat & Chat bookers their free-tote note.
   // getMCData returns rows ordered by created_at, so the first N confirmed = earliest bookers.
