@@ -1667,6 +1667,10 @@
     #event-card-reformer .bq-event-photo, #event-card-reformer-bk .bq-event-photo { background: #f8f1e7; }
     #event-card-reformer .bq-event-photo img, #event-card-reformer-bk .bq-event-photo img { object-fit: contain; }
 
+    /* City tag under an event title (distinguishes same-named events by location). */
+    .bq-event-loc { font-family:'Jost',sans-serif; font-size:.72rem; letter-spacing:.13em; text-transform:uppercase; color:var(--gold-text); font-weight:600; margin:.3rem 0 0; display:flex; align-items:center; gap:.35rem; }
+    .bq-event-loc::before { content:"\1F4CD"; font-size:.8rem; filter:grayscale(.15); }
+
     /* Wrapper around the larger booking-page flyer (so the Sold Out badge can position absolutely) */
     .bq-flyer-wrap {
       position: relative;
@@ -2833,6 +2837,7 @@
         </div>
         <div class="bq-event-date">09.13.26 &#183; Riddim &amp; Kompa</div>
         <div class="bq-event-name">Riddim &amp; Kompa <em>on the Reformer</em></div>
+        <div class="bq-event-loc">West Hempstead, NY</div>
         <div class="bq-event-sub">Sun &#183; 1 &amp; 2 PM (45 min) &#183; $45 &#183; Valley Studio, West Hempstead NY</div>
         <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
       </button>
@@ -2840,10 +2845,11 @@
       <!-- Riddim & Kompa on the Reformer — Brooklyn, Sept 26. Opens the Brooklyn booking overlay. -->
       <button type="button" id="event-card-reformer-bk" class="bq-event scroll-reveal" data-event-date="2026-09-26" data-event-name="Riddim &amp; Kompa &#8212; Brooklyn">
         <div class="bq-event-photo">
-          <img src="riddim-kompa-brooklyn-flyer.png?v=1" alt="Riddim &amp; Kompa on the Reformer &#8212; Saturday, September 26 at Maison Luxe Wellness Pilates, Brooklyn &#183; $45, complimentary goodie bag" loading="lazy" decoding="async">
+          <img src="riddim-kompa-brooklyn-flyer.jpg?v=2" alt="Riddim &amp; Kompa on the Reformer &#8212; Brooklyn. Saturday, September 26 at Maison Luxe Wellness Pilates, Brooklyn NY &#183; three sessions (12, 1 &amp; 2 PM) &#183; $45, complimentary goodie bag" loading="lazy" decoding="async">
         </div>
         <div class="bq-event-date">09.26.26 &#183; Riddim &amp; Kompa</div>
         <div class="bq-event-name">Riddim &amp; Kompa <em>on the Reformer</em></div>
+        <div class="bq-event-loc">Brooklyn, NY</div>
         <div class="bq-event-sub">Sat &#183; 12, 1 &amp; 2 PM (45 min) &#183; $45 &#183; Maison Luxe Wellness Pilates, Brooklyn</div>
         <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
       </button>
