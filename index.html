@@ -8368,20 +8368,71 @@ document.addEventListener('DOMContentLoaded', function() {
   // already emailed manually). Already-sent people start unchecked but can be overridden.
   // FOUNDING_GIFT_COUNT controls how many of the earliest bookers are offered the gift.
   var FOUNDING_GIFT_COUNT = 1;
-  document.getElementById('admin-founding-btn').addEventListener('click', function(){
-    getMCData(function(data){
-      var confirmed = (data.mc1 || []).filter(function(r){ return r.type === 'confirmed'; });
-      // Skip anyone whose admin notes contain "#nobag" (e.g. already got a tote at a
-      // past event). The next eligible booker automatically rolls up to fill the slots.
-      var eligible = confirmed.filter(function(r){ return !/#nobag/i.test(r.adminNotes || ''); });
-      var skipped  = confirmed.filter(function(r){ return  /#nobag/i.test(r.adminNotes || ''); });
-      var four = eligible.slice(0, FOUNDING_GIFT_COUNT);
-      if (!four.length){ alert('No eligible Mat & Chat bookings yet.'); return; }
-      if (typeof emailjs === 'undefined'){ alert('EmailJS not loaded.'); return; }
-      if (MC_TMPL_FOUNDING.indexOf('REPLACE_ME') !== -1){ alert('Set MC_TMPL_FOUNDING to your real EmailJS template id first.'); return; }
-      openFoundingPicker(four, skipped);
+  // Founding One — emails the free-tote note to the FIRST person who booked a chosen
+  // event (generic FOUNDING_TEMPLATE.html, event name/date/time/location filled in).
+  var FOUNDING_EVENTS = {
+    'matchat':     { name:'Mat & Chat',                                    date:'Saturday, August 1st',    time:'Arrival 11:25 AM · Class 11:30 AM', loc:'The Fitin · 297 7th Ave, Floor 3 · New York, NY 10001' },
+    'reformer':    { name:'Riddim & Kompa on the Reformer — West Hempstead', date:'Sunday, September 13th', time:'', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
+    'reformer-bk': { name:'Riddim & Kompa on the Reformer — Brooklyn',      date:'Saturday, September 26th', time:'', loc:'Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221' },
+    'turkey':      { name:'Turkey Burn!',                                   date:'Saturday, November 21st', time:'', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
+    'recharge':    { name:'Create & Recharge',                             date:'Saturday, August 15th',   time:'Arrival 11:30 AM · Art 11:35 AM', loc:'Inner Diamond Studio · 300 W 38th St, 2F, New York, NY 10018' },
+    'pilates':     { name:'Pilates x Niara',                               date:'Friday, June 19th',       time:'', loc:'The Space Pilates Studio · 36 West 20th Street, 2nd Floor, New York, NY 10011' }
+  };
+  function foundingGatherFirst(eventKey, cb){
+    function earliest(arr){ var v=arr.filter(function(r){ return r.email; }); v.sort(function(a,b){ return (a.created||'').localeCompare(b.created||''); }); return v[0]||null; }
+    if(eventKey==='matchat'){
+      getMCData(function(d){ cb(earliest((d.mc1||[]).filter(function(r){return r.type==='confirmed';}).map(function(r){return {name:r.name,email:r.email,created:r.created_at||r.timestamp_iso||r.time};}))); });
+    } else if(eventKey==='recharge'){
+      getCRData(function(d){ cb(earliest((d.cr1||[]).filter(function(r){return r.type==='confirmed'&&r.isPaid;}).map(function(r){return {name:r.name,email:r.email,created:r.created_at};}))); });
+    } else if(eventKey==='pilates'){
+      getData(function(d){ var c=[]; SESSIONS.forEach(function(s){ (d[s.id]||[]).filter(function(r){return r.type==='confirmed';}).forEach(function(r){ c.push({name:r.name,email:r.email,created:r.created_at||r.timestamp_iso||r.time}); }); }); cb(earliest(c)); });
+    } else if(eventKey==='reformer'||eventKey==='reformer-bk'||eventKey==='turkey'){
+      var keep={ 'reformer':function(ev){return ev!=='riddim-kompa-brooklyn-2026-09-26'&&ev!=='turkey-burn-2026-11-21';}, 'reformer-bk':function(ev){return ev==='riddim-kompa-brooklyn-2026-09-26';}, 'turkey':function(ev){return ev==='turkey-burn-2026-11-21';} }[eventKey];
+      try {
+        supabase.rpc('reformer_roster',{pass:ADMIN_PASSWORD}).then(function(res){
+          var rows=(res&&res.data)||[];
+          cb(earliest(rows.filter(function(r){return r.is_paid&&r.email&&keep(r.event);}).map(function(r){ var s=RF_ADMIN_SESS[r.session]; return {name:r.name,email:r.email,created:r.created_at, time:(s?('Arrival '+s.arrival+' · Class '+s.time):'')}; })));
+        }, function(){ cb(null); });
+      } catch(e){ cb(null); }
+    } else cb(null);
+  }
+  function openFoundingOne(){
+    var prior=document.getElementById('founding-one'); if(prior) prior.remove();
+    var ov=document.createElement('div'); ov.id='founding-one';
+    ov.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(27,34,21,.62);display:flex;align-items:center;justify-content:center;padding:20px;';
+    var opts=Object.keys(FOUNDING_EVENTS).map(function(k){ return '<option value="'+k+'">'+escapeHTML(FOUNDING_EVENTS[k].name)+'</option>'; }).join('');
+    ov.innerHTML='<div style="background:#f4ecdb;max-width:440px;width:100%;border-radius:16px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.4);font-family:\'Jost\',sans-serif;">'
+      +'<div style="font-family:\'Cormorant Garamond\',serif;font-style:italic;font-size:1.5rem;color:#3b4a2f;margin-bottom:2px;">🎁 Send Founding One</div>'
+      +'<div style="font-size:.86em;color:#6b6750;margin-bottom:14px;">Emails the free-tote note to the <strong>first person</strong> who booked the event you pick.</div>'
+      +'<label style="display:block;font-size:.78rem;color:#3b4a2f;font-weight:600;margin-bottom:.3rem;">Event</label>'
+      +'<select id="founding-one-event" style="width:100%;padding:.5rem .75rem;border:1px solid #d9cba6;border-radius:8px;font-family:\'Jost\',sans-serif;font-size:.9rem;background:#fff;color:#3d322a;margin-bottom:14px;">'+opts+'</select>'
+      +'<div id="founding-one-status" style="margin-bottom:12px;font-size:.86em;color:#3b4a2f;min-height:1.1em;"></div>'
+      +'<div style="display:flex;gap:9px;">'
+      +'<button type="button" id="founding-one-send" class="btn btn-primary" style="flex:1;">Send to first booker</button>'
+      +'<button type="button" id="founding-one-cancel" class="btn" style="background:#e3d9bf;color:#3b4a2f;">Cancel</button>'
+      +'</div></div>';
+    document.body.appendChild(ov);
+    function close(){ ov.remove(); }
+    ov.addEventListener('click',function(e){ if(e.target===ov) close(); });
+    document.getElementById('founding-one-cancel').addEventListener('click',close);
+    document.getElementById('founding-one-send').addEventListener('click',function(){
+      var key=document.getElementById('founding-one-event').value; var meta=FOUNDING_EVENTS[key];
+      var st=document.getElementById('founding-one-status'); var btn=this; btn.disabled=true; st.textContent='Finding the first booker…';
+      foundingGatherFirst(key,function(p){
+        if(!p){ st.textContent='No paid/confirmed bookings for this event yet.'; btn.disabled=false; return; }
+        if(typeof emailjs==='undefined'){ st.textContent='EmailJS not loaded.'; btn.disabled=false; return; }
+        if(MC_TMPL_FOUNDING.indexOf('REPLACE')!==-1){ st.textContent='Set the founding template id first.'; btn.disabled=false; return; }
+        if(!confirm('Send the Founding One gift email to '+p.name+' ('+p.email+')?\n\nThey were the first to book '+meta.name+'.')){ btn.disabled=false; st.textContent=''; return; }
+        emailjs.send(EMAILJS_SERVICE_RESEND, MC_TMPL_FOUNDING, {
+          from_name:p.name, to_email:p.email,
+          event_name:meta.name, event_date:meta.date,
+          event_time:(p.time||meta.time||''), event_location:meta.loc
+        }).then(function(){ st.textContent='✅ Sent to '+p.email; btn.disabled=false; },
+          function(){ st.textContent='⚠️ Could not send. Check EmailJS dashboard.'; btn.disabled=false; });
+      });
     });
-  });
+  }
+  document.getElementById('admin-founding-btn').addEventListener('click', function(){ openFoundingOne(); });
 
   // Checkbox picker for the Founding Four. Anyone already tagged #foundingsent starts
   // UNCHECKED (they were already emailed); everyone else starts checked. Niara can override
