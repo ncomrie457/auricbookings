@@ -5100,22 +5100,18 @@ Can't wait to move and connect with you!</textarea>
       </div>
       <div id="rfbk-waiver-box" style="display:none;max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:9px;padding:.75rem .85rem;margin:.2rem 0 .4rem;background:#fdfbf7;font-size:.82rem;line-height:1.6;color:#3d322a;"></div>
       <div class="rf-field"><label for="rfbk-sign">Signature &mdash; type your full name</label><input type="text" id="rfbk-sign" autocomplete="off" placeholder="Type your full name to sign"></div>
-      <div class="rf-field"><label for="rfbk-promo">Promo code <span class="rf-opt">(optional)</span></label><input type="text" id="rfbk-promo" autocomplete="off" placeholder="Have a code? Enter it here"></div>
       <div class="rf-err" id="rfbk-form-err" role="alert"></div>
-      <button type="submit" class="rf-btn" id="rfbk-continue" disabled>Continue &rarr;</button>
+      <button type="submit" class="rf-btn" id="rfbk-continue" disabled>Continue to payment &rarr;</button>
     </form>
 
     <div id="rfbk-step-pay" style="display:none;">
-      <p class="rf-meta" id="rfbk-pay-lead" style="margin-bottom:1rem;">&#10004; You&rsquo;re all set, <strong id="rfbk-pay-name"></strong>. Complete payment to lock your <strong id="rfbk-pay-label"></strong> spot:</p>
-      <div id="rfbk-pay-block">
-        <a id="rfbk-pay-btn" class="rf-btn" style="text-decoration:none;display:block;text-align:center;" href="#" target="_blank" rel="noopener noreferrer">Pay $45 &rarr;</a>
-        <p class="rf-policy" style="margin-top:.9rem;">You&rsquo;ll get a Stripe receipt by email. Questions? auricmovement@outlook.com</p>
-        <div style="margin-top:1rem;border-top:1px solid var(--border);padding-top:.9rem;">
-          <button type="button" id="rfbk-pay-later" class="rf-close-link" style="margin-top:0;">I&rsquo;ll pay later</button>
-          <p id="rfbk-pay-later-note" class="rf-policy" style="display:none;margin-top:.7rem;color:#8a5a2a;">Got it &mdash; we&rsquo;ve saved your details. Heads up: <strong>spots aren&rsquo;t held and are released first come, first served until payment is received</strong>, so pay soon to secure your place.</p>
-        </div>
+      <p class="rf-meta" style="margin-bottom:1rem;">&#10004; You&rsquo;re all set, <strong id="rfbk-pay-name"></strong>. Complete payment to lock your <strong id="rfbk-pay-label"></strong> spot:</p>
+      <a id="rfbk-pay-btn" class="rf-btn" style="text-decoration:none;display:block;text-align:center;" href="#" target="_blank" rel="noopener noreferrer">Pay $45 &rarr;</a>
+      <p class="rf-policy" style="margin-top:.9rem;">You&rsquo;ll get a Stripe receipt by email. Questions? auricmovement@outlook.com</p>
+      <div style="margin-top:1rem;border-top:1px solid var(--border);padding-top:.9rem;">
+        <button type="button" id="rfbk-pay-later" class="rf-close-link" style="margin-top:0;">I&rsquo;ll pay later</button>
+        <p id="rfbk-pay-later-note" class="rf-policy" style="display:none;margin-top:.7rem;color:#8a5a2a;">Got it &mdash; we&rsquo;ve saved your details. Heads up: <strong>spots aren&rsquo;t held and are released first come, first served until payment is received</strong>, so pay soon to secure your place.</p>
       </div>
-      <p id="rfbk-comp-note" class="rf-meta" style="display:none;margin:0;color:#2e7d32;">&#127873; You&rsquo;re all set, <strong id="rfbk-comp-name"></strong> &mdash; your <strong id="rfbk-comp-label"></strong> spot is confirmed, free of charge. No payment needed. We can&rsquo;t wait to move with you!</p>
     </div>
 
     <div class="rf-getting">
@@ -5142,9 +5138,6 @@ document.addEventListener('DOMContentLoaded', function(){
     'bk1':  'https://buy.stripe.com/9B6cN44949CN60c9wC9sk08',
     'bk2':  'https://buy.stripe.com/5kQ8wO350g1b2O0eQW9sk0b'
   };
-  // Free/comp code — a guest who enters this on the booking form is confirmed
-  // without payment. Case-insensitive. Change this string to rotate the code.
-  var RKBK_PROMO = 'AURICGIFT';
   var RKBK_CAP = 5;
 
   var _sb=null;
@@ -5231,29 +5224,19 @@ document.addEventListener('DOMContentLoaded', function(){
     if(!waiverEl.checked){ formErr.textContent='Please open and agree to the liability waiver.'; return; }
     if(sign.length<2){ formErr.textContent='Please type your full name to sign.'; signEl.focus(); return; }
     formErr.textContent='';
-    var promo=(document.getElementById('rfbk-promo').value||'').trim();
-    var isComp = promo.length>0 && promo.toUpperCase()===RKBK_PROMO.toUpperCase();
     var nowIso=new Date().toISOString();
     var rec={
-      name:name, email:email, session:chosen, session_label:chosenLabel + (isComp?' · COMP':''),
-      referred_by: refEl.value.trim()||(isComp?'Comp — promo code':null), health:(healthEl.value.trim())||null,
+      name:name, email:email, session:chosen, session_label:chosenLabel,
+      referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
       signature:sign, clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:18),
       refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
-      waiver_agreed:true, is_paid:isComp, created_at:nowIso, event:RKBK_EVENT
+      waiver_agreed:true, is_paid:false, created_at:nowIso, event:RKBK_EVENT
     };
     try { var k='auric_reformer_bk'; var a=JSON.parse(localStorage.getItem(k)||'[]'); a.push(rec); localStorage.setItem(k,JSON.stringify(a)); } catch(e){}
     try { var c=sb(); if(c) c.from('reformer_registrations').insert([rec]).then(function(){},function(){}); } catch(e){}
-    var payBlock=document.getElementById('rfbk-pay-block'), payLead=document.getElementById('rfbk-pay-lead'), compNote=document.getElementById('rfbk-comp-note');
-    if(isComp){
-      document.getElementById('rfbk-comp-name').textContent=name.split(' ')[0];
-      document.getElementById('rfbk-comp-label').textContent=chosenLabel;
-      payLead.style.display='none'; payBlock.style.display='none'; compNote.style.display='block';
-    } else {
-      document.getElementById('rfbk-pay-name').textContent=name.split(' ')[0];
-      document.getElementById('rfbk-pay-label').textContent=chosenLabel;
-      document.getElementById('rfbk-pay-btn').href = RKBK_LINKS[chosen] || '#';
-      payLead.style.display=''; payBlock.style.display=''; compNote.style.display='none';
-    }
+    document.getElementById('rfbk-pay-name').textContent=name.split(' ')[0];
+    document.getElementById('rfbk-pay-label').textContent=chosenLabel;
+    document.getElementById('rfbk-pay-btn').href = RKBK_LINKS[chosen] || '#';
     stepForm.style.display='none'; stepPay.style.display='';
     stepPay.scrollIntoView({behavior:'smooth',block:'nearest'});
   });
