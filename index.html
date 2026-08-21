@@ -2758,28 +2758,7 @@
 <!-- TAB: Events (Upcoming Events grid only) -->
 <div id="tab-events" class="tab-panel" role="tabpanel" aria-labelledby="btn-events">
 
-  <!-- Events filter: Current (soonest first) · Past (most recent first) · All -->
-  <style>
-    .bq-events-filter{max-width:1100px;margin:0 auto;padding:1.6rem 1rem 0;display:flex;align-items:center;justify-content:flex-end;gap:.7rem;}
-    .bq-events-filter label{font-family:'Jost',sans-serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);font-weight:600;}
-    .bq-events-filter .bq-ef-wrap{position:relative;}
-    .bq-events-filter select{appearance:none;-webkit-appearance:none;font-family:'Jost',sans-serif;font-size:.8rem;font-weight:600;letter-spacing:.04em;color:var(--brown);background:var(--cream-light);border:1px solid var(--border);border-radius:999px;padding:.55rem 2.4rem .55rem 1.1rem;cursor:pointer;box-shadow:0 8px 22px -18px rgba(var(--warm-shadow),.5);}
-    .bq-events-filter select:focus{outline:none;border-color:var(--gold);}
-    .bq-events-filter .bq-ef-wrap::after{content:"";position:absolute;right:1.05rem;top:50%;width:.5rem;height:.5rem;border-right:2px solid var(--gold-text);border-bottom:2px solid var(--gold-text);transform:translateY(-65%) rotate(45deg);pointer-events:none;}
-    @media(max-width:560px){.bq-events-filter{justify-content:center;padding-top:1.2rem;}}
-  </style>
-  <div class="bq-events-filter">
-    <label for="events-filter-select">Show</label>
-    <div class="bq-ef-wrap">
-      <select id="events-filter-select" aria-label="Filter events">
-        <option value="current">Current Events</option>
-        <option value="past">Past Events</option>
-        <option value="all">All Events</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="bq-events-wrap" id="upcoming-events-section">
+  <div class="bq-events-wrap">
 
     <div class="bq-section-head" id="upcoming-events-anchor">
       <div class="bq-section-eyebrow">Now Booking</div>
@@ -2920,7 +2899,7 @@
 
   </div>
 
-  <nav class="bq-tab-next" id="events-upcoming-divider" aria-label="Continue to next section">
+  <nav class="bq-tab-next" aria-label="Continue to next section">
     <div class="bq-tab-next-rule" aria-hidden="true"></div>
   </nav>
 
@@ -2947,28 +2926,6 @@
     <a class="bq-tab-next-link" href="#tab-faq" data-nav-tab="btn-faq">FAQ <span aria-hidden="true">&rarr;</span></a>
   </nav>
 </div>
-
-<script>
-  /* Events filter — Current (upcoming, soonest first) · Past (most recent first) · All.
-     Upcoming cards are already in ascending-date DOM order; the Past section is
-     built newest→oldest by renderVideoSections(). This just toggles which show. */
-  (function(){
-    var sel = document.getElementById('events-filter-select');
-    var upcoming = document.getElementById('upcoming-events-section');
-    var divider  = document.getElementById('events-upcoming-divider');
-    var past     = document.getElementById('past-events-section');
-    if(!sel || !upcoming || !past) return;
-    function apply(v){
-      var showUp = (v === 'current' || v === 'all');
-      var showPast = (v === 'past' || v === 'all');
-      upcoming.style.display = showUp ? '' : 'none';
-      past.style.display = showPast ? '' : 'none';
-      if(divider) divider.style.display = (v === 'all') ? '' : 'none';
-    }
-    sel.addEventListener('change', function(){ apply(sel.value); });
-    apply(sel.value); // default: Current Events
-  })();
-</script>
 </div><!-- /tab-events -->
 
 <!-- TAB: Home (brand storytelling — default landing) -->
@@ -7882,6 +7839,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch(e){ alert('Could not generate the PDF.'); if(window.console) console.error(e); }
   };
 
+  var adminEventFilterValue = 'all'; // admin panel event filter: 'all' | 'recent' | 'past'
   function renderAdmin(){
     var body=document.getElementById('admin-body');
     body.innerHTML='';
@@ -7896,6 +7854,27 @@ document.addEventListener('DOMContentLoaded', function() {
     var turkeyContainer   = document.createElement('div'); turkeyContainer.id   = 'admin-turkey-container';
     var bloomContainer    = document.createElement('div'); bloomContainer.id    = 'admin-bloom-container';
     var corpContainer     = document.createElement('div'); corpContainer.id     = 'admin-corp-container';
+    // Tag each event section with its date so the filter can sort past vs upcoming.
+    bloomContainer.setAttribute('data-event-date', '2026-12-13');
+    turkeyContainer.setAttribute('data-event-date', '2026-11-21');
+    reformerBkContainer.setAttribute('data-event-date', '2026-09-26');
+    reformerContainer.setAttribute('data-event-date', '2026-09-13');
+    crContainer.setAttribute('data-event-date', '2026-08-15');
+    mcContainer.setAttribute('data-event-date', '2026-08-01');
+    sessionsContainer.setAttribute('data-event-date', '2026-06-19');
+
+    // Filter dropdown — All / Recent (upcoming) / Past. Sits at the top of the panel.
+    var adminFilterBar = document.createElement('div');
+    adminFilterBar.style.cssText = 'display:flex;align-items:center;justify-content:flex-end;gap:.6rem;margin:0 0 1.1rem;flex-wrap:wrap;';
+    adminFilterBar.innerHTML =
+      '<label for="admin-event-filter-select" style="font-family:\'Jost\',sans-serif;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);font-weight:600;">Show events</label>' +
+      '<select id="admin-event-filter-select" style="font-family:\'Jost\',sans-serif;font-size:.85rem;font-weight:600;color:var(--brown);background:#fff;border:1px solid var(--border);border-radius:8px;padding:.45rem .8rem;cursor:pointer;">' +
+        '<option value="all">All events</option>' +
+        '<option value="recent">Recent / upcoming</option>' +
+        '<option value="past">Past events</option>' +
+      '</select>';
+    body.appendChild(adminFilterBar);
+
     // Ordered newest event first → oldest last (Corporate has no date, kept last).
     body.appendChild(bloomContainer);      // Something's Blooming — Dec 13
     body.appendChild(turkeyContainer);     // Turkey Burn! — Nov 21
@@ -7904,7 +7883,21 @@ document.addEventListener('DOMContentLoaded', function() {
     body.appendChild(crContainer);         // Create & Recharge — Aug 15
     body.appendChild(mcContainer);         // Mat & Chat — Aug 1
     body.appendChild(sessionsContainer);   // Pilates x Niara — Jun 19
-    body.appendChild(corpContainer);
+    body.appendChild(corpContainer);       // Partner With Us — no date, always shown
+
+    // Apply / persist the event filter (Corporate has no date → never hidden).
+    function applyAdminEventFilter(v){
+      adminEventFilterValue = v;
+      [bloomContainer,turkeyContainer,reformerBkContainer,reformerContainer,crContainer,mcContainer,sessionsContainer].forEach(function(c){
+        var d = c.getAttribute('data-event-date'); if(!d) return;
+        var past = (typeof isEventPast === 'function') ? isEventPast(d) : false;
+        var show = (v==='all') || (v==='past' && past) || (v==='recent' && !past);
+        c.style.display = show ? '' : 'none';
+      });
+    }
+    var _afs = adminFilterBar.querySelector('#admin-event-filter-select');
+    if(_afs){ _afs.value = adminEventFilterValue; _afs.addEventListener('change', function(){ applyAdminEventFilter(_afs.value); }); }
+    applyAdminEventFilter(adminEventFilterValue);
     if (typeof renderCRSection === 'function') renderCRSection(crContainer);
     if (typeof renderReformerSection === 'function') renderReformerSection(reformerContainer);
     if (typeof renderReformerBkSection === 'function') renderReformerBkSection(reformerBkContainer);
@@ -10662,7 +10655,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var paid1 = display.filter(function(r){ return r.session==='1pm' && r.is_paid; }).length;
       var paid2 = display.filter(function(r){ return r.session==='2pm' && r.is_paid; }).length;
       block.innerHTML = '<h3 style="color:var(--gold-text);">Riddim &amp; Kompa on the Reformer — Sep 13th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(1 PM '+paid1+'/6 · 2 PM '+paid2+'/6)</span></h3>';
-      if(paid){ block.innerHTML += '<button onclick="rfSendThankYou(\'valley\', this)" style="margin:.1rem 0 .7rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F33A} Send Mèsi Anpil thank-you ('+paid+' paid) — after the event</button>'; }
+      block.innerHTML += '<button onclick="rfSendThankYou(\'valley\', this)" style="margin:.1rem 0 .7rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F33A} Send Mèsi Anpil thank-you ('+paid+' paid) — after the event</button>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
@@ -10722,7 +10715,7 @@ document.addEventListener('DOMContentLoaded', function() {
       display.forEach(function(r){ if(r.is_paid && pd[r.session]!==undefined) pd[r.session]++; });
       var paid = display.filter(function(r){ return r.is_paid; }).length;
       block.innerHTML = '<h3 style="color:var(--gold-text);">Riddim &amp; Kompa — Brooklyn · Sep 26th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(12 PM '+pd.bk12+'/'+CAP+' · 1 PM '+pd.bk1+'/'+CAP+' · 2 PM '+pd.bk2+'/'+CAP+')</span></h3>';
-      if(paid){ block.innerHTML += '<button onclick="rfSendThankYou(\'bk\', this)" style="margin:.1rem 0 .7rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F33A} Send Mèsi Anpil thank-you ('+paid+' paid) — after the event</button>'; }
+      block.innerHTML += '<button onclick="rfSendThankYou(\'bk\', this)" style="margin:.1rem 0 .7rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F33A} Send Mèsi Anpil thank-you ('+paid+' paid) — after the event</button>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
