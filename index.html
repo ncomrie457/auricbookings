@@ -4434,7 +4434,7 @@
       <h2>Registrations</h2>
       <div class="admin-actions">
         <button type="button" id="admin-csv-btn" class="btn btn-secondary">&#128229; CSV</button>
-        <button type="button" id="admin-founding-btn" class="btn btn-primary">&#127873; Send Founding Four</button>
+        <button type="button" id="admin-founding-btn" class="btn btn-primary">&#127873; Send Founding One</button>
         <button type="button" id="admin-club-btn" class="btn btn-secondary">&#10022; Auric Club</button>
         <button type="button" id="admin-club-welcome-btn" class="btn btn-primary">&#10022; Send Club Welcome</button>
         <button type="button" id="admin-early-notify-btn" class="btn btn-primary">&#9200; Early Access &#8594; Notify List</button>
@@ -8367,7 +8367,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Opens a checkbox picker so Niara chooses exactly who gets the email (e.g. skip anyone
   // already emailed manually). Already-sent people start unchecked but can be overridden.
   // FOUNDING_GIFT_COUNT controls how many of the earliest bookers are offered the gift.
-  var FOUNDING_GIFT_COUNT = 5;
+  var FOUNDING_GIFT_COUNT = 1;
   document.getElementById('admin-founding-btn').addEventListener('click', function(){
     getMCData(function(data){
       var confirmed = (data.mc1 || []).filter(function(r){ return r.type === 'confirmed'; });
@@ -8417,7 +8417,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     overlay.innerHTML =
       '<div style="background:#f4ecdb;max-width:440px;width:100%;border-radius:16px;padding:22px 22px 18px;box-shadow:0 24px 70px rgba(0,0,0,.4);font-family:\'Jost\',sans-serif;max-height:88vh;overflow:auto;">'
-      + '<div style="font-family:\'Cormorant Garamond\',serif;font-style:italic;font-size:1.5rem;color:#3b4a2f;margin-bottom:2px;">&#127873; Send Founding Four</div>'
+      + '<div style="font-family:\'Cormorant Garamond\',serif;font-style:italic;font-size:1.5rem;color:#3b4a2f;margin-bottom:2px;">&#127873; Send Founding One</div>'
       + '<div style="font-size:.86em;color:#6b6750;margin-bottom:14px;">Check who should get the free-tote email. Already got it elsewhere? Hit &ldquo;Mark sent&rdquo; to tag them without emailing.</div>'
       + '<div id="founding-rows"></div>'
       + skipNote
