@@ -4493,8 +4493,13 @@
             <option value="s1">Pilates x Niara &#8212; Session 1 (1:00 PM)</option>
             <option value="s2">Pilates x Niara &#8212; Session 2 (2:00 PM)</option>
             <option value="mc1">Mat &amp; Chat &#8212; August 1st</option>
-            <option value="rk1pm">Riddim &amp; Kompa on the Reformer &#8212; 1 PM</option>
-            <option value="rk2pm">Riddim &amp; Kompa on the Reformer &#8212; 2 PM</option>
+            <option value="rk1pm">Riddim &amp; Kompa &#8212; West Hempstead (1 PM)</option>
+            <option value="rk2pm">Riddim &amp; Kompa &#8212; West Hempstead (2 PM)</option>
+            <option value="rkbk12">Riddim &amp; Kompa &#8212; Brooklyn (12 PM)</option>
+            <option value="rkbk1">Riddim &amp; Kompa &#8212; Brooklyn (1 PM)</option>
+            <option value="rkbk2">Riddim &amp; Kompa &#8212; Brooklyn (2 PM)</option>
+            <option value="tb1230">Turkey Burn! &#8212; 12:30 PM</option>
+            <option value="tb130">Turkey Burn! &#8212; 1:30 PM</option>
           </select>
         </div>
         <div>
@@ -7634,18 +7639,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Build the row directly (skipping the diff-based saveData) so we can mark it paid and surface real errors
     var row, table, label, isReformer = false;
-    if (event === 'rk1pm' || event === 'rk2pm') {
+    var RF_ADD_MAP = {
+      'rk1pm':  { session:'1pm',    slabel:'1:00 PM session',  event:'riddim-kompa-reformer-2026-09-13', name:'Riddim & Kompa — West Hempstead, 1 PM' },
+      'rk2pm':  { session:'2pm',    slabel:'2:00 PM session',  event:'riddim-kompa-reformer-2026-09-13', name:'Riddim & Kompa — West Hempstead, 2 PM' },
+      'rkbk12': { session:'bk12',   slabel:'12:00 PM session', event:'riddim-kompa-brooklyn-2026-09-26', name:'Riddim & Kompa — Brooklyn, 12 PM' },
+      'rkbk1':  { session:'bk1',    slabel:'1:00 PM session',  event:'riddim-kompa-brooklyn-2026-09-26', name:'Riddim & Kompa — Brooklyn, 1 PM' },
+      'rkbk2':  { session:'bk2',    slabel:'2:00 PM session',  event:'riddim-kompa-brooklyn-2026-09-26', name:'Riddim & Kompa — Brooklyn, 2 PM' },
+      'tb1230': { session:'tb1230', slabel:'12:30 PM session', event:'turkey-burn-2026-11-21',           name:'Turkey Burn! — 12:30 PM' },
+      'tb130':  { session:'tb130',  slabel:'1:30 PM session',  event:'turkey-burn-2026-11-21',           name:'Turkey Burn! — 1:30 PM' }
+    };
+    if (RF_ADD_MAP[event]) {
       isReformer = true;
       table = 'reformer_registrations';
-      var rkSess = (event === 'rk1pm') ? '1pm' : '2pm';
-      var rkLabel = (rkSess === '1pm') ? '1:00 PM session' : '2:00 PM session';
-      label = 'Riddim & Kompa on the Reformer — ' + (rkSess === '1pm' ? '1 PM' : '2 PM');
+      var m = RF_ADD_MAP[event];
+      label = m.name;
       row = {
-        name: name, email: email, session: rkSess, session_label: rkLabel,
+        name: name, email: email, session: m.session, session_label: m.slabel,
         signature: name, clauses_agreed: (window.__RF_CLAUSES ? window.__RF_CLAUSES.length : 18),
         refund_ack: true, waiver_agreed: true,
         is_paid: true, paid_at: nowIso, created_at: nowIso,
-        event: 'riddim-kompa-reformer-2026-09-13'
+        event: m.event
       };
     } else if (event === 'mc1') {
       table = 'matchat_registrations';
