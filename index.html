@@ -4520,7 +4520,7 @@
     <!-- Event Order (drag to reorder) -->
     <div style="margin-top:1rem;padding:1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:12px;">
       <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--brown);margin-bottom:.5rem;">&#8597; Event Order</h3>
-      <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:.85rem;line-height:1.5;">Drag to set the order events appear on the site (top = first). Saves automatically.</p>
+      <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:.85rem;line-height:1.5;">Tap &#9650;/&#9660; (or drag on desktop) to set the order events appear on the site (top = first). Saves automatically.</p>
       <ul id="event-order-list" style="list-style:none;margin:0;padding:0;"></ul>
       <div id="event-order-status" style="margin-top:.5rem;font-size:.78rem;color:var(--text-muted);"></div>
     </div>
@@ -6450,8 +6450,25 @@ document.addEventListener('DOMContentLoaded', function() {
       var li = document.createElement('li');
       li.setAttribute('draggable','true');
       li.setAttribute('data-key', it.key);
-      li.style.cssText = 'display:flex;align-items:center;gap:.6rem;padding:.6rem .75rem;margin-bottom:.4rem;background:#fff;border:1px solid var(--border);border-radius:8px;cursor:grab;font-family:\'Jost\',sans-serif;font-size:.85rem;color:#3d322a;';
-      li.innerHTML = '<span aria-hidden="true" style="color:var(--gold-text);font-size:1rem;line-height:1;">&#9776;</span><span>' + escapeHTML(it.name) + '</span>';
+      li.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding:.55rem .6rem .55rem .75rem;margin-bottom:.4rem;background:#fff;border:1px solid var(--border);border-radius:8px;font-family:\'Jost\',sans-serif;font-size:.85rem;color:#3d322a;';
+      var btn = 'width:34px;height:34px;flex:none;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--border);background:#faf5ee;color:var(--brown);border-radius:7px;cursor:pointer;font-size:.9rem;line-height:1;padding:0;';
+      li.innerHTML =
+        '<span style="display:flex;align-items:center;gap:.55rem;min-width:0;">' +
+          '<span aria-hidden="true" style="color:var(--gold-text);font-size:1rem;line-height:1;cursor:grab;">&#9776;</span>' +
+          '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHTML(it.name) + '</span>' +
+        '</span>' +
+        '<span style="display:flex;gap:.35rem;flex:none;">' +
+          '<button type="button" data-move="up" aria-label="Move up" style="' + btn + '">&#9650;</button>' +
+          '<button type="button" data-move="down" aria-label="Move down" style="' + btn + '">&#9660;</button>' +
+        '</span>';
+      // Tap ↑/↓ to reorder — works on every device (touch + desktop).
+      li.querySelector('[data-move="up"]').addEventListener('click', function(){
+        var prev = li.previousElementSibling; if (prev) { ul.insertBefore(li, prev); saveEventOrderFromList(ul); }
+      });
+      li.querySelector('[data-move="down"]').addEventListener('click', function(){
+        var next = li.nextElementSibling; if (next) { ul.insertBefore(next, li); saveEventOrderFromList(ul); }
+      });
+      // Drag also works where supported (desktop mouse).
       li.addEventListener('dragstart', function(e){ _eventDragEl = li; li.style.opacity = '.5'; if(e.dataTransfer) e.dataTransfer.effectAllowed = 'move'; });
       li.addEventListener('dragend', function(){ if (_eventDragEl) _eventDragEl.style.opacity = ''; _eventDragEl = null; });
       li.addEventListener('dragover', function(e){
