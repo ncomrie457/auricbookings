@@ -8384,6 +8384,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var halloweenContainer = document.createElement('div'); halloweenContainer.id = 'admin-halloween-container';
     var turkeyContainer   = document.createElement('div'); turkeyContainer.id   = 'admin-turkey-container';
     var bloomContainer    = document.createElement('div'); bloomContainer.id    = 'admin-bloom-container';
+    var riddimContainer   = document.createElement('div'); riddimContainer.id   = 'admin-riddim-interest-container';
     var corpContainer     = document.createElement('div'); corpContainer.id     = 'admin-corp-container';
     // Tag each event section with its date so the filter can sort past vs upcoming.
     bloomContainer.setAttribute('data-event-date', '2026-12-13');
@@ -8413,6 +8414,7 @@ document.addEventListener('DOMContentLoaded', function() {
     body.appendChild(halloweenContainer);  // Shhh… Quiet on the Creek — Oct 24
     body.appendChild(turkeyContainer);     // Turkey Burn! — Nov 21
     body.appendChild(bloomContainer);      // Something's Blooming — Dec 13
+    body.appendChild(riddimContainer);     // Riddim & Kompa — next-date interest list
     body.appendChild(crContainer);         // Create & Recharge — Aug 15
     body.appendChild(mcContainer);         // Mat & Chat — Aug 1
     body.appendChild(sessionsContainer);   // Pilates x Niara — Jun 19
@@ -8438,6 +8440,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof renderReformerTbSection === 'function') renderReformerTbSection(turkeyContainer);
     if (typeof renderReformerHwSection === 'function') renderReformerHwSection(halloweenContainer);
     if (typeof renderBloomingSection === 'function') renderBloomingSection(bloomContainer);
+    if (typeof renderRiddimInterestSection === 'function') renderRiddimInterestSection(riddimContainer);
     if (typeof renderWaitlistNotify === 'function') renderWaitlistNotify();
     if (typeof renderSignedAgreements === 'function') renderSignedAgreements();
 
@@ -11551,6 +11554,58 @@ document.addEventListener('DOMContentLoaded', function() {
       }, function(){ render([], true); });
     } catch(e){ render([], true); }
   }
+  // \u2500\u2500\u2500 Riddim & Kompa \u2014 "next date" interest list roster \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  var riddimRows = [];
+  function renderRiddimInterestSection(container){
+    if(!container) return;
+    var block = document.createElement('div'); block.className='admin-session-block';
+    function render(rows, err){
+      riddimRows = rows || [];
+      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F3B6} Riddim &amp; Kompa \u2014 Next-Date Interest List \u00b7 '+rows.length+' waiting</h3>';
+      if(err){ block.innerHTML += '<div class="empty-state">Interest list unavailable \u2014 run the blooming_interest read policy SQL to view it here. (Signups are still being saved.)</div>'; return; }
+      if(!rows.length){ block.innerHTML += '<div class="empty-state">No signups yet. Share book.auricmovement.com/riddim-interest</div>'; return; }
+      block.innerHTML += '<button onclick="riddimExportCSV()" style="margin:.1rem 0 .7rem;background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u2b07\ufe0f Export interest list (CSV)</button>';
+      rows.forEach(function(rec){
+        var item=document.createElement('div'); item.className='admin-sub-item';
+        var when=''; try{ when=rec.created_at?new Date(rec.created_at).toLocaleString():''; }catch(e){}
+        var phone = rec.phone ? '<br><span style="font-size:.75rem;color:var(--text-muted);">\u{1F4DE} '+escapeHTML(rec.phone)+'</span>' : '';
+        var removeBtn='<button onclick="riddimAdminRemove(\''+String(rec.id).replace(/'/g,"\\'")+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F5D1} Remove</button>';
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span><br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+phone+'</div>'+
+          '<div style="text-align:right"><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span><br><div style="margin-top:.3rem;">'+removeBtn+'</div></div>';
+        block.appendChild(item);
+      });
+    }
+    container.innerHTML=''; container.appendChild(block);
+    try {
+      supabase.from('blooming_interest').select('*').order('created_at').then(function(res){
+        if(res && res.error){ render([], true); return; }
+        var data = ((res && res.data) || []).filter(function(r){ return r.source==='riddim-interest' || r.event==='riddim-kompa-next'; });
+        render(data, false);
+      }, function(){ render([], true); });
+    } catch(e){ render([], true); }
+  }
+  window.riddimAdminRemove = function(id){
+    if(!id) return;
+    if(!confirm('Remove this person from the Riddim & Kompa interest list?')) return;
+    supabase.from('blooming_interest').delete().eq('id', id).then(function(res){
+      if(res&&res.error){ alert('Could not remove \u2014 run the blooming_interest delete policy SQL first.'); return; }
+      renderAdmin();
+    }, function(){ alert('Could not remove. Try again.'); });
+  };
+  window.riddimExportCSV = function(){
+    var rows = riddimRows || [];
+    if(!rows.length){ alert('No signups to export yet.'); return; }
+    var csv = 'Name,Email,Instagram/Phone,Signed up\n';
+    rows.forEach(function(r){
+      var when=''; try{ when = r.created_at ? new Date(r.created_at).toLocaleString() : ''; }catch(e){}
+      csv += [csvEscape(r.name), csvEscape(r.email), csvEscape(r.phone||''), csvEscape(when)].join(',') + '\n';
+    });
+    var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a'); a.href = url; a.download = 'riddim-kompa-interest.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  };
   window.bloomAdminRemove = function(id){
     if(!id) return;
     if(!confirm('Remove this signup from the Something\u2019s Blooming interest list?')) return;
