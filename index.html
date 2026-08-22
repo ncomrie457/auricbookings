@@ -5343,9 +5343,9 @@ document.addEventListener('DOMContentLoaded', function(){
   try { if(new URLSearchParams(location.search).get('book')==='reformer-bk'){ setTimeout(openOv, 450); } } catch(e){}
   // ── Payment confirmation (Stripe returns to ?paid=reformer-bk&s=bk12|bk1|bk2) ──
   var RFBK_CONF = {
-    'bk12': { label:'12:00 PM session', cal:'https://book.auricmovement.com/calendar/riddim-kompa-brooklyn-12pm.ics' },
-    'bk1':  { label:'1:00 PM session',  cal:'https://book.auricmovement.com/calendar/riddim-kompa-brooklyn-1pm.ics' },
-    'bk2':  { label:'2:00 PM session',  cal:'https://book.auricmovement.com/calendar/riddim-kompa-brooklyn-2pm.ics' }
+    'bk12': { label:'12:00 PM session', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-brooklyn-12pm' },
+    'bk1':  { label:'1:00 PM session',  cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-brooklyn-1pm' },
+    'bk2':  { label:'2:00 PM session',  cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-brooklyn-2pm' }
   };
   function rfbkShowConfirmed(sk){
     var m=RFBK_CONF[sk]||RFBK_CONF['bk12'];
@@ -5553,8 +5553,8 @@ document.addEventListener('DOMContentLoaded', function(){
   try { if(new URLSearchParams(location.search).get('book')==='turkey'){ setTimeout(openOv, 450); } } catch(e){}
   // ── Payment confirmation (Stripe returns to ?paid=turkey&s=tb1230|tb130) ──
   var TB_CONF = {
-    'tb1230': { label:'12:30 PM session', cal:'https://book.auricmovement.com/calendar/turkey-burn-1230pm.ics' },
-    'tb130':  { label:'1:30 PM session',  cal:'https://book.auricmovement.com/calendar/turkey-burn-130pm.ics' }
+    'tb1230': { label:'12:30 PM session', cal:'https://book.auricmovement.com/calendar/add/?e=turkey-burn-1230pm' },
+    'tb130':  { label:'1:30 PM session',  cal:'https://book.auricmovement.com/calendar/add/?e=turkey-burn-130pm' }
   };
   function tbShowConfirmed(sk){
     var m=TB_CONF[sk]||TB_CONF['tb1230'];
@@ -5763,8 +5763,8 @@ document.addEventListener('DOMContentLoaded', function(){
   try { if(new URLSearchParams(location.search).get('book')==='halloween'){ setTimeout(openOv, 450); } } catch(e){}
   // ── Payment confirmation (Stripe returns to ?paid=halloween&s=hw1230|hw130) ──
   var HW_CONF = {
-    'hw1230': { label:'12:30 PM session', cal:'https://book.auricmovement.com/calendar/halloween-1230pm.ics' },
-    'hw130':  { label:'1:30 PM session',  cal:'https://book.auricmovement.com/calendar/halloween-130pm.ics' }
+    'hw1230': { label:'12:30 PM session', cal:'https://book.auricmovement.com/calendar/add/?e=halloween-1230pm' },
+    'hw130':  { label:'1:30 PM session',  cal:'https://book.auricmovement.com/calendar/add/?e=halloween-130pm' }
   };
   function hwShowConfirmed(sk){
     var m=HW_CONF[sk]||HW_CONF['hw1230'];
@@ -6023,8 +6023,8 @@ document.addEventListener('DOMContentLoaded', function(){
     var RF_CAL_LOC='45+Cherry+Valley+Ave%2C+West+Hempstead%2C+NY+11552';
     var RF_CAL_TEXT='Riddim+%26+Kompa+on+the+Reformer+%E2%9C%A6+Auric+Movement';
     var SESSION_META={
-      '1pm':{ label:'1:00 PM session', cal:'https://book.auricmovement.com/calendar/riddim-kompa-west-hempstead-1pm.ics' },
-      '2pm':{ label:'2:00 PM session', cal:'https://book.auricmovement.com/calendar/riddim-kompa-west-hempstead-2pm.ics' }
+      '1pm':{ label:'1:00 PM session', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-west-hempstead-1pm' },
+      '2pm':{ label:'2:00 PM session', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-west-hempstead-2pm' }
     };
     function showConfirmed(sessionKey){
       var meta=SESSION_META[sessionKey]||SESSION_META['1pm'];
@@ -6626,12 +6626,12 @@ document.addEventListener('DOMContentLoaded', function() {
     start: '11:30 AM',
     price: '$35',
     stripeUrl: 'https://buy.stripe.com/eVq6oG20W3epagscIO9sk02',
-    calendarUrl: 'https://book.auricmovement.com/calendar/mat-and-chat.ics',
+    calendarUrl: 'https://book.auricmovement.com/calendar/add/?e=mat-and-chat',
     venue: 'The Fitin, 297 7th Ave, Floor 3, New York, NY 10001'
   };
   var SESSIONS = [
-    { id:'s1', label:'Session 1', arrival:'1:00 PM', start:'1:05 PM', date:'June 19th', stripeUrl:'https://buy.stripe.com/4gMeVc5d8dT3ewI4ci9sk00', calendarUrl:'https://book.auricmovement.com/calendar/pilates-x-niara-1pm.ics' },
-    { id:'s2', label:'Session 2', arrival:'2:00 PM', start:'2:05 PM', date:'June 19th', stripeUrl:'https://buy.stripe.com/aFafZgbBw8yJ4W8dMS9sk01', calendarUrl:'https://book.auricmovement.com/calendar/pilates-x-niara-2pm.ics' }
+    { id:'s1', label:'Session 1', arrival:'1:00 PM', start:'1:05 PM', date:'June 19th', stripeUrl:'https://buy.stripe.com/4gMeVc5d8dT3ewI4ci9sk00', calendarUrl:'https://book.auricmovement.com/calendar/add/?e=pilates-x-niara-1pm' },
+    { id:'s2', label:'Session 2', arrival:'2:00 PM', start:'2:05 PM', date:'June 19th', stripeUrl:'https://buy.stripe.com/aFafZgbBw8yJ4W8dMS9sk01', calendarUrl:'https://book.auricmovement.com/calendar/add/?e=pilates-x-niara-2pm' }
   ];
 
   var clauseTexts = [
@@ -10552,7 +10552,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var CR_TMPL_THANKYOU = 'template_7155y02';     // post-event thank-you blast (CREATE_RECHARGE_THANKYOU_TEMPLATE.html) — sent via Resend
   var CR_REGISTER_URL  = 'https://book.auricmovement.com/?event=recharge';
   var CR_PAY_PAGE_URL  = 'https://book.auricmovement.com/pay-recharge/'; // standalone pay page (carries ?code & ?email)
-  var CR_CALENDAR_URL  = 'https://book.auricmovement.com/calendar/create-recharge.ics';
+  var CR_CALENDAR_URL  = 'https://book.auricmovement.com/calendar/add/?e=create-recharge';
   var CR_EVENT = {
     id: 'cr1', label: 'Create & Recharge',
     date: 'August 15th', eventDate: 'Saturday, August 15th',
@@ -11207,15 +11207,15 @@ document.addEventListener('DOMContentLoaded', function() {
   var rfRosterById = {};                 // id -> record, for the action buttons
   var rfAdminContainer = null;
   var RF_ADMIN_SESS = {
-    '1pm': { time:'1:00 PM', arrival:'12:55 PM', cal:'https://book.auricmovement.com/calendar/riddim-kompa-west-hempstead-1pm.ics' },
-    '2pm': { time:'2:00 PM', arrival:'1:55 PM', cal:'https://book.auricmovement.com/calendar/riddim-kompa-west-hempstead-2pm.ics' },
-    'bk12': { time:'12:00 PM', arrival:'11:55 AM', cal:'https://book.auricmovement.com/calendar/riddim-kompa-brooklyn-12pm.ics' },
-    'bk1':  { time:'1:00 PM', arrival:'12:55 PM', cal:'https://book.auricmovement.com/calendar/riddim-kompa-brooklyn-1pm.ics' },
-    'bk2':  { time:'2:00 PM', arrival:'1:55 PM', cal:'https://book.auricmovement.com/calendar/riddim-kompa-brooklyn-2pm.ics' },
-    'tb1230': { time:'12:30 PM', arrival:'12:25 PM', cal:'https://book.auricmovement.com/calendar/turkey-burn-1230pm.ics' },
-    'tb130':  { time:'1:30 PM', arrival:'1:25 PM', cal:'https://book.auricmovement.com/calendar/turkey-burn-130pm.ics' },
-    'hw1230': { time:'12:30 PM', arrival:'12:25 PM', cal:'https://book.auricmovement.com/calendar/halloween-1230pm.ics' },
-    'hw130':  { time:'1:30 PM', arrival:'1:25 PM', cal:'https://book.auricmovement.com/calendar/halloween-130pm.ics' }
+    '1pm': { time:'1:00 PM', arrival:'12:55 PM', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-west-hempstead-1pm' },
+    '2pm': { time:'2:00 PM', arrival:'1:55 PM', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-west-hempstead-2pm' },
+    'bk12': { time:'12:00 PM', arrival:'11:55 AM', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-brooklyn-12pm' },
+    'bk1':  { time:'1:00 PM', arrival:'12:55 PM', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-brooklyn-1pm' },
+    'bk2':  { time:'2:00 PM', arrival:'1:55 PM', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-brooklyn-2pm' },
+    'tb1230': { time:'12:30 PM', arrival:'12:25 PM', cal:'https://book.auricmovement.com/calendar/add/?e=turkey-burn-1230pm' },
+    'tb130':  { time:'1:30 PM', arrival:'1:25 PM', cal:'https://book.auricmovement.com/calendar/add/?e=turkey-burn-130pm' },
+    'hw1230': { time:'12:30 PM', arrival:'12:25 PM', cal:'https://book.auricmovement.com/calendar/add/?e=halloween-1230pm' },
+    'hw130':  { time:'1:30 PM', arrival:'1:25 PM', cal:'https://book.auricmovement.com/calendar/add/?e=halloween-130pm' }
   };
   // Track who has been sent a Founding One (per event + session), so the roster
   // shows a 🎁 badge. Stored in localStorage (this browser).
