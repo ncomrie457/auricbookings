@@ -2430,6 +2430,12 @@
       display: block;
       transition: transform .6s ease, filter .3s ease;
     }
+    /* Create & Recharge cover — the group spans the full width, so show the
+       whole photo (everyone in frame) rather than a square center-crop. */
+    .bq-photo-gallery-cover[data-gallery="recharge"] img {
+      object-fit: contain;
+      background: #efe6d4;
+    }
     .bq-photo-gallery-cover:hover img,
     .bq-photo-gallery-cover:focus-visible img {
       transform: scale(1.04);
@@ -6527,7 +6533,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (home) {
       home.innerHTML = '';
-      renderList.slice(0, 3).forEach(function(item){ home.appendChild(buildNode(item)); });
+      renderList.slice(0, 6).forEach(function(item){ home.appendChild(buildNode(item)); });
     }
     if (gallery) {
       gallery.innerHTML = '';
