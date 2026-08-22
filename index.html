@@ -1666,6 +1666,9 @@
        Frame background matches the flyer's cream (#f8f1e7) so the letterbox is seamless. */
     #event-card-reformer .bq-event-photo, #event-card-reformer-bk .bq-event-photo, #event-card-turkey .bq-event-photo { background: #f8f1e7; }
     #event-card-reformer .bq-event-photo img, #event-card-reformer-bk .bq-event-photo img, #event-card-turkey .bq-event-photo img { object-fit: contain; }
+    /* Halloween flyer is dark — letterbox in near-black so it blends. */
+    #event-card-halloween .bq-event-photo { background:#140f0b; }
+    #event-card-halloween .bq-event-photo img { object-fit: contain; }
 
     /* City tag under an event title (distinguishes same-named events by location). */
     .bq-event-loc { font-family:'Jost',sans-serif; font-size:.72rem; letter-spacing:.13em; text-transform:uppercase; color:var(--gold-text); font-weight:600; margin:.3rem 0 0; display:flex; align-items:center; gap:.35rem; }
@@ -2855,6 +2858,18 @@
         <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
       </button>
 
+      <!-- Halloween — Shhh… Quiet on the Creek — Oct 24, Valley Studio. Opens the Halloween booking overlay. -->
+      <button type="button" id="event-card-halloween" class="bq-event scroll-reveal" data-event-date="2026-10-24" data-event-name="Halloween Reformer Pilates">
+        <div class="bq-event-photo">
+          <img src="halloween-creek-flyer.jpg?v=1" alt="Halloween Reformer Pilates &#8212; Shhh&hellip; Quiet on the Creek. Saturday, October 24 at Valley Studio, West Hempstead NY &#183; two sessions (12:30 &amp; 1:30 PM) &#183; $45, costumes encouraged" loading="lazy" decoding="async">
+        </div>
+        <div class="bq-event-date">10.24.26 &#183; Halloween</div>
+        <div class="bq-event-name">Halloween <em>Reformer Pilates</em></div>
+        <div class="bq-event-loc">West Hempstead, NY</div>
+        <div class="bq-event-sub">Sat &#183; 12:30 &amp; 1:30 PM &#183; $45 &#183; Valley Studio, West Hempstead NY &#183; costumes encouraged &#127875;</div>
+        <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
+      </button>
+
       <!-- Turkey Burn! — Nov 21, Valley Studio. Opens the Turkey Burn booking overlay. -->
       <button type="button" id="event-card-turkey" class="bq-event scroll-reveal" data-event-date="2026-11-21" data-event-name="Turkey Burn!">
         <div class="bq-event-photo">
@@ -2987,7 +3002,7 @@
       document.addEventListener('DOMContentLoaded', function(){
         var mount = document.getElementById('bq-nextup');
         if(!mount) return;
-        var ids = ['event-card-recharge','event-card-reformer','event-card-reformer-bk','event-card-turkey','event-card-matchat','event-card-pilates'];
+        var ids = ['event-card-recharge','event-card-reformer','event-card-reformer-bk','event-card-halloween','event-card-turkey','event-card-matchat','event-card-pilates'];
         var today = new Date(); today.setHours(0,0,0,0);
         var best=null, bestDate=null;
         ids.forEach(function(id){
@@ -3054,6 +3069,7 @@
         var items=[
           {id:'event-card-reformer', tag:'Almost sold out', cls:''},
           {id:'event-card-reformer-bk', tag:'Now booking', cls:'ok'},
+          {id:'event-card-halloween', tag:'Now booking', cls:'ok'},
           {id:'event-card-turkey', tag:'Now booking', cls:'ok'}
         ];
         var out='';
@@ -4498,6 +4514,8 @@
             <option value="rkbk12">Riddim &amp; Kompa &#8212; Brooklyn (12 PM)</option>
             <option value="rkbk1">Riddim &amp; Kompa &#8212; Brooklyn (1 PM)</option>
             <option value="rkbk2">Riddim &amp; Kompa &#8212; Brooklyn (2 PM)</option>
+            <option value="hw1230">Shhh&hellip; Quiet on the Creek &#8212; 12:30 PM</option>
+            <option value="hw130">Shhh&hellip; Quiet on the Creek &#8212; 1:30 PM</option>
             <option value="tb1230">Turkey Burn! &#8212; 12:30 PM</option>
             <option value="tb130">Turkey Burn! &#8212; 1:30 PM</option>
           </select>
@@ -4540,6 +4558,10 @@
           <span>Riddim &amp; Kompa on the Reformer &mdash; Brooklyn &mdash; Collab</span>
         </label>
         <label class="mc-health-row" style="margin-bottom:.45rem;">
+          <input type="checkbox" data-event-badge="halloween" data-field="is_collab">
+          <span>Shhh&hellip; Quiet on the Creek &mdash; Collab</span>
+        </label>
+        <label class="mc-health-row" style="margin-bottom:.45rem;">
           <input type="checkbox" data-event-badge="turkey" data-field="is_collab">
           <span>Turkey Burn! &mdash; Collab</span>
         </label>
@@ -4577,6 +4599,10 @@
         <input type="text" id="admin-donor-reformer-bk" data-event-donors="reformer-bk" placeholder="e.g., partner or sponsor names" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
       </div>
       <div style="margin-bottom:.75rem;">
+        <label for="admin-donor-halloween" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Shhh&hellip; Quiet on the Creek &mdash; Donors</label>
+        <input type="text" id="admin-donor-halloween" data-event-donors="halloween" placeholder="e.g., partner or sponsor names" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
+      </div>
+      <div style="margin-bottom:.75rem;">
         <label for="admin-donor-turkey" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Turkey Burn! &mdash; Donors</label>
         <input type="text" id="admin-donor-turkey" data-event-donors="turkey" placeholder="e.g., partner or sponsor names" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
       </div>
@@ -4601,6 +4627,7 @@
             <option value="recharge">Create &amp; Recharge</option>
             <option value="reformer">Riddim &amp; Kompa &mdash; West Hempstead (both sessions)</option>
             <option value="reformer-bk">Riddim &amp; Kompa &mdash; Brooklyn (all sessions)</option>
+            <option value="halloween">Shhh&hellip; Quiet on the Creek (both sessions)</option>
             <option value="turkey">Turkey Burn! (both sessions)</option>
             <option value="blooming">Something&rsquo;s Blooming (interest list)</option>
           </select>
@@ -4891,44 +4918,44 @@ Can't wait to move and connect with you!</textarea>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <!-- Riddim & Kompa on the Reformer — pick-time → waiver gate → Stripe booking overlay -->
 <style>
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-modal{background:#fdfbf7;border-radius:16px;padding:1.75rem 1.5rem;max-width:460px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.4);max-height:92vh;overflow-y:auto;text-align:center;font-family:'Jost',sans-serif;position:relative;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-x{position:absolute;top:.7rem;right:.9rem;background:none;border:none;font-size:1.4rem;line-height:1;color:#b0a08e;cursor:pointer;padding:.2rem;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-eyebrow{font-family:Georgia,serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#9a6535;font-weight:bold;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) h2.rf-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.6rem;color:var(--brown);margin:.4rem 0 .25rem;font-weight:500;line-height:1.15;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-meta{font-size:.9rem;color:#3d322a;margin:0 0 .2rem;line-height:1.5;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-goodie{font-size:.8rem;color:var(--text-muted);margin:.15rem 0 1.15rem;line-height:1.5;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-time{display:block;width:100%;text-align:left;border:1px solid var(--border);border-radius:12px;padding:.95rem 1.1rem;margin-bottom:.75rem;background:#faf5ee;font-family:'Jost',sans-serif;font-weight:600;color:var(--brown);font-size:.98rem;cursor:pointer;transition:border-color .15s,background .15s;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-time:hover:not(:disabled){border-color:var(--gold);background:#f6efe4;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-time:disabled{opacity:.5;cursor:not-allowed;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-time small{display:block;font-weight:400;color:var(--text-muted);font-size:.78rem;margin-top:.15rem;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-field{text-align:left;margin:0 0 .8rem;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-field label{display:block;font-size:.82rem;font-weight:600;color:var(--brown);margin-bottom:.3rem;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-field input[type=text],:is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-field input[type=email]{width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:9px;font-family:'Jost',sans-serif;font-size:.92rem;background:#fff;color:#2c1a0e;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-field input:focus{outline:none;border-color:var(--gold);}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-opt{font-weight:400;color:var(--text-muted);font-size:.76rem;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-ack{display:flex;gap:.6rem;align-items:flex-start;text-align:left;background:#faf5ee;border:1px solid var(--border);border-radius:10px;padding:.75rem .85rem;margin:0 0 .8rem;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-ack input{margin-top:.15rem;accent-color:var(--gold);width:18px;height:18px;flex-shrink:0;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-ack label{font-size:.82rem;color:#3d322a;line-height:1.45;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-ack a{color:#9a6535;font-weight:600;text-decoration:underline;cursor:pointer;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-policy{font-size:.76rem;color:var(--text-muted);line-height:1.5;margin:.35rem 0 0;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-btn{display:block;width:100%;margin-top:.4rem;padding:.8rem 1rem;border:none;border-radius:999px;background:var(--brown);color:#fff;font-family:'Jost',sans-serif;font-size:.95rem;font-weight:600;letter-spacing:.02em;cursor:pointer;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-btn:disabled{opacity:.45;cursor:not-allowed;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-err{color:#b03636;font-size:.8rem;text-align:left;margin:.15rem 0 .6rem;min-height:1em;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-chosen{font-size:.82rem;color:#3d322a;text-align:left;margin:0 0 1rem;background:#f4ecdd;border-radius:9px;padding:.5rem .7rem;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-chosen a{color:#9a6535;text-decoration:underline;cursor:pointer;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-conf-banner{background:#e7f3e7;border:1px solid #b6d8b6;color:#2f6b34;font-weight:600;border-radius:10px;padding:.8rem 1rem;margin:0 0 1rem;font-size:.95rem;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-conf-playlist{margin-top:1.3rem;padding-top:1.1rem;border-top:1px solid var(--border);text-align:left;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-conf-playlist h4{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:var(--brown);margin:0 0 .3rem;font-weight:600;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-conf-playlist p{font-size:.82rem;color:#3d322a;line-height:1.5;margin:0 0 .7rem;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-conf-splink{display:inline-block;margin-top:.6rem;font-family:'Jost',sans-serif;font-size:.8rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--gold-text);text-decoration:none;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-time.rf-soldout{position:relative;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-time .rf-soldout-tag{color:#b03636;font-weight:600;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-time .rf-left-tag{display:block;color:#b0432e;font-weight:600;font-size:.76rem;margin-top:.2rem;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-getting{text-align:left;margin-top:1.3rem;padding-top:1.1rem;border-top:1px solid var(--border);}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-getting h4{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:var(--brown);margin:0 0 .35rem;font-weight:600;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-getting p{font-size:.82rem;color:#3d322a;line-height:1.5;margin:0 0 .3rem;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-getting a.rf-map{color:#9a6535;font-weight:600;text-decoration:underline;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay) .rf-close-link{background:none;border:none;color:var(--text-muted);text-decoration:underline;font-size:.8rem;margin-top:1.1rem;cursor:pointer;font-family:'Jost',sans-serif;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-modal{background:#fdfbf7;border-radius:16px;padding:1.75rem 1.5rem;max-width:460px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.4);max-height:92vh;overflow-y:auto;text-align:center;font-family:'Jost',sans-serif;position:relative;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-x{position:absolute;top:.7rem;right:.9rem;background:none;border:none;font-size:1.4rem;line-height:1;color:#b0a08e;cursor:pointer;padding:.2rem;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-eyebrow{font-family:Georgia,serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#9a6535;font-weight:bold;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) h2.rf-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.6rem;color:var(--brown);margin:.4rem 0 .25rem;font-weight:500;line-height:1.15;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-meta{font-size:.9rem;color:#3d322a;margin:0 0 .2rem;line-height:1.5;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-goodie{font-size:.8rem;color:var(--text-muted);margin:.15rem 0 1.15rem;line-height:1.5;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-time{display:block;width:100%;text-align:left;border:1px solid var(--border);border-radius:12px;padding:.95rem 1.1rem;margin-bottom:.75rem;background:#faf5ee;font-family:'Jost',sans-serif;font-weight:600;color:var(--brown);font-size:.98rem;cursor:pointer;transition:border-color .15s,background .15s;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-time:hover:not(:disabled){border-color:var(--gold);background:#f6efe4;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-time:disabled{opacity:.5;cursor:not-allowed;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-time small{display:block;font-weight:400;color:var(--text-muted);font-size:.78rem;margin-top:.15rem;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-field{text-align:left;margin:0 0 .8rem;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-field label{display:block;font-size:.82rem;font-weight:600;color:var(--brown);margin-bottom:.3rem;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-field input[type=text],:is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-field input[type=email]{width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:9px;font-family:'Jost',sans-serif;font-size:.92rem;background:#fff;color:#2c1a0e;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-field input:focus{outline:none;border-color:var(--gold);}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-opt{font-weight:400;color:var(--text-muted);font-size:.76rem;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-ack{display:flex;gap:.6rem;align-items:flex-start;text-align:left;background:#faf5ee;border:1px solid var(--border);border-radius:10px;padding:.75rem .85rem;margin:0 0 .8rem;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-ack input{margin-top:.15rem;accent-color:var(--gold);width:18px;height:18px;flex-shrink:0;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-ack label{font-size:.82rem;color:#3d322a;line-height:1.45;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-ack a{color:#9a6535;font-weight:600;text-decoration:underline;cursor:pointer;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-policy{font-size:.76rem;color:var(--text-muted);line-height:1.5;margin:.35rem 0 0;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-btn{display:block;width:100%;margin-top:.4rem;padding:.8rem 1rem;border:none;border-radius:999px;background:var(--brown);color:#fff;font-family:'Jost',sans-serif;font-size:.95rem;font-weight:600;letter-spacing:.02em;cursor:pointer;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-btn:disabled{opacity:.45;cursor:not-allowed;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-err{color:#b03636;font-size:.8rem;text-align:left;margin:.15rem 0 .6rem;min-height:1em;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-chosen{font-size:.82rem;color:#3d322a;text-align:left;margin:0 0 1rem;background:#f4ecdd;border-radius:9px;padding:.5rem .7rem;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-chosen a{color:#9a6535;text-decoration:underline;cursor:pointer;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-conf-banner{background:#e7f3e7;border:1px solid #b6d8b6;color:#2f6b34;font-weight:600;border-radius:10px;padding:.8rem 1rem;margin:0 0 1rem;font-size:.95rem;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-conf-playlist{margin-top:1.3rem;padding-top:1.1rem;border-top:1px solid var(--border);text-align:left;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-conf-playlist h4{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:var(--brown);margin:0 0 .3rem;font-weight:600;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-conf-playlist p{font-size:.82rem;color:#3d322a;line-height:1.5;margin:0 0 .7rem;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-conf-splink{display:inline-block;margin-top:.6rem;font-family:'Jost',sans-serif;font-size:.8rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--gold-text);text-decoration:none;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-time.rf-soldout{position:relative;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-time .rf-soldout-tag{color:#b03636;font-weight:600;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-time .rf-left-tag{display:block;color:#b0432e;font-weight:600;font-size:.76rem;margin-top:.2rem;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-getting{text-align:left;margin-top:1.3rem;padding-top:1.1rem;border-top:1px solid var(--border);}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-getting h4{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:var(--brown);margin:0 0 .35rem;font-weight:600;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-getting p{font-size:.82rem;color:#3d322a;line-height:1.5;margin:0 0 .3rem;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-getting a.rf-map{color:#9a6535;font-weight:600;text-decoration:underline;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay) .rf-close-link{background:none;border:none;color:var(--text-muted);text-decoration:underline;font-size:.8rem;margin-top:1.1rem;cursor:pointer;font-family:'Jost',sans-serif;}
   #rf-waiver-modal{display:none;position:fixed;inset:0;z-index:10000;background:rgba(20,12,6,.6);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1rem;}
   #rf-waiver-modal .rf-wm-card{background:#fff;border-radius:14px;max-width:520px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,.45);font-family:'Jost',sans-serif;overflow:hidden;}
   #rf-waiver-modal h3{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--brown);margin:0;padding:1.1rem 1.25rem .6rem;text-align:center;}
@@ -5488,6 +5515,195 @@ document.addEventListener('DOMContentLoaded', function(){
   });
   // Deep link from the shared flyer (/turkey-burn) → open the booking popup.
   try { if(new URLSearchParams(location.search).get('book')==='turkey'){ setTimeout(openOv, 450); } } catch(e){}
+});
+</script>
+
+<!-- ══ Halloween — "Shhh… Quiet on the Creek" booking overlay (Oct 24, Valley Studio) ══ -->
+<div id="halloween-overlay" style="display:none;position:fixed;inset:0;background:rgba(44,26,14,.85);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);z-index:9999;align-items:center;justify-content:center;padding:1rem;overflow-y:auto;">
+  <div class="rf-modal">
+    <button type="button" class="rf-x" id="halloween-close" aria-label="Close">&times;</button>
+    <div class="rf-eyebrow">Auric Movement</div>
+    <h2 class="rf-title">Halloween Reformer Pilates</h2>
+    <p class="rf-meta" style="font-style:italic;color:#a8642a;">Shhh&hellip; Quiet on the Creek.</p>
+    <p class="rf-meta">Saturday, October 24 &middot; Valley Studio, West Hempstead NY</p>
+    <p class="rf-meta"><strong>$45</strong> &middot; 45-minute session &middot; only 6 spots each</p>
+    <p class="rf-goodie">Costumes encouraged &#127875; best costume prize each session &middot; complimentary goodie bag &middot; grip socks required</p>
+
+    <div id="hw-step-time">
+      <p class="rf-meta" style="margin-bottom:.7rem;font-weight:600;color:var(--brown);">Pick your time:</p>
+      <button type="button" class="rf-time" data-session="hw1230" data-label="12:30 PM session">&#128340; 12:30 PM &mdash; 1:15 PM<small>45-minute reformer session</small></button>
+      <button type="button" class="rf-time" data-session="hw130" data-label="1:30 PM session">&#128336; 1:30 PM &mdash; 2:15 PM<small>45-minute reformer session</small></button>
+    </div>
+
+    <form id="hw-step-form" style="display:none;" novalidate>
+      <div class="rf-chosen">Booking: <strong id="hw-chosen-label"></strong> &middot; <a id="hw-change-time" role="button" tabindex="0">change time</a></div>
+      <div class="rf-field"><label for="hw-name">Full name</label><input type="text" id="hw-name" autocomplete="name" placeholder="Your name"></div>
+      <div class="rf-field"><label for="hw-email">Email</label><input type="email" id="hw-email" autocomplete="email" placeholder="you@email.com"></div>
+      <div class="rf-field"><label for="hw-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="hw-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
+      <div class="rf-field"><label for="hw-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="hw-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:9px;font-family:'Jost',sans-serif;font-size:.92rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
+      <div class="rf-ack">
+        <input type="checkbox" id="hw-refund">
+        <label for="hw-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">All sales are final &mdash; no refunds or credits. Can&rsquo;t make it? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names.</span></label>
+      </div>
+      <div class="rf-ack">
+        <input type="checkbox" id="hw-waiver" disabled>
+        <label for="hw-waiver">I have read and agree to the <a id="hw-open-waiver" role="button" tabindex="0">liability waiver</a>. <span class="rf-opt">(open it to continue)</span></label>
+      </div>
+      <div id="hw-waiver-box" style="display:none;max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:9px;padding:.75rem .85rem;margin:.2rem 0 .4rem;background:#fdfbf7;font-size:.82rem;line-height:1.6;color:#3d322a;"></div>
+      <div class="rf-field"><label for="hw-sign">Signature &mdash; type your full name</label><input type="text" id="hw-sign" autocomplete="off" placeholder="Type your full name to sign"></div>
+      <div class="rf-field">
+        <label for="hw-sigpad">And draw your signature</label>
+        <div style="position:relative;">
+          <canvas id="hw-sigpad" width="500" height="140" style="width:100%;height:140px;border:1px solid var(--border);border-radius:9px;background:#fff;touch-action:none;cursor:crosshair;display:block;"></canvas>
+          <button type="button" id="hw-sig-clear" style="position:absolute;top:6px;right:8px;background:#fff;border:1px solid var(--border);border-radius:6px;font-size:.72rem;padding:.2rem .55rem;cursor:pointer;font-family:'Jost',sans-serif;color:#8a5a2a;">Clear</button>
+        </div>
+      </div>
+      <div class="rf-err" id="hw-form-err" role="alert"></div>
+      <button type="submit" class="rf-btn" id="hw-continue" disabled>Continue to payment &rarr;</button>
+    </form>
+
+    <div id="hw-step-pay" style="display:none;">
+      <p class="rf-meta" style="margin-bottom:1rem;">&#10004; You&rsquo;re all set, <strong id="hw-pay-name"></strong>. Complete payment to lock your <strong id="hw-pay-label"></strong> spot:</p>
+      <a id="hw-pay-btn" class="rf-btn" style="text-decoration:none;display:block;text-align:center;" href="#" target="_blank" rel="noopener noreferrer">Pay $45 &rarr;</a>
+      <p class="rf-policy" style="margin-top:.9rem;">You&rsquo;ll get a Stripe receipt by email. Questions? auricmovement@outlook.com</p>
+      <div style="margin-top:1rem;border-top:1px solid var(--border);padding-top:.9rem;">
+        <button type="button" id="hw-pay-later" class="rf-close-link" style="margin-top:0;">I&rsquo;ll pay later</button>
+        <p id="hw-pay-later-note" class="rf-policy" style="display:none;margin-top:.7rem;color:#8a5a2a;">Got it &mdash; we&rsquo;ve saved your details. Heads up: <strong>spots aren&rsquo;t held and are released first come, first served until payment is received</strong>, so pay soon to secure your place.</p>
+      </div>
+    </div>
+
+    <div class="rf-getting">
+      <h4>Getting there</h4>
+      <p><strong>Valley Studio</strong><br>45 Cherry Valley Ave, West Hempstead, NY 11552</p>
+      <p><a class="rf-map" href="https://maps.google.com/?q=45+Cherry+Valley+Ave+West+Hempstead+NY+11552" target="_blank" rel="noopener noreferrer">Open in Google Maps &rarr;</a></p>
+    </div>
+
+    <button type="button" class="rf-close-link" id="halloween-close2">Close</button>
+  </div>
+</div>
+
+<script>
+/* Halloween "Quiet on the Creek" booking flow (self-contained; shares
+   reformer_registrations via event='halloween-creek-2026-10-24'). */
+document.addEventListener('DOMContentLoaded', function(){
+  var card = document.getElementById('event-card-halloween');
+  var ov   = document.getElementById('halloween-overlay');
+  if(!card || !ov) return;
+
+  var HW_EVENT = 'halloween-creek-2026-10-24';
+  var HW_LINKS = {
+    'hw1230': 'https://buy.stripe.com/5kQdR835016h1JWdMS9sk0e',
+    'hw130':  'https://buy.stripe.com/fZu5kCeNI8yJbkw24a9sk0f'
+  };
+  var HW_CAP = 6;
+
+  var _sb=null;
+  function sb(){
+    if(_sb) return _sb;
+    try { if(window.supabase && window.supabase.createClient){
+      _sb = window.supabase.createClient('https://qvmiwyxerotkqpbuhpun.supabase.co','sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ');
+    }} catch(e){}
+    return _sb;
+  }
+
+  var stepTime=document.getElementById('hw-step-time'),
+      stepForm=document.getElementById('hw-step-form'),
+      stepPay =document.getElementById('hw-step-pay'),
+      chosenLabelEl=document.getElementById('hw-chosen-label'),
+      nameEl=document.getElementById('hw-name'), emailEl=document.getElementById('hw-email'),
+      refEl=document.getElementById('hw-referral'), healthEl=document.getElementById('hw-health'),
+      refundEl=document.getElementById('hw-refund'), waiverEl=document.getElementById('hw-waiver'),
+      signEl=document.getElementById('hw-sign'), formErr=document.getElementById('hw-form-err'),
+      continueBtn=document.getElementById('hw-continue'),
+      waiverBox=document.getElementById('hw-waiver-box');
+  var chosen=null, chosenLabel='';
+  var hwSig=window.AuricSigPad(document.getElementById('hw-sigpad'), document.getElementById('hw-sig-clear'));
+
+  function openOv(){ ov.style.display='flex'; document.body.style.overflow='hidden'; applyCap(); }
+  function closeOv(){ ov.style.display='none'; document.body.style.overflow=''; }
+  card.addEventListener('click', openOv);
+  document.getElementById('halloween-close').addEventListener('click', closeOv);
+  document.getElementById('halloween-close2').addEventListener('click', closeOv);
+  ov.addEventListener('click', function(e){ if(e.target===ov) closeOv(); });
+
+  Array.prototype.forEach.call(stepTime.querySelectorAll('.rf-time'), function(btn){
+    btn.addEventListener('click', function(){
+      if(btn.disabled) return;
+      chosen=btn.getAttribute('data-session'); chosenLabel=btn.getAttribute('data-label');
+      chosenLabelEl.textContent=chosenLabel;
+      stepTime.style.display='none'; stepForm.style.display='';
+    });
+  });
+  document.getElementById('hw-change-time').addEventListener('click', function(){
+    stepForm.style.display='none'; stepTime.style.display=''; chosen=null;
+  });
+
+  document.getElementById('hw-open-waiver').addEventListener('click', function(){
+    if(!waiverBox.innerHTML){
+      var cl=(window.__RF_CLAUSES||[]);
+      var html=cl.map(function(c){ return '<p style="margin:0 0 .6rem;">'+c+'</p>'; }).join('');
+      html+='<p style="margin:.6rem 0 .2rem;font-weight:600;">Refund policy</p><p style="margin:0;">'+(window.__RF_REFUND_TEXT||'')+'</p>';
+      waiverBox.innerHTML=html;
+    }
+    var showing = waiverBox.style.display && waiverBox.style.display!=='none';
+    waiverBox.style.display = showing ? 'none' : 'block';
+    waiverEl.disabled=false;
+  });
+  function syncContinue(){ continueBtn.disabled = !(refundEl.checked && waiverEl.checked); }
+  refundEl.addEventListener('change', syncContinue);
+  waiverEl.addEventListener('change', syncContinue);
+
+  function applyCap(){
+    var c=sb(); if(!c) return;
+    try {
+      c.rpc('reformer_spot_counts').then(function(res){
+        if(!res||res.error||!res.data) return;
+        var paid={ 'hw1230':0,'hw130':0 };
+        res.data.forEach(function(r){ if(paid[r.session]!==undefined) paid[r.session]=Number(r.paid)||0; });
+        Array.prototype.forEach.call(stepTime.querySelectorAll('.rf-time'), function(btn){
+          var s=btn.getAttribute('data-session'); var rem=HW_CAP-(paid[s]||0);
+          var old=btn.querySelector('.rf-left-tag'); if(old) old.remove();
+          var so=btn.querySelector('.rf-soldout-tag'); if(so) so.remove();
+          btn.disabled=false; btn.classList.remove('rf-soldout');
+          if(rem<=0){ btn.disabled=true; btn.classList.add('rf-soldout'); var t=document.createElement('small'); t.className='rf-soldout-tag'; t.textContent='Sold out'; btn.appendChild(t); }
+          else if(rem<=2){ var l=document.createElement('small'); l.className='rf-left-tag'; l.textContent='⚡ Almost sold out — only '+rem+' spot'+(rem===1?'':'s')+' left'; btn.appendChild(l); }
+        });
+      }, function(){});
+    } catch(e){}
+  }
+
+  stepForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    if(!chosen){ formErr.textContent='Please pick a session time first.'; return; }
+    var name=nameEl.value.trim(), email=emailEl.value.trim(), sign=signEl.value.trim();
+    if(name.length<2){ formErr.textContent='Please enter your full name.'; nameEl.focus(); return; }
+    if(!/.+@.+\..+/.test(email)){ formErr.textContent='Please enter a valid email.'; emailEl.focus(); return; }
+    if(!refundEl.checked){ formErr.textContent='Please confirm you understand the refund policy.'; return; }
+    if(!waiverEl.checked){ formErr.textContent='Please open and agree to the liability waiver.'; return; }
+    if(sign.length<2){ formErr.textContent='Please type your full name to sign.'; signEl.focus(); return; }
+    if(hwSig.isEmpty()){ formErr.textContent='Please draw your signature in the box.'; return; }
+    formErr.textContent='';
+    var nowIso=new Date().toISOString();
+    var rec={
+      name:name, email:email, session:chosen, session_label:chosenLabel,
+      referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
+      signature:sign, signature_data:hwSig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:18),
+      refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
+      waiver_agreed:true, is_paid:false, created_at:nowIso, event:HW_EVENT
+    };
+    try { var k='auric_halloween'; var a=JSON.parse(localStorage.getItem(k)||'[]'); a.push(rec); localStorage.setItem(k,JSON.stringify(a)); } catch(e){}
+    try { var c=sb(); if(c) window.rfSafeInsert(c, rec); } catch(e){}
+    document.getElementById('hw-pay-name').textContent=name.split(' ')[0];
+    document.getElementById('hw-pay-label').textContent=chosenLabel;
+    document.getElementById('hw-pay-btn').href = HW_LINKS[chosen] || '#';
+    stepForm.style.display='none'; stepPay.style.display='';
+    stepPay.scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
+  document.getElementById('hw-pay-later').addEventListener('click', function(){
+    document.getElementById('hw-pay-later-note').style.display='block';
+  });
+  // Deep link from the shared flyer (/halloween) → open the booking popup.
+  try { if(new URLSearchParams(location.search).get('book')==='halloween'){ setTimeout(openOv, 450); } } catch(e){}
 });
 </script>
 
@@ -6794,7 +7010,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function applyEventBadges() {
     getEventConfig(function(cfg){
-      var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat', recharge: 'event-card-recharge', reformer: 'event-card-reformer', 'reformer-bk': 'event-card-reformer-bk', turkey: 'event-card-turkey', blooming: 'event-card-blooming' };
+      var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat', recharge: 'event-card-recharge', reformer: 'event-card-reformer', 'reformer-bk': 'event-card-reformer-bk', halloween: 'event-card-halloween', turkey: 'event-card-turkey', blooming: 'event-card-blooming' };
       Object.keys(cards).forEach(function(key){
         var card = document.getElementById(cards[key]);
         if (!card) return;
@@ -7708,7 +7924,9 @@ document.addEventListener('DOMContentLoaded', function() {
       'rkbk1':  { session:'bk1',    slabel:'1:00 PM session',  event:'riddim-kompa-brooklyn-2026-09-26', name:'Riddim & Kompa — Brooklyn, 1 PM' },
       'rkbk2':  { session:'bk2',    slabel:'2:00 PM session',  event:'riddim-kompa-brooklyn-2026-09-26', name:'Riddim & Kompa — Brooklyn, 2 PM' },
       'tb1230': { session:'tb1230', slabel:'12:30 PM session', event:'turkey-burn-2026-11-21',           name:'Turkey Burn! — 12:30 PM' },
-      'tb130':  { session:'tb130',  slabel:'1:30 PM session',  event:'turkey-burn-2026-11-21',           name:'Turkey Burn! — 1:30 PM' }
+      'tb130':  { session:'tb130',  slabel:'1:30 PM session',  event:'turkey-burn-2026-11-21',           name:'Turkey Burn! — 1:30 PM' },
+      'hw1230': { session:'hw1230', slabel:'12:30 PM session', event:'halloween-creek-2026-10-24',       name:'Shhh… Quiet on the Creek — 12:30 PM' },
+      'hw130':  { session:'hw130',  slabel:'1:30 PM session',  event:'halloween-creek-2026-10-24',       name:'Shhh… Quiet on the Creek — 1:30 PM' }
     };
     if (RF_ADD_MAP[event]) {
       isReformer = true;
@@ -8010,12 +8228,14 @@ document.addEventListener('DOMContentLoaded', function() {
     var crContainer       = document.createElement('div'); crContainer.id       = 'admin-cr-container';
     var reformerContainer = document.createElement('div'); reformerContainer.id = 'admin-reformer-container';
     var reformerBkContainer = document.createElement('div'); reformerBkContainer.id = 'admin-reformer-bk-container';
+    var halloweenContainer = document.createElement('div'); halloweenContainer.id = 'admin-halloween-container';
     var turkeyContainer   = document.createElement('div'); turkeyContainer.id   = 'admin-turkey-container';
     var bloomContainer    = document.createElement('div'); bloomContainer.id    = 'admin-bloom-container';
     var corpContainer     = document.createElement('div'); corpContainer.id     = 'admin-corp-container';
     // Tag each event section with its date so the filter can sort past vs upcoming.
     bloomContainer.setAttribute('data-event-date', '2026-12-13');
     turkeyContainer.setAttribute('data-event-date', '2026-11-21');
+    halloweenContainer.setAttribute('data-event-date', '2026-10-24');
     reformerBkContainer.setAttribute('data-event-date', '2026-09-26');
     reformerContainer.setAttribute('data-event-date', '2026-09-13');
     crContainer.setAttribute('data-event-date', '2026-08-15');
@@ -8037,6 +8257,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Upcoming events soonest-first, then past events most-recent-first; Corporate last.
     body.appendChild(reformerContainer);   // Riddim & Kompa — Valley — Sep 13
     body.appendChild(reformerBkContainer); // Riddim & Kompa — Brooklyn — Sep 26
+    body.appendChild(halloweenContainer);  // Shhh… Quiet on the Creek — Oct 24
     body.appendChild(turkeyContainer);     // Turkey Burn! — Nov 21
     body.appendChild(bloomContainer);      // Something's Blooming — Dec 13
     body.appendChild(crContainer);         // Create & Recharge — Aug 15
@@ -8062,6 +8283,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof renderReformerSection === 'function') renderReformerSection(reformerContainer);
     if (typeof renderReformerBkSection === 'function') renderReformerBkSection(reformerBkContainer);
     if (typeof renderReformerTbSection === 'function') renderReformerTbSection(turkeyContainer);
+    if (typeof renderReformerHwSection === 'function') renderReformerHwSection(halloweenContainer);
     if (typeof renderBloomingSection === 'function') renderBloomingSection(bloomContainer);
     if (typeof renderWaitlistNotify === 'function') renderWaitlistNotify();
     if (typeof renderSignedAgreements === 'function') renderSignedAgreements();
@@ -8441,6 +8663,8 @@ document.addEventListener('DOMContentLoaded', function() {
     'rf-bk-12':  { src:'reformer', dbEvent:'riddim-kompa-brooklyn-2026-09-26', session:'bk12', name:'Riddim & Kompa — Brooklyn · 12 PM', date:'Saturday, September 26th', time:'Arrival 11:55 AM · Class 12:00 PM', loc:'Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221' },
     'rf-bk-1':   { src:'reformer', dbEvent:'riddim-kompa-brooklyn-2026-09-26', session:'bk1',  name:'Riddim & Kompa — Brooklyn · 1 PM', date:'Saturday, September 26th', time:'Arrival 12:55 PM · Class 1:00 PM', loc:'Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221' },
     'rf-bk-2':   { src:'reformer', dbEvent:'riddim-kompa-brooklyn-2026-09-26', session:'bk2',  name:'Riddim & Kompa — Brooklyn · 2 PM', date:'Saturday, September 26th', time:'Arrival 1:55 PM · Class 2:00 PM', loc:'Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221' },
+    'hw-1230':   { src:'reformer', dbEvent:'halloween-creek-2026-10-24', session:'hw1230', name:'Shhh… Quiet on the Creek · 12:30 PM', date:'Saturday, October 24th', time:'Arrival 12:25 PM · Class 12:30 PM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
+    'hw-130':    { src:'reformer', dbEvent:'halloween-creek-2026-10-24', session:'hw130',  name:'Shhh… Quiet on the Creek · 1:30 PM', date:'Saturday, October 24th', time:'Arrival 1:25 PM · Class 1:30 PM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
     'tb-1230':   { src:'reformer', dbEvent:'turkey-burn-2026-11-21', session:'tb1230', name:'Turkey Burn! · 12:30 PM', date:'Saturday, November 21st', time:'Arrival 12:25 PM · Class 12:30 PM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
     'tb-130':    { src:'reformer', dbEvent:'turkey-burn-2026-11-21', session:'tb130',  name:'Turkey Burn! · 1:30 PM', date:'Saturday, November 21st', time:'Arrival 1:25 PM · Class 1:30 PM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
     'recharge':  { src:'recharge', name:'Create & Recharge', date:'Saturday, August 15th', time:'Arrival 11:30 AM · Art 11:35 AM', loc:'Inner Diamond Studio · 300 W 38th St, 2F, New York, NY 10018' },
@@ -8805,7 +9029,7 @@ document.addEventListener('DOMContentLoaded', function() {
           });
           callback(confirmed);
         });
-      } else if (eventType === 'reformer' || eventType === 'reformer-bk' || eventType === 'turkey') {
+      } else if (eventType === 'reformer' || eventType === 'reformer-bk' || eventType === 'turkey' || eventType === 'halloween') {
         // Paid reformer-table registrants, via the password-gated roster function.
         // The three events share reformer_registrations, so filter by the event column.
         var RF_SESS = {
@@ -8815,12 +9039,15 @@ document.addEventListener('DOMContentLoaded', function() {
           'bk1':    { label: 'Riddim & Kompa on the Reformer — Brooklyn, 1 PM',  date: 'Saturday, September 26th', arrival: '12:55 PM', start: '1:00 PM' },
           'bk2':    { label: 'Riddim & Kompa on the Reformer — Brooklyn, 2 PM',  date: 'Saturday, September 26th', arrival: '1:55 PM', start: '2:00 PM' },
           'tb1230': { label: 'Turkey Burn! — 12:30 PM', date: 'Saturday, November 21st', arrival: '12:25 PM', start: '12:30 PM' },
-          'tb130':  { label: 'Turkey Burn! — 1:30 PM',  date: 'Saturday, November 21st', arrival: '1:25 PM', start: '1:30 PM' }
+          'tb130':  { label: 'Turkey Burn! — 1:30 PM',  date: 'Saturday, November 21st', arrival: '1:25 PM', start: '1:30 PM' },
+          'hw1230': { label: 'Shhh… Quiet on the Creek — 12:30 PM', date: 'Saturday, October 24th', arrival: '12:25 PM', start: '12:30 PM' },
+          'hw130':  { label: 'Shhh… Quiet on the Creek — 1:30 PM',  date: 'Saturday, October 24th', arrival: '1:25 PM', start: '1:30 PM' }
         };
         var RF_EVENT_FILTER = {
-          'reformer':    function(ev){ return ev !== 'riddim-kompa-brooklyn-2026-09-26' && ev !== 'turkey-burn-2026-11-21'; },
+          'reformer':    function(ev){ return ev !== 'riddim-kompa-brooklyn-2026-09-26' && ev !== 'turkey-burn-2026-11-21' && ev !== 'halloween-creek-2026-10-24'; },
           'reformer-bk': function(ev){ return ev === 'riddim-kompa-brooklyn-2026-09-26'; },
-          'turkey':      function(ev){ return ev === 'turkey-burn-2026-11-21'; }
+          'turkey':      function(ev){ return ev === 'turkey-burn-2026-11-21'; },
+          'halloween':   function(ev){ return ev === 'halloween-creek-2026-10-24'; }
         };
         var keep = RF_EVENT_FILTER[eventType];
         try {
@@ -10222,6 +10449,8 @@ document.addEventListener('DOMContentLoaded', function() {
   var RF_TMPL_CONFIRM    = 'template_pdfnmgu';
   var RF_BK_TMPL_CONFIRM = 'template_pq0dq1h';  // Riddim & Kompa — Brooklyn confirmation (RIDDIM_KOMPA_BROOKLYN_CONFIRMATION_TEMPLATE.html) — sent via Resend
   var RF_TMPL_THANKYOU = 'template_xu6b9xo';   // Riddim & Kompa post-event thank-you (RIDDIM_KOMPA_MESI_ANPIL_TEMPLATE.html) — sent via Resend
+  var RF_HW_TMPL_CONFIRM  = 'REPLACE_HW_CONFIRM';   // Halloween "Shhh… Quiet on the Creek" payment confirmation (HALLOWEEN_CREEK_CONFIRMATION_TEMPLATE.html) — sent via Resend
+  var RF_HW_TMPL_THANKYOU = 'REPLACE_HW_THANKYOU';  // Halloween "Shhh… Quiet on the Creek" post-event thank-you (HALLOWEEN_CREEK_THANKYOU_TEMPLATE.html) — sent via Resend
   var CR_TMPL_CONFIRM  = 'template_am03atq';   // payment confirmed / receipt  (Create & Recharge confirmation)
   var CR_TMPL_WAITLIST = 'REPLACE_CR_WAITLIST';  // waitlist join confirmation   (CREATE_RECHARGE_WAITLIST_TEMPLATE.html)
   var CR_TMPL_WL_OPEN  = 'REPLACE_CR_WLOPEN';    // waitlist spot opened         (CREATE_RECHARGE_WAITLIST_OPEN_TEMPLATE.html)
@@ -10890,7 +11119,9 @@ document.addEventListener('DOMContentLoaded', function() {
     'bk1':  { time:'1:00 PM', arrival:'12:55 PM', cal:'https://book.auricmovement.com/calendar/riddim-kompa-brooklyn-1pm.ics' },
     'bk2':  { time:'2:00 PM', arrival:'1:55 PM', cal:'https://book.auricmovement.com/calendar/riddim-kompa-brooklyn-2pm.ics' },
     'tb1230': { time:'12:30 PM', arrival:'12:25 PM', cal:'https://book.auricmovement.com/calendar/turkey-burn-1230pm.ics' },
-    'tb130':  { time:'1:30 PM', arrival:'1:25 PM', cal:'https://book.auricmovement.com/calendar/turkey-burn-130pm.ics' }
+    'tb130':  { time:'1:30 PM', arrival:'1:25 PM', cal:'https://book.auricmovement.com/calendar/turkey-burn-130pm.ics' },
+    'hw1230': { time:'12:30 PM', arrival:'12:25 PM', cal:'https://book.auricmovement.com/calendar/halloween-1230pm.ics' },
+    'hw130':  { time:'1:30 PM', arrival:'1:25 PM', cal:'https://book.auricmovement.com/calendar/halloween-130pm.ics' }
   };
   // Track who has been sent a Founding One (per event + session), so the roster
   // shows a 🎁 badge. Stored in localStorage (this browser).
@@ -10898,7 +11129,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function foundingKey(email,ev,sess){ return (email||'').toLowerCase()+'|'+(ev||'')+'|'+(sess||''); }
   function fbBadge(rec){ return _foundingSent[foundingKey(rec.email, rec.event, rec.session)] ? ' <span class="atype" style="background:#eef3e8;color:#3b6b3f;">🎁 Founding One</span>' : ''; }
   window.markFoundingSent = function(email,ev,sess){ _foundingSent[foundingKey(email,ev,sess)] = true; try { localStorage.setItem('auric_founding_sent', JSON.stringify(_foundingSent)); } catch(e){} if(typeof rfRefresh==='function') rfRefresh(); };
-  function rfRefresh(){ if(rfAdminContainer) renderReformerSection(rfAdminContainer); if(rfBkAdminContainer) renderReformerBkSection(rfBkAdminContainer); if(rfTbAdminContainer) renderReformerTbSection(rfTbAdminContainer); }
+  function rfRefresh(){ if(rfAdminContainer) renderReformerSection(rfAdminContainer); if(rfBkAdminContainer) renderReformerBkSection(rfBkAdminContainer); if(rfTbAdminContainer) renderReformerTbSection(rfTbAdminContainer); if(rfHwAdminContainer) renderReformerHwSection(rfHwAdminContainer); }
   function renderReformerSection(container){
     if(!container) return;
     rfAdminContainer = container;
@@ -11075,6 +11306,63 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch(e){ render([], true); }
   }
 
+  var rfHwAdminContainer = null;
+  function renderReformerHwSection(container){
+    if(!container) return;
+    rfHwAdminContainer = container;
+    var _prevBlk = container.querySelector('.admin-session-block'); // preserve collapse state across re-renders
+    var block = document.createElement('div'); block.className='admin-session-block' + ((_prevBlk ? _prevBlk.classList.contains('collapsed') : isEventPast('2026-10-24'))?' collapsed':'');
+    function btn(onclick,bg,bd,fg,label){ return '<button onclick="'+onclick+'" style="background:'+bg+';border:1px solid '+bd+';color:'+fg+';border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">'+label+'</button>'; }
+    function render(rows, err){
+      rows.forEach(function(r){ rfRosterById[r.id] = r; });
+      var display = rows.filter(function(r){ return r.event === 'halloween-creek-2026-10-24'; });
+      var CAP = 6, pd = { 'hw1230':0,'hw130':0 };
+      display.forEach(function(r){ if(r.is_paid && pd[r.session]!==undefined) pd[r.session]++; });
+      var paid = display.filter(function(r){ return r.is_paid; }).length;
+      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F383} Shhh… Quiet on the Creek · Oct 24th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(12:30 PM '+pd.hw1230+'/'+CAP+' · 1:30 PM '+pd.hw130+'/'+CAP+')</span></h3>';
+      block.innerHTML += '<button onclick="rfSendThankYou(\'halloween\', this)" style="margin:.1rem 0 .7rem;background:#f3ecff;border:1px solid #cbb6f0;color:#5b3a8a;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F383} Send Halloween thank-you ('+paid+' paid) — after the event</button>';
+      if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
+      if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
+      display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
+      var SLAB = { 'hw1230':'12:30 PM','hw130':'1:30 PM' }; var _curSess=null, _curSessBlock=null;
+      display.forEach(function(rec){
+        rfRosterById[rec.id] = rec;
+        if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.74rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); block.appendChild(_curSessBlock); }
+        var id = rec.id;
+        var item=document.createElement('div'); item.className='admin-sub-item';
+        var badge = rec.is_paid ? '<span class="atype" style="background:#e8f5e9;color:#2e7d32;">paid</span>' : '<span class="atype" style="background:#fef9e7;color:#7a6320;">pending</span>';
+        var ref = rec.referred_by ? '<br><span style="font-size:.75rem;color:#8a5a2a;">\u{1F91D} Referred by '+escapeHTML(rec.referred_by)+'</span>' : '';
+        var health = rec.health ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;white-space:pre-line;"><strong style="color:var(--gold-text);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">\u{1FA79} Health disclosure:</strong><br>'+escapeHTML(rec.health)+'</div>' : '';
+        var sig = rec.signature ? '<br><span style="font-size:.72rem;color:var(--text-muted);">\u{270D}\u{FE0F} Signed: '+escapeHTML(rec.signature)+'</span>' : '';
+        var when = ''; try { when = rec.created_at ? new Date(rec.created_at).toLocaleString() : ''; } catch(e){}
+        var paidBtn = rec.is_paid
+          ? btn('rfAdminSetPaid('+id+',false)','#fff4e5','#f0c890','#a86617','⏳ Mark unpaid')
+          : btn('rfAdminSetPaid('+id+',true)','#e8f5e9','#a5d6a7','#2e7d32','✅ Mark paid');
+        var waiverBtn = rec.signature ? btn('rfAdminWaiver('+id+')','#eef4fb','#b5d4f4','#185fa5','\u{1F4C4} Waiver') : '';
+        var clearHealthBtn = rec.health ? btn('rfAdminClearHealth('+id+')','#fef4e5','#f0c890','#a86617','\u{1FA79} Clear health') : '';
+        function timeOpt(sess,label){
+          if(rec.session===sess){ return '<span style="display:inline-block;background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;font-family:\'Jost\',sans-serif;">'+label+' ✓</span>'; }
+          return btn("rfAdminSetSession("+id+",'"+sess+"')",'#f4ecdd','#e0cfae','#7a5a2a','→ '+label);
+        }
+        var timeBtn = timeOpt('hw1230','12:30 PM') + timeOpt('hw130','1:30 PM');
+        var confirmBtn = btn('rfHwAdminConfirm('+id+')','#f3ecff','#cbb6f0','#5b3a8a','\u{1F383} Confirm + email');
+        var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
+        var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
+          '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+paidBtn+timeBtn+confirmBtn+waiverBtn+clearHealthBtn+editBtn+removeBtn+'</div></div>';
+        (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
+      });
+    }
+    container.innerHTML=''; container.appendChild(block);
+    try {
+      supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(res){
+        if(res && res.error){ render([], true); return; }
+        render((res && res.data) || [], false);
+      }, function(){ render([], true); });
+    } catch(e){ render([], true); }
+  }
+
   // ─── Something's Blooming — interest list roster ───────────────────────
   var bloomRows = [];
   function renderBloomingSection(container){
@@ -11227,6 +11515,29 @@ document.addEventListener('DOMContentLoaded', function() {
     supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: true })
       .then(function(){ rfRefresh(); }, function(){});
   };
+  // Halloween confirmation — same flow as rfBkAdminConfirm but uses the Halloween
+  // template + Halloween session metadata (hw1230/hw130).
+  window.rfHwAdminConfirm = function(id){
+    var rec = rfRosterById[id]; if(!rec){ return; }
+    if(!rec.email){ alert('No email on file for this registration.'); return; }
+    if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
+    if(RF_HW_TMPL_CONFIRM.indexOf('REPLACE')!==-1){ alert('Set RF_HW_TMPL_CONFIRM to your real EmailJS template id first (create it from HALLOWEEN_CREEK_CONFIRMATION_TEMPLATE.html).'); return; }
+    if(!confirm('Send the Halloween confirmation email to '+rec.name+' ('+rec.email+') and mark them paid?')) return;
+    var sess = RF_ADMIN_SESS[rec.session] || RF_ADMIN_SESS['hw1230'];
+    var when=''; try { when = rec.created_at ? new Date(rec.created_at).toLocaleString() : ''; } catch(e){}
+    emailjs.send(EMAILJS_SERVICE_RESEND, RF_HW_TMPL_CONFIRM, {
+      from_name: rec.name, to_email: rec.email,
+      arrival_time: sess.arrival, class_time: sess.time, calendar_url: sess.cal,
+      receipt_amount: '$45.00',
+      receipt_code: 'HW-' + rec.id,
+      receipt_signed_as: rec.signature || rec.name,
+      receipt_signed_at: when,
+      refund_policy_ack_at: when,
+      refund_policy_text: rec.refund_policy_text || window.__RF_REFUND_TEXT || 'All sales are final — no refunds or credits.'
+    }).then(function(){ alert('✅ Confirmation sent to '+rec.email); }, function(){ alert('⚠️ Could not send. Check EmailJS dashboard.'); });
+    supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: true })
+      .then(function(){ rfRefresh(); }, function(){});
+  };
   // Admin: POST-EVENT THANK-YOU BLAST — Riddim & Kompa on the Reformer ("Mèsi Anpil").
   // Sends the MÈSI ANPIL template (RIDDIM_KOMPA_MESI_ANPIL_TEMPLATE.html) via Resend to
   // every PAID registrant of one event. which='valley' (Sep 13, West Hempstead) or
@@ -11237,27 +11548,32 @@ document.addEventListener('DOMContentLoaded', function() {
       if(!r || !r.is_paid) return false;
       if(!(r.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(r.email))) return false;
       var isBk = r.event === 'riddim-kompa-brooklyn-2026-09-26';
+      var isHw = r.event === 'halloween-creek-2026-10-24';
+      if(which==='halloween') return isHw;
       if(which==='bk') return isBk;
-      return !isBk && r.event !== 'turkey-burn-2026-11-21'; // valley = not Brooklyn, not Turkey Burn
+      return !isBk && !isHw && r.event !== 'turkey-burn-2026-11-21'; // valley = not Brooklyn, not Halloween, not Turkey Burn
     });
-    var where = (which==='bk') ? 'Brooklyn' : 'West Hempstead';
-    if(!recips.length){ alert('No paid registrants to thank for Riddim & Kompa — '+where+' yet.'); return; }
+    var isHalloween = (which==='halloween');
+    var thankTmpl = isHalloween ? RF_HW_TMPL_THANKYOU : RF_TMPL_THANKYOU;
+    var eventLabel = isHalloween ? 'Shhh… Quiet on the Creek' : 'Riddim & Kompa';
+    var where = isHalloween ? 'Valley Studio' : (which==='bk') ? 'Brooklyn' : 'West Hempstead';
+    if(!recips.length){ alert('No paid registrants to thank for '+eventLabel+' — '+where+' yet.'); return; }
     if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
-    if(RF_TMPL_THANKYOU.indexOf('REPLACE')!==-1){ alert('Set RF_TMPL_THANKYOU to your real EmailJS template id first.'); return; }
-    if(!confirm('Send the Riddim & Kompa “Mèsi Anpil” thank-you to '+recips.length+' paid registrant(s) — '+where+'?\n\n(Sends through Resend.)')) return;
+    if(thankTmpl.indexOf('REPLACE')!==-1){ alert('Set '+(isHalloween?'RF_HW_TMPL_THANKYOU':'RF_TMPL_THANKYOU')+' to your real EmailJS template id first.'); return; }
+    if(!confirm('Send the '+eventLabel+' thank-you to '+recips.length+' paid registrant(s) — '+where+'?\n\n(Sends through Resend.)')) return;
     var btn = triggerBtn; var originalText = btn ? btn.textContent : '';
     if(btn){ btn.disabled=true; }
     var sent=0, failed=0, failedRecipients=[];
     function sendNext(i){
       if(i>=recips.length){
         if(btn){ btn.disabled=false; btn.textContent=originalText; }
-        var msg='✅ Sent '+sent+' Riddim & Kompa thank-you email(s).';
+        var msg='✅ Sent '+sent+' '+eventLabel+' thank-you email(s).';
         if(failed>0){ msg+='\n\n⚠️ '+failed+' failed: '+failedRecipients.join(', ')+'\n\nCheck EmailJS Dashboard → History.'; }
         alert(msg); return;
       }
       var rec=recips[i];
       if(btn){ btn.textContent='Sending... ('+(sent+failed)+'/'+recips.length+')'; }
-      emailjs.send(EMAILJS_SERVICE_RESEND, RF_TMPL_THANKYOU, { from_name: rec.name, to_email: rec.email })
+      emailjs.send(EMAILJS_SERVICE_RESEND, thankTmpl, { from_name: rec.name, to_email: rec.email })
         .then(function(){ sent++; }).catch(function(err){ failed++; failedRecipients.push(rec.email); console.error('[rf thank-you] FAILED for '+rec.email, err); })
         .then(function(){ setTimeout(function(){ sendNext(i+1); }, 600); });
     }

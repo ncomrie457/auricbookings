@@ -1,0 +1,200 @@
+<!--
+  ════════════════════════════════════════════════════════════
+   Halloween Reformer — "Shhh… Quiet on the Creek" Payment Confirmation
+   (Valley Studio · Saturday, October 24)
+   ────────────────────────────────────────────────────────────
+   HOW TO USE:
+     1. In EmailJS → Email Templates → Create New Template.
+     2. Switch to the "Code"/HTML view and paste this ENTIRE file over
+        everything, then Save.
+     3. Copy the new template id (e.g. template_xxxxxxx) and set it in
+        index.html:  var RF_HW_TMPL_CONFIRM = 'template_xxxxxxx';
+     4. In the template Settings tab set:
+          Subject:   You're in — Shhh… Quiet on the Creek 🎃 Auric Movement
+          From Name: Auric Movement
+          To Email:  {{to_email}}
+
+   EmailJS variables (same names as the other reformer confirmations):
+     {{from_name}} {{to_email}} {{arrival_time}} {{class_time}} {{calendar_url}}
+     {{receipt_amount}} {{receipt_code}} {{receipt_signed_as}}
+     {{receipt_signed_at}} {{refund_policy_text}} {{refund_policy_ack_at}}
+  ════════════════════════════════════════════════════════════
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You're in — Shhh&hellip; Quiet on the Creek</title>
+</head>
+<body style="margin:0;padding:0;background-color:#100c09;font-family:Georgia,'Times New Roman',serif;color:#e9dcc9;">
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#100c09;padding:32px 16px;">
+  <tr>
+    <td align="center">
+
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#1a1410;border-radius:14px;overflow:hidden;box-shadow:0 6px 34px rgba(0,0,0,0.55);max-width:600px;width:100%;">
+
+        <!-- Top accent stripe: moss · amber · ember -->
+        <tr>
+          <td style="padding:0;font-size:0;line-height:0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td width="34%" style="height:6px;background-color:#3b4a2f;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="33%" style="height:6px;background-color:#c9812f;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="33%" style="height:6px;background-color:#8a3a1e;font-size:0;line-height:0;">&nbsp;</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Header -->
+        <tr>
+          <td align="center" style="background-color:#161a12;padding:38px 30px 30px;border-bottom:1px solid #2c2a1f;">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:#c9812f;letter-spacing:4px;text-transform:uppercase;font-weight:bold;">Auric Movement</div>
+            <div style="font-size:30px;line-height:1;margin-top:14px;">&#127875;&nbsp;&#129415;&nbsp;&#127875;</div>
+            <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:32px;line-height:1.15;color:#f0e4cf;margin-top:12px;">Shhh&hellip;<br>Quiet on the Creek</div>
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:#a9b892;letter-spacing:2.5px;text-transform:uppercase;margin-top:14px;">Halloween Reformer Pilates</div>
+            <div style="display:inline-block;background-color:#c9812f;color:#1a1410;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;padding:8px 20px;border-radius:20px;margin-top:18px;">&#10003; Spot Confirmed</div>
+          </td>
+        </tr>
+
+        <!-- Greeting -->
+        <tr>
+          <td style="padding:34px 42px 6px;">
+            <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:24px;color:#f0e4cf;margin:0 0 14px 0;">You&rsquo;re in, {{from_name}}.</p>
+            <p style="font-family:Georgia,serif;font-size:16px;line-height:1.75;color:#d9cbb5;margin:0;">
+              Your payment is in and your spot for <strong style="color:#f0e4cf;">Shhh&hellip; Quiet on the Creek &mdash; our Halloween reformer session on Saturday, October 24th</strong> is officially secured. Come as you are, or come as something a little spooky. &#127875;
+            </p>
+          </td>
+        </tr>
+
+        <!-- Costume prompt -->
+        <tr>
+          <td style="padding:20px 42px 8px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#221a13;border:1px solid #3a2f22;border-radius:10px;">
+              <tr>
+                <td style="padding:24px 26px;" align="center">
+                  <div style="font-size:26px;line-height:1;">&#129415;</div>
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#c9812f;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin:10px 0 8px;">Costumes Encouraged</div>
+                  <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:22px;line-height:1.4;color:#f0e4cf;margin:0;">
+                    Dress the part &mdash; there&rsquo;s a little prize for the best costume in each session.
+                  </p>
+                  <p style="font-family:Georgia,serif;font-size:13px;line-height:1.6;color:#b6a888;margin:12px 0 0 0;">
+                    Keep it comfy enough to move in &mdash; grip socks required.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Your Session -->
+        <tr>
+          <td style="padding:24px 42px 8px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#221a13;border-left:3px solid #c9812f;border-radius:0 8px 8px 0;">
+              <tr>
+                <td style="padding:20px 24px;">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#c9812f;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:12px;">Your Session</div>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#d9cbb5;width:120px;"><strong style="color:#f0e4cf;">Event:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#d9cbb5;">Halloween Reformer Pilates</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#d9cbb5;"><strong style="color:#f0e4cf;">Date:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#d9cbb5;">Saturday, October 24th &middot; {{class_time}}</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#d9cbb5;"><strong style="color:#f0e4cf;">Arrival:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#d9cbb5;">{{arrival_time}}</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#d9cbb5;"><strong style="color:#f0e4cf;">Class starts:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#d9cbb5;">{{class_time}}</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#d9cbb5;vertical-align:top;"><strong style="color:#f0e4cf;">Location:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#d9cbb5;line-height:1.55;">Valley Studio<br>45 Cherry Valley Ave<br>West Hempstead, NY 11552</td></tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Add to calendar -->
+        <tr>
+          <td style="padding:22px 42px 10px;" align="center">
+            <a href="{{calendar_url}}" style="display:inline-block;background-color:#8a3a1e;color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:13px 30px;border-radius:8px;">&#128197; Add to My Calendar</a>
+            <p style="font-family:Georgia,serif;font-size:12px;color:#8f8270;margin:12px 0 0 0;">Works with Apple, Google &amp; Outlook calendars.</p>
+          </td>
+        </tr>
+
+        <!-- Divider -->
+        <tr><td style="padding:12px 42px;"><div style="border-top:1px solid #2c2a1f;"></div></td></tr>
+
+        <!-- Receipt -->
+        <tr>
+          <td style="padding:0 42px 22px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#221a13;border-radius:8px;">
+              <tr>
+                <td style="padding:20px 24px;">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#8fae6f;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:12px;">&#10003; Payment Received &mdash; Receipt</div>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#d9cbb5;width:150px;"><strong style="color:#f0e4cf;">Amount paid:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#d9cbb5;">{{receipt_amount}}</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#d9cbb5;"><strong style="color:#f0e4cf;">Confirmation code:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#d9cbb5;">{{receipt_code}}</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#d9cbb5;"><strong style="color:#f0e4cf;">Waiver signed by:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#d9cbb5;">{{receipt_signed_as}}</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#d9cbb5;"><strong style="color:#f0e4cf;">Signed at:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#d9cbb5;">{{receipt_signed_at}}</td></tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- What to bring -->
+        <tr>
+          <td style="padding:0 42px 18px;">
+            <h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:22px;color:#f0e4cf;margin:0 0 12px 0;font-weight:500;">What to bring</h2>
+            <p style="font-family:Georgia,serif;font-size:14px;color:#d9cbb5;line-height:1.8;margin:0;">
+              &bull;&nbsp; A costume, if you&rsquo;re feeling it &mdash; comfy enough to move in &#127875;<br>
+              &bull;&nbsp; Grip socks (required)<br>
+              &bull;&nbsp; All equipment is provided &mdash; plus a complimentary goodie bag &#127873;
+            </p>
+          </td>
+        </tr>
+
+        <!-- Lateness note -->
+        <tr>
+          <td style="padding:0 42px 20px;">
+            <p style="font-family:Georgia,serif;font-size:13px;color:#a8977f;line-height:1.65;margin:0;font-style:italic;">
+              &#9200; Please arrive at {{arrival_time}}. Class begins at {{class_time}} with a <strong>5-minute grace period only</strong> &mdash; late arrivals can&rsquo;t be admitted. We want you to have the full experience.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Refund policy -->
+        <tr>
+          <td style="padding:0 42px 28px;">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#7a705e;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">Refund Policy &mdash; Acknowledged {{refund_policy_ack_at}}</div>
+            <p style="font-family:Georgia,serif;font-size:12px;color:#a8977f;line-height:1.65;margin:0;white-space:pre-line;">{{refund_policy_text}}</p>
+          </td>
+        </tr>
+
+        <!-- Closing -->
+        <tr>
+          <td style="padding:0 42px 30px;">
+            <p style="font-family:Georgia,serif;font-size:15px;color:#d9cbb5;line-height:1.75;margin:0 0 10px 0;">See you on the reformer &mdash; come ready to move, breathe, and haunt the creek (quietly). &#129415;</p>
+            <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:20px;color:#f0e4cf;margin:0;">&mdash; Niara</p>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background-color:#161a12;padding:28px 34px;" align="center">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#e9dcc9;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">Auric Movement</div>
+            <div style="font-family:Georgia,serif;font-size:12px;color:#b6a888;line-height:1.8;">
+              Pilates events in NYC, hosted with intention.<br>
+              <a href="mailto:auricmovement@outlook.com" style="color:#e0b878;text-decoration:none;">auricmovement@outlook.com</a> &middot; <a href="https://book.auricmovement.com" style="color:#e0b878;text-decoration:none;">book.auricmovement.com</a>
+            </div>
+            <div style="border-top:1px solid rgba(255,255,255,0.14);margin-top:20px;padding-top:16px;">
+              <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:15px;color:#cdd8bb;">&#10022; Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect &#10022;</div>
+            </div>
+          </td>
+        </tr>
+
+      </table>
+
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>
