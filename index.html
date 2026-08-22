@@ -8432,28 +8432,34 @@ document.addEventListener('DOMContentLoaded', function() {
   var FOUNDING_GIFT_COUNT = 1;
   // Founding One — emails the free-tote note to the FIRST person who booked a chosen
   // event (generic FOUNDING_TEMPLATE.html, event name/date/time/location filled in).
+  // Multi-session reformer events get a Founding One PER SESSION (first booker of
+  // each time slot). Single-session / non-reformer events stay event-level.
   var FOUNDING_EVENTS = {
-    'matchat':     { name:'Mat & Chat',                                    date:'Saturday, August 1st',    time:'Arrival 11:25 AM · Class 11:30 AM', loc:'The Fitin · 297 7th Ave, Floor 3 · New York, NY 10001' },
-    'reformer':    { name:'Riddim & Kompa on the Reformer — West Hempstead', date:'Sunday, September 13th', time:'', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
-    'reformer-bk': { name:'Riddim & Kompa on the Reformer — Brooklyn',      date:'Saturday, September 26th', time:'', loc:'Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221' },
-    'turkey':      { name:'Turkey Burn!',                                   date:'Saturday, November 21st', time:'', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
-    'recharge':    { name:'Create & Recharge',                             date:'Saturday, August 15th',   time:'Arrival 11:30 AM · Art 11:35 AM', loc:'Inner Diamond Studio · 300 W 38th St, 2F, New York, NY 10018' },
-    'pilates':     { name:'Pilates x Niara',                               date:'Friday, June 19th',       time:'', loc:'The Space Pilates Studio · 36 West 20th Street, 2nd Floor, New York, NY 10011' }
+    'matchat':   { src:'matchat',  name:'Mat & Chat', date:'Saturday, August 1st', time:'Arrival 11:25 AM · Class 11:30 AM', loc:'The Fitin · 297 7th Ave, Floor 3 · New York, NY 10001' },
+    'rf-wh-1pm': { src:'reformer', dbEvent:'riddim-kompa-reformer-2026-09-13', session:'1pm',  name:'Riddim & Kompa — West Hempstead · 1 PM', date:'Sunday, September 13th', time:'Arrival 12:55 PM · Class 1:00 PM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
+    'rf-wh-2pm': { src:'reformer', dbEvent:'riddim-kompa-reformer-2026-09-13', session:'2pm',  name:'Riddim & Kompa — West Hempstead · 2 PM', date:'Sunday, September 13th', time:'Arrival 1:55 PM · Class 2:00 PM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
+    'rf-bk-12':  { src:'reformer', dbEvent:'riddim-kompa-brooklyn-2026-09-26', session:'bk12', name:'Riddim & Kompa — Brooklyn · 12 PM', date:'Saturday, September 26th', time:'Arrival 11:55 AM · Class 12:00 PM', loc:'Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221' },
+    'rf-bk-1':   { src:'reformer', dbEvent:'riddim-kompa-brooklyn-2026-09-26', session:'bk1',  name:'Riddim & Kompa — Brooklyn · 1 PM', date:'Saturday, September 26th', time:'Arrival 12:55 PM · Class 1:00 PM', loc:'Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221' },
+    'rf-bk-2':   { src:'reformer', dbEvent:'riddim-kompa-brooklyn-2026-09-26', session:'bk2',  name:'Riddim & Kompa — Brooklyn · 2 PM', date:'Saturday, September 26th', time:'Arrival 1:55 PM · Class 2:00 PM', loc:'Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221' },
+    'tb-1230':   { src:'reformer', dbEvent:'turkey-burn-2026-11-21', session:'tb1230', name:'Turkey Burn! · 12:30 PM', date:'Saturday, November 21st', time:'Arrival 12:25 PM · Class 12:30 PM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
+    'tb-130':    { src:'reformer', dbEvent:'turkey-burn-2026-11-21', session:'tb130',  name:'Turkey Burn! · 1:30 PM', date:'Saturday, November 21st', time:'Arrival 1:25 PM · Class 1:30 PM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
+    'recharge':  { src:'recharge', name:'Create & Recharge', date:'Saturday, August 15th', time:'Arrival 11:30 AM · Art 11:35 AM', loc:'Inner Diamond Studio · 300 W 38th St, 2F, New York, NY 10018' },
+    'pilates':   { src:'pilates',  name:'Pilates x Niara', date:'Friday, June 19th', time:'', loc:'The Space Pilates Studio · 36 West 20th Street, 2nd Floor, New York, NY 10011' }
   };
   function foundingGatherFirst(eventKey, cb){
+    var meta=FOUNDING_EVENTS[eventKey]; if(!meta){ cb(null); return; }
     function earliest(arr){ var v=arr.filter(function(r){ return r.email; }); v.sort(function(a,b){ return (a.created||'').localeCompare(b.created||''); }); return v[0]||null; }
-    if(eventKey==='matchat'){
+    if(meta.src==='matchat'){
       getMCData(function(d){ cb(earliest((d.mc1||[]).filter(function(r){return r.type==='confirmed';}).map(function(r){return {name:r.name,email:r.email,created:r.created_at||r.timestamp_iso||r.time};}))); });
-    } else if(eventKey==='recharge'){
+    } else if(meta.src==='recharge'){
       getCRData(function(d){ cb(earliest((d.cr1||[]).filter(function(r){return r.type==='confirmed'&&r.isPaid;}).map(function(r){return {name:r.name,email:r.email,created:r.created_at};}))); });
-    } else if(eventKey==='pilates'){
+    } else if(meta.src==='pilates'){
       getData(function(d){ var c=[]; SESSIONS.forEach(function(s){ (d[s.id]||[]).filter(function(r){return r.type==='confirmed';}).forEach(function(r){ c.push({name:r.name,email:r.email,created:r.created_at||r.timestamp_iso||r.time}); }); }); cb(earliest(c)); });
-    } else if(eventKey==='reformer'||eventKey==='reformer-bk'||eventKey==='turkey'){
-      var keep={ 'reformer':function(ev){return ev!=='riddim-kompa-brooklyn-2026-09-26'&&ev!=='turkey-burn-2026-11-21';}, 'reformer-bk':function(ev){return ev==='riddim-kompa-brooklyn-2026-09-26';}, 'turkey':function(ev){return ev==='turkey-burn-2026-11-21';} }[eventKey];
+    } else if(meta.src==='reformer'){
       try {
         supabase.rpc('reformer_roster',{pass:ADMIN_PASSWORD}).then(function(res){
           var rows=(res&&res.data)||[];
-          cb(earliest(rows.filter(function(r){return r.is_paid&&r.email&&keep(r.event);}).map(function(r){ var s=RF_ADMIN_SESS[r.session]; return {name:r.name,email:r.email,created:r.created_at, time:(s?('Arrival '+s.arrival+' · Class '+s.time):'')}; })));
+          cb(earliest(rows.filter(function(r){return r.is_paid&&r.email&&r.event===meta.dbEvent&&r.session===meta.session;}).map(function(r){return {name:r.name,email:r.email,created:r.created_at};})));
         }, function(){ cb(null); });
       } catch(e){ cb(null); }
     } else cb(null);
