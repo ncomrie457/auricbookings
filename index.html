@@ -9202,7 +9202,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
           supabase.from('blooming_interest').select('*').order('created_at').then(function(res){
             var rows = (res && res.data) || [];
-            var confirmed = rows.filter(function(r){ return r.email; }).map(function(rec){
+            var confirmed = rows.filter(function(r){ return r.email && r.source!=='riddim-interest' && r.event!=='riddim-kompa-next'; }).map(function(rec){
               return { rec: { name: rec.name, email: rec.email }, sess: { label: 'Something’s Blooming', date: 'Saturday, December 13th', arrival: 'TBD', start: 'TBD' } };
             });
             callback(confirmed);
@@ -11531,7 +11531,8 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
       supabase.from('blooming_interest').select('*').order('created_at').then(function(res){
         if(res && res.error){ render([], true); return; }
-        render((res && res.data) || [], false);
+        var data = ((res && res.data) || []).filter(function(r){ return r.source!=='riddim-interest' && r.event!=='riddim-kompa-next'; });
+        render(data, false);
       }, function(){ render([], true); });
     } catch(e){ render([], true); }
   }
