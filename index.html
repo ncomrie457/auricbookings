@@ -8467,31 +8467,49 @@ document.addEventListener('DOMContentLoaded', function() {
       +'<div style="font-family:\'Cormorant Garamond\',serif;font-style:italic;font-size:1.5rem;color:#3b4a2f;margin-bottom:2px;">🎁 Send Founding One</div>'
       +'<div style="font-size:.86em;color:#6b6750;margin-bottom:14px;">Emails the free-tote note to the <strong>first person</strong> who booked the event you pick.</div>'
       +'<label style="display:block;font-size:.78rem;color:#3b4a2f;font-weight:600;margin-bottom:.3rem;">Event</label>'
-      +'<select id="founding-one-event" style="width:100%;padding:.5rem .75rem;border:1px solid #d9cba6;border-radius:8px;font-family:\'Jost\',sans-serif;font-size:.9rem;background:#fff;color:#3d322a;margin-bottom:14px;">'+opts+'</select>'
+      +'<select id="founding-one-event" style="width:100%;padding:.5rem .75rem;border:1px solid #d9cba6;border-radius:8px;font-family:\'Jost\',sans-serif;font-size:.9rem;background:#fff;color:#3d322a;margin-bottom:12px;">'+opts+'</select>'
+      +'<div id="founding-one-preview" style="margin-bottom:12px;padding:.7rem .85rem;background:#eef3e8;border:1px solid #cdddbb;border-radius:10px;font-size:.86em;color:#3b4a2f;min-height:1.1em;">Looking up the first booker…</div>'
       +'<div id="founding-one-status" style="margin-bottom:12px;font-size:.86em;color:#3b4a2f;min-height:1.1em;"></div>'
       +'<div style="display:flex;gap:9px;">'
-      +'<button type="button" id="founding-one-send" class="btn btn-primary" style="flex:1;">Send to first booker</button>'
+      +'<button type="button" id="founding-one-send" class="btn btn-primary" style="flex:1;" disabled>Send to first booker</button>'
       +'<button type="button" id="founding-one-cancel" class="btn" style="background:#e3d9bf;color:#3b4a2f;">Cancel</button>'
       +'</div></div>';
     document.body.appendChild(ov);
     function close(){ ov.remove(); }
     ov.addEventListener('click',function(e){ if(e.target===ov) close(); });
     document.getElementById('founding-one-cancel').addEventListener('click',close);
-    document.getElementById('founding-one-send').addEventListener('click',function(){
-      var key=document.getElementById('founding-one-event').value; var meta=FOUNDING_EVENTS[key];
-      var st=document.getElementById('founding-one-status'); var btn=this; btn.disabled=true; st.textContent='Finding the first booker…';
+    var evSel=document.getElementById('founding-one-event');
+    var prevEl=document.getElementById('founding-one-preview');
+    var sendBtn=document.getElementById('founding-one-send');
+    var stEl=document.getElementById('founding-one-status');
+    var _curPerson=null, _lookupToken=0;
+    function preview(){
+      var key=evSel.value; stEl.textContent=''; _curPerson=null; sendBtn.disabled=true;
+      prevEl.textContent='Looking up the first booker…';
+      var tok=++_lookupToken;
       foundingGatherFirst(key,function(p){
-        if(!p){ st.textContent='No paid/confirmed bookings for this event yet.'; btn.disabled=false; return; }
-        if(typeof emailjs==='undefined'){ st.textContent='EmailJS not loaded.'; btn.disabled=false; return; }
-        if(MC_TMPL_FOUNDING.indexOf('REPLACE')!==-1){ st.textContent='Set the founding template id first.'; btn.disabled=false; return; }
-        if(!confirm('Send the Founding One gift email to '+p.name+' ('+p.email+')?\n\nThey were the first to book '+meta.name+'.')){ btn.disabled=false; st.textContent=''; return; }
-        emailjs.send(EMAILJS_SERVICE_RESEND, MC_TMPL_FOUNDING, {
-          from_name:p.name, to_email:p.email,
-          event_name:meta.name, event_date:meta.date,
-          event_time:(p.time||meta.time||''), event_location:meta.loc
-        }).then(function(){ st.textContent='✅ Sent to '+p.email; btn.disabled=false; },
-          function(){ st.textContent='⚠️ Could not send. Check EmailJS dashboard.'; btn.disabled=false; });
+        if(tok!==_lookupToken) return; // a newer lookup superseded this one
+        _curPerson=p;
+        if(!p){ prevEl.innerHTML='<span style="color:#8a6b3a;">No paid/confirmed bookings for this event yet.</span>'; sendBtn.disabled=true; return; }
+        prevEl.innerHTML='<strong>First to book:</strong> '+escapeHTML(p.name)+'<br><span style="color:#5f7052;">'+escapeHTML(p.email)+'</span>';
+        sendBtn.disabled=false;
       });
+    }
+    evSel.addEventListener('change', preview);
+    preview();
+    sendBtn.addEventListener('click',function(){
+      var key=evSel.value; var meta=FOUNDING_EVENTS[key]; var p=_curPerson;
+      if(!p){ stEl.textContent='No first booker to send to yet.'; return; }
+      if(typeof emailjs==='undefined'){ stEl.textContent='EmailJS not loaded.'; return; }
+      if(MC_TMPL_FOUNDING.indexOf('REPLACE')!==-1){ stEl.textContent='Set the founding template id first.'; return; }
+      if(!confirm('Send the Founding One gift email to '+p.name+' ('+p.email+')?\n\nThey were the first to book '+meta.name+'.')) return;
+      sendBtn.disabled=true; stEl.textContent='Sending…';
+      emailjs.send(EMAILJS_SERVICE_RESEND, MC_TMPL_FOUNDING, {
+        from_name:p.name, to_email:p.email,
+        event_name:meta.name, event_date:meta.date,
+        event_time:(p.time||meta.time||''), event_location:meta.loc
+      }).then(function(){ stEl.textContent='✅ Sent to '+p.email; },
+        function(){ stEl.textContent='⚠️ Could not send. Check EmailJS dashboard.'; sendBtn.disabled=false; });
     });
   }
   document.getElementById('admin-founding-btn').addEventListener('click', function(){ openFoundingOne(); });
