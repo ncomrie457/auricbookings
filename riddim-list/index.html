@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Something's Blooming — Interest List</title>
+<title>Riddim &amp; Kompa — Interest List</title>
 <style>
-  :root{--ivory:#f1e9da;--cream:#faf6ee;--card:#fffdf9;--brown:#5A3A1A;--gold:#9c6b34;--muted:#8a7d6b;--border:#e6dbc8;--sage:#8a9a78;}
+  :root{--ivory:#f1e9da;--card:#fffdf9;--brown:#5A3A1A;--gold:#9c6b34;--muted:#8a7d6b;--border:#e6dbc8;--green:#123522;}
   *{margin:0;padding:0;box-sizing:border-box;}
   body{font-family:'Jost','Helvetica Neue',Arial,sans-serif;background:var(--ivory);color:#3d322a;-webkit-font-smoothing:antialiased;}
   .wrap{max-width:900px;margin:0 auto;padding:2rem 1.1rem 4rem;}
   header{text-align:center;margin:1rem 0 1.8rem;}
   .eyebrow{font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:600;}
   h1{font-family:Georgia,'Cormorant Garamond',serif;font-size:2.1rem;color:var(--brown);margin-top:.4rem;font-weight:600;}
-  h1 em{color:var(--sage);font-style:italic;}
+  h1 em{color:var(--green);font-style:italic;}
   .count{margin-top:.5rem;font-size:.95rem;color:var(--muted);}
   .bar{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin:1.2rem 0 1.5rem;}
   .btn{font-family:inherit;font-size:.82rem;font-weight:600;letter-spacing:.02em;border-radius:999px;padding:.6rem 1.3rem;cursor:pointer;border:1px solid var(--gold);background:var(--brown);color:#fff;}
@@ -28,7 +28,6 @@
   .empty{text-align:center;padding:2.5rem 1rem;color:var(--muted);}
   .tablewrap{overflow-x:auto;}
   .status{text-align:center;font-size:.8rem;color:var(--muted);margin-top:1rem;}
-  /* Passcode gate */
   #gate{position:fixed;inset:0;background:var(--ivory);display:flex;align-items:center;justify-content:center;padding:1.2rem;z-index:50;}
   .gatecard{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2.2rem 1.8rem;max-width:380px;width:100%;text-align:center;box-shadow:0 24px 60px -34px rgba(90,58,26,.5);}
   .gatecard h2{font-family:Georgia,serif;color:var(--brown);font-size:1.5rem;margin-bottom:.3rem;}
@@ -38,12 +37,11 @@
 </style>
 </head>
 <body>
-  <!-- Passcode gate -->
   <div id="gate">
     <div class="gatecard">
       <div class="eyebrow">Auric Movement</div>
-      <h2>Something's Blooming</h2>
-      <p>Enter the shared passcode to view the interest list.</p>
+      <h2>Riddim &amp; Kompa</h2>
+      <p>Enter the passcode to view the interest list.</p>
       <input id="gate-input" type="password" placeholder="Passcode" autocomplete="off" autofocus>
       <div class="gateerr" id="gate-err"></div>
       <button class="btn" id="gate-btn" style="width:100%;">View list</button>
@@ -52,8 +50,8 @@
 
   <div class="wrap" id="app" style="display:none;">
     <header>
-      <div class="eyebrow">Curated Sunday &times; Auric Movement</div>
-      <h1>Something's <em>Blooming</em> &mdash; Interest List</h1>
+      <div class="eyebrow">On the Reformer &times; Auric Movement</div>
+      <h1>Riddim &amp; <em>Kompa</em> &mdash; Interest List</h1>
       <div class="count" id="count">Loading&hellip;</div>
     </header>
     <div class="bar">
@@ -62,7 +60,7 @@
     </div>
     <div class="tablewrap">
       <table id="tbl">
-        <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>Signed up</th></tr></thead>
+        <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Instagram / phone</th><th>Signed up</th></tr></thead>
         <tbody id="tbody"></tbody>
       </table>
     </div>
@@ -72,65 +70,48 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
   (function(){
-    // ── Shared passcode (change this to whatever you give your collaborator) ──
-    var PASSCODE = 'bloom2025';
-
-    var SB_URL = 'https://qvmiwyxerotkqpbuhpun.supabase.co';
-    var SB_KEY = 'sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ';
-    var sb = null;
-    try { if (window.supabase && window.supabase.createClient) sb = window.supabase.createClient(SB_URL, SB_KEY); } catch(e){}
-
-    var gate=document.getElementById('gate'), app=document.getElementById('app');
-    var rows=[];
-
+    var PASSCODE='riddim2026';
+    var SB_URL='https://qvmiwyxerotkqpbuhpun.supabase.co';
+    var SB_KEY='sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ';
+    var sb=null; try{ if(window.supabase&&window.supabase.createClient) sb=window.supabase.createClient(SB_URL,SB_KEY); }catch(e){}
+    var gate=document.getElementById('gate'), app=document.getElementById('app'), rows=[];
     function unlock(){ gate.style.display='none'; app.style.display='block'; load(); }
-    function tryPass(){
-      var v=document.getElementById('gate-input').value.trim();
-      if(v===PASSCODE){ try{sessionStorage.setItem('bloom_list_ok','1');}catch(e){} unlock(); }
-      else{ document.getElementById('gate-err').textContent='Incorrect passcode. Try again.'; }
-    }
+    function tryPass(){ var v=document.getElementById('gate-input').value.trim();
+      if(v===PASSCODE){ try{sessionStorage.setItem('riddim_list_ok','1');}catch(e){} unlock(); }
+      else{ document.getElementById('gate-err').textContent='Incorrect passcode. Try again.'; } }
     document.getElementById('gate-btn').addEventListener('click', tryPass);
     document.getElementById('gate-input').addEventListener('keydown', function(e){ if(e.key==='Enter') tryPass(); });
-    try{ if(sessionStorage.getItem('bloom_list_ok')==='1') unlock(); }catch(e){}
-
-    function fmt(iso){ try{ return iso ? new Date(iso).toLocaleString() : ''; }catch(e){ return ''; } }
+    try{ if(sessionStorage.getItem('riddim_list_ok')==='1') unlock(); }catch(e){}
+    function fmt(iso){ try{ return iso? new Date(iso).toLocaleString():''; }catch(e){ return ''; } }
     function esc(s){ return String(s==null?'':s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];}); }
-
     function render(){
       var tb=document.getElementById('tbody');
-      document.getElementById('count').textContent = rows.length + (rows.length===1?' person':' people') + ' on the interest list';
+      document.getElementById('count').textContent = rows.length + (rows.length===1?' person':' people') + ' waiting on the next date';
       if(!rows.length){ tb.innerHTML='<tr><td colspan="5" class="empty">No signups yet.</td></tr>'; return; }
       tb.innerHTML = rows.map(function(r,i){
         return '<tr><td class="muted">'+(i+1)+'</td><td>'+esc(r.name)+'</td><td class="email">'+esc(r.email)+
           '</td><td class="muted">'+esc(r.phone||'—')+'</td><td class="muted">'+esc(fmt(r.created_at))+'</td></tr>';
       }).join('');
     }
-
     function load(){
       var st=document.getElementById('status'); st.textContent='Refreshing…';
       if(!sb){ st.textContent='Could not connect.'; return; }
       sb.from('blooming_interest').select('*').order('created_at').then(function(res){
         if(res && res.error){ st.textContent='Could not load the list (check the read policy in Supabase).'; return; }
-        rows = (res.data||[]).filter(function(r){ return r.source!=='riddim-interest' && r.event!=='riddim-kompa-next'; });
-        render();
-        st.textContent='Updated '+new Date().toLocaleTimeString();
+        rows = (res.data||[]).filter(function(r){ return r.source==='riddim-interest' || r.event==='riddim-kompa-next'; });
+        render(); st.textContent='Updated '+new Date().toLocaleTimeString();
       }, function(){ st.textContent='Could not load the list.'; });
     }
-
     document.getElementById('refresh-btn').addEventListener('click', load);
     document.getElementById('csv-btn').addEventListener('click', function(){
       if(!rows.length){ alert('No signups to export yet.'); return; }
       function ce(v){ return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'; }
-      var csv='Name,Email,Phone,Signed up\n';
+      var csv='Name,Email,Instagram/Phone,Signed up\n';
       rows.forEach(function(r){ csv+=[ce(r.name),ce(r.email),ce(r.phone||''),ce(fmt(r.created_at))].join(',')+'\n'; });
-      var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-      var url=URL.createObjectURL(blob), a=document.createElement('a');
-      a.href=url; a.download='somethings-blooming-interest.csv';
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}), url=URL.createObjectURL(blob), a=document.createElement('a');
+      a.href=url; a.download='riddim-kompa-interest.csv'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
       setTimeout(function(){ URL.revokeObjectURL(url); },1000);
     });
-
-    // Auto-refresh every 60s while the tab is visible
     setInterval(function(){ if(app.style.display!=='none' && document.visibilityState==='visible') load(); }, 60000);
   })();
   </script>
