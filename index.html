@@ -6078,8 +6078,9 @@ document.addEventListener('DOMContentLoaded', function() {
       title:    'Create + Recharge Recap',
       date:     'August 15, 2026',
       subtitle: 'Auric × Georgina Arroyo · New York',
-      sortDate: '2026-08-15',
-      eventId:  'recharge'   // replaces the "Photos Coming Soon" placeholder for Create & Recharge
+      sortDate: '2026-08-15'
+      // eventId omitted on purpose so this shows as its own card AND the
+      // Create & Recharge photo gallery still appears separately (same as Juneteenth).
     },
     {
       file:     'matchat-recap.mp4',        // self-hosted video in the repo
@@ -6122,6 +6123,21 @@ document.addEventListener('DOMContentLoaded', function() {
   //   3. Photos display in the order listed (first = cover)
   // ────────────────────────────────────────────────────────
   var EVENT_PHOTO_GALLERIES = {
+    recharge: {
+      title:  'Create + Recharge Recap',
+      date:   'August 15, 2026',
+      soldOut: true,   // shows a "Sold Out" chip on the gallery cover
+      cover:  'recharge-01.jpg',
+      photos: [
+        'recharge-01.jpg',  // 1. Full group by the Auric Movement banner (COVER)
+        'recharge-02.jpg',  // 2. Three attendees together
+        'recharge-03.jpg',  // 3. Class in session on the mats
+        'recharge-04.jpg',  // 4. Niara by the banner
+        'recharge-05.jpg'   // 5. Attendee with a Vital Proteins refresher
+      ],
+      description: 'Our Create &amp; Recharge &mdash; a session of movement, community, and good energy. We flowed through a mat Pilates class, recharged with refreshments, and sent everyone home lighter than they came.',
+      reflection: 'Move together, recharge together &mdash; this is what Auric is all about.'
+    },
     pilates: {
       title:  'Juneteenth Recap',
       date:   'June 19, 2026',
