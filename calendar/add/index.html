@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Add to Calendar — Auric Movement</title>
+  <style>
+    :root{ --cream:#f4ece0; --cream-2:#efe3cd; --brown:#5A3A1A; --green:#3b4a2f; --gold:#a9832f; --gold-2:#c9a24d; --ink:#3d322a; --border:#e2d4bb; }
+    *{ box-sizing:border-box; }
+    body{ margin:0; min-height:100vh; background:linear-gradient(158deg,#f7f0e2,#efe3cd); color:var(--ink);
+      font-family:'Jost','Helvetica Neue',Arial,sans-serif; display:flex; align-items:center; justify-content:center; padding:1.5rem; }
+    .card{ background:#fdfbf7; border:1px solid var(--border); border-radius:16px; max-width:440px; width:100%;
+      box-shadow:0 20px 60px -30px rgba(90,58,26,.45); overflow:hidden; }
+    .head{ background:var(--green); color:#f3efe2; text-align:center; padding:26px 24px 22px; }
+    .brand{ font-size:12px; letter-spacing:.34em; text-transform:uppercase; color:#cdd8bb; padding-left:.34em; }
+    .mark{ font-size:22px; margin-top:8px; color:var(--gold-2); }
+    .body{ padding:26px 26px 30px; text-align:center; }
+    .eyebrow{ font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--gold); font-weight:600; }
+    h1{ font-family:'Cormorant Garamond',Georgia,serif; font-style:italic; font-weight:600; font-size:1.7rem; color:var(--green);
+      margin:.5rem 0 .35rem; line-height:1.2; }
+    .meta{ font-size:.9rem; color:var(--ink); line-height:1.55; margin:0 0 1.4rem; }
+    .meta strong{ color:var(--brown); }
+    a.btn{ display:flex; align-items:center; justify-content:center; gap:.6rem; width:100%; text-decoration:none;
+      border:1px solid var(--border); border-radius:11px; padding:.85rem 1rem; margin:0 0 .7rem; font-size:.95rem; font-weight:600;
+      color:var(--brown); background:#faf5ee; transition:border-color .15s, background .15s; }
+    a.btn:hover{ border-color:var(--gold-2); background:#f6efe4; }
+    a.btn .ico{ width:22px; height:22px; flex:0 0 22px; }
+    a.btn.primary{ background:var(--green); color:#f3efe2; border-color:var(--green); }
+    a.btn.primary:hover{ background:#33421f; }
+    .note{ font-size:.76rem; color:#8a7a5f; margin:1rem 0 0; line-height:1.5; }
+    .err{ font-family:'Cormorant Garamond',Georgia,serif; font-style:italic; font-size:1.15rem; color:var(--brown); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="head">
+      <div class="brand">Auric Movement</div>
+      <div class="mark">&#10022;</div>
+    </div>
+    <div class="body" id="body">
+      <p class="err">Loading&hellip;</p>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    // Event table — keyed by the .ics basename. Times are UTC (compact iCal form).
+    var LOC_VALLEY = 'Valley Studio, 45 Cherry Valley Ave, West Hempstead, NY 11552';
+    var LOC_MAISON = 'Maison Luxe Wellness Pilates, 958 Lafayette Ave, Brooklyn, NY 11221';
+    var LOC_FITIN  = 'The Fitin, 297 7th Ave, Floor 3, New York, NY 10001';
+    var LOC_SPACE  = 'The Space Pilates Studio, 36 West 20th Street, 2nd Floor, New York, NY 10011';
+    var LOC_DIAMOND= 'Inner Diamond Studio, 300 W 38th Street, 2F, New York, NY 10018';
+    var DETAILS = 'Auric Movement — please arrive a few minutes early. Questions? auricmovement@outlook.com';
+    var RK = 'Riddim & Kompa on the Reformer ✦ Auric Movement';
+    var HW = 'Halloween Reformer Pilates — Shhh… Quiet on the Creek ✦ Auric Movement';
+    var TB = 'Turkey Burn! on the Reformer ✦ Auric Movement';
+    var E = {
+      'riddim-kompa-west-hempstead-1pm': { t:RK, s:'20260913T170000Z', e:'20260913T174500Z', l:LOC_VALLEY, w:'Sunday, September 13 · 1:00 PM' },
+      'riddim-kompa-west-hempstead-2pm': { t:RK, s:'20260913T180000Z', e:'20260913T184500Z', l:LOC_VALLEY, w:'Sunday, September 13 · 2:00 PM' },
+      'riddim-kompa-brooklyn-12pm':      { t:RK, s:'20260926T160000Z', e:'20260926T164500Z', l:LOC_MAISON, w:'Saturday, September 26 · 12:00 PM' },
+      'riddim-kompa-brooklyn-1pm':       { t:RK, s:'20260926T170000Z', e:'20260926T174500Z', l:LOC_MAISON, w:'Saturday, September 26 · 1:00 PM' },
+      'riddim-kompa-brooklyn-2pm':       { t:RK, s:'20260926T180000Z', e:'20260926T184500Z', l:LOC_MAISON, w:'Saturday, September 26 · 2:00 PM' },
+      'halloween-1230pm':                { t:HW, s:'20261024T163000Z', e:'20261024T171500Z', l:LOC_VALLEY, w:'Saturday, October 24 · 12:30 PM' },
+      'halloween-130pm':                 { t:HW, s:'20261024T173000Z', e:'20261024T181500Z', l:LOC_VALLEY, w:'Saturday, October 24 · 1:30 PM' },
+      'turkey-burn-1230pm':              { t:TB, s:'20261121T173000Z', e:'20261121T181500Z', l:LOC_VALLEY, w:'Saturday, November 21 · 12:30 PM' },
+      'turkey-burn-130pm':               { t:TB, s:'20261121T183000Z', e:'20261121T191500Z', l:LOC_VALLEY, w:'Saturday, November 21 · 1:30 PM' },
+      'mat-and-chat':                    { t:'Mat & Chat ✦ Auric Movement', s:'20260801T153000Z', e:'20260801T163000Z', l:LOC_FITIN, w:'Saturday, August 1 · 11:30 AM' },
+      'pilates-x-niara-1pm':             { t:'Pilates x Niara ✦ Auric Movement', s:'20260619T170000Z', e:'20260619T180000Z', l:LOC_SPACE, w:'Friday, June 19 · 1:00 PM' },
+      'pilates-x-niara-2pm':             { t:'Pilates x Niara ✦ Auric Movement', s:'20260619T180000Z', e:'20260619T190000Z', l:LOC_SPACE, w:'Friday, June 19 · 2:00 PM' },
+      'create-recharge':                 { t:'Create & Recharge ✦ Auric Movement', s:'20260815T153000Z', e:'20260815T170000Z', l:LOC_DIAMOND, w:'Saturday, August 15 · 11:30 AM' }
+    };
+
+    function iso(z){ // 20261024T163000Z -> 2026-10-24T16:30:00Z
+      return z.replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/, '$1-$2-$3T$4:$5:$6Z');
+    }
+    function gcal(ev){
+      return 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+        + '&text=' + encodeURIComponent(ev.t)
+        + '&dates=' + ev.s + '/' + ev.e
+        + '&details=' + encodeURIComponent(DETAILS)
+        + '&location=' + encodeURIComponent(ev.l);
+    }
+    function outlook(host, ev){
+      return 'https://' + host + '/calendar/0/deeplink/compose?path=/calendar/action/compose&rru=addevent'
+        + '&subject=' + encodeURIComponent(ev.t)
+        + '&startdt=' + iso(ev.s) + '&enddt=' + iso(ev.e)
+        + '&body=' + encodeURIComponent(DETAILS)
+        + '&location=' + encodeURIComponent(ev.l);
+    }
+    function icon(paths){ return '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+paths+'</svg>'; }
+    var calIcon = '<rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/>';
+    var dlIcon  = '<path d="M12 3v12M7 10l5 5 5-5M4 21h16"/>';
+
+    var key = (new URLSearchParams(location.search).get('e') || '').trim();
+    var ev = E[key];
+    var body = document.getElementById('body');
+    if(!ev){
+      body.innerHTML = '<p class="err">Sorry — we couldn’t find that event. <br>Visit <a href="https://book.auricmovement.com" style="color:#a9832f;">book.auricmovement.com</a>.</p>';
+      return;
+    }
+    var icsUrl = 'https://book.auricmovement.com/calendar/' + key + '.ics';
+    body.innerHTML =
+      '<div class="eyebrow">Add to your calendar</div>' +
+      '<h1>' + ev.t.replace(/ ✦ Auric Movement$/,'') + '</h1>' +
+      '<p class="meta"><strong>' + ev.w + '</strong><br>' + ev.l + '</p>' +
+      '<a class="btn primary" target="_blank" rel="noopener" href="' + gcal(ev) + '">' + icon(calIcon) + 'Google Calendar</a>' +
+      '<a class="btn" href="' + icsUrl + '">' + icon(calIcon) + 'Apple Calendar</a>' +
+      '<a class="btn" target="_blank" rel="noopener" href="' + outlook('outlook.live.com', ev) + '">' + icon(calIcon) + 'Outlook.com</a>' +
+      '<a class="btn" target="_blank" rel="noopener" href="' + outlook('outlook.office.com', ev) + '">' + icon(calIcon) + 'Outlook (Office 365)</a>' +
+      '<a class="btn" href="' + icsUrl + '">' + icon(dlIcon) + 'Download .ics (any calendar)</a>' +
+      '<p class="note">On iPhone, “Apple Calendar” or “Download .ics” adds it instantly. On Android or desktop, use Google or Outlook.</p>';
+  })();
+  </script>
+</body>
+</html>
