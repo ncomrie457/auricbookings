@@ -10515,6 +10515,8 @@ document.addEventListener('DOMContentLoaded', function() {
   var RF_TMPL_THANKYOU = 'template_xu6b9xo';   // Riddim & Kompa post-event thank-you (RIDDIM_KOMPA_MESI_ANPIL_TEMPLATE.html) — sent via Resend
   var RF_HW_TMPL_CONFIRM  = 'template_hhjwepr';   // Halloween "Shhh… Quiet on the Creek" payment confirmation (HALLOWEEN_CREEK_CONFIRMATION_TEMPLATE.html) — sent via Resend
   var RF_HW_TMPL_THANKYOU = 'template_g125fph';  // Halloween "Shhh… Quiet on the Creek" post-event thank-you (HALLOWEEN_CREEK_THANKYOU_TEMPLATE.html) — sent via Resend
+  var RF_TB_TMPL_CONFIRM  = 'REPLACE_TB_CONFIRM';   // Turkey Burn! payment confirmation (TURKEY_BURN_CONFIRMATION_TEMPLATE.html) — sent via Resend
+  var RF_TB_TMPL_THANKYOU = 'REPLACE_TB_THANKYOU';  // Turkey Burn! post-event thank-you (TURKEY_BURN_THANKYOU_TEMPLATE.html) — sent via Resend
   var CR_TMPL_CONFIRM  = 'template_am03atq';   // payment confirmed / receipt  (Create & Recharge confirmation)
   var CR_TMPL_WAITLIST = 'REPLACE_CR_WAITLIST';  // waitlist join confirmation   (CREATE_RECHARGE_WAITLIST_TEMPLATE.html)
   var CR_TMPL_WL_OPEN  = 'REPLACE_CR_WLOPEN';    // waitlist spot opened         (CREATE_RECHARGE_WAITLIST_OPEN_TEMPLATE.html)
@@ -11329,6 +11331,7 @@ document.addEventListener('DOMContentLoaded', function() {
       display.forEach(function(r){ if(r.is_paid && pd[r.session]!==undefined) pd[r.session]++; });
       var paid = display.filter(function(r){ return r.is_paid; }).length;
       block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F983} Turkey Burn! · Nov 21st · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(12:30 PM '+pd.tb1230+'/'+CAP+' · 1:30 PM '+pd.tb130+'/'+CAP+')</span></h3>';
+      block.innerHTML += '<button onclick="rfSendThankYou(\'turkey\', this)" style="margin:.1rem 0 .7rem;background:#fdeeea;border:1px solid #f2b8ab;color:#a8391f;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F983} Send Turkey Burn thank-you ('+paid+' paid) — after the event</button>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
@@ -11353,11 +11356,12 @@ document.addEventListener('DOMContentLoaded', function() {
           return btn("rfAdminSetSession("+id+",'"+sess+"')",'#f4ecdd','#e0cfae','#7a5a2a','→ '+label);
         }
         var timeBtn = timeOpt('tb1230','12:30 PM') + timeOpt('tb130','1:30 PM');
+        var confirmBtn = btn('rfTbAdminConfirm('+id+')','#fdeeea','#f2b8ab','#a8391f','\u{1F4E7} Confirm + email');
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
-          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+paidBtn+timeBtn+waiverBtn+clearHealthBtn+editBtn+removeBtn+'</div></div>';
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+editBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
       });
     }
@@ -11602,6 +11606,29 @@ document.addEventListener('DOMContentLoaded', function() {
     supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: true })
       .then(function(){ rfRefresh(); }, function(){});
   };
+  // Turkey Burn confirmation — same flow as rfHwAdminConfirm but uses the Turkey
+  // Burn template + Turkey session metadata (tb1230/tb130).
+  window.rfTbAdminConfirm = function(id){
+    var rec = rfRosterById[id]; if(!rec){ return; }
+    if(!rec.email){ alert('No email on file for this registration.'); return; }
+    if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
+    if(RF_TB_TMPL_CONFIRM.indexOf('REPLACE')!==-1){ alert('Set RF_TB_TMPL_CONFIRM to your real EmailJS template id first (create it from TURKEY_BURN_CONFIRMATION_TEMPLATE.html).'); return; }
+    if(!confirm('Send the Turkey Burn confirmation email to '+rec.name+' ('+rec.email+') and mark them paid?')) return;
+    var sess = RF_ADMIN_SESS[rec.session] || RF_ADMIN_SESS['tb1230'];
+    var when=''; try { when = rec.created_at ? new Date(rec.created_at).toLocaleString() : ''; } catch(e){}
+    emailjs.send(EMAILJS_SERVICE_RESEND, RF_TB_TMPL_CONFIRM, {
+      from_name: rec.name, to_email: rec.email,
+      arrival_time: sess.arrival, class_time: sess.time, calendar_url: sess.cal,
+      receipt_amount: '$45.00',
+      receipt_code: 'TB-' + rec.id,
+      receipt_signed_as: rec.signature || rec.name,
+      receipt_signed_at: when,
+      refund_policy_ack_at: when,
+      refund_policy_text: rec.refund_policy_text || window.__RF_REFUND_TEXT || 'All sales are final — no refunds or credits.'
+    }).then(function(){ alert('✅ Confirmation sent to '+rec.email); }, function(){ alert('⚠️ Could not send. Check EmailJS dashboard.'); });
+    supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: true })
+      .then(function(){ rfRefresh(); }, function(){});
+  };
   // Admin: POST-EVENT THANK-YOU BLAST — Riddim & Kompa on the Reformer ("Mèsi Anpil").
   // Sends the MÈSI ANPIL template (RIDDIM_KOMPA_MESI_ANPIL_TEMPLATE.html) via Resend to
   // every PAID registrant of one event. which='valley' (Sep 13, West Hempstead) or
@@ -11613,17 +11640,21 @@ document.addEventListener('DOMContentLoaded', function() {
       if(!(r.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(r.email))) return false;
       var isBk = r.event === 'riddim-kompa-brooklyn-2026-09-26';
       var isHw = r.event === 'halloween-creek-2026-10-24';
+      var isTb = r.event === 'turkey-burn-2026-11-21';
       if(which==='halloween') return isHw;
+      if(which==='turkey') return isTb;
       if(which==='bk') return isBk;
-      return !isBk && !isHw && r.event !== 'turkey-burn-2026-11-21'; // valley = not Brooklyn, not Halloween, not Turkey Burn
+      return !isBk && !isHw && !isTb; // valley = not Brooklyn, not Halloween, not Turkey Burn
     });
     var isHalloween = (which==='halloween');
-    var thankTmpl = isHalloween ? RF_HW_TMPL_THANKYOU : RF_TMPL_THANKYOU;
-    var eventLabel = isHalloween ? 'Shhh… Quiet on the Creek' : 'Riddim & Kompa';
-    var where = isHalloween ? 'Valley Studio' : (which==='bk') ? 'Brooklyn' : 'West Hempstead';
+    var isTurkey = (which==='turkey');
+    var thankTmpl = isHalloween ? RF_HW_TMPL_THANKYOU : isTurkey ? RF_TB_TMPL_THANKYOU : RF_TMPL_THANKYOU;
+    var thankVar = isHalloween ? 'RF_HW_TMPL_THANKYOU' : isTurkey ? 'RF_TB_TMPL_THANKYOU' : 'RF_TMPL_THANKYOU';
+    var eventLabel = isHalloween ? 'Shhh… Quiet on the Creek' : isTurkey ? 'Turkey Burn!' : 'Riddim & Kompa';
+    var where = (isHalloween||isTurkey) ? 'Valley Studio' : (which==='bk') ? 'Brooklyn' : 'West Hempstead';
     if(!recips.length){ alert('No paid registrants to thank for '+eventLabel+' — '+where+' yet.'); return; }
     if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
-    if(thankTmpl.indexOf('REPLACE')!==-1){ alert('Set '+(isHalloween?'RF_HW_TMPL_THANKYOU':'RF_TMPL_THANKYOU')+' to your real EmailJS template id first.'); return; }
+    if(thankTmpl.indexOf('REPLACE')!==-1){ alert('Set '+thankVar+' to your real EmailJS template id first.'); return; }
     if(!confirm('Send the '+eventLabel+' thank-you to '+recips.length+' paid registrant(s) — '+where+'?\n\n(Sends through Resend.)')) return;
     var btn = triggerBtn; var originalText = btn ? btn.textContent : '';
     if(btn){ btn.disabled=true; }
