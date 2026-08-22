@@ -65,8 +65,6 @@
         <input type="text" id="ri-name" autocomplete="name" placeholder="Your name">
         <label for="ri-email">Email</label>
         <input type="email" id="ri-email" autocomplete="email" placeholder="you@email.com">
-        <label for="ri-phone">Instagram / phone <span class="opt">(optional)</span></label>
-        <input type="text" id="ri-phone" autocomplete="off" placeholder="@yourhandle or number">
         <div class="err" id="ri-error"></div>
         <button type="submit" class="btn" id="ri-submit">Add me to the list</button>
       </form>
@@ -92,11 +90,10 @@
       ev.preventDefault(); errBox.style.display='none';
       var name=document.getElementById('ri-name').value.trim();
       var email=document.getElementById('ri-email').value.trim();
-      var phone=document.getElementById('ri-phone').value.trim();
       if(!name){ showError('Please add your name.'); return; }
       if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ showError('Please enter a valid email.'); return; }
       btn.disabled=true; btn.textContent='Saving…';
-      var rec={ name:name, email:email, phone:phone||null, event:'riddim-kompa-next', source:'riddim-interest' };
+      var rec={ name:name, email:email, phone:null, event:'riddim-kompa-next', source:'riddim-interest' };
       try{ var a=JSON.parse(localStorage.getItem('auric_riddim_interest')||'[]'); a.push(rec); localStorage.setItem('auric_riddim_interest', JSON.stringify(a)); }catch(e){}
       function done(){ form.style.display='none'; confirmed.style.display='block'; confirmed.scrollIntoView({behavior:'smooth',block:'center'}); }
       if(sb){ sb.from('blooming_interest').insert([rec]).then(function(res){ if(res&&res.error) console.warn('insert error:', res.error.message); done(); }, function(){ done(); }); }
