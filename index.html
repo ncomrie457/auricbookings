@@ -2716,12 +2716,13 @@
   /* Hero slideshow — cross-fading past-event photos */
   .bq-hero-slides{position:absolute;inset:0;z-index:0;background:#ece3d2 url('hero-slide-1.jpg') center/cover no-repeat;}
   .bq-hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;
-    animation:bqHeroFade 28s infinite;will-change:opacity;}
+    animation:bqHeroFade 35s infinite;will-change:opacity;}
   .bq-hero-slide:nth-child(1){animation-delay:0s;background-image:url('hero-slide-1.jpg');}
   .bq-hero-slide:nth-child(2){animation-delay:7s;background-image:url('hero-slide-2.jpg');}
-  .bq-hero-slide:nth-child(3){animation-delay:14s;background-image:url('hero-slide-3.jpg');background-position:center 30%;}
-  .bq-hero-slide:nth-child(4){animation-delay:21s;background-image:url('hero-slide-4.jpg');background-position:center 22%;}
-  @keyframes bqHeroFade{0%{opacity:0}3%{opacity:1}24%{opacity:1}29%{opacity:0}100%{opacity:0}}
+  .bq-hero-slide:nth-child(3){animation-delay:14s;background-image:url('recharge-01.jpg');background-position:center 32%;}
+  .bq-hero-slide:nth-child(4){animation-delay:21s;background-image:url('hero-slide-3.jpg');background-position:center 30%;}
+  .bq-hero-slide:nth-child(5){animation-delay:28s;background-image:url('hero-slide-4.jpg');background-position:center 22%;}
+  @keyframes bqHeroFade{0%{opacity:0}2.4%{opacity:1}18.5%{opacity:1}20.5%{opacity:0}100%{opacity:0}}
   .bq-hero-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
     background:linear-gradient(180deg, rgba(248,244,236,.9) 0%, rgba(248,244,236,.52) 20%, rgba(248,244,236,.42) 52%, rgba(248,244,236,.78) 100%);}
   .bq-hero-inner{z-index:4 !important;}
@@ -2733,6 +2734,7 @@
 </style>
 <section class="bq-hero hero" role="banner">
   <div class="bq-hero-slides" aria-hidden="true">
+    <div class="bq-hero-slide"></div>
     <div class="bq-hero-slide"></div>
     <div class="bq-hero-slide"></div>
     <div class="bq-hero-slide"></div>
