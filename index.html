@@ -5061,7 +5061,7 @@ Can't wait to move and connect with you!</textarea>
     <div id="rf-step-confirmed" style="display:none;">
       <div class="rf-conf-banner">&#10004; Payment received &mdash; you&rsquo;re booked!</div>
       <p class="rf-meta" style="margin:0 0 1rem;">See you Sunday, September 13 for your <strong id="rf-conf-label"></strong>. A goodie bag is waiting &#127873;</p>
-      <a id="rf-conf-cal" class="rf-btn" style="text-decoration:none;display:block;" href="#" target="_blank" rel="noopener noreferrer">Add to Google Calendar</a>
+      <div id="rf-conf-cal" class="rf-cal-wrap"></div>
       <div class="rf-conf-playlist">
         <h4>&#127925; Press play before you come</h4>
         <p>The riddim &amp; kompa we&rsquo;ll move to. Get it in your body &mdash; come ready to flow.</p>
@@ -5113,8 +5113,48 @@ Can't wait to move and connect with you!</textarea>
       });
     } catch(e){}
   };
+
+  /* Inline "Add to Calendar" buttons for the confirmation screens — Google,
+     Apple, Outlook, Office 365, .ics. Keyed by the .ics basename. Same data
+     as /calendar/add/. window.auricCalButtons(key) returns ready HTML. */
+  var AC_VALLEY='Valley Studio, 45 Cherry Valley Ave, West Hempstead, NY 11552';
+  var AC_MAISON='Maison Luxe Wellness Pilates, 958 Lafayette Ave, Brooklyn, NY 11221';
+  var AC_RK='Riddim & Kompa on the Reformer ✦ Auric Movement';
+  var AC_HW='Halloween Reformer Pilates — Shhh… Quiet on the Creek ✦ Auric Movement';
+  var AC_TB='Turkey Burn! on the Reformer ✦ Auric Movement';
+  var AC_DET='Auric Movement — please arrive a few minutes early. Questions? auricmovement@outlook.com';
+  var AC_TABLE={
+    'riddim-kompa-west-hempstead-1pm':{t:AC_RK,s:'20260913T170000Z',e:'20260913T174500Z',l:AC_VALLEY},
+    'riddim-kompa-west-hempstead-2pm':{t:AC_RK,s:'20260913T180000Z',e:'20260913T184500Z',l:AC_VALLEY},
+    'riddim-kompa-brooklyn-12pm':{t:AC_RK,s:'20260926T160000Z',e:'20260926T164500Z',l:AC_MAISON},
+    'riddim-kompa-brooklyn-1pm':{t:AC_RK,s:'20260926T170000Z',e:'20260926T174500Z',l:AC_MAISON},
+    'riddim-kompa-brooklyn-2pm':{t:AC_RK,s:'20260926T180000Z',e:'20260926T184500Z',l:AC_MAISON},
+    'halloween-1230pm':{t:AC_HW,s:'20261024T163000Z',e:'20261024T171500Z',l:AC_VALLEY},
+    'halloween-130pm':{t:AC_HW,s:'20261024T173000Z',e:'20261024T181500Z',l:AC_VALLEY},
+    'turkey-burn-1230pm':{t:AC_TB,s:'20261121T173000Z',e:'20261121T181500Z',l:AC_VALLEY},
+    'turkey-burn-130pm':{t:AC_TB,s:'20261121T183000Z',e:'20261121T191500Z',l:AC_VALLEY}
+  };
+  function acIso(z){ return z.replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/,'$1-$2-$3T$4:$5:$6Z'); }
+  function acKeyFrom(cal){ var m=(cal||'').split('e='); return m.length>1?m[1]:cal; }
+  window.auricCalButtons = function(keyOrUrl){
+    var key=acKeyFrom(keyOrUrl); var ev=AC_TABLE[key]; if(!ev) return '';
+    var g='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(ev.t)+'&dates='+ev.s+'/'+ev.e+'&details='+encodeURIComponent(AC_DET)+'&location='+encodeURIComponent(ev.l);
+    var ics='https://book.auricmovement.com/calendar/'+key+'.ics';
+    function ol(host){ return 'https://'+host+'/calendar/0/deeplink/compose?path=/calendar/action/compose&rru=addevent&subject='+encodeURIComponent(ev.t)+'&startdt='+acIso(ev.s)+'&enddt='+acIso(ev.e)+'&body='+encodeURIComponent(AC_DET)+'&location='+encodeURIComponent(ev.l); }
+    function b(href,label,primary){ return '<a href="'+href+'"'+(href===ics?'':' target="_blank" rel="noopener noreferrer"')+' class="rf-cal-opt'+(primary?' primary':'')+'">'+label+'</a>'; }
+    return '<div class="rf-cal-title">📅 Add to your calendar</div>'+
+      b(g,'Google Calendar',true)+b(ics,'Apple Calendar')+b(ol('outlook.live.com'),'Outlook.com')+b(ol('outlook.office.com'),'Outlook (Office 365)')+b(ics,'Download .ics (any calendar)');
+  };
 })();
 </script>
+<style>
+  .rf-cal-wrap{ text-align:left; margin:0; }
+  .rf-cal-title{ font-family:'Jost',sans-serif;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9a6535;font-weight:600;margin:.2rem 0 .55rem; }
+  .rf-cal-opt{ display:block;width:100%;box-sizing:border-box;text-align:center;text-decoration:none;border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;margin:0 0 .5rem;font-family:'Jost',sans-serif;font-size:.9rem;font-weight:600;color:var(--brown);background:#faf5ee;transition:border-color .15s,background .15s; }
+  .rf-cal-opt:hover{ border-color:var(--gold);background:#f6efe4; }
+  .rf-cal-opt.primary{ background:var(--brown);color:#fff;border-color:var(--brown); }
+  .rf-cal-opt.primary:hover{ background:#4a2f14; }
+</style>
 
 <!-- Scrollable liability waiver sub-modal -->
 <div id="rf-waiver-modal" aria-modal="true" role="dialog" aria-labelledby="rf-waiver-title">
@@ -5205,7 +5245,7 @@ Can't wait to move and connect with you!</textarea>
     <div id="rfbk-step-confirmed" style="display:none;">
       <div class="rf-conf-banner">&#10004; Payment received &mdash; you&rsquo;re booked!</div>
       <p class="rf-meta" style="margin:0 0 1rem;">See you Saturday, September 26 in Brooklyn for your <strong id="rfbk-conf-label"></strong>. A goodie bag is waiting &#127873;</p>
-      <a id="rfbk-conf-cal" class="rf-btn" style="text-decoration:none;display:block;" href="#" target="_blank" rel="noopener noreferrer">&#128197; Add to My Calendar</a>
+      <div id="rfbk-conf-cal" class="rf-cal-wrap"></div>
     </div>
 
     <div class="rf-getting">
@@ -5350,7 +5390,7 @@ document.addEventListener('DOMContentLoaded', function(){
   function rfbkShowConfirmed(sk){
     var m=RFBK_CONF[sk]||RFBK_CONF['bk12'];
     document.getElementById('rfbk-conf-label').textContent=m.label;
-    document.getElementById('rfbk-conf-cal').href=m.cal;
+    document.getElementById('rfbk-conf-cal').innerHTML=window.auricCalButtons(m.cal);
     stepTime.style.display='none'; stepForm.style.display='none'; stepPay.style.display='none';
     document.getElementById('rfbk-step-confirmed').style.display='';
     openOv();
@@ -5416,7 +5456,7 @@ document.addEventListener('DOMContentLoaded', function(){
     <div id="tb-step-confirmed" style="display:none;">
       <div class="rf-conf-banner">&#10004; Payment received &mdash; you&rsquo;re booked!</div>
       <p class="rf-meta" style="margin:0 0 1rem;">See you Saturday, November 21 for your <strong id="tb-conf-label"></strong>. Come sweat out the Thanksgiving food &#127831;</p>
-      <a id="tb-conf-cal" class="rf-btn" style="text-decoration:none;display:block;" href="#" target="_blank" rel="noopener noreferrer">&#128197; Add to My Calendar</a>
+      <div id="tb-conf-cal" class="rf-cal-wrap"></div>
     </div>
 
     <div class="rf-getting">
@@ -5559,7 +5599,7 @@ document.addEventListener('DOMContentLoaded', function(){
   function tbShowConfirmed(sk){
     var m=TB_CONF[sk]||TB_CONF['tb1230'];
     document.getElementById('tb-conf-label').textContent=m.label;
-    document.getElementById('tb-conf-cal').href=m.cal;
+    document.getElementById('tb-conf-cal').innerHTML=window.auricCalButtons(m.cal);
     stepTime.style.display='none'; stepForm.style.display='none'; stepPay.style.display='none';
     document.getElementById('tb-step-confirmed').style.display='';
     openOv();
@@ -5626,7 +5666,7 @@ document.addEventListener('DOMContentLoaded', function(){
     <div id="hw-step-confirmed" style="display:none;">
       <div class="rf-conf-banner">&#10004; Payment received &mdash; you&rsquo;re booked!</div>
       <p class="rf-meta" style="margin:0 0 1rem;">See you Saturday, October 24 for your <strong id="hw-conf-label"></strong>. Costumes encouraged &#127875; a goodie bag is waiting &#127873;</p>
-      <a id="hw-conf-cal" class="rf-btn" style="text-decoration:none;display:block;" href="#" target="_blank" rel="noopener noreferrer">&#128197; Add to My Calendar</a>
+      <div id="hw-conf-cal" class="rf-cal-wrap"></div>
     </div>
 
     <div class="rf-getting">
@@ -5769,7 +5809,7 @@ document.addEventListener('DOMContentLoaded', function(){
   function hwShowConfirmed(sk){
     var m=HW_CONF[sk]||HW_CONF['hw1230'];
     document.getElementById('hw-conf-label').textContent=m.label;
-    document.getElementById('hw-conf-cal').href=m.cal;
+    document.getElementById('hw-conf-cal').innerHTML=window.auricCalButtons(m.cal);
     stepTime.style.display='none'; stepForm.style.display='none'; stepPay.style.display='none';
     document.getElementById('hw-step-confirmed').style.display='';
     openOv();
@@ -6029,7 +6069,7 @@ document.addEventListener('DOMContentLoaded', function(){
     function showConfirmed(sessionKey){
       var meta=SESSION_META[sessionKey]||SESSION_META['1pm'];
       document.getElementById('rf-conf-label').textContent=meta.label;
-      document.getElementById('rf-conf-cal').href=meta.cal;
+      document.getElementById('rf-conf-cal').innerHTML=window.auricCalButtons(meta.cal);
       stepTime.style.display='none'; stepForm.style.display='none'; stepPay.style.display='none';
       document.getElementById('rf-step-confirmed').style.display='';
       openOverlay();
