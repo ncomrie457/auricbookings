@@ -1,0 +1,16 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Auric Movement//Booking//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:hw-1230@auricmovement.com
+DTSTAMP:20260815T120000Z
+DTSTART:20261024T163000Z
+DTEND:20261024T171500Z
+SUMMARY:Halloween Reformer Pilates — Shhh… Quiet on the Creek ✦ Auric Movement
+DESCRIPTION:Please arrive a few minutes early. Valley Studio\, West Hempstead. Costumes encouraged\, grip socks required.
+LOCATION:Valley Studio\, 45 Cherry Valley Ave\, West Hempstead\, NY 11552
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR
