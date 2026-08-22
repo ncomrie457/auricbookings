@@ -11413,7 +11413,9 @@ document.addEventListener('DOMContentLoaded', function() {
       block.innerHTML += '<button onclick="rfSendThankYou(\'bk\', this)" style="margin:.1rem 0 .7rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F33A} Send Mèsi Anpil thank-you ('+paid+' paid) — after the event</button>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
-      display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
+      var _bkOrd = { 'bk12':0, 'bk1':1, 'bk2':2 };
+      function _bkRank(s){ return _bkOrd[s]!==undefined ? _bkOrd[s] : 99; }
+      display.sort(function(a,b){ return (_bkRank(a.session)-_bkRank(b.session)) || (a.created_at||'').localeCompare(b.created_at||''); });
       var SLAB = { 'bk12':'12 PM','bk1':'1 PM','bk2':'2 PM' }; var _curSess=null, _curSessBlock=null;
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
