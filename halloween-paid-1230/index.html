@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Payment received — Shhh… Quiet on the Creek (Halloween Reformer) | Auric Movement</title>
+
+  <!-- Clean success URL for Stripe (no query string of its own). Stripe may
+       append ?session_id=… here; we ignore it and forward to the real
+       confirmation screen, which reads ?paid=halloween&s=hw1230. -->
+  <meta http-equiv="refresh" content="0;url=/?paid=halloween&amp;s=hw1230">
+  <script>window.location.replace('/?paid=halloween&s=hw1230');</script>
+
+  <style>
+    body {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      background: #140f0b;
+      color: #5A3A1A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      font-style: italic;
+      text-align: center;
+      padding: 2rem;
+    }
+    a { color: #d98a3d; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <p>Confirming your booking&hellip; <a href="/?paid=halloween&s=hw1230">Continue</a></p>
+</body>
+</html>
