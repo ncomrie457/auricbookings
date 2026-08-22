@@ -8514,7 +8514,7 @@ document.addEventListener('DOMContentLoaded', function() {
         from_name:p.name, to_email:p.email,
         event_name:meta.name, event_date:meta.date,
         event_time:(p.time||meta.time||''), event_location:meta.loc
-      }).then(function(){ stEl.textContent='✅ Sent to '+p.email; },
+      }).then(function(){ stEl.textContent='✅ Sent to '+p.email; if(meta.src==='reformer'){ try{ window.markFoundingSent(p.email, meta.dbEvent, meta.session); }catch(e){} } },
         function(){ stEl.textContent='⚠️ Could not send. Check EmailJS dashboard.'; sendBtn.disabled=false; });
     });
   }
@@ -10892,6 +10892,12 @@ document.addEventListener('DOMContentLoaded', function() {
     'tb1230': { time:'12:30 PM', arrival:'12:25 PM', cal:'https://book.auricmovement.com/calendar/turkey-burn-1230pm.ics' },
     'tb130':  { time:'1:30 PM', arrival:'1:25 PM', cal:'https://book.auricmovement.com/calendar/turkey-burn-130pm.ics' }
   };
+  // Track who has been sent a Founding One (per event + session), so the roster
+  // shows a 🎁 badge. Stored in localStorage (this browser).
+  var _foundingSent = {}; try { _foundingSent = JSON.parse(localStorage.getItem('auric_founding_sent')||'{}') || {}; } catch(e){}
+  function foundingKey(email,ev,sess){ return (email||'').toLowerCase()+'|'+(ev||'')+'|'+(sess||''); }
+  function fbBadge(rec){ return _foundingSent[foundingKey(rec.email, rec.event, rec.session)] ? ' <span class="atype" style="background:#eef3e8;color:#3b6b3f;">🎁 Founding One</span>' : ''; }
+  window.markFoundingSent = function(email,ev,sess){ _foundingSent[foundingKey(email,ev,sess)] = true; try { localStorage.setItem('auric_founding_sent', JSON.stringify(_foundingSent)); } catch(e){} if(typeof rfRefresh==='function') rfRefresh(); };
   function rfRefresh(){ if(rfAdminContainer) renderReformerSection(rfAdminContainer); if(rfBkAdminContainer) renderReformerBkSection(rfBkAdminContainer); if(rfTbAdminContainer) renderReformerTbSection(rfTbAdminContainer); }
   function renderReformerSection(container){
     if(!container) return;
@@ -10940,7 +10946,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var timeBtn = timeOpt('1pm','1 PM') + timeOpt('2pm','2 PM');
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
-        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
           '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+editBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
@@ -10998,7 +11004,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var confirmBtn = btn('rfBkAdminConfirm('+id+')','#e8f5e9','#a5d6a7','#2e7d32','\u{1F4E7} Confirm + email');
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
-        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
           '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+editBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
@@ -11054,7 +11060,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var timeBtn = timeOpt('tb1230','12:30 PM') + timeOpt('tb130','1:30 PM');
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
-        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
           '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+paidBtn+timeBtn+waiverBtn+clearHealthBtn+editBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
