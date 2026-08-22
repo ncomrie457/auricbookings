@@ -5194,6 +5194,12 @@ Can't wait to move and connect with you!</textarea>
       </div>
     </div>
 
+    <div id="rfbk-step-confirmed" style="display:none;">
+      <div class="rf-conf-banner">&#10004; Payment received &mdash; you&rsquo;re booked!</div>
+      <p class="rf-meta" style="margin:0 0 1rem;">See you Saturday, September 26 in Brooklyn for your <strong id="rfbk-conf-label"></strong>. A goodie bag is waiting &#127873;</p>
+      <a id="rfbk-conf-cal" class="rf-btn" style="text-decoration:none;display:block;" href="#" target="_blank" rel="noopener noreferrer">&#128197; Add to My Calendar</a>
+    </div>
+
     <div class="rf-getting">
       <h4>Getting there</h4>
       <p><strong>Maison Luxe Wellness Pilates</strong><br>958 Lafayette Ave<br>Brooklyn, NY 11221</p>
@@ -5327,6 +5333,22 @@ document.addEventListener('DOMContentLoaded', function(){
   });
   // Deep link from the shared flyer (/riddim-kompa-brooklyn) → open the booking popup.
   try { if(new URLSearchParams(location.search).get('book')==='reformer-bk'){ setTimeout(openOv, 450); } } catch(e){}
+  // ── Payment confirmation (Stripe returns to ?paid=reformer-bk&s=bk12|bk1|bk2) ──
+  var RFBK_CONF = {
+    'bk12': { label:'12:00 PM session', cal:'https://book.auricmovement.com/calendar/riddim-kompa-brooklyn-12pm.ics' },
+    'bk1':  { label:'1:00 PM session',  cal:'https://book.auricmovement.com/calendar/riddim-kompa-brooklyn-1pm.ics' },
+    'bk2':  { label:'2:00 PM session',  cal:'https://book.auricmovement.com/calendar/riddim-kompa-brooklyn-2pm.ics' }
+  };
+  function rfbkShowConfirmed(sk){
+    var m=RFBK_CONF[sk]||RFBK_CONF['bk12'];
+    document.getElementById('rfbk-conf-label').textContent=m.label;
+    document.getElementById('rfbk-conf-cal').href=m.cal;
+    stepTime.style.display='none'; stepForm.style.display='none'; stepPay.style.display='none';
+    document.getElementById('rfbk-step-confirmed').style.display='';
+    openOv();
+    try { var arr=JSON.parse(localStorage.getItem('auric_reformer_bk')||'[]'); if(arr.length){ arr[arr.length-1].is_paid=true; localStorage.setItem('auric_reformer_bk', JSON.stringify(arr)); } } catch(e){}
+  }
+  try { var _bp=new URLSearchParams(location.search); if(_bp.get('paid')==='reformer-bk'){ var _bs=_bp.get('s'); if(!RFBK_CONF[_bs]) _bs='bk12'; setTimeout(function(){ rfbkShowConfirmed(_bs); }, 300); } } catch(e){}
 });
 </script>
 
@@ -5381,6 +5403,12 @@ document.addEventListener('DOMContentLoaded', function(){
         <button type="button" id="tb-pay-later" class="rf-close-link" style="margin-top:0;">I&rsquo;ll pay later</button>
         <p id="tb-pay-later-note" class="rf-policy" style="display:none;margin-top:.7rem;color:#8a5a2a;">Got it &mdash; we&rsquo;ve saved your details. Heads up: <strong>spots aren&rsquo;t held and are released first come, first served until payment is received</strong>, so pay soon to secure your place.</p>
       </div>
+    </div>
+
+    <div id="tb-step-confirmed" style="display:none;">
+      <div class="rf-conf-banner">&#10004; Payment received &mdash; you&rsquo;re booked!</div>
+      <p class="rf-meta" style="margin:0 0 1rem;">See you Saturday, November 21 for your <strong id="tb-conf-label"></strong>. Come sweat out the Thanksgiving food &#127831;</p>
+      <a id="tb-conf-cal" class="rf-btn" style="text-decoration:none;display:block;" href="#" target="_blank" rel="noopener noreferrer">&#128197; Add to My Calendar</a>
     </div>
 
     <div class="rf-getting">
@@ -5515,6 +5543,21 @@ document.addEventListener('DOMContentLoaded', function(){
   });
   // Deep link from the shared flyer (/turkey-burn) → open the booking popup.
   try { if(new URLSearchParams(location.search).get('book')==='turkey'){ setTimeout(openOv, 450); } } catch(e){}
+  // ── Payment confirmation (Stripe returns to ?paid=turkey&s=tb1230|tb130) ──
+  var TB_CONF = {
+    'tb1230': { label:'12:30 PM session', cal:'https://book.auricmovement.com/calendar/turkey-burn-1230pm.ics' },
+    'tb130':  { label:'1:30 PM session',  cal:'https://book.auricmovement.com/calendar/turkey-burn-130pm.ics' }
+  };
+  function tbShowConfirmed(sk){
+    var m=TB_CONF[sk]||TB_CONF['tb1230'];
+    document.getElementById('tb-conf-label').textContent=m.label;
+    document.getElementById('tb-conf-cal').href=m.cal;
+    stepTime.style.display='none'; stepForm.style.display='none'; stepPay.style.display='none';
+    document.getElementById('tb-step-confirmed').style.display='';
+    openOv();
+    try { var arr=JSON.parse(localStorage.getItem('auric_turkey_burn')||'[]'); if(arr.length){ arr[arr.length-1].is_paid=true; localStorage.setItem('auric_turkey_burn', JSON.stringify(arr)); } } catch(e){}
+  }
+  try { var _tp=new URLSearchParams(location.search); if(_tp.get('paid')==='turkey'){ var _ts=_tp.get('s'); if(!TB_CONF[_ts]) _ts='tb1230'; setTimeout(function(){ tbShowConfirmed(_ts); }, 300); } } catch(e){}
 });
 </script>
 
@@ -5570,6 +5613,12 @@ document.addEventListener('DOMContentLoaded', function(){
         <button type="button" id="hw-pay-later" class="rf-close-link" style="margin-top:0;">I&rsquo;ll pay later</button>
         <p id="hw-pay-later-note" class="rf-policy" style="display:none;margin-top:.7rem;color:#8a5a2a;">Got it &mdash; we&rsquo;ve saved your details. Heads up: <strong>spots aren&rsquo;t held and are released first come, first served until payment is received</strong>, so pay soon to secure your place.</p>
       </div>
+    </div>
+
+    <div id="hw-step-confirmed" style="display:none;">
+      <div class="rf-conf-banner">&#10004; Payment received &mdash; you&rsquo;re booked!</div>
+      <p class="rf-meta" style="margin:0 0 1rem;">See you Saturday, October 24 for your <strong id="hw-conf-label"></strong>. Costumes encouraged &#127875; a goodie bag is waiting &#127873;</p>
+      <a id="hw-conf-cal" class="rf-btn" style="text-decoration:none;display:block;" href="#" target="_blank" rel="noopener noreferrer">&#128197; Add to My Calendar</a>
     </div>
 
     <div class="rf-getting">
@@ -5704,6 +5753,21 @@ document.addEventListener('DOMContentLoaded', function(){
   });
   // Deep link from the shared flyer (/halloween) → open the booking popup.
   try { if(new URLSearchParams(location.search).get('book')==='halloween'){ setTimeout(openOv, 450); } } catch(e){}
+  // ── Payment confirmation (Stripe returns to ?paid=halloween&s=hw1230|hw130) ──
+  var HW_CONF = {
+    'hw1230': { label:'12:30 PM session', cal:'https://book.auricmovement.com/calendar/halloween-1230pm.ics' },
+    'hw130':  { label:'1:30 PM session',  cal:'https://book.auricmovement.com/calendar/halloween-130pm.ics' }
+  };
+  function hwShowConfirmed(sk){
+    var m=HW_CONF[sk]||HW_CONF['hw1230'];
+    document.getElementById('hw-conf-label').textContent=m.label;
+    document.getElementById('hw-conf-cal').href=m.cal;
+    stepTime.style.display='none'; stepForm.style.display='none'; stepPay.style.display='none';
+    document.getElementById('hw-step-confirmed').style.display='';
+    openOv();
+    try { var arr=JSON.parse(localStorage.getItem('auric_halloween')||'[]'); if(arr.length){ arr[arr.length-1].is_paid=true; localStorage.setItem('auric_halloween', JSON.stringify(arr)); } } catch(e){}
+  }
+  try { var _hp=new URLSearchParams(location.search); if(_hp.get('paid')==='halloween'){ var _hs=_hp.get('s'); if(!HW_CONF[_hs]) _hs='hw1230'; setTimeout(function(){ hwShowConfirmed(_hs); }, 300); } } catch(e){}
 });
 </script>
 
