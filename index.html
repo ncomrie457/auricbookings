@@ -5516,6 +5516,10 @@ document.addEventListener('DOMContentLoaded', function(){
   });
   document.getElementById('rfbk-pay-later').addEventListener('click', function(){
     document.getElementById('rfbk-pay-later-note').style.display='block';
+    if(this._pp) return; this._pp=1;
+    window.auricSendPayPending && window.auricSendPayPending({ event:'riddim-kompa-brooklyn-2026-09-26',
+      name:(document.getElementById('rfbk-name').value||'').trim(), email:(document.getElementById('rfbk-email').value||'').trim(),
+      sessionLabel:(document.getElementById('rfbk-pay-label').textContent||''), stripeUrl:(document.getElementById('rfbk-pay-btn').getAttribute('href')||'') });
   });
   // Deep link from the shared flyer (/riddim-kompa-brooklyn) → open the booking popup.
   try { if(new URLSearchParams(location.search).get('book')==='reformer-bk'){ setTimeout(openOv, 450); } } catch(e){}
@@ -5733,6 +5737,10 @@ document.addEventListener('DOMContentLoaded', function(){
   });
   document.getElementById('tb-pay-later').addEventListener('click', function(){
     document.getElementById('tb-pay-later-note').style.display='block';
+    if(this._pp) return; this._pp=1;
+    window.auricSendPayPending && window.auricSendPayPending({ event:'turkey-burn-2026-11-21',
+      name:(document.getElementById('tb-name').value||'').trim(), email:(document.getElementById('tb-email').value||'').trim(),
+      sessionLabel:(document.getElementById('tb-pay-label').textContent||''), stripeUrl:(document.getElementById('tb-pay-btn').getAttribute('href')||'') });
   });
   // Deep link from the shared flyer (/turkey-burn) → open the booking popup.
   try { if(new URLSearchParams(location.search).get('book')==='turkey'){ setTimeout(openOv, 450); } } catch(e){}
@@ -5950,6 +5958,10 @@ document.addEventListener('DOMContentLoaded', function(){
   });
   document.getElementById('hw-pay-later').addEventListener('click', function(){
     document.getElementById('hw-pay-later-note').style.display='block';
+    if(this._pp) return; this._pp=1;
+    window.auricSendPayPending && window.auricSendPayPending({ event:'halloween-creek-2026-10-24',
+      name:(document.getElementById('hw-name').value||'').trim(), email:(document.getElementById('hw-email').value||'').trim(),
+      sessionLabel:(document.getElementById('hw-pay-label').textContent||''), stripeUrl:(document.getElementById('hw-pay-btn').getAttribute('href')||'') });
   });
   // Deep link from the shared flyer (/halloween) → open the booking popup.
   try { if(new URLSearchParams(location.search).get('book')==='halloween'){ setTimeout(openOv, 450); } } catch(e){}
@@ -6179,6 +6191,10 @@ document.addEventListener('DOMContentLoaded', function(){
     // "I'll pay later" — reveal the spot-not-held warning (details already saved)
     document.getElementById('rf-pay-later').addEventListener('click', function(){
       document.getElementById('rf-pay-later-note').style.display='block';
+      if(this._pp) return; this._pp=1;
+      window.auricSendPayPending && window.auricSendPayPending({ event:'riddim-kompa-reformer-2026-09-13',
+        name:(document.getElementById('rf-name').value||'').trim(), email:(document.getElementById('rf-email').value||'').trim(),
+        sessionLabel:(document.getElementById('rf-pay-label').textContent||''), stripeUrl:'' });
     });
 
     // ── Sold-out cap: hide a session once 6 paid bookings exist (fails OPEN) ──
@@ -13598,6 +13614,34 @@ document.addEventListener('DOMContentLoaded', function() {
       else { done(); }
     });
   });
+})();
+</script>
+<script>
+/* Auto-send the generic payment-pending email when a customer books but chooses
+   "I'll pay later" on a reformer-style event. Reads details from the form, fills
+   the correct per-event Stripe link, and sends via EmailJS (best-effort). */
+(function(){
+  var PP_TMPL='template_547l0yl', PP_SERVICE='service_ieahnue';
+  var PP_META={
+    'riddim-kompa-reformer-2026-09-13':{ name:'Riddim & Kompa on the Reformer — West Hempstead', date:'Sunday, September 13', loc:'Valley Studio, West Hempstead NY', amount:'$45.00' },
+    'riddim-kompa-brooklyn-2026-09-26':{ name:'Riddim & Kompa on the Reformer — Brooklyn', date:'Saturday, September 26', loc:'Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221', amount:'$45.00' },
+    'halloween-creek-2026-10-24':      { name:'Shhh… Quiet on the Creek — Halloween Reformer', date:'Saturday, October 24', loc:'Valley Studio, West Hempstead NY', amount:'$45.00' },
+    'turkey-burn-2026-11-21':          { name:'Turkey Burn! on the Reformer', date:'Saturday, November 21', loc:'Valley Studio, West Hempstead NY', amount:'$45.00' }
+  };
+  window.auricSendPayPending=function(o){
+    try{
+      if(!o || !o.email || !/.+@.+\..+/.test(o.email) || typeof emailjs==='undefined') return;
+      if(PP_TMPL.indexOf('REPLACE')!==-1) return;
+      var m=PP_META[o.event]||{};
+      var url=(o.stripeUrl && o.stripeUrl.indexOf('buy.stripe.com')>=0) ? o.stripeUrl : 'https://book.auricmovement.com';
+      emailjs.send(PP_SERVICE, PP_TMPL, {
+        from_name:o.name||'there', to_email:o.email,
+        event_name:m.name||'your event', event_date:m.date||'',
+        session_label:o.sessionLabel||'', location:m.loc||'',
+        stripe_url:url, amount:m.amount||'$45.00'
+      });
+    }catch(e){}
+  };
 })();
 </script>
 
