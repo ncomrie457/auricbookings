@@ -4667,14 +4667,20 @@
         <div>
           <label for="admin-flex-reminder-event" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Event</label>
           <select id="admin-flex-reminder-event" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
-            <option value="pilates">Pilates x Niara (both sessions)</option>
-            <option value="matchat">Mat &amp; Chat</option>
-            <option value="recharge">Create &amp; Recharge</option>
-            <option value="reformer">Riddim &amp; Kompa &mdash; West Hempstead (both sessions)</option>
-            <option value="reformer-bk">Riddim &amp; Kompa &mdash; Brooklyn (all sessions)</option>
-            <option value="halloween">Shhh&hellip; Quiet on the Creek (both sessions)</option>
-            <option value="turkey">Turkey Burn! (both sessions)</option>
-            <option value="blooming">Something&rsquo;s Blooming (interest list)</option>
+            <optgroup label="Upcoming events">
+              <option value="reformer">Riddim &amp; Kompa &mdash; West Hempstead (Sep 13)</option>
+              <option value="reformer-bk">Riddim &amp; Kompa &mdash; Brooklyn (Sep 26)</option>
+              <option value="halloween">Shhh&hellip; Quiet on the Creek (Oct 24)</option>
+              <option value="turkey">Turkey Burn! (Nov 21)</option>
+            </optgroup>
+            <optgroup label="Interest lists">
+              <option value="blooming">Something&rsquo;s Blooming (interest list)</option>
+            </optgroup>
+            <optgroup label="Past events &middot; archive">
+              <option value="pilates">Pilates x Niara (Jun 19)</option>
+              <option value="matchat">Mat &amp; Chat (Aug 1)</option>
+              <option value="recharge">Create &amp; Recharge (Aug 15)</option>
+            </optgroup>
           </select>
         </div>
         <div>
@@ -4690,7 +4696,13 @@
       </div>
 
       <div style="margin-bottom:.85rem;">
-        <label for="admin-flex-reminder-message" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Message <span style="font-weight:400;color:var(--text-muted);">(edit freely &mdash; this is the email body; your edits are remembered)</span></label>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.3rem;">
+          <label for="admin-flex-reminder-message" style="font-size:.78rem;color:var(--brown);font-weight:600;">Message <span style="font-weight:400;color:var(--text-muted);">(edit freely &mdash; saved per event)</span></label>
+          <div style="display:flex;align-items:center;gap:.5rem;flex-shrink:0;">
+            <span id="admin-flex-reminder-saved" style="font-size:.68rem;color:#2e7d32;opacity:0;transition:opacity .2s;">Saved &#10003;</span>
+            <button type="button" id="admin-flex-reminder-reset" style="font-size:.7rem;color:#a86617;background:#fff4e5;border:1px solid #f0c890;border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-family:'Jost',sans-serif;">&#8634; Reset to default</button>
+          </div>
+        </div>
         <textarea id="admin-flex-reminder-message" rows="7" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;resize:vertical;line-height:1.55;">What to bring: just your good vibes &mdash; all equipment is provided. Wear something comfy to move in and you're set.
 
 Location: The Fitin &middot; 297 7th Ave, Floor 3, New York, NY 10001
@@ -9127,12 +9139,37 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('admin-flex-reminder-suggestion').textContent = getReminderPhrasing(days).greeting;
   });
 
-  // Remember the editable reminder message across sessions (per browser).
+  // ── Per-event reminder message: each event remembers its own body, still fully editable ──
+  var REMINDER_MSG_DEFAULTS = {
+    reformer: "What to bring: just your good vibes — all equipment is provided. Wear something comfy to move in, plus grip socks (required).\n\nLocation: Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552\n\nPlease arrive a few minutes early — class begins promptly and late arrivals can't be admitted.\n\nCan't wait to move with you! 🇯🇲🇭🇹",
+    'reformer-bk': "What to bring: just your good vibes — all equipment is provided. Wear something comfy to move in, plus grip socks (required).\n\nLocation: Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221\n\nPlease arrive a few minutes early — class begins promptly and late arrivals can't be admitted.\n\nCan't wait to move with you! 🇯🇲🇭🇹",
+    halloween: "What to bring: your good vibes and (if you'd like) a costume — costumes are encouraged! 🎃 All equipment is provided; grip socks are required.\n\nLocation: Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552\n\nPlease arrive a few minutes early — class begins promptly and late arrivals can't be admitted.\n\nCan't wait to move (and maybe spook) with you!",
+    turkey: "What to bring: just your good vibes — all equipment is provided. Wear something comfy to move in, plus grip socks (required).\n\nLocation: Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552\n\nPlease arrive a few minutes early — class begins promptly and late arrivals can't be admitted.\n\nCome ready to sweat out the holiday. 🦃",
+    pilates: "What to bring: just your good vibes — all equipment is provided. Wear something comfy to move in and you're set.\n\nLocation: The Fitin · 297 7th Ave, Floor 3, New York, NY 10001\n\nPlease arrive on time — class begins promptly with a 5-minute grace period only, and late arrivals can't be admitted.\n\nCan't wait to move and connect with you!",
+    matchat: "What to bring: just yourself — all mats and supplies are provided. Wear something comfy to move in.\n\nPlease arrive a few minutes early — we begin promptly and late arrivals can't be admitted.\n\nCan't wait to move, create, and connect with you! 🎨",
+    recharge: "What to bring: just yourself — all art supplies and mats are provided. Wear something comfy you don't mind getting a little paint on.\n\nPlease arrive a few minutes early — we begin promptly and late arrivals can't be admitted.\n\nCan't wait to create and recharge with you!",
+    blooming: "Thanks for your interest in Something's Blooming! We'll be in touch with the details soon.\n\nKeep an eye on your inbox — spots are limited and go to the interest list first.\n\nCan't wait to bloom with you! 🌸"
+  };
   (function(){
     var msgEl = document.getElementById('admin-flex-reminder-message');
-    if (!msgEl) return;
-    try { var saved = localStorage.getItem('auric_reminder_msg'); if (saved !== null) msgEl.value = saved; } catch(e){}
-    msgEl.addEventListener('input', function(){ try { localStorage.setItem('auric_reminder_msg', this.value); } catch(e){} });
+    var evSel = document.getElementById('admin-flex-reminder-event');
+    var resetBtn = document.getElementById('admin-flex-reminder-reset');
+    var savedTag = document.getElementById('admin-flex-reminder-saved');
+    if (!msgEl || !evSel) return;
+    function key(ev){ return 'auric_reminder_msg_' + ev; }
+    function def(ev){ return REMINDER_MSG_DEFAULTS[ev] || REMINDER_MSG_DEFAULTS.pilates || ''; }
+    function loadFor(ev){
+      var saved = null; try { saved = localStorage.getItem(key(ev)); } catch(e){}
+      msgEl.value = (saved !== null && saved !== undefined) ? saved : def(ev);
+    }
+    var _t;
+    function flashSaved(){ if(!savedTag) return; savedTag.style.opacity='1'; clearTimeout(_t); _t=setTimeout(function(){ savedTag.style.opacity='0'; }, 1200); }
+    // One-time migration: fold the old single shared message into whatever event is selected now.
+    try { var legacy = localStorage.getItem('auric_reminder_msg'); if (legacy !== null && localStorage.getItem(key(evSel.value)) === null) localStorage.setItem(key(evSel.value), legacy); localStorage.removeItem('auric_reminder_msg'); } catch(e){}
+    loadFor(evSel.value);
+    msgEl.addEventListener('input', function(){ try { localStorage.setItem(key(evSel.value), this.value); } catch(e){} flashSaved(); });
+    evSel.addEventListener('change', function(){ loadFor(this.value); });
+    if (resetBtn) resetBtn.addEventListener('click', function(){ msgEl.value = def(evSel.value); try { localStorage.setItem(key(evSel.value), msgEl.value); } catch(e){} flashSaved(); msgEl.focus(); });
   })();
 
   // ── Reminder "question box" presets, per event ──
