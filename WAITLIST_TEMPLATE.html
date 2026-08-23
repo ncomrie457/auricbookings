@@ -1,0 +1,122 @@
+<!--
+  ════════════════════════════════════════════════════════════
+   Generic Waitlist Confirmation — "You're on the waitlist"
+   (Works for ALL reformer-style events: Riddim & Kompa West
+    Hempstead & Brooklyn, Halloween, Turkey Burn — the event
+    name/date/session are filled in from variables.)
+   ────────────────────────────────────────────────────────────
+   HOW TO USE:
+     1. In EmailJS → Email Templates → Create New Template.
+     2. Switch to the "Code"/HTML view and paste this ENTIRE file over
+        everything, then Save.
+     3. Copy the new template id and set it in index.html — find:
+          var WL_TMPL = 'template_REPLACE_WAITLIST';
+        and replace it with your real id, e.g. 'template_ab12cde'.
+     4. In the template Settings tab set:
+          Subject:   You're on the waitlist ⏳ {{event_name}}
+          From Name: Auric Movement
+          To Email:  {{to_email}}
+
+   EmailJS variables used:
+     {{from_name}}      — recipient's name
+     {{to_email}}       — their email (send-to)
+     {{event_name}}     — e.g. "Turkey Burn! on the Reformer"
+     {{event_date}}     — e.g. "Saturday, November 21"
+     {{session_label}}  — e.g. "12:30 PM session"
+     {{location}}       — e.g. "Valley Studio, West Hempstead NY"
+  ════════════════════════════════════════════════════════════
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You're on the waitlist</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f1e9da;font-family:Georgia,'Times New Roman',serif;color:#3d322a;">
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f1e9da;padding:32px 16px;">
+  <tr>
+    <td align="center">
+
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#fdfbf7;border-radius:14px;overflow:hidden;box-shadow:0 6px 30px rgba(90,58,26,0.14);max-width:600px;width:100%;">
+
+        <!-- Top stripe -->
+        <tr>
+          <td style="padding:0;font-size:0;line-height:0;height:8px;background-color:#9c6b34;">&nbsp;</td>
+        </tr>
+
+        <!-- Header -->
+        <tr>
+          <td align="center" style="background-color:#f6f0e4;padding:34px 30px 28px;border-bottom:1px solid #e6dbc8;">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:#9c6b34;letter-spacing:3px;text-transform:uppercase;font-weight:bold;">Auric Movement</div>
+            <div style="font-size:34px;line-height:1;margin-top:14px;">&#9203;</div>
+            <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:30px;line-height:1.15;color:#5A3A1A;margin-top:10px;">You&rsquo;re on the waitlist</div>
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="padding:34px 42px 8px;">
+            <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:24px;color:#9c6b34;margin:0 0 16px 0;">Hi {{from_name}},</p>
+            <p style="font-family:Georgia,serif;font-size:16px;line-height:1.8;color:#3a2f26;margin:0 0 16px 0;">
+              Thanks so much for your interest! This session is currently full, so we&rsquo;ve added you to the <strong>waitlist</strong>. If a spot opens up, we&rsquo;ll email you right away with a window to grab it.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Event details -->
+        <tr>
+          <td style="padding:8px 42px 8px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f6f0e4;border:1px solid #e6dbc8;border-radius:10px;">
+              <tr>
+                <td style="padding:22px 26px;">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#9c6b34;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">You&rsquo;re waitlisted for</div>
+                  <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;color:#2a231d;line-height:1.3;margin-bottom:10px;">{{event_name}}</div>
+                  <div style="font-family:Georgia,serif;font-size:15px;color:#3a2f26;line-height:1.7;">
+                    &#128197; {{event_date}}<br>
+                    &#128336; {{session_label}}<br>
+                    &#128205; {{location}}
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Reassurance -->
+        <tr>
+          <td style="padding:20px 42px 6px;">
+            <p style="font-family:Georgia,serif;font-size:15px;line-height:1.75;color:#3a2f26;margin:0;">
+              No payment is needed to hold your waitlist spot &mdash; you&rsquo;ll only pay if a place opens and you claim it. Keep an eye on your inbox!
+            </p>
+          </td>
+        </tr>
+
+        <!-- Closing -->
+        <tr>
+          <td style="padding:22px 42px 30px;">
+            <p style="font-family:Georgia,serif;font-size:15px;color:#3a2f26;line-height:1.75;margin:0 0 10px 0;">With gratitude, &#10084;&#65039;</p>
+            <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:20px;color:#9c6b34;margin:0;">&mdash; Niara, Auric Movement</p>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background-color:#1f1a17;padding:24px 34px;" align="center">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#ffffff;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">Auric Movement</div>
+            <div style="font-family:Georgia,serif;font-size:12px;color:#d8c8b6;line-height:1.8;">
+              Pilates events in NYC, hosted with intention.<br>
+              <a href="mailto:auricmovement@outlook.com" style="color:#e0b878;text-decoration:none;">auricmovement@outlook.com</a> &middot; <a href="https://book.auricmovement.com" style="color:#e0b878;text-decoration:none;">book.auricmovement.com</a>
+            </div>
+          </td>
+        </tr>
+
+      </table>
+
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>
