@@ -4503,6 +4503,66 @@
         <button type="button" id="admin-close-btn" class="btn btn-secondary">&#10005; Close</button>
       </div>
     </div>
+    <style>
+      #admin-panel .admin-tabnav{display:flex;gap:.1rem;border-bottom:1px solid var(--border);margin:.2rem 0 1.2rem;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+      #admin-panel .admin-tab{font-family:'Jost',sans-serif;font-size:.85rem;font-weight:600;color:var(--text-muted);background:none;border:none;border-bottom:3px solid transparent;padding:.7rem .95rem;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:.4rem;}
+      #admin-panel .admin-tab:hover{color:var(--brown);}
+      #admin-panel .admin-tab.active{color:var(--brown);border-bottom-color:var(--gold);}
+      #admin-panel .admin-tabpanel[hidden]{display:none;}
+      #admin-roster-search{width:100%;max-width:460px;padding:.55rem .8rem;border:1px solid var(--border);border-radius:9px;font-family:'Jost',sans-serif;font-size:.88rem;background:#fff;color:#3d322a;margin:0 0 1rem;box-sizing:border-box;}
+    </style>
+    <nav id="admin-tabnav" class="admin-tabnav" role="tablist">
+      <button type="button" class="admin-tab active" data-tab="rosters">&#128451;&#65039; Rosters</button>
+      <button type="button" class="admin-tab" data-tab="reminders">&#9993;&#65039; Reminders &amp; Emails</button>
+      <button type="button" class="admin-tab" data-tab="add">&#10133; Add / Edit</button>
+      <button type="button" class="admin-tab" data-tab="lists">&#128279; Lists &amp; Agreements</button>
+      <button type="button" class="admin-tab" data-tab="recog">&#127991;&#65039; Recognition</button>
+    </nav>
+    <div id="admin-tab-rosters" class="admin-tabpanel"></div>
+    <div id="admin-tab-reminders" class="admin-tabpanel" hidden></div>
+    <div id="admin-tab-add" class="admin-tabpanel" hidden></div>
+    <div id="admin-tab-lists" class="admin-tabpanel" hidden></div>
+    <div id="admin-tab-recog" class="admin-tabpanel" hidden></div>
+    <script>
+    (function(){
+      function setup(){
+        var nav=document.getElementById('admin-tabnav'); if(!nav || nav._wired) return; nav._wired=true;
+        var MAP={
+          rosters:['admin-body'],
+          reminders:['admin-reminder-section','admin-waitlist-section'],
+          add:['admin-manual-add-section'],
+          lists:['admin-shared-lists','admin-agreements-section','admin-club-section','admin-notify-list-section'],
+          recog:['admin-badges-section','admin-donor-section']
+        };
+        Object.keys(MAP).forEach(function(tab){
+          var panel=document.getElementById('admin-tab-'+tab); if(!panel) return;
+          MAP[tab].forEach(function(id){ var el=document.getElementById(id); if(el && el.parentNode!==panel) panel.appendChild(el); });
+        });
+        var rp=document.getElementById('admin-tab-rosters');
+        if(rp && !document.getElementById('admin-roster-search')){
+          var s=document.createElement('input'); s.id='admin-roster-search'; s.type='search';
+          s.placeholder='🔍 Search name or email across all events…';
+          s.addEventListener('input', function(){
+            var q=this.value.trim().toLowerCase();
+            Array.prototype.forEach.call(rp.querySelectorAll('.admin-sub-item'), function(it){
+              it.style.display = (!q || (it.textContent||'').toLowerCase().indexOf(q)>=0) ? '' : 'none';
+            });
+          });
+          rp.insertBefore(s, rp.firstChild);
+        }
+        Array.prototype.forEach.call(nav.querySelectorAll('.admin-tab'), function(btn){
+          btn.addEventListener('click', function(){
+            Array.prototype.forEach.call(nav.querySelectorAll('.admin-tab'), function(b){ b.classList.remove('active'); });
+            btn.classList.add('active');
+            ['rosters','reminders','add','lists','recog'].forEach(function(t){
+              var p=document.getElementById('admin-tab-'+t); if(p) p.hidden = (t!==btn.getAttribute('data-tab'));
+            });
+          });
+        });
+      }
+      if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', setup); else setup();
+    })();
+    </script>
     <div id="admin-body"></div>
 
     <!-- Consolidated Waitlist Notify — all events in one place -->
@@ -4537,7 +4597,7 @@
     </div>
 
     <!-- Manual Add -->
-    <div style="margin-top:1.5rem;padding:1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:12px;">
+    <div id="admin-manual-add-section" style="margin-top:1.5rem;padding:1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:12px;">
       <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--brown);margin-bottom:1rem;">&#10133; Manually Add Registration</h3>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
         <div>
@@ -4578,7 +4638,7 @@
     </div>
 
     <!-- Event Badges -->
-    <div style="margin-top:1.5rem;padding:1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:12px;">
+    <div id="admin-badges-section" style="margin-top:1.5rem;padding:1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:12px;">
       <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--brown);margin-bottom:.75rem;">&#127991; Event Badges</h3>
       <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:.85rem;line-height:1.5;">Toggle which events show the gold COLLAB badge on the Events hub. Changes save automatically.</p>
       <div id="admin-event-badges">
@@ -4619,7 +4679,7 @@
     </div>
 
     <!-- Donor / Sponsor Recognition -->
-    <div style="margin-top:1rem;padding:1.25rem;background:#fdf5f4;border:1px solid #f0d4d0;border-radius:12px;">
+    <div id="admin-donor-section" style="margin-top:1rem;padding:1.25rem;background:#fdf5f4;border:1px solid #f0d4d0;border-radius:12px;">
       <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--brown);margin-bottom:.5rem;">&#127873; Donor Recognition</h3>
       <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:.85rem;line-height:1.5;">Add companies/sponsors to display a <strong>&#127873; Donor Supported</strong> badge and a "With thanks to..." line on the event card. Comma-separated. Leave blank for no badge.</p>
 
@@ -4659,7 +4719,7 @@
     </div>
 
     <!-- Flexible Reminder Sender -->
-    <div style="margin-top:1rem;padding:1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:12px;">
+    <div id="admin-reminder-section" style="margin-top:1rem;padding:1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:12px;">
       <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--brown);margin-bottom:.5rem;">&#128232; Send Custom Reminder</h3>
       <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:.85rem;line-height:1.5;">Send a beautifully branded reminder for any number of days out. The greeting auto-adapts (e.g., "See you next week!" for 7 days, "See you tomorrow!" for 1 day), or you can write your own.</p>
 
