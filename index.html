@@ -4538,6 +4538,23 @@
           var panel=document.getElementById('admin-tab-'+tab); if(!panel) return;
           MAP[tab].forEach(function(id){ var el=document.getElementById(id); if(el && el.parentNode!==panel) panel.appendChild(el); });
         });
+        // Move header action buttons into the tabs they belong to (declutter the header).
+        (function(){
+          // Auric Club toggle → Lists tab, above the members section.
+          var clubBtn=document.getElementById('admin-club-btn'), clubSec=document.getElementById('admin-club-section'), listsP=document.getElementById('admin-tab-lists');
+          if(clubBtn && clubSec && listsP && clubSec.parentNode===listsP){ clubBtn.style.margin='0 0 .8rem'; listsP.insertBefore(clubBtn, clubSec); }
+          // Early Access → Notify List button → Lists tab, above the Coming Soon notify list.
+          var earlyBtn=document.getElementById('admin-early-notify-btn'), notifySec=document.getElementById('admin-notify-list-section');
+          if(earlyBtn && notifySec && listsP && notifySec.parentNode===listsP){ earlyBtn.style.margin='0 0 .8rem'; listsP.insertBefore(earlyBtn, notifySec); }
+          // Send Founding One + Send Club Welcome → Recognition tab, grouped at the top.
+          var recogP=document.getElementById('admin-tab-recog');
+          if(recogP && !document.getElementById('admin-recog-actions')){
+            var row=document.createElement('div'); row.id='admin-recog-actions';
+            row.style.cssText='display:flex;gap:.5rem;flex-wrap:wrap;margin:0 0 1rem;';
+            ['admin-founding-btn','admin-club-welcome-btn'].forEach(function(id){ var b=document.getElementById(id); if(b){ b.style.margin='0'; row.appendChild(b); } });
+            if(row.childNodes.length) recogP.insertBefore(row, recogP.firstChild);
+          }
+        })();
         var rp=document.getElementById('admin-tab-rosters');
         if(rp && !document.getElementById('admin-roster-search')){
           var s=document.createElement('input'); s.id='admin-roster-search'; s.type='search';
