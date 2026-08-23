@@ -9446,7 +9446,9 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   document.getElementById('admin-clear-btn').addEventListener('click', function(){
-    if (!confirm('Are you sure you want to delete ALL data \u2014 Pilates, Mat & Chat, Corporate, and Notify List? This cannot be undone.')) return;
+    var _typed = prompt('\u26a0\ufe0f DANGER: this permanently deletes ALL Pilates, Mat & Chat, Corporate, and Notify List data. It cannot be undone.\n\nType DELETE (in capital letters) to confirm:');
+    if (_typed === null) return; // cancelled
+    if (_typed.trim() !== 'DELETE') { alert('Cancelled \u2014 nothing was cleared. (You must type DELETE exactly.)'); return; }
     saveData({ s1:[], s2:[] }, function(){
       saveMCData({ mc1:[] }, function(){
         saveCorpData({ inquiries:[], bookings:[] }, function(){
