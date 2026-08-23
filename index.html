@@ -5389,8 +5389,9 @@ document.addEventListener('DOMContentLoaded', function(){
           var s=btn.getAttribute('data-session'); var rem=RKBK_CAP-(paid[s]||0);
           var old=btn.querySelector('.rf-left-tag'); if(old) old.remove();
           var so=btn.querySelector('.rf-soldout-tag'); if(so) so.remove();
+          if(window.auricWaitlistClear) window.auricWaitlistClear(btn);
           btn.disabled=false; btn.classList.remove('rf-soldout');
-          if(rem<=0){ btn.disabled=true; btn.classList.add('rf-soldout'); var t=document.createElement('small'); t.className='rf-soldout-tag'; t.textContent='Sold out'; btn.appendChild(t); }
+          if(rem<=0){ btn.disabled=true; btn.classList.add('rf-soldout'); var t=document.createElement('small'); t.className='rf-soldout-tag'; t.textContent='Sold out'; btn.appendChild(t); if(window.auricWaitlistAppend) window.auricWaitlistAppend(btn, RKBK_EVENT, s, btn.getAttribute('data-label')); }
           else if(rem<=2){ var l=document.createElement('small'); l.className='rf-left-tag'; l.textContent='⚡ Almost sold out — only '+rem+' spot'+(rem===1?'':'s')+' left'; btn.appendChild(l); }
         });
       }, function(){});
@@ -5605,8 +5606,9 @@ document.addEventListener('DOMContentLoaded', function(){
           var s=btn.getAttribute('data-session'); var rem=TB_CAP-(paid[s]||0);
           var old=btn.querySelector('.rf-left-tag'); if(old) old.remove();
           var so=btn.querySelector('.rf-soldout-tag'); if(so) so.remove();
+          if(window.auricWaitlistClear) window.auricWaitlistClear(btn);
           btn.disabled=false; btn.classList.remove('rf-soldout');
-          if(rem<=0){ btn.disabled=true; btn.classList.add('rf-soldout'); var t=document.createElement('small'); t.className='rf-soldout-tag'; t.textContent='Sold out'; btn.appendChild(t); }
+          if(rem<=0){ btn.disabled=true; btn.classList.add('rf-soldout'); var t=document.createElement('small'); t.className='rf-soldout-tag'; t.textContent='Sold out'; btn.appendChild(t); if(window.auricWaitlistAppend) window.auricWaitlistAppend(btn, TB_EVENT, s, btn.getAttribute('data-label')); }
           else if(rem<=2){ var l=document.createElement('small'); l.className='rf-left-tag'; l.textContent='⚡ Almost sold out — only '+rem+' spot'+(rem===1?'':'s')+' left'; btn.appendChild(l); }
         });
       }, function(){});
@@ -5821,8 +5823,9 @@ document.addEventListener('DOMContentLoaded', function(){
           var s=btn.getAttribute('data-session'); var rem=HW_CAP-(paid[s]||0);
           var old=btn.querySelector('.rf-left-tag'); if(old) old.remove();
           var so=btn.querySelector('.rf-soldout-tag'); if(so) so.remove();
+          if(window.auricWaitlistClear) window.auricWaitlistClear(btn);
           btn.disabled=false; btn.classList.remove('rf-soldout');
-          if(rem<=0){ btn.disabled=true; btn.classList.add('rf-soldout'); var t=document.createElement('small'); t.className='rf-soldout-tag'; t.textContent='Sold out'; btn.appendChild(t); }
+          if(rem<=0){ btn.disabled=true; btn.classList.add('rf-soldout'); var t=document.createElement('small'); t.className='rf-soldout-tag'; t.textContent='Sold out'; btn.appendChild(t); if(window.auricWaitlistAppend) window.auricWaitlistAppend(btn, HW_EVENT, s, btn.getAttribute('data-label')); }
           else if(rem<=2){ var l=document.createElement('small'); l.className='rf-left-tag'; l.textContent='⚡ Almost sold out — only '+rem+' spot'+(rem===1?'':'s')+' left'; btn.appendChild(l); }
         });
       }, function(){});
@@ -6102,12 +6105,14 @@ document.addEventListener('DOMContentLoaded', function(){
           Array.prototype.forEach.call(document.querySelectorAll('#rf-step-time .rf-time'), function(btn){
             var s=btn.getAttribute('data-session');
             var old=btn.querySelector('.rf-left-tag'); if(old) old.remove();
+            if(window.auricWaitlistClear) window.auricWaitlistClear(btn);
             var remaining = CAP - (paid[s]||0);
             if(remaining<=0){
               btn.disabled=true; btn.classList.add('rf-soldout');
               if(!btn.querySelector('.rf-soldout-tag')){
                 var t=document.createElement('small'); t.className='rf-soldout-tag'; t.textContent='Sold out'; btn.appendChild(t);
               }
+              if(window.auricWaitlistAppend) window.auricWaitlistAppend(btn, 'riddim-kompa-reformer-2026-09-13', s, btn.getAttribute('data-label'));
             } else if(remaining<=2){
               var l=document.createElement('small'); l.className='rf-left-tag';
               l.textContent='⚡ Almost sold out — only ' + remaining + ' spot' + (remaining===1?'':'s') + ' left';
@@ -11333,6 +11338,27 @@ document.addEventListener('DOMContentLoaded', function() {
   function fbBadge(rec){ return _foundingSent[foundingKey(rec.email, rec.event, rec.session)] ? ' <span class="atype" style="background:#eef3e8;color:#3b6b3f;">🎁 Founding One</span>' : ''; }
   window.markFoundingSent = function(email,ev,sess){ _foundingSent[foundingKey(email,ev,sess)] = true; try { localStorage.setItem('auric_founding_sent', JSON.stringify(_foundingSent)); } catch(e){} if(typeof rfRefresh==='function') rfRefresh(); };
   function rfRefresh(){ if(rfAdminContainer) renderReformerSection(rfAdminContainer); if(rfBkAdminContainer) renderReformerBkSection(rfBkAdminContainer); if(rfTbAdminContainer) renderReformerTbSection(rfTbAdminContainer); if(rfHwAdminContainer) renderReformerHwSection(rfHwAdminContainer); }
+  // Build a "⏳ Waitlist" sub-block for one event (rows = full roster; filters type='waitlist').
+  function rfWaitlistBlock(allRows, eventId){
+    var waits = (allRows||[]).filter(function(r){ return r.type==='waitlist' && r.event===eventId; });
+    var wrap = document.createElement('div'); wrap.className='admin-session-block'; wrap.style.cssText='margin:.6rem 0 .2rem;padding:.5rem .6rem;background:#fffaf0;border:1px solid #f0e0bd;border-radius:8px;';
+    var h=document.createElement('h3'); h.style.cssText='font-size:.74rem;color:#7a6320;margin:0 0 .3rem;';
+    h.textContent='⏳ Waitlist · '+waits.length+(waits.length===1?' person':' people');
+    wrap.appendChild(h);
+    if(!waits.length){ var e=document.createElement('div'); e.style.cssText='font-size:.78rem;color:var(--text-muted);'; e.textContent='No one on the waitlist yet.'; wrap.appendChild(e); return wrap; }
+    waits.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
+    waits.forEach(function(rec){
+      rfRosterById[rec.id]=rec;
+      var when=''; try{ when=rec.created_at?new Date(rec.created_at).toLocaleString():''; }catch(e){}
+      var item=document.createElement('div'); item.className='admin-sub-item';
+      var rm='<button onclick="rfAdminRemove('+rec.id+')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F5D1} Remove</button>';
+      item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> <span class="atype" style="background:#fef9e7;color:#7a6320;">waitlist</span><br><span class="aemail">'+escapeHTML(rec.email||'')+'</span></div>'+
+        '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span><br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;">'+rm+'</div></div>';
+      wrap.appendChild(item);
+    });
+    return wrap;
+  }
+
   function renderReformerSection(container){
     if(!container) return;
     rfAdminContainer = container;
@@ -11343,6 +11369,7 @@ document.addEventListener('DOMContentLoaded', function() {
       rfRosterById = {};
       rows.forEach(function(r){ rfRosterById[r.id] = r; }); // keep ALL rows addressable (Valley + Brooklyn share admin actions)
       var display = rows.filter(function(r){ return r.event !== 'riddim-kompa-brooklyn-2026-09-26' && r.event !== 'turkey-burn-2026-11-21'; }); // Valley section: exclude Brooklyn + Turkey Burn
+      display = display.filter(function(r){ return r.type!=='waitlist'; }); // waitlisters shown separately, never counted as registered
       var paid  = display.filter(function(r){ return r.is_paid; }).length;
       var paid1 = display.filter(function(r){ return r.session==='1pm' && r.is_paid; }).length;
       var paid2 = display.filter(function(r){ return r.session==='2pm' && r.is_paid; }).length;
@@ -11351,6 +11378,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
+      block.appendChild(rfWaitlistBlock(rows, 'riddim-kompa-reformer-2026-09-13'));
       var SLAB = { '1pm':'1 PM', '2pm':'2 PM' }; var _curSess=null, _curSessBlock=null;
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
@@ -11406,6 +11434,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function render(rows, err){
       rows.forEach(function(r){ rfRosterById[r.id] = r; });
       var display = rows.filter(function(r){ return r.event === 'riddim-kompa-brooklyn-2026-09-26'; });
+      display = display.filter(function(r){ return r.type!=='waitlist'; }); // waitlisters shown separately, never counted as registered
       var CAP = 5, pd = { 'bk12':0,'bk1':0,'bk2':0 };
       display.forEach(function(r){ if(r.is_paid && pd[r.session]!==undefined) pd[r.session]++; });
       var paid = display.filter(function(r){ return r.is_paid; }).length;
@@ -11416,6 +11445,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var _bkOrd = { 'bk12':0, 'bk1':1, 'bk2':2 };
       function _bkRank(s){ return _bkOrd[s]!==undefined ? _bkOrd[s] : 99; }
       display.sort(function(a,b){ return (_bkRank(a.session)-_bkRank(b.session)) || (a.created_at||'').localeCompare(b.created_at||''); });
+      block.appendChild(rfWaitlistBlock(rows, 'riddim-kompa-brooklyn-2026-09-26'));
       var SLAB = { 'bk12':'12 PM','bk1':'1 PM','bk2':'2 PM' }; var _curSess=null, _curSessBlock=null;
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
@@ -11466,6 +11496,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function render(rows, err){
       rows.forEach(function(r){ rfRosterById[r.id] = r; });
       var display = rows.filter(function(r){ return r.event === 'turkey-burn-2026-11-21'; });
+      display = display.filter(function(r){ return r.type!=='waitlist'; }); // waitlisters shown separately, never counted as registered
       var CAP = 6, pd = { 'tb1230':0,'tb130':0 };
       display.forEach(function(r){ if(r.is_paid && pd[r.session]!==undefined) pd[r.session]++; });
       var paid = display.filter(function(r){ return r.is_paid; }).length;
@@ -11474,6 +11505,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
+      block.appendChild(rfWaitlistBlock(rows, 'turkey-burn-2026-11-21'));
       var SLAB = { 'tb1230':'12:30 PM','tb130':'1:30 PM' }; var _curSess=null, _curSessBlock=null;
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
@@ -11523,6 +11555,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function render(rows, err){
       rows.forEach(function(r){ rfRosterById[r.id] = r; });
       var display = rows.filter(function(r){ return r.event === 'halloween-creek-2026-10-24'; });
+      display = display.filter(function(r){ return r.type!=='waitlist'; }); // waitlisters shown separately, never counted as registered
       var CAP = 6, pd = { 'hw1230':0,'hw130':0 };
       display.forEach(function(r){ if(r.is_paid && pd[r.session]!==undefined) pd[r.session]++; });
       var paid = display.filter(function(r){ return r.is_paid; }).length;
@@ -11531,6 +11564,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
+      block.appendChild(rfWaitlistBlock(rows, 'halloween-creek-2026-10-24'));
       var SLAB = { 'hw1230':'12:30 PM','hw130':'1:30 PM' }; var _curSess=null, _curSessBlock=null;
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
@@ -13294,6 +13328,128 @@ document.addEventListener('DOMContentLoaded', function() {
     <span class="lightbox-title"></span>
   </div>
 </div>
+
+<!-- ══════════ Shared waitlist modal (reformer-style events) ══════════ -->
+<style>
+  .awl-overlay{position:fixed;inset:0;background:rgba(44,26,14,.85);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);z-index:10000;display:flex;align-items:center;justify-content:center;padding:1rem;overflow-y:auto;}
+  .awl-modal{background:#fdfbf7;border-radius:16px;padding:1.9rem 1.6rem;max-width:420px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.4);position:relative;text-align:center;font-family:'Jost',sans-serif;color:#3d322a;}
+  .awl-x{position:absolute;top:.7rem;right:.9rem;background:none;border:none;font-size:1.4rem;line-height:1;color:#b0a08e;cursor:pointer;padding:.2rem;}
+  .awl-eyebrow{font-family:Georgia,serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#9a6535;font-weight:bold;}
+  .awl-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.6rem;color:var(--brown);margin:.4rem 0 .5rem;font-weight:500;}
+  .awl-meta{font-size:.9rem;color:#3d322a;line-height:1.5;margin:0 0 1rem;}
+  .awl-note{font-size:.82rem;color:var(--text-muted);line-height:1.5;margin:0 0 1rem;text-align:left;background:#faf5ee;border:1px solid var(--border);border-radius:10px;padding:.7rem .85rem;}
+  .awl-field{text-align:left;margin:0 0 .8rem;}
+  .awl-field label{display:block;font-size:.82rem;font-weight:600;color:var(--brown);margin-bottom:.3rem;}
+  .awl-field input{width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:9px;font-family:'Jost',sans-serif;font-size:.92rem;background:#fff;color:#2c1a0e;box-sizing:border-box;}
+  .awl-field input:focus{outline:none;border-color:var(--gold);}
+  .awl-err{color:#b03636;font-size:.8rem;text-align:left;margin:.15rem 0 .6rem;min-height:1em;}
+  .awl-btn{display:block;width:100%;padding:.8rem 1rem;border:none;border-radius:999px;background:var(--brown);color:#fff;font-family:'Jost',sans-serif;font-size:.95rem;font-weight:600;letter-spacing:.02em;cursor:pointer;}
+  .awl-btn:disabled{opacity:.5;cursor:not-allowed;}
+  .awl-btn-ghost{background:transparent;color:var(--brown);border:1px solid var(--border);margin-top:.8rem;}
+  .awl-confirmed .awl-check{font-size:2rem;}
+  .awl-confirmed h3{font-family:'Cormorant Garamond',serif;font-style:italic;color:#123522;font-size:1.5rem;margin:.4rem 0 .5rem;}
+  .awl-confirmed p{font-size:.9rem;color:var(--text-muted);line-height:1.55;}
+  /* "Join the waitlist" trigger shown under a sold-out time button */
+  .rf-wl-link{display:block;width:100%;margin:-.4rem 0 .8rem;padding:.55rem .8rem;border:1px dashed #c9a86a;border-radius:10px;background:#fbf3e2;color:#7a5322;font-family:'Jost',sans-serif;font-weight:600;font-size:.85rem;cursor:pointer;text-align:center;}
+  .rf-wl-link:hover{background:#f6ead0;}
+</style>
+<div id="awl-overlay" class="awl-overlay" style="display:none;">
+  <div class="awl-modal">
+    <button type="button" class="awl-x" id="awl-close" aria-label="Close">&times;</button>
+    <div class="awl-eyebrow">Auric Movement</div>
+    <h2 class="awl-title" id="awl-title">Join the waitlist</h2>
+    <p class="awl-meta" id="awl-meta"></p>
+    <form id="awl-form" novalidate>
+      <p class="awl-note">This session is full. Add your name below &mdash; if a spot opens, we&rsquo;ll email you.</p>
+      <div class="awl-field"><label for="awl-name">Full name</label><input type="text" id="awl-name" autocomplete="name" placeholder="Your name"></div>
+      <div class="awl-field"><label for="awl-email">Email</label><input type="email" id="awl-email" autocomplete="email" placeholder="you@email.com"></div>
+      <div class="awl-err" id="awl-err" role="alert"></div>
+      <button type="submit" class="awl-btn" id="awl-submit">Join the waitlist &rarr;</button>
+    </form>
+    <div class="awl-confirmed" id="awl-confirmed" style="display:none;">
+      <div class="awl-check" aria-hidden="true">&#9203;</div>
+      <h3>You&rsquo;re on the waitlist!</h3>
+      <p id="awl-conf-msg"></p>
+      <button type="button" class="awl-btn awl-btn-ghost" id="awl-close2">Done</button>
+    </div>
+  </div>
+</div>
+<script>
+/* Shared waitlist for the reformer-style events (Sept 13 WH, Sept 26 Brooklyn,
+   Halloween, Turkey Burn). When a session is sold out, its time button gets a
+   "Join the waitlist" trigger (window.auricWaitlistAppend) that opens this modal.
+   Entries are stored in reformer_registrations with type='waitlist' (is_paid=false),
+   so they never consume a paid spot, and a generic confirmation email is sent. */
+(function(){
+  var WL_META = {
+    'riddim-kompa-reformer-2026-09-13':{ name:'Riddim & Kompa on the Reformer — West Hempstead', date:'Sunday, September 13', loc:'Valley Studio, West Hempstead NY' },
+    'riddim-kompa-brooklyn-2026-09-26':{ name:'Riddim & Kompa on the Reformer — Brooklyn',       date:'Saturday, September 26', loc:'Maison Luxe Wellness Pilates, Brooklyn NY' },
+    'halloween-creek-2026-10-24':      { name:'Shhh… Quiet on the Creek — Halloween Reformer',   date:'Saturday, October 24',  loc:'Valley Studio, West Hempstead NY' },
+    'turkey-burn-2026-11-21':          { name:'Turkey Burn! on the Reformer',                    date:'Saturday, November 21', loc:'Valley Studio, West Hempstead NY' }
+  };
+  var WL_SERVICE = 'service_ieahnue';
+  var WL_TMPL    = 'template_REPLACE_WAITLIST'; // create from WAITLIST_TEMPLATE.html, then paste the id here
+  var SB_URL = 'https://qvmiwyxerotkqpbuhpun.supabase.co', SB_KEY = 'sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ';
+  var _sb = null; function sb(){ if(_sb) return _sb; try { if(window.supabase && window.supabase.createClient) _sb = window.supabase.createClient(SB_URL, SB_KEY); } catch(e){} return _sb; }
+  var curEvent=null, curSession=null, curLabel='';
+  function el(id){ return document.getElementById(id); }
+
+  window.auricOpenWaitlist = function(eventId, session, label){
+    var ov=el('awl-overlay'); if(!ov) return;
+    curEvent=eventId; curSession=session; curLabel=label||'';
+    var m=WL_META[eventId]||{ name:'this event', date:'', loc:'' };
+    el('awl-meta').innerHTML='<strong>'+m.name+'</strong>'+((m.date||curLabel)?'<br>':'')+(m.date?m.date:'')+(m.date&&curLabel?' &middot; ':'')+(curLabel||'')+(m.loc?'<br>'+m.loc:'');
+    el('awl-form').style.display=''; el('awl-confirmed').style.display='none';
+    el('awl-name').value=''; el('awl-email').value=''; el('awl-err').textContent='';
+    var b=el('awl-submit'); b.disabled=false; b.innerHTML='Join the waitlist &rarr;';
+    ov.style.display='flex'; document.body.style.overflow='hidden';
+    setTimeout(function(){ try{ el('awl-name').focus(); }catch(e){} }, 50);
+  };
+  function closeWl(){ var ov=el('awl-overlay'); if(ov){ ov.style.display='none'; document.body.style.overflow=''; } }
+
+  window.auricWaitlistClear = function(btn){ if(btn && btn._wlLink){ try{ btn._wlLink.remove(); }catch(e){} btn._wlLink=null; } };
+  window.auricWaitlistAppend = function(btn, eventId, session, label){
+    window.auricWaitlistClear(btn);
+    var a=document.createElement('button');
+    a.type='button'; a.className='rf-wl-link'; a.innerHTML='Join the waitlist &rarr;';
+    a.addEventListener('click', function(){ window.auricOpenWaitlist(eventId, session, label); });
+    if(btn.parentNode) btn.parentNode.insertBefore(a, btn.nextSibling);
+    btn._wlLink=a;
+  };
+
+  document.addEventListener('DOMContentLoaded', function(){
+    var ov=el('awl-overlay'); if(!ov) return;
+    el('awl-close').addEventListener('click', closeWl);
+    var c2=el('awl-close2'); if(c2) c2.addEventListener('click', closeWl);
+    ov.addEventListener('click', function(ev){ if(ev.target===ov) closeWl(); });
+    document.addEventListener('keydown', function(ev){ if(ev.key==='Escape' && ov.style.display==='flex') closeWl(); });
+    el('awl-form').addEventListener('submit', function(ev){
+      ev.preventDefault();
+      var name=el('awl-name').value.trim(), email=el('awl-email').value.trim(), err=el('awl-err'), btn=el('awl-submit');
+      if(name.length<2){ err.textContent='Please enter your full name.'; el('awl-name').focus(); return; }
+      if(!/.+@.+\..+/.test(email)){ err.textContent='Please enter a valid email.'; el('awl-email').focus(); return; }
+      err.textContent=''; btn.disabled=true; btn.textContent='Adding you…';
+      var rec={ name:name, email:email, session:curSession, session_label:curLabel, event:curEvent, type:'waitlist', is_paid:false, created_at:new Date().toISOString() };
+      try { var k='auric_waitlist'; var arr=JSON.parse(localStorage.getItem(k)||'[]'); arr.push(rec); localStorage.setItem(k, JSON.stringify(arr)); } catch(e){}
+      function fail(){ btn.disabled=false; btn.innerHTML='Join the waitlist &rarr;'; err.textContent='Hmm — that didn’t save. Please email auricmovement@outlook.com and we’ll add you.'; }
+      function done(){
+        try {
+          if(typeof emailjs!=='undefined' && WL_TMPL.indexOf('REPLACE')===-1){
+            var m=WL_META[curEvent]||{};
+            emailjs.send(WL_SERVICE, WL_TMPL, { from_name:name, to_email:email, event_name:(m.name||'the event'), event_date:(m.date||''), session_label:(curLabel||''), location:(m.loc||'') });
+          }
+        } catch(e){}
+        var m2=WL_META[curEvent]||{};
+        el('awl-conf-msg').innerHTML='You&rsquo;re on the waitlist for <strong>'+(m2.name||'this event')+'</strong>'+(curLabel?' &middot; '+curLabel:'')+'. If a spot opens, we&rsquo;ll email you at <strong>'+email+'</strong>.';
+        el('awl-form').style.display='none'; el('awl-confirmed').style.display='block';
+      }
+      var c=sb();
+      if(c){ c.from('reformer_registrations').insert([rec]).then(function(res){ if(res && res.error){ fail(); return; } done(); }, fail); }
+      else { done(); }
+    });
+  });
+})();
+</script>
 
 </body>
 </html>
