@@ -2794,10 +2794,38 @@
       <h2 class="bq-section-title">Upcoming <em>Events</em></h2>
     </div>
 
+    <style>
+      .bq-loc-filter{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin:0 0 1.8rem;}
+      .bq-loc-btn{font-family:'Jost',sans-serif;font-size:.8rem;font-weight:600;letter-spacing:.02em;color:var(--text-muted);background:#fff;border:1px solid var(--border);border-radius:999px;padding:.5rem 1.15rem;cursor:pointer;transition:color .15s,background .15s,border-color .15s;}
+      .bq-loc-btn:hover{color:var(--brown);border-color:var(--gold);}
+      .bq-loc-btn.active{background:var(--brown);color:#fff;border-color:var(--brown);}
+    </style>
+    <div class="bq-loc-filter" id="bq-loc-filter" role="tablist" aria-label="Filter events by location">
+      <button type="button" class="bq-loc-btn active" data-loc="all">All</button>
+      <button type="button" class="bq-loc-btn" data-loc="long-island">Long Island</button>
+      <button type="button" class="bq-loc-btn" data-loc="brooklyn">Brooklyn</button>
+      <button type="button" class="bq-loc-btn" data-loc="manhattan">Manhattan</button>
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function(){
+        var bar=document.getElementById('bq-loc-filter'); if(!bar) return;
+        bar.addEventListener('click', function(e){
+          var btn=e.target.closest('.bq-loc-btn'); if(!btn) return;
+          Array.prototype.forEach.call(bar.querySelectorAll('.bq-loc-btn'), function(b){ b.classList.remove('active'); });
+          btn.classList.add('active');
+          var loc=btn.getAttribute('data-loc');
+          Array.prototype.forEach.call(document.querySelectorAll('#tab-events .bq-events .bq-event'), function(c){
+            var cl=c.getAttribute('data-location')||'all';
+            c.style.display = (loc==='all' || cl===loc) ? '' : 'none';
+          });
+        });
+      });
+    </script>
+
     <div class="bq-events">
 
       <!-- Pilates x Niara -->
-      <button type="button" id="event-card-pilates" class="bq-event scroll-reveal" data-event-date="2026-06-19" data-event-name="Pilates x Niara">
+      <button type="button" id="event-card-pilates" class="bq-event scroll-reveal" data-event-date="2026-06-19" data-event-name="Pilates x Niara" data-location="manhattan">
         <div class="bq-event-photo">
           <picture>
             <source srcset="flyer.webp" type="image/webp">
@@ -2814,7 +2842,7 @@
       </button>
 
       <!-- Mat & Chat -->
-      <button type="button" id="event-card-matchat" class="bq-event scroll-reveal" data-event-date="2026-08-01" data-event-name="Mat &amp; Chat" data-reg-opens="2026-07-01">
+      <button type="button" id="event-card-matchat" class="bq-event scroll-reveal" data-event-date="2026-08-01" data-event-name="Mat &amp; Chat" data-reg-opens="2026-07-01" data-location="manhattan">
         <div class="bq-event-photo">
           <picture>
             <source srcset="flyer2.webp?v=3" type="image/webp">
@@ -2836,7 +2864,7 @@
       </button>
 
       <!-- Create & Recharge -->
-      <button type="button" id="event-card-recharge" class="bq-event scroll-reveal" data-event-date="2026-08-15" data-event-name="Create &amp; Recharge" data-reg-opens="2026-07-15" data-past="true">
+      <button type="button" id="event-card-recharge" class="bq-event scroll-reveal" data-event-date="2026-08-15" data-event-name="Create &amp; Recharge" data-reg-opens="2026-07-15" data-past="true" data-location="manhattan">
         <div class="bq-event-photo">
           <picture>
             <source srcset="recharge-flyer.webp?v=3" type="image/webp">
@@ -2857,7 +2885,7 @@
       </button>
 
       <!-- Reformer Pilates — Sept 13. Opens a time-picker overlay with Stripe buy buttons. -->
-      <button type="button" id="event-card-reformer" class="bq-event scroll-reveal" data-event-date="2026-09-13" data-event-name="Reformer Pilates">
+      <button type="button" id="event-card-reformer" class="bq-event scroll-reveal" data-event-date="2026-09-13" data-event-name="Reformer Pilates" data-location="long-island">
         <div class="bq-event-photo">
           <picture>
             <source srcset="reformer-flier-card.webp?v=2" type="image/webp">
@@ -2873,7 +2901,7 @@
       </button>
 
       <!-- Riddim & Kompa on the Reformer — Brooklyn, Sept 26. Opens the Brooklyn booking overlay. -->
-      <button type="button" id="event-card-reformer-bk" class="bq-event scroll-reveal" data-event-date="2026-09-26" data-event-name="Riddim &amp; Kompa &#8212; Brooklyn">
+      <button type="button" id="event-card-reformer-bk" class="bq-event scroll-reveal" data-event-date="2026-09-26" data-event-name="Riddim &amp; Kompa &#8212; Brooklyn" data-location="brooklyn">
         <div class="bq-event-photo">
           <img src="riddim-kompa-brooklyn-flyer.jpg?v=3" alt="Riddim &amp; Kompa on the Reformer &#8212; Brooklyn. Saturday, September 26 at Maison Luxe Wellness Pilates, Brooklyn NY &#183; three sessions (12, 1 &amp; 2 PM) &#183; $45, complimentary goodie bag" loading="lazy" decoding="async">
         </div>
@@ -2885,7 +2913,7 @@
       </button>
 
       <!-- Halloween — Shhh… Quiet on the Creek — Oct 24, Valley Studio. Opens the Halloween booking overlay. -->
-      <button type="button" id="event-card-halloween" class="bq-event scroll-reveal" data-event-date="2026-10-24" data-event-name="Halloween Reformer Pilates">
+      <button type="button" id="event-card-halloween" class="bq-event scroll-reveal" data-event-date="2026-10-24" data-event-name="Halloween Reformer Pilates" data-location="long-island">
         <div class="bq-event-photo">
           <img src="halloween-creek-flyer.jpg?v=2" alt="Halloween Reformer Pilates &#8212; Shhh&hellip; Quiet on the Creek. Saturday, October 24 at Valley Studio, West Hempstead NY &#183; two sessions (12:30 &amp; 1:30 PM) &#183; $45, costumes encouraged" loading="lazy" decoding="async">
         </div>
@@ -2898,7 +2926,7 @@
       </button>
 
       <!-- Turkey Burn! — Nov 21, Valley Studio. Opens the Turkey Burn booking overlay. -->
-      <button type="button" id="event-card-turkey" class="bq-event scroll-reveal" data-event-date="2026-11-21" data-event-name="Turkey Burn!">
+      <button type="button" id="event-card-turkey" class="bq-event scroll-reveal" data-event-date="2026-11-21" data-event-name="Turkey Burn!" data-location="long-island">
         <div class="bq-event-photo">
           <img src="turkey-burn-flyer.jpg?v=3" alt="Turkey Burn! on the Reformer &#8212; Saturday, November 21 at Valley Studio, West Hempstead NY &#183; two sessions (12:30 &amp; 1:30 PM) &#183; $45" loading="lazy" decoding="async">
         </div>
@@ -2911,7 +2939,7 @@
       </button>
 
       <!-- Something's Blooming — Dec 13, Long Island. Interest list → /blooming -->
-      <a href="/blooming" id="event-card-blooming" class="bq-event scroll-reveal" data-event-date="2026-12-13" data-event-name="Something&#8217;s Blooming">
+      <a href="/blooming" id="event-card-blooming" class="bq-event scroll-reveal" data-event-date="2026-12-13" data-event-name="Something&#8217;s Blooming" data-location="long-island">
         <div class="bq-event-photo">
           <img src="blooming-flyer.png?v=1" alt="Something&rsquo;s Blooming &#8212; Saturday, December 13th, Long Island" loading="lazy" decoding="async" style="object-position:center 20%;">
         </div>
@@ -2922,7 +2950,7 @@
       </a>
 
       <!-- Riddim & Kompa — next-date interest (join the list) -->
-      <a href="/riddim-interest" id="event-card-riddim-interest" class="bq-event scroll-reveal" data-event-name="Riddim &amp; Kompa — Next Date">
+      <a href="/riddim-interest" id="event-card-riddim-interest" class="bq-event scroll-reveal" data-event-name="Riddim &amp; Kompa — Next Date" data-location="all">
         <div class="bq-event-photo">
           <img src="riddim-interest-card.jpg?v=1" alt="Riddim &amp; Kompa on the Reformer is coming back — join the early list for the next date" loading="lazy" decoding="async">
         </div>
