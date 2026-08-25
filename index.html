@@ -2809,14 +2809,30 @@
     <script>
       document.addEventListener('DOMContentLoaded', function(){
         var bar=document.getElementById('bq-loc-filter'); if(!bar) return;
+        var cards=[].slice.call(document.querySelectorAll('#tab-events .bq-events .bq-event'));
+        var today=new Date(); today.setHours(0,0,0,0);
+        function isPast(c){
+          if(c.getAttribute('data-past')==='true') return true;
+          var ds=c.getAttribute('data-event-date'); if(!ds) return false;
+          var dt=new Date(ds+'T00:00:00'); if(isNaN(dt.getTime())) return false;
+          return dt<today;
+        }
+        // Past events don't belong under "Upcoming Events" — hide them.
+        cards.forEach(function(c){ if(isPast(c)) c.style.display='none'; });
+        // Only show a location button if it has at least one upcoming event.
+        Array.prototype.forEach.call(bar.querySelectorAll('.bq-loc-btn'), function(btn){
+          var loc=btn.getAttribute('data-loc'); if(loc==='all') return;
+          var has=cards.some(function(c){ return !isPast(c) && (c.getAttribute('data-location')||'all')===loc; });
+          if(!has) btn.style.display='none';
+        });
         bar.addEventListener('click', function(e){
           var btn=e.target.closest('.bq-loc-btn'); if(!btn) return;
           Array.prototype.forEach.call(bar.querySelectorAll('.bq-loc-btn'), function(b){ b.classList.remove('active'); });
           btn.classList.add('active');
           var loc=btn.getAttribute('data-loc');
-          Array.prototype.forEach.call(document.querySelectorAll('#tab-events .bq-events .bq-event'), function(c){
-            var cl=c.getAttribute('data-location')||'all';
-            c.style.display = (loc==='all' || cl===loc) ? '' : 'none';
+          cards.forEach(function(c){
+            if(isPast(c)){ c.style.display='none'; return; }
+            c.style.display = (loc==='all' || (c.getAttribute('data-location')||'all')===loc) ? '' : 'none';
           });
         });
       });
@@ -2885,12 +2901,13 @@
       </button>
 
       <!-- Reformer Pilates — Sept 13. Opens a time-picker overlay with Stripe buy buttons. -->
-      <button type="button" id="event-card-reformer" class="bq-event scroll-reveal" data-event-date="2026-09-13" data-event-name="Reformer Pilates" data-location="long-island" data-soldout="true">
+      <button type="button" id="event-card-reformer" class="bq-event scroll-reveal is-sold-out" data-event-date="2026-09-13" data-event-name="Reformer Pilates" data-location="long-island" data-soldout="true">
         <div class="bq-event-photo">
           <picture>
             <source srcset="reformer-flier-card.webp?v=2" type="image/webp">
             <img src="reformer-flier-card.jpg?v=2" alt="Riddim &amp; Kompa on the Reformer &#8212; Sunday, September 13th at Valley Studio, West Hempstead, NY &#183; $45, complimentary goodie bag" loading="lazy" decoding="async">
           </picture>
+          <div class="bq-event-status" aria-hidden="true">Sold Out</div>
         </div>
         <div class="bq-event-date">09.13.26 &#183; Riddim &amp; Kompa</div>
         <div class="bq-event-name">Riddim &amp; Kompa <em>on the Reformer</em></div>
