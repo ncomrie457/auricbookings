@@ -8090,10 +8090,10 @@ document.addEventListener('DOMContentLoaded', function() {
   // No admin password is stored in this page. Opening the panel requires a
   // Supabase account (created in the Supabase dashboard). The signed-in
   // session also carries the auth token the database row-rules check.
-  // NOTE: ADMIN_PASSWORD is retained ONLY because the reformer_* database
-  // functions still expect a `pass` argument; it is removed once those
-  // functions are migrated to require the login instead.
-  var ADMIN_PASSWORD = 'AuricAdmin2026';
+  // The reformer_* database functions now check your login (is_owner), not a
+  // password — this value is an unused placeholder kept only so the existing
+  // `pass:` arguments still resolve. There is no admin password anywhere.
+  var ADMIN_PASSWORD = '';
   function adminHasSession(cb){
     try {
       var p = supabase.auth.getSession();
