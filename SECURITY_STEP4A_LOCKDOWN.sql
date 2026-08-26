@@ -35,7 +35,7 @@ alter table public.admin_roles enable row level security;
 -- ▶▶ If your Supabase login email is NOT the one below, edit it here:
 insert into public.admin_roles (user_id, role)
 select id, 'owner' from auth.users
-where email = 'niara.comrie@gmail.com'
+where email = 'auricmovement@outlook.com'
 on conflict (user_id) do update set role = 'owner';
 
 -- Helper: is the current caller an owner?
