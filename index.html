@@ -4562,6 +4562,7 @@
         <button type="button" id="admin-club-welcome-btn" class="btn btn-primary">&#10022; Send Club Welcome</button>
         <button type="button" id="admin-early-notify-btn" class="btn btn-primary">&#9200; Early Access &#8594; Notify List</button>
         <button type="button" id="admin-clear-btn" class="btn btn-danger">&#128465; Clear All Data</button>
+        <button type="button" id="admin-logout-btn" class="btn btn-secondary" onclick="window.adminLogout&&window.adminLogout()">&#128274; Log out</button>
         <button type="button" id="admin-close-btn" class="btn btn-secondary">&#10005; Close</button>
       </div>
     </div>
@@ -8082,27 +8083,76 @@ document.addEventListener('DOMContentLoaded', function() {
   if (window.location.hash === '#admin') {
     setTimeout(toggleAdmin, 200);
   }
-  // Simple admin password gate \u2014 change ADMIN_PASSWORD below to your own
-  // (anyone who views page source can technically find this \u2014 for stronger security, use Supabase Auth)
+  // \u2500\u2500 Admin access \u2014 real login via Supabase Auth \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // No admin password is stored in this page. Opening the panel requires a
+  // Supabase account (created in the Supabase dashboard). The signed-in
+  // session also carries the auth token the database row-rules check.
+  // NOTE: ADMIN_PASSWORD is retained ONLY because the reformer_* database
+  // functions still expect a `pass` argument; it is removed once those
+  // functions are migrated to require the login instead.
   var ADMIN_PASSWORD = 'AuricAdmin2026';
-  function isAdminUnlocked(){ return sessionStorage.getItem('auric_admin_unlocked') === '1'; }
-  function unlockAdmin(){
-    if (isAdminUnlocked()) return true;
-    var pw = window.prompt('Admin password:');
-    if (pw === null) return false; // cancelled
-    if (pw === ADMIN_PASSWORD) {
-      sessionStorage.setItem('auric_admin_unlocked', '1');
-      return true;
-    }
-    alert('Incorrect password.');
-    return false;
+  function adminHasSession(cb){
+    try {
+      var p = supabase.auth.getSession();
+      if (p && p.then){ p.then(function(res){ cb(!!(res && res.data && res.data.session)); }, function(){ cb(false); }); }
+      else { cb(false); }
+    } catch(e){ cb(false); }
   }
-  function toggleAdmin(){
-    if (!adminPanel.classList.contains('visible')) {
-      if (!unlockAdmin()) return; // require password before opening
+  function openAdminLogin(cb){
+    if (document.getElementById('auric-login-ov')) return;
+    var ov=document.createElement('div'); ov.id='auric-login-ov';
+    ov.style.cssText='position:fixed;inset:0;background:rgba(44,26,14,.85);z-index:100001;display:flex;align-items:center;justify-content:center;padding:1rem;';
+    var m=document.createElement('div');
+    m.style.cssText='background:#fdfbf7;border:1px solid #e6dbc8;border-radius:16px;max-width:380px;width:100%;padding:1.6rem 1.5rem;box-shadow:0 24px 64px rgba(44,26,14,.4);font-family:\'Jost\',sans-serif;';
+    m.innerHTML=''
+      +'<h3 style="margin:0 0 .3rem;font-family:\'Cormorant Garamond\',serif;font-style:italic;color:#123522;font-size:1.5rem;font-weight:600;">Admin sign in</h3>'
+      +'<p style="margin:0 0 1rem;color:#8a7d6b;font-size:.82rem;line-height:1.5;">Sign in with your Auric Movement admin account.</p>'
+      +'<label style="display:block;font-size:.75rem;font-weight:600;color:#5A3A1A;margin:.5rem 0 .3rem;">Email</label>'
+      +'<input id="auric-login-email" type="email" autocomplete="username" style="width:100%;padding:.7rem .8rem;border:1px solid #e6dbc8;border-radius:9px;font-size:1rem;font-family:inherit;box-sizing:border-box;">'
+      +'<label style="display:block;font-size:.75rem;font-weight:600;color:#5A3A1A;margin:.7rem 0 .3rem;">Password</label>'
+      +'<input id="auric-login-pass" type="password" autocomplete="current-password" style="width:100%;padding:.7rem .8rem;border:1px solid #e6dbc8;border-radius:9px;font-size:1rem;font-family:inherit;box-sizing:border-box;">'
+      +'<div id="auric-login-err" style="display:none;color:#b0432e;font-size:.8rem;margin-top:.6rem;"></div>'
+      +'<button id="auric-login-btn" style="width:100%;margin-top:1.1rem;padding:.8rem;border:none;border-radius:999px;background:#123522;color:#f5efe0;font-family:inherit;font-size:.95rem;font-weight:600;cursor:pointer;">Sign in</button>'
+      +'<button id="auric-login-cancel" style="width:100%;margin-top:.5rem;padding:.6rem;border:none;background:none;color:#8a7d6b;font-family:inherit;font-size:.82rem;cursor:pointer;">Cancel</button>';
+    ov.appendChild(m); document.body.appendChild(ov);
+    var emailEl=m.querySelector('#auric-login-email'), passEl=m.querySelector('#auric-login-pass'),
+        errEl=m.querySelector('#auric-login-err'), btn=m.querySelector('#auric-login-btn');
+    function close(){ if(ov.parentNode) ov.parentNode.removeChild(ov); }
+    m.querySelector('#auric-login-cancel').addEventListener('click', function(){ close(); cb(false); });
+    ov.addEventListener('click', function(e){ if(e.target===ov){ close(); cb(false); } });
+    setTimeout(function(){ try{ emailEl.focus(); }catch(e){} }, 50);
+    function submit(){
+      var email=(emailEl.value||'').trim(), pw=passEl.value||'';
+      if(!email || !pw){ errEl.textContent='Enter your email and password.'; errEl.style.display='block'; return; }
+      btn.disabled=true; btn.textContent='Signing in\u2026'; errEl.style.display='none';
+      try {
+        supabase.auth.signInWithPassword({ email:email, password:pw }).then(function(res){
+          if(res && res.error){ errEl.textContent=(res.error.message||'Sign in failed.'); errEl.style.display='block'; btn.disabled=false; btn.textContent='Sign in'; return; }
+          close(); cb(true);
+        }, function(){ errEl.textContent='Sign in failed. Try again.'; errEl.style.display='block'; btn.disabled=false; btn.textContent='Sign in'; });
+      } catch(e){ errEl.textContent='Login is unavailable right now.'; errEl.style.display='block'; btn.disabled=false; btn.textContent='Sign in'; }
     }
-    var v=adminPanel.classList.toggle('visible');
-    if(v){renderAdmin();adminPanel.scrollIntoView({behavior:'smooth'});}
+    btn.addEventListener('click', submit);
+    passEl.addEventListener('keydown', function(e){ if(e.key==='Enter') submit(); });
+  }
+  function requireAdmin(cb){
+    adminHasSession(function(has){ if(has){ cb(true); } else { openAdminLogin(cb); } });
+  }
+  window.adminLogout = function(){
+    try { if(supabase.auth && supabase.auth.signOut) supabase.auth.signOut(); } catch(e){}
+    try { sessionStorage.removeItem('auric_admin_unlocked'); } catch(e){}
+    adminPanel.classList.remove('visible');
+    alert('Signed out.');
+  };
+  function toggleAdmin(){
+    if (adminPanel.classList.contains('visible')){ adminPanel.classList.remove('visible'); return; }
+    requireAdmin(function(ok){
+      if(!ok) return;
+      adminPanel.classList.add('visible');
+      renderAdmin();
+      if (typeof refreshAdminBadgeToggles === 'function') { try{ refreshAdminBadgeToggles(); }catch(e){} }
+      adminPanel.scrollIntoView({behavior:'smooth'});
+    });
   }
 
   // Click any admin section header to collapse/expand
