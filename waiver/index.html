@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liability Waiver — Auric Movement</title>
+  <meta name="description" content="Sign the Auric Movement liability waiver to participate in pilates, wellness, and movement sessions.">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream:#f5f0e8; --cream-light:#fdfbf7; --cream-mid:#ebe4d8;
+      --brown:#5A3A1A; --gold:#b07840; --gold-light:#c8956c;
+      --text:#2c2420; --text-muted:#7a6e63; --border:#e8e0d5; --white:#ffffff;
+      --green:#2e7d32; --red:#c0392b;
+    }
+    body { font-family:'Jost',sans-serif; background:var(--cream); color:var(--text); min-height:100vh; line-height:1.6; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; }
+    :focus-visible { outline:3px solid var(--gold); outline-offset:3px; border-radius:4px; }
+    .hidden { display:none !important; }
+
+    .hero { background:var(--cream-light); border-bottom:1px solid var(--border); text-align:center; padding:1.5rem 1.5rem 1.35rem; }
+    .hero-mark { display:block; margin:0 auto .55rem; border-radius:50%; }
+    .hero-title { font-family:'Playfair Display',serif; font-style:italic; font-weight:700; font-size:1.35rem; color:var(--brown); letter-spacing:.02em; }
+    .hero-sub { font-size:.78rem; color:var(--text-muted); margin-top:.35rem; letter-spacing:.14em; text-transform:uppercase; font-weight:600; }
+
+    .wrap { max-width:720px; margin:0 auto; padding:2rem 1.25rem 4rem; }
+    .card { background:var(--white); border:1px solid var(--border); border-radius:16px; padding:2rem 1.75rem; box-shadow:0 2px 12px rgba(92,74,58,.06); }
+    .card h2 { font-family:'Playfair Display',serif; font-size:1.3rem; color:var(--brown); margin-bottom:.4rem; font-weight:700; }
+    .subtitle { color:var(--text-muted); font-size:.9rem; margin-bottom:1.5rem; }
+
+    .field { margin-bottom:1.1rem; }
+    label { display:block; font-weight:600; margin-bottom:.35rem; color:#3d322a; font-size:.9rem; }
+    .required { color:var(--red); margin-left:2px; }
+    input[type="text"],input[type="email"],textarea,select { width:100%; padding:.8rem 1rem; border:2px solid var(--border); border-radius:10px; font-size:.95rem; font-family:'Jost',sans-serif; color:var(--text); background:var(--cream-light); transition:border .2s; }
+    textarea { resize:vertical; min-height:80px; line-height:1.5; }
+    input[type="text"]:focus,input[type="email"]:focus,textarea:focus,select:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(176,120,64,.15); outline:none; }
+    .err-msg { color:var(--red); font-size:.8rem; margin-top:.3rem; min-height:1.1rem; }
+
+    .btn { display:inline-flex; align-items:center; gap:.5rem; padding:.85rem 1.75rem; border:none; border-radius:10px; font-size:.95rem; font-family:'Jost',sans-serif; font-weight:600; cursor:pointer; transition:all .2s; min-height:44px; text-decoration:none; }
+    .btn-primary { background:linear-gradient(135deg,var(--gold),var(--gold-light)); color:#fff; box-shadow:0 2px 8px rgba(176,120,64,.25); }
+    .btn-primary:hover { background:linear-gradient(135deg,#9a6630,var(--gold)); }
+    .btn-primary:disabled { opacity:.5; cursor:not-allowed; }
+    .btn-secondary { background:#eee7dd; color:var(--brown); }
+    .btn-secondary:hover { background:#e0d6c9; }
+    .btn-danger { background:#fdecea; color:var(--red); border:1px solid #f5c6c2; }
+    .btn-full { width:100%; justify-content:center; }
+
+    .progress-section { margin-bottom:1.25rem; }
+    .progress-label { display:flex; justify-content:space-between; font-size:.85rem; color:var(--brown); margin-bottom:.4rem; font-weight:600; }
+    .progress-track { width:100%; height:10px; background:var(--border); border-radius:6px; overflow:hidden; }
+    .progress-fill { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius:6px; transition:width .4s ease; width:0%; }
+
+    .clause { display:flex; align-items:flex-start; gap:.75rem; padding:.85rem 1rem; border:2px solid var(--border); border-radius:10px; margin-bottom:.6rem; background:var(--cream-light); }
+    .clause.checked { border-color:var(--gold); background:#faf5ee; }
+    .clause input[type="checkbox"] { width:20px; height:20px; min-width:20px; margin-top:2px; accent-color:var(--gold); cursor:pointer; }
+    .clause-text { font-size:.88rem; color:#3d322a; line-height:1.55; }
+    .clause-num { font-weight:700; color:var(--gold); margin-right:.2rem; }
+
+    .sig-section { margin-top:1.25rem; padding-top:1.25rem; border-top:2px solid var(--border); }
+    .statement { background:#faf5ee; border-left:4px solid var(--gold); padding:1rem 1.25rem; border-radius:0 10px 10px 0; margin-bottom:1rem; font-size:.9rem; color:#3d322a; line-height:1.6; }
+    .final-check { display:flex; align-items:center; gap:.75rem; padding:.85rem 1rem; background:#faf5ee; border-radius:10px; margin-bottom:1rem; }
+    .final-check input[type="checkbox"] { width:20px; height:20px; min-width:20px; accent-color:var(--gold); cursor:pointer; }
+    .final-check label { margin-bottom:0; font-weight:500; cursor:pointer; font-size:.9rem; }
+
+    .success-card { text-align:center; padding:2.5rem 1.5rem; }
+    .checkmark { font-size:3rem; margin-bottom:.75rem; color:var(--gold); }
+    .success-card h2 { text-align:center; color:var(--brown); margin-bottom:.5rem; }
+    .detail { color:var(--brown); font-size:.9rem; margin-bottom:.3rem; }
+    .success-actions { margin-top:1.5rem; display:flex; flex-wrap:wrap; gap:.75rem; justify-content:center; }
+    .email-status { margin-top:1rem; padding:.75rem 1rem; border-radius:10px; font-size:.85rem; }
+    .email-sent { background:#e8f5e9; color:var(--green); border:1px solid #a5d6a7; }
+    .email-failed { background:#fef9e7; color:#7a6320; border:1px solid #f0dca0; }
+
+    /* Admin */
+    .admin-panel { display:none; background:var(--white); border:2px solid var(--gold); border-radius:16px; padding:1.75rem; margin-top:1.5rem; box-shadow:0 4px 20px rgba(92,74,58,.12); }
+    .admin-panel.visible { display:block; }
+    .admin-badge { display:inline-block; background:var(--gold); color:#fff; font-size:.65rem; font-weight:700; padding:.2rem .6rem; border-radius:20px; letter-spacing:1px; text-transform:uppercase; margin-bottom:.75rem; }
+    .admin-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem; margin-bottom:1rem; }
+    .admin-header h2 { font-size:1.1rem; color:var(--brown); font-family:'Playfair Display',serif; }
+    .admin-actions { display:flex; gap:.5rem; flex-wrap:wrap; }
+    .admin-sub-item { display:flex; justify-content:space-between; align-items:center; padding:.6rem .85rem; background:var(--cream-light); border:1px solid var(--border); border-radius:8px; margin-bottom:.4rem; flex-wrap:wrap; gap:.4rem; font-size:.85rem; }
+    .admin-sub-item .aname { font-weight:600; color:#3d322a; }
+    .admin-sub-item .aemail { color:var(--text-muted); font-size:.8rem; }
+    .empty-state { text-align:center; padding:1.5rem; color:#a89e94; font-style:italic; font-size:.9rem; }
+    .admin-hint { font-size:.75rem; color:#a89e94; margin-top:1rem; text-align:center; font-style:italic; }
+
+    footer { text-align:center; padding:1.5rem; font-size:.78rem; color:#a89e94; border-top:1px solid var(--border); letter-spacing:1px; }
+
+    /* Modal */
+    .modal-backdrop { position:fixed; inset:0; z-index:500; background:rgba(44,26,14,.6); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; padding:1rem; }
+    .modal { background:var(--white); border-radius:20px; width:100%; max-width:640px; max-height:85vh; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 24px 64px rgba(44,26,14,.25); }
+    .modal-header { padding:1.25rem 1.5rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+    .modal-header h3 { font-family:'Playfair Display',serif; color:var(--brown); font-size:1.1rem; }
+    .modal-close { background:none; border:none; font-size:1.4rem; cursor:pointer; color:var(--text-muted); line-height:1; padding:.25rem; }
+    .modal-body { overflow-y:auto; padding:1.25rem 1.5rem; flex:1; font-size:.88rem; line-height:1.75; color:#3d322a; }
+    .modal-body h4 { color:var(--brown); font-size:.95rem; margin:1.1rem 0 .3rem; font-family:'Playfair Display',serif; }
+    .modal-body p { margin-bottom:.6rem; }
+
+    footer button { background:none; border:none; color:var(--gold); cursor:pointer; font-size:.78rem; text-decoration:underline; font-family:'Jost',sans-serif; padding:0; }
+    footer a { color:var(--gold); }
+
+    @media(max-width:600px){
+      .card { padding:1.25rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="sr-announce" aria-live="polite" aria-atomic="true" class="sr-only" role="status"></div>
+
+<section class="hero">
+  <img src="/logo-am-gold-64.png" alt="" width="44" height="44" class="hero-mark" aria-hidden="true">
+  <div class="hero-title">Auric Movement</div>
+  <div class="hero-sub">Liability Waiver &amp; Release</div>
+</section>
+
+<main class="wrap">
+
+  <!-- STEP 1: Form -->
+  <div id="step-form" class="card">
+    <h2>Sign Your Waiver</h2>
+    <p class="subtitle">Enter your details and select your event, then read each clause carefully and check the box to acknowledge it. All clauses must be acknowledged before you can sign. This is a legally binding Liability Waiver &amp; Release.</p>
+
+    <div class="field">
+      <label for="reg-name">Full Legal Name <span class="required" aria-hidden="true">*</span></label>
+      <input type="text" id="reg-name" placeholder="Enter your full legal name" aria-required="true">
+      <div id="reg-name-err" class="err-msg" role="alert"></div>
+    </div>
+    <div class="field">
+      <label for="reg-email">Email Address <span class="required" aria-hidden="true">*</span></label>
+      <input type="email" id="reg-email" placeholder="your@email.com" aria-required="true">
+      <div id="reg-email-err" class="err-msg" role="alert"></div>
+    </div>
+    <div class="field">
+      <label for="reg-event-select">Which event are you attending? <span class="required" aria-hidden="true">*</span></label>
+      <select id="reg-event-select" aria-required="true" style="width:100%;padding:.8rem 1rem;border:2px solid var(--border);border-radius:10px;font-size:.95rem;font-family:'Jost',sans-serif;color:var(--text);background:var(--cream-light);">
+        <option value="">Select your event…</option>
+        <option value="recharge">Create &amp; Recharge — Sat, Aug 15, 2026</option>
+        <option value="matchat">Mat &amp; Chat — Sat, Aug 1, 2026</option>
+        <option value="other">Another event / private session</option>
+      </select>
+      <div id="reg-event-err" class="err-msg" role="alert"></div>
+    </div>
+    <div class="field hidden" id="custom-event-fields">
+      <label for="reg-event">Event Name</label>
+      <input type="text" id="reg-event" placeholder="e.g. Private Pilates Session">
+      <label for="reg-date" style="display:block;margin-top:.7rem;">Event Date &amp; Time</label>
+      <input type="text" id="reg-date" placeholder="e.g. August 20th at 10:00 AM">
+    </div>
+    <div class="field">
+      <label for="reg-note">Anything we should know before class? <span style="font-weight:400;color:var(--text-muted);">(optional)</span></label>
+      <p style="font-size:.8rem;color:var(--text-muted);margin:-.15rem 0 .45rem;line-height:1.5;">Injuries, recent surgeries, pregnancy, allergies — anything that helps us support you. Seen only by your instructor.</p>
+      <textarea id="reg-note" rows="3" placeholder="Optional — leave blank if nothing comes to mind"></textarea>
+    </div>
+
+    <div class="progress-section hidden" id="progress-section">
+      <div class="progress-label">
+        <span><span id="confirmed-count">0</span>/<span id="total-count">19</span> confirmed</span>
+        <span id="remaining-text">19 remaining</span>
+      </div>
+      <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="19" id="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:.75rem;" class="hidden" id="select-all-wrap">
+      <button type="button" id="select-all-btn" class="btn btn-secondary" style="font-size:.82rem;padding:.5rem 1rem;width:100%;justify-content:center;">✓ Select All Clauses</button>
+    </div>
+
+    <div id="clauses-hint" style="padding:1rem 1.1rem;border:2px dashed var(--border);border-radius:10px;background:var(--cream-light);color:var(--text-muted);font-size:.9rem;text-align:center;">👆 Choose your event to load your waiver.</div>
+    <div id="clauses-container" role="group" aria-label="Waiver clauses"></div>
+
+    <div class="sig-section">
+      <div class="statement">
+        I, <strong id="waiver-name-stmt">[Your Name]</strong>, acknowledge that I have carefully read and fully understand this Liability Waiver &amp; Release. I understand that I am giving up substantial legal rights, including the right to sue. I sign this agreement freely and voluntarily, without any inducement.
+      </div>
+      <div class="final-check">
+        <input type="checkbox" id="final-agree" disabled>
+        <label for="final-agree">I have read, understood, and agree to all terms above</label>
+      </div>
+      <p style="font-size:.78rem;color:var(--text-muted);line-height:1.6;margin-bottom:.75rem;">Sign in the box below with your finger, stylus, or mouse. Your electronic signature is the legal equivalent of your handwritten signature and is legally binding under the E-SIGN Act, 15 U.S.C. § 7001.</p>
+      <div class="field">
+        <label>Digital Signature — sign below <span class="required" aria-hidden="true">*</span></label>
+        <div id="sig-wrap" style="position:relative;opacity:.5;pointer-events:none;transition:opacity .2s;">
+          <canvas id="sig-canvas" width="640" height="180" style="width:100%;height:180px;border:1px solid var(--border,#e6dbc8);border-radius:10px;background:#fff;touch-action:none;display:block;"></canvas>
+          <button type="button" id="sig-clear" style="position:absolute;top:8px;right:10px;background:#faf5ee;border:1px solid #e6dbc8;color:#5A3A1A;border-radius:6px;padding:.25rem .6rem;font-size:.72rem;cursor:pointer;font-family:inherit;">Clear</button>
+          <span id="sig-stamp" style="position:absolute;left:12px;bottom:7px;font-size:.66rem;color:#b3a892;pointer-events:none;"></span>
+        </div>
+        <input type="hidden" id="sig-input">
+        <div id="sig-err" class="err-msg" role="alert"></div>
+      </div>
+      <button type="button" id="submit-btn" class="btn btn-primary btn-full" disabled>Submit Waiver ✦</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Confirmed -->
+  <div id="step-confirmed" class="card success-card hidden">
+    <div class="checkmark" aria-hidden="true">✦</div>
+    <h2>Thank You!</h2>
+    <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:1.25rem;">Your liability waiver has been signed and submitted successfully.</p>
+    <p class="detail"><strong>Name:</strong> <span id="conf-name"></span></p>
+    <p class="detail"><strong>Email:</strong> <span id="conf-email"></span></p>
+    <p class="detail hidden" id="conf-event-row"><strong>Event:</strong> <span id="conf-event"></span></p>
+    <p class="detail hidden" id="conf-date-row"><strong>Date:</strong> <span id="conf-date"></span></p>
+    <p class="detail"><strong>Signed at:</strong> <span id="conf-time"></span></p>
+    <div id="email-status"></div>
+    <div class="success-actions">
+      <button type="button" id="download-waiver-btn" class="btn btn-primary">📄 Download My Waiver (PDF)</button>
+      <button type="button" id="new-btn" class="btn btn-secondary">Sign Another Waiver →</button>
+    </div>
+  </div>
+
+  <!-- Admin panel (Ctrl+Shift+A) -->
+  <div id="admin-panel" class="admin-panel">
+    <span class="admin-badge">Admin Only</span>
+    <div class="admin-header">
+      <h2>Signed Waivers</h2>
+      <div class="admin-actions">
+        <button type="button" id="admin-csv-btn" class="btn btn-secondary">📥 CSV</button>
+        <button type="button" id="admin-clear-btn" class="btn btn-danger">🗑 Clear All</button>
+        <button type="button" id="admin-logout-btn" class="btn btn-secondary" onclick="window.auricWaiverLogout&&window.auricWaiverLogout()">🔒 Log out</button>
+        <button type="button" id="admin-close-btn" class="btn btn-secondary">✕ Close</button>
+      </div>
+    </div>
+    <div id="admin-body"></div>
+    <p class="admin-hint">Press Ctrl+Shift+A (or Cmd+Shift+A) to toggle this panel</p>
+  </div>
+</main>
+
+<footer role="contentinfo">
+  Auric Movement&trade; ·
+  <button type="button" id="open-privacy-btn">Privacy Policy</button> ·
+  <button type="button" id="open-terms-btn">Terms &amp; Conditions</button>
+  · auricmovement@outlook.com
+  <br style="margin-top:.5rem;">
+  <span style="font-size:.72rem;letter-spacing:.5px;">
+    We are committed to web accessibility. For assistance contact <a href="mailto:auricmovement@outlook.com">auricmovement@outlook.com</a> ·
+    This site uses essential cookies only for functionality. No tracking or advertising cookies are used.
+  </span>
+  <br style="margin-top:.5rem;">
+  <span style="font-size:.72rem;letter-spacing:.5px;">&copy; 2026 Auric Movement. All rights reserved.</span>
+</footer>
+
+<!-- Privacy Policy Modal -->
+<div id="privacy-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="privacy-title">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="privacy-title">Privacy Policy — Auric Movement LLC</h3>
+      <button class="modal-close" id="close-privacy-btn" aria-label="Close privacy policy">✕</button>
+    </div>
+    <div class="modal-body">
+      <p><em>Effective Date: May 2026 · Last updated: May 2026</em></p>
+      <p>Auric Movement LLC ("we," "us," or "our") is committed to protecting your personal information in accordance with the New York SHIELD Act, the federal CAN-SPAM Act, and other applicable laws.</p>
+      <h4>1. Information We Collect</h4>
+      <p>We collect your full legal name and email address when you sign a liability waiver. If you provide an event name or event date, we collect those as well. We also record the date and time of your signed waiver. For certain events, we may ask you to disclose health information (see Section 2 below).</p>
+      <h4>2. Health Information</h4>
+      <p>For certain events, you may be asked to disclose health conditions (such as recent surgeries, injuries, pregnancy, chronic conditions, current medications, or other relevant medical information) so your instructor can ensure your safety during physical activity. This information is treated as confidential and is used solely by your instructor to provide safe and appropriate guidance. We do not share health information with any third parties. Health disclosure data will be permanently deleted within 30 days after the event concludes. By voluntarily disclosing health information, you consent to its limited use as described in this Policy. Auric Movement LLC is not a healthcare provider, and this information is not covered by HIPAA; however, we apply reasonable safeguards consistent with the New York SHIELD Act to protect it.</p>
+      <h4>3. How We Use Your Information</h4>
+      <p>Your information is used solely to: (a) maintain a record of signed liability waivers; (b) confirm receipt of your signed waiver; (c) contact you regarding the event you have signed up for, if applicable; and (d) allow your instructor to safely modify activity based on any health disclosures.</p>
+      <h4>4. How Your Data Is Stored</h4>
+      <p>Waiver records are stored via Supabase (a secure third-party database service) and transmitted via EmailJS to our inbox at auricmovement@outlook.com. Data is not transferred outside the United States. Waiver records, including health information, will be retained as required for legal and liability purposes and deleted thereafter upon request.</p>
+      <h4>5. We Do Not Sell Your Data</h4>
+      <p>We do not sell, rent, trade, or share your personal information &#8212; including health information &#8212; with any third parties for marketing purposes.</p>
+      <h4>6. Cookies</h4>
+      <p>This site uses essential cookies only for functionality (such as saving your progress through the waiver form). No tracking or advertising cookies are used.</p>
+      <h4>7. Your Rights (NY SHIELD Act)</h4>
+      <p>You have the right to request access to, correction of, or deletion of your personal information, including health disclosures. Email us at auricmovement@outlook.com. We will respond within 30 days.</p>
+      <h4>8. Data Security</h4>
+      <p>We implement reasonable administrative and technical safeguards consistent with the New York SHIELD Act, including encryption in transit, access controls, and limited retention periods.</p>
+      <h4>9. Minors</h4>
+      <p>This waiver is not directed at individuals under the age of 18 unless accompanied by a parent or legal guardian who signs on their behalf.</p>
+      <h4>10. Contact Us</h4>
+      <p><strong>Auric Movement LLC</strong><br>auricmovement@outlook.com</p>
+    </div>
+  </div>
+</div>
+
+<!-- Terms & Conditions Modal -->
+<div id="terms-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="terms-title">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="terms-title">Terms &amp; Conditions</h3>
+      <button class="modal-close" id="close-terms-btn" aria-label="Close terms">✕</button>
+    </div>
+    <div class="modal-body">
+      <p><em>Effective Date: May 2026</em></p>
+      <h4>1. Acceptance of Waiver</h4>
+      <p>By signing this liability waiver electronically, you acknowledge that you have read, understood, and agreed to all 19 clauses contained in it. Your electronic signature is the legal equivalent of your handwritten signature and is legally binding under the Electronic Signatures in Global and National Commerce Act (E-SIGN Act), 15 U.S.C. § 7001.</p>
+      <h4>2. Code of Conduct</h4>
+      <p>All participants are expected to treat instructors, staff, and fellow participants with respect. Auric Movement LLC is a welcoming, inclusive space. Disruptive, disrespectful, or unsafe behavior will result in removal from the session.</p>
+      <h4>3. Right to Refuse Entry</h4>
+      <p>Auric Movement LLC reserves the right to refuse participation to any individual who has not completed a signed liability waiver, appears to be under the influence of alcohol or substances, or poses a safety risk.</p>
+      <h4>4. Photography &amp; Video</h4>
+      <p>Photography and video may be captured during sessions for promotional purposes. To opt out, notify your instructor before the session or email auricmovement@outlook.com.</p>
+      <h4>5. Medical Disclaimer</h4>
+      <p>Pilates and movement sessions involve physical exertion and inherent risk. Please consult a physician before attending if you have any medical conditions or health concerns. Auric Movement LLC instructors are not licensed medical professionals. Participation is at your own risk.</p>
+      <h4>6. Personal Belongings</h4>
+      <p>You are responsible for your personal belongings. Auric Movement LLC is not liable for lost, stolen, or damaged items.</p>
+      <h4>7. Governing Law &amp; Disputes</h4>
+      <p>This agreement is governed by the laws of the State of New York. Any disputes shall be resolved through binding arbitration in accordance with the rules of the American Arbitration Association, in New York County, New York.</p>
+      <h4>8. Contact</h4>
+      <p><strong>Auric Movement LLC</strong><br>auricmovement@outlook.com</p>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  var EMAILJS_PUBLIC_KEY  = 'xr1kT3l8rFhNodudq';
+  // Resend-backed service (verified domain book@auricmovement.com). The old
+  // Outlook service (service_9n4adla) was locked by Microsoft and no longer
+  // sends — all mail routes through Resend now, matching the main site.
+  var EMAILJS_SERVICE_ID  = 'service_ieahnue';
+  var TMPL_ADMIN          = 'template_6qkcf8j';
+  var ADMIN_EMAIL         = 'auricmovement@outlook.com'; // you get a copy of each signed waiver
+
+  // ── Supabase client ────────────────────────────────────────────────────────
+  var supabase = window.supabase.createClient(
+    'https://qvmiwyxerotkqpbuhpun.supabase.co',
+    'sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ'
+  );
+  var STORAGE_KEY     = 'auric_standalone_waivers';
+  var TOTAL_CLAUSES   = 19;
+  var _lastWaivers = { waivers: [] };
+
+  if (typeof emailjs !== 'undefined') emailjs.init(EMAILJS_PUBLIC_KEY);
+
+  // Comprehensive express-assumption-of-risk and release clauses. Each is acknowledged
+  // individually (conspicuous, separately-checked) to maximize enforceability. Keep the
+  // legal wording intact — edits here change the substance of the release.
+  var clauseTexts = [
+    "I understand that participation in wellness, movement, and/or energy-based sessions offered by Auric Movement LLC involves physical activity and inherent risks, including but not limited to muscle strain, sprains, fractures, and other injuries.",
+    "I acknowledge that I am voluntarily participating in these sessions and assume all risks of injury or harm that may result from my participation, whether foreseeable or unforeseeable.",
+    "I represent that I am physically and mentally fit to participate and have no medical conditions that would prevent safe participation, or I have obtained clearance from a licensed healthcare provider.",
+    "I agree to disclose any known medical conditions, allergies, injuries, or physical limitations to my instructor before each session.",
+    "I understand that the instructors and staff of Auric Movement LLC are not licensed medical professionals and that no session is a substitute for professional medical advice, diagnosis, or treatment.",
+    "I agree to follow all instructions, safety guidelines, and rules provided by Auric Movement LLC staff during sessions.",
+    "I understand that I may stop participation at any time if I feel pain, discomfort, or distress, and I agree to immediately notify my instructor.",
+    "I release, discharge, and hold harmless Auric Movement LLC, its owners, instructors, employees, agents, and affiliates from any and all claims, liabilities, damages, or expenses arising from my participation.",
+    "I waive any right to bring a lawsuit or legal claim against Auric Movement LLC, its owners, instructors, employees, agents, or affiliates for any injury, illness, or loss sustained during or as a result of my participation.",
+    "I understand that this waiver extends to any claims arising from the negligence of Auric Movement LLC, its owners, instructors, employees, agents, or affiliates, excluding gross negligence or willful misconduct.",
+    "I consent to the use of any photographs, video recordings, or audio recordings taken during sessions for promotional, educational, or marketing purposes by Auric Movement LLC, unless I submit a written opt-out request.",
+    "I understand that personal belongings brought to sessions are my responsibility and that Auric Movement LLC is not liable for any lost, stolen, or damaged items.",
+    "I agree that any disputes arising from this waiver or my participation shall be resolved through binding arbitration in accordance with the rules of the American Arbitration Association, and not through court litigation.",
+    "I acknowledge that this waiver is governed by and construed in accordance with the laws of the State of New York.",
+    "I understand that if any provision of this waiver is found to be unenforceable, the remaining provisions shall remain in full force and effect.",
+    "I confirm that I am at least 18 years of age, or that I have obtained parental or guardian consent if I am a minor.",
+    "I agree that this waiver remains in effect for all future sessions and activities with Auric Movement LLC unless I submit a written revocation.",
+    "I acknowledge that I have had sufficient opportunity to read this waiver, ask questions, and seek independent legal advice before signing.",
+    "I understand that a complimentary gift bag may be provided as a courtesy. I acknowledge that I assume full responsibility for any items received and their use. I release the Released Parties from any liability arising from the receipt or use of gift bag contents."
+  ];
+
+  // Create & Recharge adds one collab/art-specific clause (mirrors the booking flow):
+  // covers art-material risk and extends the release to Georgina Arroyo & collaborators.
+  var CR_ART_CLAUSE =
+    "I understand that Create & Recharge is co-hosted with Georgina Arroyo and includes creative and art-based activities. I acknowledge the inherent risks of using art materials and tools — including cuts, skin irritation, or allergic reactions to paints, adhesives, or other supplies, and staining of clothing or belongings — and I voluntarily assume all such risks. I agree that every release, waiver, and hold-harmless provision in this agreement also protects Auric Movement LLC's collaborators, co-hosts, and guest instructors, including Georgina Arroyo, to the same extent as the Released Parties. I agree to disclose any known allergies or sensitivities to my instructor before participating.";
+
+  // Per-event waiver config. extraClauses are appended to the base set above.
+  var WAIVER_EVENTS = {
+    recharge: { name: 'Create & Recharge', date: 'Saturday, August 15, 2026 · 11:30 AM', extraClauses: [CR_ART_CLAUSE], custom: false },
+    matchat:  { name: 'Mat & Chat',        date: 'Saturday, August 1, 2026 · 11:30 AM',  extraClauses: [], custom: false },
+    other:    { name: '',                  date: '',                                      extraClauses: [], custom: true }
+  };
+  // The clause set currently in play (base by default; swapped when an event is chosen).
+  var activeClauses = clauseTexts.slice();
+
+  var checkedClauses = {};
+  var checkedCount   = 0;
+  var lastSubmission = null;
+
+  function announce(msg) {
+    var el = document.getElementById('sr-announce');
+    el.textContent = '';
+    setTimeout(function(){ el.textContent = msg; }, 80);
+  }
+  function escapeHTML(str){ var d=document.createElement('div'); d.textContent=str; return d.innerHTML; }
+  function genCode(){ return 'AUR-' + Math.random().toString(36).substr(2,6).toUpperCase(); }
+
+  function _wRowToRec(r){
+    return {
+      name: r.name, email: r.email, signature: r.signature || '',
+      eventName: r.event_name || '', eventDate: r.event_date || '',
+      notes: r.notes || '',
+      time: r.time_str, timestamp: r.timestamp_iso,
+      code: r.code, clausesAgreed: r.clauses_agreed || TOTAL_CLAUSES
+    };
+  }
+  function _wRecToRow(rec){
+    return {
+      name: rec.name, email: rec.email, signature: rec.signature || null,
+      event_name: rec.eventName || null, event_date: rec.eventDate || null,
+      notes: rec.notes || null,
+      time_str: rec.time, timestamp_iso: rec.timestamp,
+      code: rec.code, clauses_agreed: rec.clausesAgreed || TOTAL_CLAUSES
+    };
+  }
+
+  function getData(callback) {
+    supabase.from('standalone_waivers').select('*').order('created_at')
+      .then(function(res){
+        var data = { waivers: (res.data || []).map(_wRowToRec) };
+        _lastWaivers = JSON.parse(JSON.stringify(data));
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e){}
+        callback(data);
+      }, function(){
+        try { callback(JSON.parse(localStorage.getItem(STORAGE_KEY)) || { waivers:[] }); }
+        catch(e){ callback({ waivers:[] }); }
+      });
+  }
+
+  function saveData(d, callback) {
+    var oldCodes = {};
+    (_lastWaivers.waivers || []).forEach(function(r){ if (r.code) oldCodes[r.code] = true; });
+    var newCodes = {};
+    var inserts = [];
+    (d.waivers || []).forEach(function(r){
+      if (!r.code) return;
+      newCodes[r.code] = true;
+      if (!oldCodes[r.code]) inserts.push(_wRecToRow(r));
+    });
+    var deleteCodes = [];
+    (_lastWaivers.waivers || []).forEach(function(r){
+      if (r.code && !newCodes[r.code]) deleteCodes.push(r.code);
+    });
+
+    var ops = [];
+    if (inserts.length)     ops.push(supabase.from('standalone_waivers').insert(inserts));
+    if (deleteCodes.length) ops.push(supabase.from('standalone_waivers').delete().in('code', deleteCodes));
+
+    var done = function(){
+      _lastWaivers = JSON.parse(JSON.stringify(d));
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch(e){}
+      if (callback) callback();
+    };
+    if (!ops.length) { done(); return; }
+    Promise.all(ops).then(done, done);
+  }
+
+  // Live signer name in statement
+  document.getElementById('reg-name').addEventListener('input', function(){
+    var v = this.value.trim();
+    document.getElementById('waiver-name-stmt').textContent = v || '[Your Name]';
+  });
+
+  // Apply an event selection: swap the clause set, auto-fill event name/date,
+  // reveal the custom fields only for "other", and rebuild the waiver.
+  function applyEventSelection(key) {
+    var cfg = WAIVER_EVENTS[key];
+    var customWrap = document.getElementById('custom-event-fields');
+    var evName = document.getElementById('reg-event');
+    var evDate = document.getElementById('reg-date');
+    var hint   = document.getElementById('clauses-hint');
+    document.getElementById('reg-event-err').textContent = '';
+
+    if (!cfg) {
+      // Nothing selected — hide clauses, progress, select-all; show hint; disable signing.
+      activeClauses = clauseTexts.slice();
+      checkedClauses = {}; checkedCount = 0;
+      customWrap.classList.add('hidden');
+      document.getElementById('clauses-container').innerHTML = '';
+      document.getElementById('progress-section').classList.add('hidden');
+      document.getElementById('select-all-wrap').classList.add('hidden');
+      var fa0 = document.getElementById('final-agree'); if (fa0) { fa0.checked = false; fa0.disabled = true; }
+      var si0 = document.getElementById('sig-input'); if (si0) { si0.value=''; }
+      if (typeof sigPad !== 'undefined' && sigPad) sigPad.enable(false);
+      var sb0 = document.getElementById('submit-btn'); if (sb0) sb0.disabled = true;
+      if (hint) hint.classList.remove('hidden');
+      return;
+    }
+
+    activeClauses = cfg.extraClauses.length ? clauseTexts.concat(cfg.extraClauses) : clauseTexts.slice();
+    TOTAL_CLAUSES = activeClauses.length;
+
+    if (cfg.custom) {
+      customWrap.classList.remove('hidden');
+      evName.value = ''; evDate.value = '';
+    } else {
+      customWrap.classList.add('hidden');
+      evName.value = cfg.name;
+      evDate.value = cfg.date;
+    }
+    if (hint) hint.classList.add('hidden');
+    document.getElementById('progress-section').classList.remove('hidden');
+    document.getElementById('select-all-wrap').classList.remove('hidden');
+    document.getElementById('total-count').textContent = TOTAL_CLAUSES;
+    // Reset signing state whenever the event (and its clauses) change.
+    var fa = document.getElementById('final-agree'); if (fa) fa.checked = false;
+    var si = document.getElementById('sig-input'); if (si) { si.value=''; }
+    if (typeof sigPad !== 'undefined' && sigPad) sigPad.enable(false);
+    var sb = document.getElementById('submit-btn'); if (sb) sb.disabled = true;
+    var sa = document.getElementById('select-all-btn'); if (sa) { sa.textContent='✓ Select All Clauses'; sa.disabled=false; }
+    document.getElementById('progress-track').setAttribute('aria-valuemax', TOTAL_CLAUSES);
+    buildClauses();
+  }
+
+  document.getElementById('reg-event-select').addEventListener('change', function(){
+    applyEventSelection(this.value);
+  });
+
+  // Build clauses
+  function buildClauses() {
+    var container = document.getElementById('clauses-container');
+    container.innerHTML = ''; checkedClauses={}; checkedCount=0; updateProgress();
+    activeClauses.forEach(function(text, i) {
+      var div = document.createElement('div'); div.className='clause';
+      var cb = document.createElement('input'); cb.type='checkbox'; cb.id='cb-'+i;
+      cb.setAttribute('aria-label','Agree to clause '+(i+1)+' of '+TOTAL_CLAUSES);
+      var lbl = document.createElement('label'); lbl.htmlFor='cb-'+i; lbl.className='clause-text';
+      lbl.innerHTML = '<span class="clause-num">'+(i+1)+'.</span> '+escapeHTML(text);
+      cb.addEventListener('change', function(){
+        if (this.checked){ checkedClauses[i]=true; div.classList.add('checked'); }
+        else { delete checkedClauses[i]; div.classList.remove('checked'); }
+        updateProgress();
+      });
+      div.appendChild(cb); div.appendChild(lbl); container.appendChild(div);
+    });
+  }
+
+  function updateProgress() {
+    checkedCount = Object.keys(checkedClauses).length;
+    document.getElementById('confirmed-count').textContent = checkedCount;
+    document.getElementById('total-count').textContent     = TOTAL_CLAUSES;
+    document.getElementById('remaining-text').textContent  = (TOTAL_CLAUSES-checkedCount)+' remaining';
+    document.getElementById('progress-fill').style.width   = (checkedCount/TOTAL_CLAUSES*100)+'%';
+    document.getElementById('progress-track').setAttribute('aria-valuenow', checkedCount);
+    var fa = document.getElementById('final-agree');
+    if (checkedCount === TOTAL_CLAUSES) {
+      fa.disabled = false;
+      announce('All clauses confirmed! Please agree and sign below.');
+    } else {
+      fa.disabled = true; fa.checked = false;
+      if (typeof sigPad !== 'undefined' && sigPad) sigPad.enable(false);
+      document.getElementById('submit-btn').disabled = true;
+    }
+  }
+
+  document.getElementById('select-all-btn').addEventListener('click', function(){
+    var checkboxes = document.querySelectorAll('#clauses-container input[type="checkbox"]');
+    checkboxes.forEach(function(cb){
+      if (!cb.checked) { cb.checked = true; cb.dispatchEvent(new Event('change')); }
+    });
+    this.textContent = '✓ All Clauses Selected';
+    this.disabled = true;
+    announce('All ' + TOTAL_CLAUSES + ' clauses selected.');
+  });
+
+  document.getElementById('final-agree').addEventListener('change', function(){
+    var on = this.checked && checkedCount === TOTAL_CLAUSES;
+    if (sigPad) sigPad.enable(on);
+    if (on) { document.getElementById('sig-canvas').scrollIntoView({behavior:'smooth', block:'center'}); }
+    else { document.getElementById('submit-btn').disabled = true; }
+  });
+
+  // ── Live drawn signature pad (finger / stylus / mouse), time-stamped ──
+  var sigPad = (function(){
+    var canvas = document.getElementById('sig-canvas');
+    if (!canvas) return null;
+    var ctx = canvas.getContext('2d');
+    ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#1c1a17';
+    var drawing = false, dirty = false, signedAt = '';
+    function pos(e){ var r=canvas.getBoundingClientRect(); var t=(e.touches&&e.touches[0])||e; return { x:(t.clientX-r.left)*(canvas.width/r.width), y:(t.clientY-r.top)*(canvas.height/r.height) }; }
+    function refresh(){
+      var si=document.getElementById('sig-input'); if(si) si.value = dirty ? canvas.toDataURL('image/png') : '';
+      var agreed = (checkedCount===TOTAL_CLAUSES) && document.getElementById('final-agree').checked;
+      document.getElementById('submit-btn').disabled = !(dirty && agreed);
+      document.getElementById('sig-err').textContent='';
+    }
+    function start(e){ if(document.getElementById('sig-wrap').style.pointerEvents==='none') return; e.preventDefault(); drawing=true; var p=pos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); }
+    function move(e){ if(!drawing) return; e.preventDefault(); var p=pos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); if(!dirty){ dirty=true; signedAt=new Date().toLocaleString(); var st=document.getElementById('sig-stamp'); if(st) st.textContent='Signed '+signedAt; } refresh(); }
+    function end(){ drawing=false; }
+    canvas.addEventListener('mousedown',start); canvas.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
+    canvas.addEventListener('touchstart',start,{passive:false}); canvas.addEventListener('touchmove',move,{passive:false}); canvas.addEventListener('touchend',end);
+    var clr=document.getElementById('sig-clear'); if(clr) clr.addEventListener('click',function(){ ctx.clearRect(0,0,canvas.width,canvas.height); dirty=false; signedAt=''; var st=document.getElementById('sig-stamp'); if(st) st.textContent=''; refresh(); });
+    return {
+      isEmpty:function(){ return !dirty; },
+      dataURL:function(){ return dirty ? canvas.toDataURL('image/png') : ''; },
+      signedAt:function(){ return signedAt; },
+      clear:function(){ ctx.clearRect(0,0,canvas.width,canvas.height); dirty=false; signedAt=''; var st=document.getElementById('sig-stamp'); if(st) st.textContent=''; refresh(); },
+      enable:function(on){ var w=document.getElementById('sig-wrap'); if(w){ w.style.opacity=on?'1':'.5'; w.style.pointerEvents=on?'auto':'none'; } if(!on){ this.clear(); } }
+    };
+  })();
+
+  // Submit
+  document.getElementById('submit-btn').addEventListener('click', function(){
+    var name  = document.getElementById('reg-name').value.trim();
+    var email = document.getElementById('reg-email').value.trim();
+    var sig   = sigPad ? sigPad.dataURL() : '';
+    var ok    = true;
+
+    if (!name || name.length < 2) {
+      document.getElementById('reg-name-err').textContent = 'Please enter your full legal name.';
+      ok = false;
+    } else { document.getElementById('reg-name-err').textContent = ''; }
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      document.getElementById('reg-email-err').textContent = 'Please enter a valid email address.';
+      ok = false;
+    } else { document.getElementById('reg-email-err').textContent = ''; }
+
+    var evKey = document.getElementById('reg-event-select').value;
+    if (!evKey) {
+      document.getElementById('reg-event-err').textContent = 'Please select the event you are attending.';
+      ok = false;
+    } else if (evKey === 'other' && !document.getElementById('reg-event').value.trim()) {
+      document.getElementById('reg-event-err').textContent = 'Please enter the event name.';
+      ok = false;
+    } else { document.getElementById('reg-event-err').textContent = ''; }
+
+    if (!ok) {
+      document.getElementById('reg-name').scrollIntoView({behavior:'smooth', block:'center'});
+      return;
+    }
+
+    if (!sig) {
+      document.getElementById('sig-err').textContent = 'Please sign in the signature box above.';
+      document.getElementById('sig-canvas').scrollIntoView({behavior:'smooth', block:'center'});
+      return;
+    }
+    document.getElementById('sig-err').textContent = '';
+
+    var submitBtn = document.getElementById('submit-btn');
+    submitBtn.disabled = true; submitBtn.textContent = 'Saving...';
+
+    var eventName = document.getElementById('reg-event').value.trim();
+    var eventDate = document.getElementById('reg-date').value.trim();
+    var noteEl = document.getElementById('reg-note');
+    var noteVal = noteEl ? noteEl.value.trim() : '';
+    var now = new Date();
+    var record = {
+      name: name, email: email, signature: sig,
+      eventName: eventName, eventDate: eventDate, notes: noteVal,
+      time: now.toLocaleString(), timestamp: now.toISOString(),
+      code: genCode(), clausesAgreed: TOTAL_CLAUSES, clauseList: activeClauses.slice()
+    };
+
+    getData(function(data){
+      if (!data.waivers) data.waivers = [];
+      data.waivers.push(record);
+      saveData(data, function(){
+        submitBtn.disabled = false; submitBtn.textContent = 'Submit Waiver ✦';
+        lastSubmission = record;
+        document.getElementById('conf-name').textContent  = name;
+        document.getElementById('conf-email').textContent = email;
+        document.getElementById('conf-time').textContent  = record.time;
+        if (eventName) {
+          document.getElementById('conf-event').textContent = eventName;
+          document.getElementById('conf-event-row').classList.remove('hidden');
+        }
+        if (eventDate) {
+          document.getElementById('conf-date').textContent = eventDate;
+          document.getElementById('conf-date-row').classList.remove('hidden');
+        }
+        document.getElementById('step-form').classList.add('hidden');
+        document.getElementById('step-confirmed').classList.remove('hidden');
+        document.getElementById('step-confirmed').scrollIntoView({behavior:'smooth'});
+        announce('Waiver signed successfully.');
+        sendAdminEmail(record);
+      });
+    });
+  });
+
+  // Sends a confirmation to the person who signed, and a copy to the studio
+  // (ADMIN_EMAIL) so Niara is notified of every signed waiver.
+  function sendAdminEmail(rec) {
+    var el = document.getElementById('email-status');
+    el.innerHTML = '<div class="email-status email-sent">Sending confirmation...</div>';
+    if (typeof emailjs === 'undefined') {
+      el.innerHTML = '<div class="email-status email-failed">Email service unavailable. Waiver is saved.</div>';
+      return;
+    }
+    var base = {
+      from_name:         rec.name,
+      session_label:     rec.eventName || 'Standalone Waiver',
+      arrival_time:      rec.eventDate || 'N/A',
+      registration_type: 'Standalone waiver signed',
+      sign_time:         rec.time,
+      clauses_agreed:    TOTAL_CLAUSES + ' of ' + TOTAL_CLAUSES,
+      health_note:       rec.notes || '—',
+      cancel_code:       rec.code
+    };
+    // 1) Confirmation to the signer (this drives the on-screen status).
+    var toSigner = {}; for (var k in base) toSigner[k] = base[k];
+    toSigner.to_email = rec.email;
+    emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, toSigner).then(function(){
+      el.innerHTML = '<div class="email-status email-sent">✅ Confirmation sent. You may download your waiver below.</div>';
+    }).catch(function(err){
+      console.error('[waiver email] send failed', err);
+      var why = (err && (err.text || err.message)) ? (' (' + (err.text || err.message) + ')') : '';
+      el.innerHTML = '<div class="email-status email-failed">⚠️ Could not send confirmation email — your waiver is still saved.' + escapeHTML(why) + '</div>';
+    });
+    // 2) Best-effort copy to the studio so you're notified (doesn't affect status).
+    if (ADMIN_EMAIL && (rec.email || '').toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+      var toAdmin = {}; for (var j in base) toAdmin[j] = base[j];
+      toAdmin.to_email = ADMIN_EMAIL;
+      try { emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, toAdmin).then(function(){}, function(){}); } catch(e){}
+    }
+  }
+
+  // Reset
+  function resetForm() {
+    checkedClauses = {}; checkedCount = 0; lastSubmission = null;
+    document.getElementById('reg-name').value = '';
+    document.getElementById('reg-email').value = '';
+    document.getElementById('reg-event-select').value = '';
+    document.getElementById('reg-event').value = '';
+    document.getElementById('reg-date').value = '';
+    var rn = document.getElementById('reg-note'); if (rn) rn.value = '';
+    document.getElementById('conf-event-row').classList.add('hidden');
+    document.getElementById('conf-date-row').classList.add('hidden');
+    document.getElementById('sig-input').value = '';
+    if (typeof sigPad !== 'undefined' && sigPad) sigPad.enable(false);
+    document.getElementById('final-agree').checked = false;
+    document.getElementById('final-agree').disabled = true;
+    document.getElementById('submit-btn').disabled = true;
+    document.getElementById('email-status').innerHTML = '';
+    document.getElementById('waiver-name-stmt').textContent = '[Your Name]';
+    ['reg-name-err','reg-email-err','sig-err','reg-event-err'].forEach(function(id){
+      document.getElementById(id).textContent = '';
+    });
+    var sa = document.getElementById('select-all-btn');
+    sa.textContent = '✓ Select All Clauses'; sa.disabled = false;
+    applyEventSelection('');  // clears clauses, hides progress, shows the "select event" hint
+    document.getElementById('step-confirmed').classList.add('hidden');
+    document.getElementById('step-form').classList.remove('hidden');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  document.getElementById('new-btn').addEventListener('click', resetForm);
+
+  // PDF download
+  document.getElementById('download-waiver-btn').addEventListener('click', function(){
+    if (!lastSubmission) return;
+    generateWaiverPDF(lastSubmission);
+  });
+
+  function generateWaiverPDF(rec) {
+    var jsPDF = window.jspdf.jsPDF;
+    var doc = new jsPDF({unit:'pt',format:'letter'});
+    var pageW = doc.internal.pageSize.getWidth(), pageH = doc.internal.pageSize.getHeight();
+    var margin = 54, contentW = pageW - margin*2, y = margin;
+    function checkPage(n){ if (y+n > pageH - margin - 32){ doc.addPage(); y = margin; } }
+    doc.setFillColor(90,58,26); doc.rect(0,0,pageW,72,'F');
+    doc.setFont('times','italic'); doc.setFontSize(26); doc.setTextColor(255,255,255);
+    doc.text('Auric Movement', pageW/2, 30, {align:'center'});
+    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(230,210,180);
+    doc.text('PILATES · WELLNESS · FLOW', pageW/2, 46, {align:'center'});
+    doc.setFontSize(8); doc.setTextColor(200,180,150); doc.text('MOVE · FEEL · GLOW', pageW/2, 60, {align:'center'});
+    y = 96;
+    doc.setFont('times','bold'); doc.setFontSize(18); doc.setTextColor(90,58,26);
+    doc.text('LIABILITY WAIVER & RELEASE', pageW/2, y, {align:'center'});
+    y += 10; doc.setDrawColor(176,120,64); doc.setLineWidth(1); doc.line(margin, y, pageW-margin, y); y += 18;
+    doc.setFillColor(250,245,238); doc.setDrawColor(176,120,64); doc.setLineWidth(0.5);
+    doc.roundedRect(margin, y, contentW, 70, 6, 6, 'FD');
+    doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(90,58,26);
+    doc.text('PARTICIPANT', margin+14, y+16);
+    doc.setFont('helvetica','normal'); doc.setFontSize(12); doc.setTextColor(44,36,32);
+    doc.text(rec.name, margin+14, y+30);
+    doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(90,58,26);
+    doc.text('EMAIL', margin+14, y+48);
+    doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(44,36,32);
+    doc.text(rec.email, margin+14, y+60);
+    doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(90,58,26);
+    doc.text('SIGNED', margin+contentW/2, y+16);
+    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(44,36,32);
+    doc.text(rec.time, margin+contentW/2, y+30);
+    if (rec.eventName || rec.eventDate) {
+      doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(90,58,26);
+      doc.text('EVENT', margin+contentW/2, y+48);
+      doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(44,36,32);
+      var evt = [rec.eventName, rec.eventDate].filter(Boolean).join(' · ');
+      doc.text(doc.splitTextToSize(evt, contentW/2 - 14), margin+contentW/2, y+60);
+    }
+    y += 88;
+    if (rec.notes) {
+      checkPage(56);
+      doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(90,58,26);
+      doc.text('PARTICIPANT NOTE', margin, y); y += 5;
+      doc.setDrawColor(176,120,64); doc.setLineWidth(0.5); doc.line(margin, y, pageW-margin, y); y += 13;
+      doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(61,50,42);
+      var nlines = doc.splitTextToSize(rec.notes, contentW);
+      doc.text(nlines, margin, y); y += nlines.length * 11 + 14;
+    }
+    doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(90,58,26);
+    doc.text('AGREED CLAUSES', margin, y); y += 6;
+    doc.setDrawColor(176,120,64); doc.setLineWidth(0.75); doc.line(margin, y, pageW-margin, y); y += 14;
+    // Use the clause set this waiver was actually signed against (Create & Recharge adds
+    // the collab/art clause). Fresh signs carry rec.clauseList; admin re-downloads infer it.
+    var pdfClauses = (rec.clauseList && rec.clauseList.length) ? rec.clauseList
+      : (/create\s*&?\s*recharge/i.test(rec.eventName || '') ? clauseTexts.concat([CR_ART_CLAUSE]) : clauseTexts);
+    pdfClauses.forEach(function(text, i){
+      var lines = doc.setFontSize(8.5).splitTextToSize(text, contentW - 26);
+      var blockH = lines.length * 11 + 14; checkPage(blockH);
+      doc.setFillColor(176,120,64); doc.circle(margin+8, y+5, 7, 'F');
+      doc.setFont('helvetica','bold'); doc.setFontSize(7); doc.setTextColor(255,255,255);
+      doc.text(String(i+1), margin+8, y+7.5, {align:'center'});
+      doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(61,50,42);
+      doc.text(lines, margin+22, y+5); y += blockH;
+      doc.setDrawColor(232,224,213); doc.setLineWidth(0.3); doc.line(margin+22, y-4, pageW-margin, y-4);
+    });
+    checkPage(80); y += 8;
+    doc.setFillColor(250,245,238); doc.setDrawColor(176,120,64); doc.setLineWidth(3);
+    doc.line(margin, y, margin, y+64); doc.setLineWidth(0.3);
+    doc.roundedRect(margin+5, y, contentW-5, 64, 4, 4, 'F');
+    doc.setFont('helvetica','italic'); doc.setFontSize(9); doc.setTextColor(61,50,42);
+    var stmt = 'I, ' + rec.name + ', acknowledge that I have carefully read and fully understand this Liability Waiver & Release. I understand that I am giving up substantial legal rights, including the right to sue. I sign this agreement freely and voluntarily, without any inducement.';
+    doc.text(doc.splitTextToSize(stmt, contentW - 22), margin+14, y+14); y += 76;
+    checkPage(70);
+    doc.setDrawColor(200,186,168); doc.setLineWidth(0.5);
+    doc.line(margin, y+30, margin+230, y+30); doc.line(margin+250, y+30, margin+410, y+30);
+    doc.setFont('times','italic'); doc.setFontSize(15); doc.setTextColor(90,58,26);
+    if (rec.signature && String(rec.signature).indexOf('data:image') === 0) {
+      try { doc.addImage(rec.signature, 'PNG', margin+4, y+2, 150, 26); }
+      catch(e){ doc.text('[signature on file]', margin+4, y+26); }
+    } else if (rec.signature) {
+      doc.text('✦ ' + rec.signature, margin+4, y+26);
+    }
+    doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(122,110,99);
+    doc.text('Digital Signature', margin+4, y+40); doc.text('Date', margin+254, y+40);
+    doc.setFontSize(9); doc.setTextColor(61,50,42); doc.text(rec.time, margin+254, y+26);
+    var total = doc.internal.getNumberOfPages();
+    for (var p = 1; p <= total; p++) {
+      doc.setPage(p); doc.setFillColor(245,240,232); doc.rect(0, pageH-32, pageW, 32, 'F');
+      doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(122,110,99);
+      doc.text('Auric Movement · Liability Waiver · Signed ' + rec.time, pageW/2, pageH-18, {align:'center'});
+      doc.text('Page ' + p + ' of ' + total, pageW/2, pageH-8, {align:'center'});
+    }
+    doc.save('auric-waiver-' + rec.name.replace(/[^a-z0-9]/gi,'-').toLowerCase() + '.pdf');
+  }
+
+  // Admin panel (Ctrl/Cmd+Shift+A)
+  var adminPanel = document.getElementById('admin-panel');
+  document.addEventListener('keydown', function(e){
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+      e.preventDefault(); toggleAdmin();
+    }
+  });
+  // ── Admin access — real login via Supabase Auth (no password in the page) ──
+  function adminHasSession(cb){
+    try {
+      var p = supabase.auth.getSession();
+      if (p && p.then){ p.then(function(res){ cb(!!(res && res.data && res.data.session)); }, function(){ cb(false); }); }
+      else { cb(false); }
+    } catch(e){ cb(false); }
+  }
+  function openAdminLogin(cb){
+    if (document.getElementById('auric-login-ov')) return;
+    var ov=document.createElement('div'); ov.id='auric-login-ov';
+    ov.style.cssText='position:fixed;inset:0;background:rgba(44,26,14,.85);z-index:100001;display:flex;align-items:center;justify-content:center;padding:1rem;';
+    var m=document.createElement('div');
+    m.style.cssText='background:#fdfbf7;border:1px solid #e6dbc8;border-radius:16px;max-width:380px;width:100%;padding:1.6rem 1.5rem;box-shadow:0 24px 64px rgba(44,26,14,.4);font-family:inherit;';
+    m.innerHTML=''
+      +'<h3 style="margin:0 0 .3rem;color:#123522;font-size:1.4rem;font-weight:600;">Admin sign in</h3>'
+      +'<p style="margin:0 0 1rem;color:#8a7d6b;font-size:.82rem;line-height:1.5;">Sign in with your Auric Movement admin account.</p>'
+      +'<label style="display:block;font-size:.75rem;font-weight:600;color:#5A3A1A;margin:.5rem 0 .3rem;">Email</label>'
+      +'<input id="auric-login-email" type="email" autocomplete="username" style="width:100%;padding:.7rem .8rem;border:1px solid #e6dbc8;border-radius:9px;font-size:1rem;font-family:inherit;box-sizing:border-box;">'
+      +'<label style="display:block;font-size:.75rem;font-weight:600;color:#5A3A1A;margin:.7rem 0 .3rem;">Password</label>'
+      +'<input id="auric-login-pass" type="password" autocomplete="current-password" style="width:100%;padding:.7rem .8rem;border:1px solid #e6dbc8;border-radius:9px;font-size:1rem;font-family:inherit;box-sizing:border-box;">'
+      +'<div id="auric-login-err" style="display:none;color:#b0432e;font-size:.8rem;margin-top:.6rem;"></div>'
+      +'<button id="auric-login-btn" style="width:100%;margin-top:1.1rem;padding:.8rem;border:none;border-radius:999px;background:#123522;color:#f5efe0;font-family:inherit;font-size:.95rem;font-weight:600;cursor:pointer;">Sign in</button>'
+      +'<button id="auric-login-cancel" style="width:100%;margin-top:.5rem;padding:.6rem;border:none;background:none;color:#8a7d6b;font-family:inherit;font-size:.82rem;cursor:pointer;">Cancel</button>';
+    ov.appendChild(m); document.body.appendChild(ov);
+    var emailEl=m.querySelector('#auric-login-email'), passEl=m.querySelector('#auric-login-pass'),
+        errEl=m.querySelector('#auric-login-err'), btn=m.querySelector('#auric-login-btn');
+    function close(){ if(ov.parentNode) ov.parentNode.removeChild(ov); }
+    m.querySelector('#auric-login-cancel').addEventListener('click', function(){ close(); cb(false); });
+    ov.addEventListener('click', function(e){ if(e.target===ov){ close(); cb(false); } });
+    setTimeout(function(){ try{ emailEl.focus(); }catch(e){} }, 50);
+    function submit(){
+      var email=(emailEl.value||'').trim(), pw=passEl.value||'';
+      if(!email || !pw){ errEl.textContent='Enter your email and password.'; errEl.style.display='block'; return; }
+      btn.disabled=true; btn.textContent='Signing in…'; errEl.style.display='none';
+      try {
+        supabase.auth.signInWithPassword({ email:email, password:pw }).then(function(res){
+          if(res && res.error){ errEl.textContent=(res.error.message||'Sign in failed.'); errEl.style.display='block'; btn.disabled=false; btn.textContent='Sign in'; return; }
+          close(); cb(true);
+        }, function(){ errEl.textContent='Sign in failed. Try again.'; errEl.style.display='block'; btn.disabled=false; btn.textContent='Sign in'; });
+      } catch(e){ errEl.textContent='Login is unavailable right now.'; errEl.style.display='block'; btn.disabled=false; btn.textContent='Sign in'; }
+    }
+    btn.addEventListener('click', submit);
+    passEl.addEventListener('keydown', function(e){ if(e.key==='Enter') submit(); });
+  }
+  function toggleAdmin(){
+    if (adminPanel.classList.contains('visible')){ adminPanel.classList.remove('visible'); return; }
+    adminHasSession(function(has){
+      function openIt(){ adminPanel.classList.add('visible'); renderAdmin(); adminPanel.scrollIntoView({behavior:'smooth'}); }
+      if (has) openIt(); else openAdminLogin(function(ok){ if(ok) openIt(); });
+    });
+  }
+  window.auricWaiverLogout = function(){
+    try { if(supabase.auth && supabase.auth.signOut) supabase.auth.signOut(); } catch(e){}
+    adminPanel.classList.remove('visible');
+    alert('Signed out.');
+  };
+  document.getElementById('admin-close-btn').addEventListener('click', function(){
+    adminPanel.classList.remove('visible');
+  });
+
+  function renderAdmin() {
+    var body = document.getElementById('admin-body');
+    body.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--text-muted);font-size:.85rem;">Loading...</div>';
+    getData(function(data){
+      body.innerHTML = '';
+      var list = data.waivers || [];
+      if (!list.length) {
+        body.innerHTML = '<div class="empty-state">No waivers signed yet.</div>';
+        return;
+      }
+      list.slice().reverse().forEach(function(rec){
+        var item = document.createElement('div'); item.className = 'admin-sub-item';
+        var eventInfo = '';
+        if (rec.eventName || rec.eventDate) {
+          eventInfo = '<br><span style="font-size:.75rem;color:var(--gold);">' +
+            escapeHTML([rec.eventName, rec.eventDate].filter(Boolean).join(' · ')) + '</span>';
+        }
+        var noteInfo = '';
+        if (rec.notes) {
+          noteInfo = '<br><span style="font-size:.75rem;color:var(--brown);">📝 ' + escapeHTML(rec.notes) + '</span>';
+        }
+        var sigInfo = '';
+        if (rec.signature && String(rec.signature).indexOf('data:image') === 0) {
+          sigInfo = '<br><span style="font-size:.7rem;color:var(--text-muted);">Signature:</span><br>' +
+            '<img src="' + rec.signature + '" alt="signature" style="margin-top:.2rem;max-width:190px;height:54px;object-fit:contain;background:#fff;border:1px solid var(--border);border-radius:6px;">';
+        }
+        var rmBtn = rec.code
+          ? '<button type="button" onclick="waiverAdminRemove(\'' + String(rec.code).replace(/'/g,"\\'") + '\')" style="margin-top:.35rem;background:#fdecea;border:1px solid #f5c6c2;color:#b0432e;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:inherit;">🗑 Remove</button>'
+          : '';
+        item.innerHTML =
+          '<div><span class="aname">' + escapeHTML(rec.name) + '</span><br>' +
+          '<span class="aemail">' + escapeHTML(rec.email) + '</span>' + eventInfo + noteInfo + sigInfo + '</div>' +
+          '<div style="text-align:right;"><span style="font-size:.75rem;color:var(--text-muted);">' + escapeHTML(rec.time) + '</span><br>' + rmBtn + '</div>';
+        body.appendChild(item);
+      });
+      var count = document.createElement('p');
+      count.style.cssText = 'font-size:.8rem;color:var(--text-muted);margin-top:.5rem;';
+      count.textContent = list.length + ' signed waiver' + (list.length !== 1 ? 's' : '');
+      body.appendChild(count);
+    });
+  }
+
+  // Delete a single signed waiver by its code (owner only — enforced by the
+  // database row-rules, which require you to be logged in).
+  window.waiverAdminRemove = function(code){
+    if (!code) return;
+    if (!confirm('Delete this signed waiver? This cannot be undone.')) return;
+    supabase.from('standalone_waivers').delete().eq('code', code).then(function(res){
+      if (res && res.error){ alert('Could not delete: ' + res.error.message); return; }
+      // Keep the local cache in sync so the count/list are correct.
+      try {
+        _lastWaivers.waivers = (_lastWaivers.waivers||[]).filter(function(r){ return r.code !== code; });
+      } catch(e){}
+      renderAdmin();
+    }, function(){ alert('Could not delete. Try again.'); });
+  };
+
+  document.getElementById('admin-csv-btn').addEventListener('click', function(){
+    getData(function(data){
+      var list = data.waivers || [];
+      var csv = 'Name,Email,Event,Event Date,Note,Signed At,Code\n';
+      list.forEach(function(rec){
+        csv += '"' + rec.name.replace(/"/g,'""') + '","' + rec.email.replace(/"/g,'""') +
+          '","' + ((rec.eventName||'').replace(/"/g,'""')) +
+          '","' + ((rec.eventDate||'').replace(/"/g,'""')) +
+          '","' + ((rec.notes||'').replace(/"/g,'""')) +
+          '","' + rec.time + '","' + (rec.code || '') + '"\n';
+      });
+      var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a'); a.href = url; a.download = 'auric-standalone-waivers.csv';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    });
+  });
+
+  document.getElementById('admin-clear-btn').addEventListener('click', function(){
+    if (!confirm('Are you sure you want to delete ALL signed waiver records? This cannot be undone.')) return;
+    saveData({ waivers:[] }, function(){
+      renderAdmin();
+      alert('All waiver records cleared.');
+    });
+  });
+
+  // Modal handling
+  function openModal(id){ document.getElementById(id).classList.remove('hidden'); }
+  function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
+  document.getElementById('open-privacy-btn').addEventListener('click', function(){ openModal('privacy-modal'); });
+  document.getElementById('open-terms-btn').addEventListener('click', function(){ openModal('terms-modal'); });
+  document.getElementById('close-privacy-btn').addEventListener('click', function(){ closeModal('privacy-modal'); });
+  document.getElementById('close-terms-btn').addEventListener('click', function(){ closeModal('terms-modal'); });
+  ['privacy-modal','terms-modal'].forEach(function(id){
+    document.getElementById(id).addEventListener('click', function(e){ if (e.target === this) closeModal(id); });
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') {
+      if (!document.getElementById('privacy-modal').classList.contains('hidden')) closeModal('privacy-modal');
+      if (!document.getElementById('terms-modal').classList.contains('hidden'))   closeModal('terms-modal');
+    }
+  });
+
+  // Clauses are built once an event is selected (applyEventSelection), not on load.
+
+  // Prefill from URL params (?name=... &email=... &event=... &date=...)
+  // ?event= accepts a key (recharge|matchat) to preselect the dropdown,
+  // or any other text which drops into the "other" custom event fields.
+  try {
+    var params = new URLSearchParams(window.location.search);
+    var pName  = params.get('name');
+    var pEmail = params.get('email');
+    var pEvent = params.get('event');
+    var pDate  = params.get('date');
+    if (pName)  {
+      document.getElementById('reg-name').value = pName;
+      document.getElementById('waiver-name-stmt').textContent = pName;
+    }
+    if (pEmail) document.getElementById('reg-email').value = pEmail;
+    if (pEvent) {
+      var sel = document.getElementById('reg-event-select');
+      var key = pEvent.toLowerCase();
+      if (WAIVER_EVENTS[key] && key !== 'other') {
+        sel.value = key; applyEventSelection(key);
+      } else {
+        sel.value = 'other'; applyEventSelection('other');
+        document.getElementById('reg-event').value = pEvent;
+        if (pDate) document.getElementById('reg-date').value = pDate;
+      }
+    }
+  } catch(e) {}
+});
+</script>
+</body>
+</html>
