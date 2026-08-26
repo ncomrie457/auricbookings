@@ -18,6 +18,7 @@
   .bar{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin:1.2rem 0 1.5rem;}
   .btn{font-family:inherit;font-size:.82rem;font-weight:600;letter-spacing:.02em;border-radius:999px;padding:.6rem 1.3rem;cursor:pointer;border:1px solid var(--gold);background:var(--brown);color:#fff;}
   .btn.secondary{background:transparent;color:var(--brown);}
+  .btn.ghost{background:transparent;color:var(--muted);border-color:var(--border);}
   .btn:hover{opacity:.9;}
   table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 16px 40px -30px rgba(90,58,26,.35);}
   th,td{text-align:left;padding:.8rem 1rem;font-size:.9rem;border-bottom:1px solid var(--border);}
@@ -28,25 +29,27 @@
   .empty{text-align:center;padding:2.5rem 1rem;color:var(--muted);}
   .tablewrap{overflow-x:auto;}
   .status{text-align:center;font-size:.8rem;color:var(--muted);margin-top:1rem;}
-  /* Passcode gate */
+  /* Login gate */
   #gate{position:fixed;inset:0;background:var(--ivory);display:flex;align-items:center;justify-content:center;padding:1.2rem;z-index:50;}
   .gatecard{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2.2rem 1.8rem;max-width:380px;width:100%;text-align:center;box-shadow:0 24px 60px -34px rgba(90,58,26,.5);}
   .gatecard h2{font-family:Georgia,serif;color:var(--brown);font-size:1.5rem;margin-bottom:.3rem;}
   .gatecard p{color:var(--muted);font-size:.86rem;margin-bottom:1.2rem;line-height:1.5;}
-  .gatecard input{width:100%;padding:.7rem .9rem;border:1px solid var(--border);border-radius:9px;font-family:inherit;font-size:1rem;text-align:center;letter-spacing:.1em;margin-bottom:.8rem;}
+  .gatecard input{width:100%;padding:.7rem .9rem;border:1px solid var(--border);border-radius:9px;font-family:inherit;font-size:1rem;margin-bottom:.7rem;}
   .gateerr{color:#b0432e;font-size:.82rem;min-height:1.1rem;margin-bottom:.5rem;}
+  .signout{margin-top:1.6rem;}
 </style>
 </head>
 <body>
-  <!-- Passcode gate -->
+  <!-- Login gate -->
   <div id="gate">
     <div class="gatecard">
       <div class="eyebrow">Auric Movement</div>
       <h2>Something's Blooming</h2>
-      <p>Enter the shared passcode to view the interest list.</p>
-      <input id="gate-input" type="password" placeholder="Passcode" autocomplete="off" autofocus>
+      <p>Sign in with the email and password you were given to view the interest list.</p>
+      <input id="gate-email" type="email" placeholder="Email" autocomplete="username" autofocus>
+      <input id="gate-pass" type="password" placeholder="Password" autocomplete="current-password">
       <div class="gateerr" id="gate-err"></div>
-      <button class="btn" id="gate-btn" style="width:100%;">View list</button>
+      <button class="btn" id="gate-btn" style="width:100%;">Sign in</button>
     </div>
   </div>
 
@@ -67,14 +70,14 @@
       </table>
     </div>
     <div class="status" id="status"></div>
+    <div style="text-align:center;" class="signout">
+      <button class="btn ghost" id="signout-btn">Sign out</button>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
   (function(){
-    // ── Shared passcode (change this to whatever you give your collaborator) ──
-    var PASSCODE = 'bloom2025';
-
     var SB_URL = 'https://qvmiwyxerotkqpbuhpun.supabase.co';
     var SB_KEY = 'sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ';
     var sb = null;
@@ -83,15 +86,33 @@
     var gate=document.getElementById('gate'), app=document.getElementById('app');
     var rows=[];
 
-    function unlock(){ gate.style.display='none'; app.style.display='block'; load(); }
-    function tryPass(){
-      var v=document.getElementById('gate-input').value.trim();
-      if(v===PASSCODE){ try{sessionStorage.setItem('bloom_list_ok','1');}catch(e){} unlock(); }
-      else{ document.getElementById('gate-err').textContent='Incorrect passcode. Try again.'; }
+    function showApp(){ gate.style.display='none'; app.style.display='block'; load(); }
+    function showGate(){ app.style.display='none'; gate.style.display='flex'; }
+
+    function signIn(){
+      var email=document.getElementById('gate-email').value.trim();
+      var pass=document.getElementById('gate-pass').value;
+      var err=document.getElementById('gate-err');
+      err.textContent='';
+      if(!sb){ err.textContent='Could not connect. Refresh and try again.'; return; }
+      if(!email||!pass){ err.textContent='Enter your email and password.'; return; }
+      var btn=document.getElementById('gate-btn'); btn.disabled=true; btn.textContent='Signing in…';
+      sb.auth.signInWithPassword({email:email,password:pass}).then(function(res){
+        btn.disabled=false; btn.textContent='Sign in';
+        if(res && res.error){ err.textContent='Wrong email or password.'; return; }
+        showApp();
+      }, function(){ btn.disabled=false; btn.textContent='Sign in'; err.textContent='Could not sign in. Try again.'; });
     }
-    document.getElementById('gate-btn').addEventListener('click', tryPass);
-    document.getElementById('gate-input').addEventListener('keydown', function(e){ if(e.key==='Enter') tryPass(); });
-    try{ if(sessionStorage.getItem('bloom_list_ok')==='1') unlock(); }catch(e){}
+    document.getElementById('gate-btn').addEventListener('click', signIn);
+    document.getElementById('gate-pass').addEventListener('keydown', function(e){ if(e.key==='Enter') signIn(); });
+    document.getElementById('gate-email').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('gate-pass').focus(); });
+
+    document.getElementById('signout-btn').addEventListener('click', function(){
+      if(sb) sb.auth.signOut().then(showGate, showGate); else showGate();
+    });
+
+    // Resume an existing session if the collaborator is already signed in.
+    if(sb){ sb.auth.getSession().then(function(res){ if(res && res.data && res.data.session) showApp(); }); }
 
     function fmt(iso){ try{ return iso ? new Date(iso).toLocaleString() : ''; }catch(e){ return ''; } }
     function esc(s){ return String(s==null?'':s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];}); }
@@ -109,9 +130,11 @@
     function load(){
       var st=document.getElementById('status'); st.textContent='Refreshing…';
       if(!sb){ st.textContent='Could not connect.'; return; }
-      sb.from('blooming_interest').select('*').order('created_at').then(function(res){
-        if(res && res.error){ st.textContent='Could not load the list (check the read policy in Supabase).'; return; }
-        rows = (res.data||[]).filter(function(r){ return r.source!=='riddim-interest' && r.event!=='riddim-kompa-next'; });
+      // Server function returns ONLY the Something's Blooming rows, and only
+      // to an owner or a seeded blooming collaborator.
+      sb.rpc('blooming_read').then(function(res){
+        if(res && res.error){ st.textContent='Could not load the list. Ask the owner to confirm your access.'; return; }
+        rows = res.data || [];
         render();
         st.textContent='Updated '+new Date().toLocaleTimeString();
       }, function(){ st.textContent='Could not load the list.'; });
