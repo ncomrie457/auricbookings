@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reserve the AURIC MVMT Bag — No Payment | Auric Movement</title>
+  <meta name="description" content="Reserve the AURIC MVMT bag — matte, made to move from reformer to real life. $30, pay when you pick it up at an event. No payment now — just reserve yours.">
+
+  <!-- Open Graph / iMessage / social preview -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Auric Movement">
+  <meta property="og:url" content="https://book.auricmovement.com/reserve-bag">
+  <meta property="og:title" content="Reserve the AURIC MVMT bag ✦ $30, pay at pickup">
+  <meta property="og:description" content="Made to move — reformer to real life. Reserve yours now, no payment. Pay $30 when you pick it up at an event.">
+  <meta property="og:image" content="https://book.auricmovement.com/auric-bag.jpg?v=1">
+  <meta property="og:image:width" content="720">
+  <meta property="og:image:height" content="720">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Reserve the AURIC MVMT bag ✦ $30, pay at pickup">
+  <meta name="twitter:description" content="Reserve yours now, no payment. Pay $30 when you pick it up at an event.">
+  <meta name="twitter:image" content="https://book.auricmovement.com/auric-bag.jpg?v=1">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{ --cream:#f7f0e2; --card:#fdfbf7; --green:#123522; --brown:#5A3A1A; --gold:#a9832f; --muted:#8a7d6b; --border:#e6dbc8; }
+    *{ margin:0; padding:0; box-sizing:border-box; }
+    body{ font-family:'Jost','Helvetica Neue',Arial,sans-serif; background:linear-gradient(158deg,#f7f0e2,#efe3cd); color:#3d322a; min-height:100vh; -webkit-font-smoothing:antialiased; }
+    .wrap{ max-width:520px; margin:0 auto; padding:2.4rem 1.2rem 4rem; }
+    .card{ background:var(--card); border:1px solid var(--border); border-radius:18px; overflow:hidden; box-shadow:0 24px 60px -34px rgba(90,58,26,.5); }
+    .photo{ width:100%; aspect-ratio:1/1; object-fit:cover; display:block; }
+    .head{ text-align:center; padding:1.7rem 1.6rem 1.1rem; }
+    .brand{ font-size:.72rem; letter-spacing:.34em; text-transform:uppercase; color:var(--gold); font-weight:600; padding-left:.34em; }
+    h1{ font-family:'Cormorant Garamond',Georgia,serif; font-style:italic; font-weight:600; font-size:2rem; color:var(--green); margin:.5rem 0 .2rem; line-height:1.12; }
+    .price{ display:inline-block; margin:.7rem 0 .1rem; font-weight:600; font-size:.9rem; letter-spacing:.02em; color:var(--brown); background:#f6efe2; border:1px solid var(--border); border-radius:999px; padding:.4rem 1rem; }
+    .sub{ font-size:.95rem; color:var(--muted); line-height:1.6; margin-top:.7rem; }
+    .note{ font-size:.82rem; color:var(--muted); line-height:1.55; margin-top:.7rem; }
+    .note strong{ color:var(--brown); }
+    form{ padding:.4rem 1.6rem 1.8rem; }
+    label{ display:block; font-size:.8rem; font-weight:600; color:var(--brown); margin:.9rem 0 .35rem; }
+    input{ width:100%; padding:.8rem .9rem; border:1px solid var(--border); border-radius:10px; font-family:inherit; font-size:1rem; background:#fff; color:#2c1a0e; }
+    input:focus{ outline:none; border-color:var(--gold); }
+    .btn{ width:100%; margin-top:1.3rem; padding:.95rem 1rem; border:none; border-radius:999px; background:var(--green); color:#f5efe0; font-family:inherit; font-size:1rem; font-weight:600; letter-spacing:.02em; cursor:pointer; }
+    .btn:hover{ background:#0e2b1b; }
+    .btn:disabled{ opacity:.6; cursor:not-allowed; }
+    .err{ display:none; color:#b0432e; font-size:.85rem; margin-top:.8rem; }
+    .confirmed{ display:none; text-align:center; padding:2.2rem 1.8rem 2.6rem; }
+    .confirmed .mk{ font-size:2rem; color:var(--gold); }
+    .confirmed h2{ font-family:'Cormorant Garamond',Georgia,serif; font-style:italic; font-size:1.7rem; color:var(--green); margin:.5rem 0 .4rem; }
+    .confirmed p{ color:var(--muted); font-size:.95rem; line-height:1.6; }
+    .foot{ text-align:center; font-size:.8rem; color:var(--muted); margin-top:1.4rem; }
+    .foot a{ color:var(--gold); text-decoration:none; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <img class="photo" src="../auric-bag.jpg?v=1" alt="The AURIC MVMT bag — matte, made to move from reformer to real life">
+      <div class="head">
+        <div class="brand">Auric Movement</div>
+        <h1>Reserve the<br>AURIC MVMT bag</h1>
+        <span class="price">$30 &middot; pay at pickup</span>
+        <p class="sub">Made to move &mdash; reformer to real life. Roomy enough for your mat towel, water, and grip socks. 🤎</p>
+        <p class="note"><strong>No payment now.</strong> Just reserve yours &mdash; we&rsquo;ll set one aside and you pay <strong>$30</strong> when you pick it up at one of our events. We&rsquo;ll email you the moment they&rsquo;re ready.</p>
+      </div>
+      <form id="reserve-form" novalidate>
+        <label for="rb-name">Full name</label>
+        <input type="text" id="rb-name" autocomplete="name" placeholder="Your name">
+        <label for="rb-email">Email</label>
+        <input type="email" id="rb-email" autocomplete="email" placeholder="you@email.com">
+        <div class="err" id="rb-error"></div>
+        <button type="submit" class="btn" id="rb-submit">Reserve mine</button>
+      </form>
+      <div class="confirmed" id="rb-confirmed">
+        <div class="mk">&#10022;</div>
+        <h2>Yours is reserved!</h2>
+        <p>We&rsquo;ll set one aside and email you the moment the bags are ready. Bring <strong>$30</strong> and grab it at your next session &mdash; no payment until then.</p>
+      </div>
+    </div>
+    <div class="foot">Auric Movement &middot; <a href="https://book.auricmovement.com">book.auricmovement.com</a></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+  (function(){
+    var SB_URL='https://qvmiwyxerotkqpbuhpun.supabase.co';
+    var SB_KEY='sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ';
+    var sb=null; try{ if(window.supabase&&window.supabase.createClient) sb=window.supabase.createClient(SB_URL,SB_KEY); }catch(e){}
+    var form=document.getElementById('reserve-form'), btn=document.getElementById('rb-submit'),
+        errBox=document.getElementById('rb-error'), confirmed=document.getElementById('rb-confirmed');
+    function showError(m){ errBox.textContent=m; errBox.style.display='block'; }
+    form.addEventListener('submit', function(ev){
+      ev.preventDefault(); errBox.style.display='none';
+      var name=document.getElementById('rb-name').value.trim();
+      var email=document.getElementById('rb-email').value.trim();
+      if(!name){ showError('Please add your name.'); return; }
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ showError('Please enter a valid email.'); return; }
+      btn.disabled=true; btn.textContent='Reserving…';
+      var rec={ name:name, email:email, phone:null, event:'auric-bag-reserve', source:'bag-reserve' };
+      try{ var a=JSON.parse(localStorage.getItem('auric_bag_reserve')||'[]'); a.push(rec); localStorage.setItem('auric_bag_reserve', JSON.stringify(a)); }catch(e){}
+      function done(){ form.style.display='none'; confirmed.style.display='block'; confirmed.scrollIntoView({behavior:'smooth',block:'center'}); }
+      if(sb){ sb.from('blooming_interest').insert([rec]).then(function(res){ if(res&&res.error) console.warn('insert error:', res.error.message); done(); }, function(){ done(); }); }
+      else { done(); }
+    });
+  })();
+  </script>
+</body>
+</html>
