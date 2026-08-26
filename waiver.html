@@ -312,6 +312,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // sends — all mail routes through Resend now, matching the main site.
   var EMAILJS_SERVICE_ID  = 'service_ieahnue';
   var TMPL_ADMIN          = 'template_6qkcf8j';
+  var ADMIN_EMAIL         = 'auricmovement@outlook.com'; // you get a copy of each signed waiver
 
   // ── Supabase client ────────────────────────────────────────────────────────
   var supabase = window.supabase.createClient(
@@ -636,6 +637,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
+  // Sends a confirmation to the person who signed, and a copy to the studio
+  // (ADMIN_EMAIL) so Niara is notified of every signed waiver.
   function sendAdminEmail(rec) {
     var el = document.getElementById('email-status');
     el.innerHTML = '<div class="email-status email-sent">Sending confirmation...</div>';
@@ -643,9 +646,8 @@ document.addEventListener('DOMContentLoaded', function() {
       el.innerHTML = '<div class="email-status email-failed">Email service unavailable. Waiver is saved.</div>';
       return;
     }
-    emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, {
+    var base = {
       from_name:         rec.name,
-      to_email:          rec.email,
       session_label:     rec.eventName || 'Standalone Waiver',
       arrival_time:      rec.eventDate || 'N/A',
       registration_type: 'Standalone waiver signed',
@@ -653,13 +655,23 @@ document.addEventListener('DOMContentLoaded', function() {
       clauses_agreed:    TOTAL_CLAUSES + ' of ' + TOTAL_CLAUSES,
       health_note:       rec.notes || '—',
       cancel_code:       rec.code
-    }).then(function(){
+    };
+    // 1) Confirmation to the signer (this drives the on-screen status).
+    var toSigner = {}; for (var k in base) toSigner[k] = base[k];
+    toSigner.to_email = rec.email;
+    emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, toSigner).then(function(){
       el.innerHTML = '<div class="email-status email-sent">✅ Confirmation sent. You may download your waiver below.</div>';
     }).catch(function(err){
       console.error('[waiver email] send failed', err);
       var why = (err && (err.text || err.message)) ? (' (' + (err.text || err.message) + ')') : '';
       el.innerHTML = '<div class="email-status email-failed">⚠️ Could not send confirmation email — your waiver is still saved.' + escapeHTML(why) + '</div>';
     });
+    // 2) Best-effort copy to the studio so you're notified (doesn't affect status).
+    if (ADMIN_EMAIL && (rec.email || '').toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+      var toAdmin = {}; for (var j in base) toAdmin[j] = base[j];
+      toAdmin.to_email = ADMIN_EMAIL;
+      try { emailjs.send(EMAILJS_SERVICE_ID, TMPL_ADMIN, toAdmin).then(function(){}, function(){}); } catch(e){}
+    }
   }
 
   // Reset
