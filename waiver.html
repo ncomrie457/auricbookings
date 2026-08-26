@@ -307,7 +307,10 @@
 document.addEventListener('DOMContentLoaded', function() {
 
   var EMAILJS_PUBLIC_KEY  = 'xr1kT3l8rFhNodudq';
-  var EMAILJS_SERVICE_ID  = 'service_9n4adla';
+  // Resend-backed service (verified domain book@auricmovement.com). The old
+  // Outlook service (service_9n4adla) was locked by Microsoft and no longer
+  // sends — all mail routes through Resend now, matching the main site.
+  var EMAILJS_SERVICE_ID  = 'service_ieahnue';
   var TMPL_ADMIN          = 'template_6qkcf8j';
 
   // ── Supabase client ────────────────────────────────────────────────────────
@@ -652,8 +655,10 @@ document.addEventListener('DOMContentLoaded', function() {
       cancel_code:       rec.code
     }).then(function(){
       el.innerHTML = '<div class="email-status email-sent">✅ Confirmation sent. You may download your waiver below.</div>';
-    }).catch(function(){
-      el.innerHTML = '<div class="email-status email-failed">⚠️ Could not send confirmation email — your waiver is still saved.</div>';
+    }).catch(function(err){
+      console.error('[waiver email] send failed', err);
+      var why = (err && (err.text || err.message)) ? (' (' + (err.text || err.message) + ')') : '';
+      el.innerHTML = '<div class="email-status email-failed">⚠️ Could not send confirmation email — your waiver is still saved.' + escapeHTML(why) + '</div>';
     });
   }
 
@@ -871,10 +876,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (rec.notes) {
           noteInfo = '<br><span style="font-size:.75rem;color:var(--brown);">📝 ' + escapeHTML(rec.notes) + '</span>';
         }
+        var rmBtn = rec.code
+          ? '<button type="button" onclick="waiverAdminRemove(\'' + String(rec.code).replace(/'/g,"\\'") + '\')" style="margin-top:.35rem;background:#fdecea;border:1px solid #f5c6c2;color:#b0432e;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:inherit;">🗑 Remove</button>'
+          : '';
         item.innerHTML =
           '<div><span class="aname">' + escapeHTML(rec.name) + '</span><br>' +
           '<span class="aemail">' + escapeHTML(rec.email) + '</span>' + eventInfo + noteInfo + '</div>' +
-          '<span style="font-size:.75rem;color:var(--text-muted);">' + escapeHTML(rec.time) + '</span>';
+          '<div style="text-align:right;"><span style="font-size:.75rem;color:var(--text-muted);">' + escapeHTML(rec.time) + '</span><br>' + rmBtn + '</div>';
         body.appendChild(item);
       });
       var count = document.createElement('p');
@@ -883,6 +891,21 @@ document.addEventListener('DOMContentLoaded', function() {
       body.appendChild(count);
     });
   }
+
+  // Delete a single signed waiver by its code (owner only — enforced by the
+  // database row-rules, which require you to be logged in).
+  window.waiverAdminRemove = function(code){
+    if (!code) return;
+    if (!confirm('Delete this signed waiver? This cannot be undone.')) return;
+    supabase.from('standalone_waivers').delete().eq('code', code).then(function(res){
+      if (res && res.error){ alert('Could not delete: ' + res.error.message); return; }
+      // Keep the local cache in sync so the count/list are correct.
+      try {
+        _lastWaivers.waivers = (_lastWaivers.waivers||[]).filter(function(r){ return r.code !== code; });
+      } catch(e){}
+      renderAdmin();
+    }, function(){ alert('Could not delete. Try again.'); });
+  };
 
   document.getElementById('admin-csv-btn').addEventListener('click', function(){
     getData(function(data){
