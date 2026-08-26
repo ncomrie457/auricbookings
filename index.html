@@ -6978,8 +6978,19 @@ document.addEventListener('DOMContentLoaded', function() {
     };
   }
 
+  // Dedup helper — asks the server only about the booker's OWN email (never
+  // returns anyone else's info). Calls back with {type, wlPosition, isPaid} or null.
+  function auricEmailStatus(fnName, session, email, cb){
+    try {
+      supabase.rpc(fnName, { p_session: session || '', p_email: (email||'').trim() }).then(function(res){
+        var row = (res && res.data && res.data[0]) || null;
+        cb(row ? { code: row.code, type: row.type, wlPosition: row.wl_position, isPaid: row.is_paid } : null);
+      }, function(){ cb(null); });
+    } catch(e){ cb(null); }
+  }
+
   function getData(callback) {
-    supabase.from('pilates_registrations').select('*').order('created_at')
+    supabase.rpc('pilates_read')
       .then(function(res){
         var grouped = { s1: [], s2: [] };
         (res.data || []).forEach(function(r){
@@ -7061,7 +7072,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function getMCData(callback) {
-    supabase.from('matchat_registrations').select('*').order('created_at')
+    supabase.rpc('matchat_read')
       .then(function(res){
         var data = { mc1: (res.data || []).map(_mcRowToRec) };
         _lastMC = JSON.parse(JSON.stringify(data));
@@ -7695,8 +7706,7 @@ document.addEventListener('DOMContentLoaded', function() {
     wlBtn.disabled = true; wlBtn.textContent = 'Saving...';
 
     getData(function(data) {
-      // Email dedup check
-      var existing = (data[selectedSession]||[]).filter(function(r){ return (r.email||'').toLowerCase() === email.toLowerCase(); })[0];
+     auricEmailStatus('pilates_email_status', selectedSession, email, function(existing) {
       if (existing) {
         wlBtn.disabled = false; wlBtn.textContent = 'Join Waitlist \u2192';
         var msg = existing.type === 'confirmed'
@@ -7723,6 +7733,7 @@ document.addEventListener('DOMContentLoaded', function() {
         sendWaitlistEmail(record);
         buildSessionCards();
       });
+     });
     });
   });
 
@@ -7827,9 +7838,7 @@ document.addEventListener('DOMContentLoaded', function() {
     submitBtn.disabled = true;
     submitBtn.textContent = 'Saving...';
 
-    getData(function(data) {
-      // Email dedup check
-      var existing = (data[selectedSession]||[]).filter(function(r){ return (r.email||'').toLowerCase() === email.toLowerCase(); })[0];
+    auricEmailStatus('pilates_email_status', selectedSession, email, function(existing) {
       if (existing) {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Submit & Reserve My Spot \u2726';
@@ -7894,7 +7903,7 @@ document.addEventListener('DOMContentLoaded', function() {
           sendWaitlistEmail(record);
         }
         // Refresh local cache from server so UI shows correct counts next time
-        getData(function(fresh){ data = fresh; buildSessionCards(); });
+        getData(function(fresh){ buildSessionCards(); });
       }, function(err){
         submitBtn.disabled = false;
         submitBtn.textContent = 'Submit & Reserve My Spot \u2726';
@@ -9852,8 +9861,7 @@ document.addEventListener('DOMContentLoaded', function() {
     btn.disabled=true; btn.textContent = 'Saving...';
 
     getMCData(function(data) {
-      // Email dedup check
-      var existing = (data.mc1||[]).filter(function(r){ return (r.email||'').toLowerCase() === email.toLowerCase(); })[0];
+     auricEmailStatus('matchat_email_status', 'mc1', email, function(existing) {
       if (existing) {
         btn.disabled=false; btn.textContent = 'Join Waitlist \u2192';
         var msg = existing.type === 'confirmed'
@@ -9878,6 +9886,7 @@ document.addEventListener('DOMContentLoaded', function() {
         sendMCWaitlistEmail(record);
         buildMCSpots();
       });
+     });
     });
   });
 
@@ -10042,9 +10051,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var submitBtn = document.getElementById('mc-submit-btn');
     submitBtn.disabled=true; submitBtn.textContent = 'Saving...';
 
-    getMCData(function(data) {
-      // Email dedup check
-      var existing = (data.mc1||[]).filter(function(r){ return (r.email||'').toLowerCase() === email.toLowerCase(); })[0];
+    auricEmailStatus('matchat_email_status', 'mc1', email, function(existing) {
       if (existing) {
         submitBtn.disabled=false; submitBtn.textContent = 'Submit & Reserve My Spot \u2726';
         var msg = existing.type === 'confirmed'
@@ -10101,22 +10108,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Auto-move: this new booking supersedes any prior WAITLIST or CANCELLED
         // entry for the same email (case-insensitive), so remove those to avoid
         // a duplicate. Paid/confirmed rows are never touched.
-        (function(){
-          var em = (email||'').trim().toLowerCase();
-          supabase.from('matchat_registrations').select('code,email,type').then(function(dres){
-            if (!dres || !dres.data) return;
-            var dupes = dres.data.filter(function(r){
-              return r.code !== code && (r.email||'').trim().toLowerCase() === em && (r.type==='waitlist' || r.type==='cancelled');
-            });
-            if (!dupes.length) return;
-            var left = dupes.length;
-            dupes.forEach(function(d){
-              supabase.from('matchat_registrations').delete().eq('code', d.code).then(function(){
-                if (--left === 0) renumberMCWaitlist(function(){});
-              }, function(){ if (--left === 0) renumberMCWaitlist(function(){}); });
-            });
-          }, function(){});
-        })();
+        // Supersede prior waitlist/cancelled rows for this email + renumber the
+        // waitlist — done server-side so it needs no public read of the table.
+        try { supabase.rpc('matchat_remove_prior', { p_email: email, p_keep_code: code }).then(function(){}, function(){}); } catch(e){}
         var record={ name:name, email:email, phone:phone, signature:sig, session:'mc1', sessionLabel:'Mat & Chat', arrival:'11:25 AM', classStart:'11:30 AM', time:timeStr, timestamp:now.toISOString(), code:code, type:type, wlPosition:wlPos, clausesAgreed:19, notes:notesWithAck, isPair:isPair, friendName:isPair?friendName:'', friendEmail:isPair?friendEmail:'', refundPolicyAck:refundAckTime, refundPolicyText:MC_REFUND_POLICY_TEXT, tier:bookedTier.key, pricePaid:bookedTier.price };
         mcLastSubmission=record;
 
@@ -10162,7 +10156,7 @@ document.addEventListener('DOMContentLoaded', function() {
           announce('Session full. Added to waitlist at position '+wlPos+'.');
         }
         // Refresh local data + UI from server so spot counts are accurate
-        getMCData(function(fresh){ data = fresh; buildMCSpots(); });
+        getMCData(function(fresh){ buildMCSpots(); });
       }, function(err){
         submitBtn.disabled=false; submitBtn.textContent = 'Submit & Reserve My Spot ✦';
         console.error('[book_matchat_session] RPC error', err);
@@ -10976,7 +10970,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
   }
   function getCRData(callback){
-    supabase.from('create_recharge_registrations').select('*').order('created_at')
+    supabase.rpc('crecharge_read')
       .then(function(res){
         var data = { cr1: (res.data || []).map(_crRowToRec) };
         try { localStorage.setItem(CR_STORAGE_KEY, JSON.stringify(data)); } catch(e){}
@@ -11179,8 +11173,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function crCreatePendingRecord(pending, onDone){
     if (pending.code){ onDone(pending, null); return; }
     var pname = pending.isMinor ? pending.minorNames : pending.name;
-    getCRData(function(data){
-      var existing = (data.cr1||[]).filter(function(r){ return (r.email||'').toLowerCase()===pending.email.toLowerCase() && (r.name||'').toLowerCase()===(pname||'').toLowerCase(); })[0];
+    auricEmailStatus('crecharge_email_status', 'cr1', pending.email, function(existing){
       if (existing){ pending.code=existing.code; pending.type=existing.type; pending.wlPosition=existing.wlPosition; pending.isPaid=existing.isPaid; crSavePending(pending); onDone(pending, existing); return; }
       var now=new Date(); var code=genCode();
       var notes='⏳ STATUS: PAYMENT PENDING — created at checkout. Payment not yet confirmed and waiver not yet signed.' +
@@ -11399,10 +11392,7 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
-    getCRData(function(data){
-      // Match on email AND participant name, so one email can register both a
-      // parent and their child (different names) but can't double-book the same person.
-      var existing = (data.cr1||[]).filter(function(r){ return (r.email||'').toLowerCase() === email.toLowerCase() && (r.name||'').toLowerCase() === participantName.toLowerCase(); })[0];
+    auricEmailStatus('crecharge_email_status', 'cr1', email, function(existing){
       if (existing) {
         submitBtn.disabled=false; submitBtn.textContent = 'Continue to Payment →';
         alert(existing.type==='confirmed'
