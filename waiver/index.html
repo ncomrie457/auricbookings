@@ -182,8 +182,9 @@
       <p style="font-size:.78rem;color:var(--text-muted);line-height:1.6;margin-bottom:.75rem;">Sign in the box below with your finger, stylus, or mouse. Your electronic signature is the legal equivalent of your handwritten signature and is legally binding under the E-SIGN Act, 15 U.S.C. § 7001.</p>
       <div class="field">
         <label>Digital Signature — sign below <span class="required" aria-hidden="true">*</span></label>
-        <div id="sig-wrap" style="position:relative;opacity:.5;pointer-events:none;transition:opacity .2s;">
-          <canvas id="sig-canvas" width="640" height="180" style="width:100%;height:180px;border:1px solid var(--border,#e6dbc8);border-radius:10px;background:#fff;touch-action:none;display:block;"></canvas>
+        <div id="sig-wrap" style="position:relative;pointer-events:none;transition:opacity .2s;">
+          <canvas id="sig-canvas" width="640" height="180" style="width:100%;height:180px;border:2px dashed #d8c9ad;border-radius:10px;background:#fffdf9;touch-action:none;display:block;"></canvas>
+          <span id="sig-hint" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 1rem;color:#b3a892;font-style:italic;font-size:.9rem;pointer-events:none;line-height:1.4;"></span>
           <button type="button" id="sig-clear" style="position:absolute;top:8px;right:10px;background:#faf5ee;border:1px solid #e6dbc8;color:#5A3A1A;border-radius:6px;padding:.25rem .6rem;font-size:.72rem;cursor:pointer;font-family:inherit;">Clear</button>
           <span id="sig-stamp" style="position:absolute;left:12px;bottom:7px;font-size:.66rem;color:#b3a892;pointer-events:none;"></span>
         </div>
@@ -562,15 +563,21 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!canvas) return null;
     var ctx = canvas.getContext('2d');
     ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#1c1a17';
-    var drawing = false, dirty = false, signedAt = '';
+    var drawing = false, dirty = false, signedAt = '', locked = true;
     function pos(e){ var r=canvas.getBoundingClientRect(); var t=(e.touches&&e.touches[0])||e; return { x:(t.clientX-r.left)*(canvas.width/r.width), y:(t.clientY-r.top)*(canvas.height/r.height) }; }
+    function hint(){
+      var h=document.getElementById('sig-hint'); if(!h) return;
+      if(dirty){ h.style.display='none'; return; }
+      h.style.display='flex';
+      h.textContent = locked ? 'Agree to all 19 clauses above, then sign here ✍️' : 'Sign here — draw with your finger or mouse';
+    }
     function refresh(){
       var si=document.getElementById('sig-input'); if(si) si.value = dirty ? canvas.toDataURL('image/png') : '';
       var agreed = (checkedCount===TOTAL_CLAUSES) && document.getElementById('final-agree').checked;
       document.getElementById('submit-btn').disabled = !(dirty && agreed);
-      document.getElementById('sig-err').textContent='';
+      document.getElementById('sig-err').textContent=''; hint();
     }
-    function start(e){ if(document.getElementById('sig-wrap').style.pointerEvents==='none') return; e.preventDefault(); drawing=true; var p=pos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); }
+    function start(e){ if(locked) return; e.preventDefault(); drawing=true; var p=pos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); }
     function move(e){ if(!drawing) return; e.preventDefault(); var p=pos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); if(!dirty){ dirty=true; signedAt=new Date().toLocaleString(); var st=document.getElementById('sig-stamp'); if(st) st.textContent='Signed '+signedAt; } refresh(); }
     function end(){ drawing=false; }
     canvas.addEventListener('mousedown',start); canvas.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
@@ -581,9 +588,10 @@ document.addEventListener('DOMContentLoaded', function() {
       dataURL:function(){ return dirty ? canvas.toDataURL('image/png') : ''; },
       signedAt:function(){ return signedAt; },
       clear:function(){ ctx.clearRect(0,0,canvas.width,canvas.height); dirty=false; signedAt=''; var st=document.getElementById('sig-stamp'); if(st) st.textContent=''; refresh(); },
-      enable:function(on){ var w=document.getElementById('sig-wrap'); if(w){ w.style.opacity=on?'1':'.5'; w.style.pointerEvents=on?'auto':'none'; } if(!on){ this.clear(); } }
+      enable:function(on){ locked=!on; var w=document.getElementById('sig-wrap'); if(w){ w.style.opacity=on?'1':'.75'; w.style.pointerEvents=on?'auto':'none'; var c=document.getElementById('sig-canvas'); if(c) c.style.borderColor = on ? '#b07840' : '#d8c9ad'; } if(!on){ this.clear(); } else { hint(); } }
     };
   })();
+  if (sigPad) sigPad.enable(false);
 
   // Submit
   document.getElementById('submit-btn').addEventListener('click', function(){
