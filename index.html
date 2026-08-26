@@ -7502,15 +7502,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // checkout). If the webhook ever goes down again, disable this call so real
   // bookings aren't cancelled while is_paid is stuck false.
   function sweepExpiredSpots() {
-    var nowIso = new Date().toISOString();
-    ['pilates_registrations','matchat_registrations'].forEach(function(table){
-      supabase.from(table)
-        .update({ type: 'cancelled' })
-        .eq('is_paid', false)
-        .eq('type', 'confirmed')
-        .lt('expires_at', nowIso)
-        .then(function(){}, function(){});
-    });
+    // Server-side: cancels expired unpaid holds without the public key needing
+    // direct UPDATE on the registration tables.
+    try { supabase.rpc('sweep_expired_holds').then(function(){}, function(){}); } catch(e){}
   }
   // Run on page load.
   sweepExpiredSpots();
@@ -11189,7 +11183,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var row=res.data[0]; pending.code=code; pending.type=row.out_type; pending.wlPosition=row.out_wl_position; crSavePending(pending);
         // Record the referrer in its own column right away, so it's captured even
         // if they never finish the waiver.
-        if (pending.referral){ supabase.from('create_recharge_registrations').update({ referred_by: pending.referral }).eq('code', code).then(function(){}, function(){}); }
+        if (pending.referral){ supabase.rpc('crecharge_set_referral', { p_code: code, p_referral: pending.referral }).then(function(){}, function(){}); }
         buildCRSpots(); updateEventCardSpots();
         onDone(pending, null);
       }, function(){ onDone(pending, null); });
@@ -11362,12 +11356,10 @@ document.addEventListener('DOMContentLoaded', function() {
       var uPhone=phone?('PHONE (for class reminders): '+phone):'';
       var uNotesFull=uTicket+'\n\n'+uAck+(uPhone?('\n\n'+uPhone):'')+(uNotes?('\n\n'+uNotes):'');
       var uRefEl=document.getElementById('cr-reg-referral'); var uReferral=uRefEl?uRefEl.value.trim():'';
-      supabase.from('create_recharge_registrations').update({
-        name:participantName, phone:(phone||null), signature:sig,
-        clauses_agreed:CR_CLAUSE_TEXTS.length, notes:uNotesFull,
-        referred_by:(uReferral||null),
-        is_paid:true, paid_at:uNow.toISOString()
-      }).eq('code', _crPend.code).then(function(res){
+      supabase.rpc('crecharge_complete_waiver', {
+        p_code: _crPend.code, p_name: participantName, p_phone: (phone||null), p_signature: sig,
+        p_clauses: CR_CLAUSE_TEXTS.length, p_notes: uNotesFull, p_referral: (uReferral||'')
+      }).then(function(res){
         submitBtn.disabled=false; submitBtn.textContent = 'Continue to Payment →';
         if (res && res.error){ console.error('[CR waiver update] failed', res.error); alert('Something went wrong saving your waiver. Please try again, or email auricmovement@outlook.com.'); return; }
         document.getElementById('cr-conf-name').textContent = participantName;
@@ -12596,7 +12588,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Waiver is signed BEFORE payment now, so returning here means they're fully
     // done. Just mark paid and show the "you're confirmed" overlay with Add-to-Calendar.
     if (crPend && crPend.code){
-      try { supabase.from('create_recharge_registrations').update({ is_paid:true, paid_at:new Date().toISOString() }).eq('code', crPend.code).then(function(){ try{ if(typeof renderAdmin==='function') renderAdmin(); }catch(e){} }, function(){}); } catch(e){}
+      try { supabase.rpc('crecharge_mark_paid', { p_code: crPend.code }).then(function(){ try{ if(typeof renderAdmin==='function') renderAdmin(); }catch(e){} }, function(){}); } catch(e){}
     }
     var _cn=document.getElementById('cr-conf-name'); if(_cn && crPend) _cn.textContent=(crPend.isMinor?crPend.minorNames:crPend.name)||'';
     var _ct=document.getElementById('cr-conf-time'); if(_ct) _ct.textContent=(crPend&&crPend.waiverAt)||new Date().toLocaleString();
