@@ -39,7 +39,10 @@ insert into public.business_expenses
   (null,         'Amazon',                  'Merch & Supplies',              10.88, 'Scrunchies'),
   (null,         'Amazon',                  'Merch & Supplies',              16.32, 'Haitian/Jamaican flags (Riddim & Kompa)'),
   (null,         'Amazon',                  'Merch & Supplies',              43.54, 'Mooliwe affirmation cards for goodie bags'),
-  ('2026-06-26', 'Amazon',                  'Equipment (Reformers, Props)',  29.99, 'Gliders (props)');
+  ('2026-06-26', 'Amazon',                  'Equipment (Reformers, Props)',  29.99, 'Gliders (props)'),
+  ('2026-07-08', 'CVS',                     'Merch & Supplies',              10.95, 'Thank you cards'),
+  ('2026-05-14', 'CVS',                     'Merch & Supplies',              26.91, 'Thank you cards'),
+  ('2026-08-26', 'CVS',                     'Merch & Supplies',               8.23, 'Thank you cards');
 
 select count(*) as expenses_loaded, to_char(sum(amount),'FM999,999.00') as total_usd
 from public.business_expenses;
