@@ -63,8 +63,10 @@ const REFUND_TEXT = "All sales are final — no refunds or credits. Spot transfe
 async function sendConfirmation(row: Record<string, unknown>, amountCents: number) {
   const event = String(row.event ?? "");
   const templateId = EVENT_TEMPLATE[event];
-  if (!templateId) return; // not a reformer event we send confirmations for
-  if (!EMAILJS_PUBLIC || !EMAILJS_PRIVATE) { console.warn("EmailJS keys missing — skipping email"); return; }
+  if (!templateId) return; // not a reformer event we send confirmations for — nothing to send
+  // Missing keys is a real misconfiguration: throw so the caller does NOT stamp
+  // emailed_at, and Stripe's retry tries again once the keys are restored.
+  if (!EMAILJS_PUBLIC || !EMAILJS_PRIVATE) throw new Error("EmailJS keys missing");
   const sess = SESSION_META[String(row.session ?? "")] ?? { time: "", arrival: "", cal: "https://book.auricmovement.com" };
   const amount = amountCents ? `$${(amountCents / 100).toFixed(2)}` : "$45.00";
   const now = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
@@ -92,7 +94,9 @@ async function sendConfirmation(row: Record<string, unknown>, amountCents: numbe
       template_params: params,
     }),
   });
-  if (!res.ok) console.error("EmailJS send failed", res.status, await res.text());
+  // Throw on failure so the caller does NOT stamp emailed_at — the send is
+  // retried on Stripe's next delivery attempt instead of being lost.
+  if (!res.ok) throw new Error(`EmailJS send failed ${res.status}: ${await res.text()}`);
 }
 
 Deno.serve(async (req) => {
@@ -117,31 +121,57 @@ Deno.serve(async (req) => {
   const email = (session.customer_details?.email ?? session.customer_email ?? "").trim();
   if (!email) return new Response("ok (no email)", { status: 200 });
 
-  // Find the most recent UNPAID reformer registration for this email.
+  // Find the most recent reformer registration for this email that still needs
+  // handling — i.e. not yet paid, OR paid but the confirmation email hasn't been
+  // sent yet (emailed_at is null). This is the fix for the retry bug: a booking
+  // that got marked paid on a failed first attempt is still picked up here so the
+  // retry can send the missed email.
   const { data, error } = await supabase
     .from("reformer_registrations")
     .select("*")
     .ilike("email", email)
-    .eq("is_paid", false)
+    .or("is_paid.eq.false,emailed_at.is.null")
     .order("created_at", { ascending: false })
     .limit(1);
 
   if (error) { console.error("Supabase query error:", error.message); return new Response("db error", { status: 500 }); }
   if (!data || data.length === 0) {
-    // No matching pending reformer booking (e.g. a different event's payment) — ignore.
+    // Nothing pending — either a different event's payment, or this booking is
+    // already paid AND already emailed. Either way, done.
     return new Response("ok (no match)", { status: 200 });
   }
   const row = data[0];
+  // Waitlist rows never pay — filtered here (not in the query) because confirmed
+  // rows may store type as null, which a query-level neq would wrongly exclude.
   if (row.type === "waitlist") return new Response("ok (waitlist row)", { status: 200 });
 
-  const { error: upErr } = await supabase
-    .from("reformer_registrations")
-    .update({ is_paid: true, paid_at: new Date().toISOString() })
-    .eq("id", row.id);
-  if (upErr) { console.error("Supabase update error:", upErr.message); return new Response("db update error", { status: 500 }); }
+  // 1) Mark paid immediately (idempotent) so it shows paid in your roster right
+  //    away, even if the email step below fails and has to retry.
+  if (!row.is_paid) {
+    const { error: upErr } = await supabase
+      .from("reformer_registrations")
+      .update({ is_paid: true, paid_at: new Date().toISOString() })
+      .eq("id", row.id);
+    if (upErr) { console.error("Supabase update error:", upErr.message); return new Response("db update error", { status: 500 }); }
+  }
 
-  try { await sendConfirmation(row, session.amount_total ?? 0); }
-  catch (e) { console.error("sendConfirmation threw:", (e as Error).message); }
+  // 2) Send the confirmation exactly once. If it fails, throw → 500 → Stripe
+  //    retries and this runs again (emailed_at still null). Once it succeeds we
+  //    stamp emailed_at, so a later retry finds nothing pending and never
+  //    double-sends.
+  if (!row.emailed_at) {
+    try {
+      await sendConfirmation(row, session.amount_total ?? 0);
+    } catch (e) {
+      console.error("sendConfirmation failed (will retry):", (e as Error).message);
+      return new Response("email send failed", { status: 500 });
+    }
+    const { error: stampErr } = await supabase
+      .from("reformer_registrations")
+      .update({ emailed_at: new Date().toISOString() })
+      .eq("id", row.id);
+    if (stampErr) console.error("emailed_at stamp failed:", stampErr.message);
+  }
 
   return new Response("ok (confirmed)", { status: 200 });
 });
