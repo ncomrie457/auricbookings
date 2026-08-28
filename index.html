@@ -5262,10 +5262,11 @@ Can't wait to move and connect with you!</textarea>
       <p class="rf-meta" style="margin:0 0 1rem;">See you Sunday, September 13 for your <strong id="rf-conf-label"></strong>. A goodie bag is waiting &#127873;</p>
       <p class="rf-meta" style="margin:0 0 1rem;">&#127903; You&rsquo;re entered to win a 4-class Valley Studio package &mdash; drawn at random at the event (must be present).</p>
       <div id="rf-conf-cal" class="rf-cal-wrap"></div>
-      <a href="/reserve-bag" style="display:block;margin:1.1rem 0 0;padding:.95rem 1.1rem;background:#fffdf9;border:1px solid #e6dbc8;border-radius:12px;text-decoration:none;">
+      <div class="bag-reserve-cta" style="margin:1.1rem 0 0;padding:.95rem 1.1rem;background:#fffdf9;border:1px solid #e6dbc8;border-radius:12px;">
         <span style="display:block;font-family:Georgia,serif;font-size:1rem;color:#5A3A1A;font-weight:600;">&#128092; Want the AURIC MVMT bag too?</span>
-        <span style="display:block;font-size:.85rem;color:#6b5d4f;margin-top:.3rem;line-height:1.55;">Reserve yours &mdash; $30, pay at pickup. Made to move from reformer to real life. <span style="color:#9c6b34;font-weight:700;white-space:nowrap;">Reserve yours &rarr;</span></span>
-      </a>
+        <span style="display:block;font-size:.85rem;color:#6b5d4f;margin:.3rem 0 .75rem;line-height:1.55;">Reserve yours &mdash; $30, pay at pickup. No payment now &mdash; one click and we&rsquo;ll set one aside.</span>
+        <button type="button" onclick="auricBagReserve(this,'auric_reformer')" style="border:none;border-radius:999px;background:#5A3A1A;color:#f5efe0;font-family:inherit;font-weight:600;font-size:.9rem;letter-spacing:.02em;padding:.6rem 1.4rem;cursor:pointer;">Yes, reserve mine &#10022;</button>
+      </div>
       <div class="rf-conf-playlist">
         <h4>&#127925; Press play before you come</h4>
         <p>The riddim &amp; kompa we&rsquo;ll move to. Get it in your body &mdash; come ready to flow.</p>
@@ -5450,10 +5451,11 @@ Can't wait to move and connect with you!</textarea>
       <div class="rf-conf-banner">&#10004; Payment received &mdash; you&rsquo;re booked!</div>
       <p class="rf-meta" style="margin:0 0 1rem;">See you Saturday, September 26 in Brooklyn for your <strong id="rfbk-conf-label"></strong>. A goodie bag is waiting &#127873;</p>
       <div id="rfbk-conf-cal" class="rf-cal-wrap"></div>
-      <a href="/reserve-bag" style="display:block;margin:1.1rem 0 0;padding:.95rem 1.1rem;background:#fffdf9;border:1px solid #e6dbc8;border-radius:12px;text-decoration:none;">
+      <div class="bag-reserve-cta" style="margin:1.1rem 0 0;padding:.95rem 1.1rem;background:#fffdf9;border:1px solid #e6dbc8;border-radius:12px;">
         <span style="display:block;font-family:Georgia,serif;font-size:1rem;color:#5A3A1A;font-weight:600;">&#128092; Want the AURIC MVMT bag too?</span>
-        <span style="display:block;font-size:.85rem;color:#6b5d4f;margin-top:.3rem;line-height:1.55;">Reserve yours &mdash; $30, pay at pickup. Made to move from reformer to real life. <span style="color:#9c6b34;font-weight:700;white-space:nowrap;">Reserve yours &rarr;</span></span>
-      </a>
+        <span style="display:block;font-size:.85rem;color:#6b5d4f;margin:.3rem 0 .75rem;line-height:1.55;">Reserve yours &mdash; $30, pay at pickup. No payment now &mdash; one click and we&rsquo;ll set one aside.</span>
+        <button type="button" onclick="auricBagReserve(this,'auric_reformer_bk')" style="border:none;border-radius:999px;background:#5A3A1A;color:#f5efe0;font-family:inherit;font-weight:600;font-size:.9rem;letter-spacing:.02em;padding:.6rem 1.4rem;cursor:pointer;">Yes, reserve mine &#10022;</button>
+      </div>
     </div>
 
     <div class="rf-getting">
@@ -5676,10 +5678,11 @@ document.addEventListener('DOMContentLoaded', function(){
       <p class="rf-meta" style="margin:0 0 1rem;">See you Saturday, November 21 for your <strong id="tb-conf-label"></strong>. Come sweat out the Thanksgiving food &#127831;</p>
       <p class="rf-meta" style="margin:0 0 1rem;">&#127903; You&rsquo;re entered to win a 4-class Valley Studio package &mdash; drawn at random at the event (must be present).</p>
       <div id="tb-conf-cal" class="rf-cal-wrap"></div>
-      <a href="/reserve-bag" style="display:block;margin:1.1rem 0 0;padding:.95rem 1.1rem;background:#fffdf9;border:1px solid #e6dbc8;border-radius:12px;text-decoration:none;">
+      <div class="bag-reserve-cta" style="margin:1.1rem 0 0;padding:.95rem 1.1rem;background:#fffdf9;border:1px solid #e6dbc8;border-radius:12px;">
         <span style="display:block;font-family:Georgia,serif;font-size:1rem;color:#5A3A1A;font-weight:600;">&#128092; Want the AURIC MVMT bag too?</span>
-        <span style="display:block;font-size:.85rem;color:#6b5d4f;margin-top:.3rem;line-height:1.55;">Reserve yours &mdash; $30, pay at pickup. Made to move from reformer to real life. <span style="color:#9c6b34;font-weight:700;white-space:nowrap;">Reserve yours &rarr;</span></span>
-      </a>
+        <span style="display:block;font-size:.85rem;color:#6b5d4f;margin:.3rem 0 .75rem;line-height:1.55;">Reserve yours &mdash; $30, pay at pickup. No payment now &mdash; one click and we&rsquo;ll set one aside.</span>
+        <button type="button" onclick="auricBagReserve(this,'auric_turkey_burn')" style="border:none;border-radius:999px;background:#5A3A1A;color:#f5efe0;font-family:inherit;font-weight:600;font-size:.9rem;letter-spacing:.02em;padding:.6rem 1.4rem;cursor:pointer;">Yes, reserve mine &#10022;</button>
+      </div>
     </div>
 
     <div class="rf-getting">
@@ -5901,10 +5904,11 @@ document.addEventListener('DOMContentLoaded', function(){
       <p class="rf-meta" style="margin:0 0 1rem;">See you Saturday, October 24 for your <strong id="hw-conf-label"></strong>. Costumes encouraged &#127875; a goodie bag is waiting &#127873;</p>
       <p class="rf-meta" style="margin:0 0 1rem;">&#127875; Wear your best costume &mdash; the best one each session wins a 4-class Valley Studio package!</p>
       <div id="hw-conf-cal" class="rf-cal-wrap"></div>
-      <a href="/reserve-bag" style="display:block;margin:1.1rem 0 0;padding:.95rem 1.1rem;background:#fffdf9;border:1px solid #e6dbc8;border-radius:12px;text-decoration:none;">
+      <div class="bag-reserve-cta" style="margin:1.1rem 0 0;padding:.95rem 1.1rem;background:#fffdf9;border:1px solid #e6dbc8;border-radius:12px;">
         <span style="display:block;font-family:Georgia,serif;font-size:1rem;color:#5A3A1A;font-weight:600;">&#128092; Want the AURIC MVMT bag too?</span>
-        <span style="display:block;font-size:.85rem;color:#6b5d4f;margin-top:.3rem;line-height:1.55;">Reserve yours &mdash; $30, pay at pickup. Made to move from reformer to real life. <span style="color:#9c6b34;font-weight:700;white-space:nowrap;">Reserve yours &rarr;</span></span>
-      </a>
+        <span style="display:block;font-size:.85rem;color:#6b5d4f;margin:.3rem 0 .75rem;line-height:1.55;">Reserve yours &mdash; $30, pay at pickup. No payment now &mdash; one click and we&rsquo;ll set one aside.</span>
+        <button type="button" onclick="auricBagReserve(this,'auric_halloween')" style="border:none;border-radius:999px;background:#5A3A1A;color:#f5efe0;font-family:inherit;font-weight:600;font-size:.9rem;letter-spacing:.02em;padding:.6rem 1.4rem;cursor:pointer;">Yes, reserve mine &#10022;</button>
+      </div>
     </div>
 
     <div class="rf-getting">
@@ -13813,6 +13817,54 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }catch(e){}
   };
+})();
+</script>
+
+<!-- One-click "reserve the AURIC MVMT bag" on event confirmation screens.
+     Uses the name/email already captured at booking (from localStorage),
+     inserts a bag-reserve row into blooming_interest (shows in the admin
+     bag list), and needs no extra info from the guest. -->
+<script>
+(function(){
+  var SB_URL='https://qvmiwyxerotkqpbuhpun.supabase.co';
+  var SB_KEY='sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ';
+  var _bagClient=null;
+  function bagClient(){
+    if(_bagClient) return _bagClient;
+    try{ if(window.supabase&&window.supabase.createClient) _bagClient=window.supabase.createClient(SB_URL,SB_KEY); }catch(e){}
+    return _bagClient;
+  }
+  function reservedMarkup(){
+    return '<span style="display:block;font-family:Georgia,serif;font-size:1rem;color:#123522;font-weight:600;">&#10004; Your AURIC MVMT bag is reserved</span>'+
+      '<span style="display:block;font-size:.85rem;color:#6b5d4f;margin-top:.3rem;line-height:1.55;">We&rsquo;ll set one aside &mdash; bring <strong>$30</strong> to pick it up at the event.</span>';
+  }
+  window.auricBagReserve=function(btn, storageKey){
+    var wrap = btn.parentNode;
+    var name='', email='';
+    try{
+      var a=JSON.parse(localStorage.getItem(storageKey)||'[]');
+      if(a&&a.length){ var last=a[a.length-1]||{}; name=last.name||''; email=last.email||''; }
+    }catch(e){}
+    // No booking info on this device (e.g. paid on another device) → fall back
+    // to the reserve page where they can enter their details.
+    if(!email){ window.location.href='/reserve-bag'; return; }
+    btn.disabled=true; btn.textContent='Reserving…';
+    var rec={ name:name, email:email, phone:null, event:'auric-bag-reserve', source:'bag-reserve' };
+    function done(){
+      try{ localStorage.setItem('auric_bag_reserved','1'); }catch(e){}
+      wrap.innerHTML=reservedMarkup();
+    }
+    var c=bagClient();
+    if(c){ c.from('blooming_interest').insert([rec]).then(function(res){ if(res&&res.error) console.warn('bag reserve:', res.error.message); done(); }, function(){ done(); }); }
+    else { done(); }
+  };
+  // If they already reserved (e.g. reloaded the confirmation screen), show the
+  // reserved state instead of the button again.
+  document.addEventListener('DOMContentLoaded', function(){
+    var flagged=false; try{ flagged = localStorage.getItem('auric_bag_reserved')==='1'; }catch(e){}
+    if(!flagged) return;
+    Array.prototype.forEach.call(document.querySelectorAll('.bag-reserve-cta'), function(el){ el.innerHTML=reservedMarkup(); });
+  });
 })();
 </script>
 
