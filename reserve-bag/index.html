@@ -90,6 +90,14 @@
     var form=document.getElementById('reserve-form'), btn=document.getElementById('rb-submit'),
         errBox=document.getElementById('rb-error'), confirmed=document.getElementById('rb-confirmed');
     function showError(m){ errBox.textContent=m; errBox.style.display='block'; }
+    function showReserved(){ form.style.display='none'; confirmed.style.display='block'; confirmed.scrollIntoView({behavior:'smooth',block:'center'}); }
+    function showFull(){
+      form.style.display='none';
+      confirmed.innerHTML='<div class="mk">&#10022;</div><h2>Fully reserved</h2><p>All 10 AURIC MVMT bags are spoken for &mdash; thank you for the love! Keep an eye out for the next batch.</p>';
+      confirmed.style.display='block'; confirmed.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+    // If all 10 are already gone, show the sold-out state on load.
+    if(sb){ sb.rpc('bag_reserve_count').then(function(res){ if(res&&!res.error&&typeof res.data==='number'&&res.data>=10){ showFull(); } }, function(){}); }
     form.addEventListener('submit', function(ev){
       ev.preventDefault(); errBox.style.display='none';
       var name=document.getElementById('rb-name').value.trim();
@@ -97,11 +105,19 @@
       if(!name){ showError('Please add your name.'); return; }
       if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ showError('Please enter a valid email.'); return; }
       btn.disabled=true; btn.textContent='Reserving…';
-      var rec={ name:name, email:email, phone:null, event:'auric-bag-reserve', source:'bag-reserve' };
-      try{ var a=JSON.parse(localStorage.getItem('auric_bag_reserve')||'[]'); a.push(rec); localStorage.setItem('auric_bag_reserve', JSON.stringify(a)); }catch(e){}
-      function done(){ form.style.display='none'; confirmed.style.display='block'; confirmed.scrollIntoView({behavior:'smooth',block:'center'}); }
-      if(sb){ sb.from('blooming_interest').insert([rec]).then(function(res){ if(res&&res.error) console.warn('insert error:', res.error.message); done(); }, function(){ done(); }); }
-      else { done(); }
+      try{ var a=JSON.parse(localStorage.getItem('auric_bag_reserve')||'[]'); a.push({name:name,email:email}); localStorage.setItem('auric_bag_reserve', JSON.stringify(a)); }catch(e){}
+      function fallbackInsert(){
+        // Keeps reservations working before LIMIT_AURIC_BAG_10.sql is run; the
+        // 10-cap applies once that's in.
+        var rec={ name:name, email:email, phone:null, event:'auric-bag-reserve', source:'bag-reserve' };
+        sb.from('blooming_interest').insert([rec]).then(function(){ showReserved(); }, function(){ showReserved(); });
+      }
+      if(!sb){ showReserved(); return; }
+      sb.rpc('reserve_auric_bag', { p_name:name, p_email:email }).then(function(res){
+        if(res && res.error){ fallbackInsert(); return; }
+        if(res && res.data==='full'){ showFull(); return; }
+        showReserved();
+      }, function(){ fallbackInsert(); });
     });
   })();
   </script>
