@@ -50,6 +50,7 @@ const RECEIPT_PREFIX: Record<string, string> = {
 const SESSION_META: Record<string, { time: string; arrival: string; cal: string }> = {
   "1pm":    { time: "1:00 PM",  arrival: "12:55 PM", cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-west-hempstead-1pm" },
   "2pm":    { time: "2:00 PM",  arrival: "1:55 PM",  cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-west-hempstead-2pm" },
+  "3pm":    { time: "3:00 PM",  arrival: "2:55 PM",  cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-west-hempstead-3pm" },
   "bk12":   { time: "12:00 PM", arrival: "11:55 AM", cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-brooklyn-12pm" },
   "bk1":    { time: "1:00 PM",  arrival: "12:55 PM", cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-brooklyn-1pm" },
   "bk2":    { time: "2:00 PM",  arrival: "1:55 PM",  cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-brooklyn-2pm" },
