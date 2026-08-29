@@ -10920,6 +10920,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Riddim & Kompa on the Reformer — confirmation email (from RIDDIM_KOMPA_CONFIRMATION_TEMPLATE.html).
   // Replace with the real EmailJS template id once created.
   var RF_TMPL_CONFIRM    = 'template_pdfnmgu';
+  var RF_TMPL_WL_OPEN    = 'template_2oft3ms';  // Riddim & Kompa — waitlist "3 PM just opened" (RIDDIM_KOMPA_3PM_WAITLIST_TEMPLATE) — sent via Resend
   var RF_BK_TMPL_CONFIRM = 'template_pq0dq1h';  // Riddim & Kompa — Brooklyn confirmation (RIDDIM_KOMPA_BROOKLYN_CONFIRMATION_TEMPLATE.html) — sent via Resend
   var RF_TMPL_THANKYOU = 'template_xu6b9xo';   // Riddim & Kompa post-event thank-you (RIDDIM_KOMPA_MESI_ANPIL_TEMPLATE.html) — sent via Resend
   var RF_HW_TMPL_CONFIRM  = 'template_hhjwepr';   // Halloween "Shhh… Quiet on the Creek" payment confirmation (HALLOWEEN_CREEK_CONFIRMATION_TEMPLATE.html) — sent via Resend
@@ -11643,6 +11644,14 @@ document.addEventListener('DOMContentLoaded', function() {
     wrap.appendChild(h);
     if(!waits.length){ var e=document.createElement('div'); e.style.cssText='font-size:.78rem;color:var(--text-muted);'; e.textContent='No one on the waitlist yet.'; wrap.appendChild(e); return wrap; }
     waits.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
+    // Sept 13 only: one-click "email the waitlist that 3 PM opened".
+    if(eventId==='riddim-kompa-reformer-2026-09-13'){
+      var nb=document.createElement('button');
+      nb.textContent='📧 Email waitlist — 3 PM opened ('+waits.length+')';
+      nb.style.cssText='margin:.15rem 0 .55rem;background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.35rem .75rem;font-size:.74rem;cursor:pointer;font-family:\'Jost\',sans-serif;';
+      nb.setAttribute('onclick', "rfNotifyWaitlist('riddim-kompa-reformer-2026-09-13')");
+      wrap.appendChild(nb);
+    }
     waits.forEach(function(rec){
       rfRosterById[rec.id]=rec;
       var when=''; try{ when=rec.created_at?new Date(rec.created_at).toLocaleString():''; }catch(e){}
@@ -11654,6 +11663,34 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     return wrap;
   }
+
+  // Email everyone on a reformer waitlist that a spot opened (sequential — 1s
+  // apart to respect send limits). Uses RF_TMPL_WL_OPEN (template_2oft3ms).
+  window.rfNotifyWaitlist = function(eventId){
+    var all = Object.keys(rfRosterById).map(function(k){ return rfRosterById[k]; });
+    var seen = {}, list = [];
+    all.forEach(function(r){
+      if(!r || r.type!=='waitlist' || r.event!==eventId) return;
+      if(!(r.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(r.email))) return;
+      var e = r.email.toLowerCase(); if(seen[e]) return; seen[e]=1; list.push(r);
+    });
+    if(!list.length){ alert('No one on this waitlist with a valid email yet.'); return; }
+    if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
+    if(RF_TMPL_WL_OPEN.indexOf('REPLACE')!==-1){ alert('Set RF_TMPL_WL_OPEN to your EmailJS template id first.'); return; }
+    if(!confirm('Email '+list.length+' waitlister(s) that the 3:00 PM session just opened?\n\nEach gets the branded waitlist email.')) return;
+    var sent=0, failed=0, failedList=[];
+    (function next(i){
+      if(i>=list.length){
+        var msg='✅ Emailed '+sent+' waitlister(s).'+(failed?('\n\n⚠️ '+failed+' failed: '+failedList.join(', ')):'');
+        alert(msg); return;
+      }
+      var r=list[i];
+      var fn=((r.name||'').trim().split(/\s+/)[0])||'there';
+      emailjs.send(EMAILJS_SERVICE_RESEND, RF_TMPL_WL_OPEN, { first_name:fn, from_name:fn, to_email:r.email, name:r.name||'', email:r.email })
+        .then(function(){ sent++; }, function(err){ failed++; failedList.push(r.email); console.error('[rf waitlist notify] failed for '+r.email, err); })
+        .then(function(){ setTimeout(function(){ next(i+1); }, 1000); });
+    })(0);
+  };
 
   function renderReformerSection(container){
     if(!container) return;
