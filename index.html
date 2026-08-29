@@ -4696,6 +4696,7 @@
             <option value="mc1">Mat &amp; Chat &#8212; August 1st</option>
             <option value="rk1pm">Riddim &amp; Kompa &#8212; West Hempstead (1 PM)</option>
             <option value="rk2pm">Riddim &amp; Kompa &#8212; West Hempstead (2 PM)</option>
+            <option value="rk3pm">Riddim &amp; Kompa &#8212; West Hempstead (3 PM)</option>
             <option value="rkbk12">Riddim &amp; Kompa &#8212; Brooklyn (12 PM)</option>
             <option value="rkbk1">Riddim &amp; Kompa &#8212; Brooklyn (1 PM)</option>
             <option value="rkbk2">Riddim &amp; Kompa &#8212; Brooklyn (2 PM)</option>
@@ -5211,6 +5212,7 @@ Can't wait to move and connect with you!</textarea>
       <p class="rf-meta" style="margin-bottom:.7rem;font-weight:600;color:var(--brown);">Pick your time:</p>
       <button type="button" class="rf-time" data-session="1pm" data-label="1:00 PM session">&#128336; 1:00 PM &mdash; 1:45 PM<small>45-minute reformer session</small></button>
       <button type="button" class="rf-time" data-session="2pm" data-label="2:00 PM session">&#128337; 2:00 PM &mdash; 2:45 PM<small>45-minute reformer session</small></button>
+      <button type="button" class="rf-time" data-session="3pm" data-label="3:00 PM session">&#128338; 3:00 PM &mdash; 3:45 PM<small>45-minute reformer session &middot; just added</small></button>
     </div>
 
     <!-- STEP 2 · details + refund + waiver gate -->
@@ -5248,6 +5250,9 @@ Can't wait to move and connect with you!</textarea>
       </div>
       <div id="rf-buy-2pm" style="display:none;">
         <stripe-buy-button buy-button-id="buy_btn_1U0ql7Cyx5PIptEiXHPOsmj2" publishable-key="pk_live_51TSmNuCyx5PIptEi8SCgMFB3I7ECVFeAzDOwjj1ZLrVZX1scB6cH8wAjNor3SFilMwMuqo0aFsbsckjYLU33iSAp00tmUxBVlK"></stripe-buy-button>
+      </div>
+      <div id="rf-buy-3pm" style="display:none;">
+        <stripe-buy-button buy-button-id="buy_btn_1U9vYuCyx5PIptEii41JghLq" publishable-key="pk_live_51TSmNuCyx5PIptEi8SCgMFB3I7ECVFeAzDOwjj1ZLrVZX1scB6cH8wAjNor3SFilMwMuqo0aFsbsckjYLU33iSAp00tmUxBVlK"></stripe-buy-button>
       </div>
       <p class="rf-policy" style="margin-top:.9rem;">You&rsquo;ll get a Stripe receipt by email. Questions? auricmovement@outlook.com</p>
       <div style="margin-top:1rem;border-top:1px solid var(--border);padding-top:.9rem;">
@@ -6271,6 +6276,7 @@ document.addEventListener('DOMContentLoaded', function(){
       document.getElementById('rf-pay-label').textContent = chosenLabel;
       document.getElementById('rf-buy-1pm').style.display = (chosen==='1pm')?'block':'none';
       document.getElementById('rf-buy-2pm').style.display = (chosen==='2pm')?'block':'none';
+      document.getElementById('rf-buy-3pm').style.display = (chosen==='3pm')?'block':'none';
       stepForm.style.display='none'; stepPay.style.display='';
       stepPay.scrollIntoView({behavior:'smooth', block:'nearest'});
     });
@@ -6291,7 +6297,7 @@ document.addEventListener('DOMContentLoaded', function(){
         // Aggregate counts only (no PII leaves the DB) via a security-definer function.
         sb.rpc('reformer_spot_counts').then(function(res){
           if(!res || res.error || !res.data) return;              // any hiccup → leave both open
-          var paid={ '1pm':0, '2pm':0 };
+          var paid={ '1pm':0, '2pm':0, '3pm':0 };
           res.data.forEach(function(r){ if(paid[r.session]!==undefined) paid[r.session]=Number(r.paid)||0; });
           var CAP=6;
           Array.prototype.forEach.call(document.querySelectorAll('#rf-step-time .rf-time'), function(btn){
@@ -6321,7 +6327,8 @@ document.addEventListener('DOMContentLoaded', function(){
     var RF_CAL_TEXT='Riddim+%26+Kompa+on+the+Reformer+%E2%9C%A6+Auric+Movement';
     var SESSION_META={
       '1pm':{ label:'1:00 PM session', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-west-hempstead-1pm' },
-      '2pm':{ label:'2:00 PM session', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-west-hempstead-2pm' }
+      '2pm':{ label:'2:00 PM session', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-west-hempstead-2pm' },
+      '3pm':{ label:'3:00 PM session', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-west-hempstead-3pm' }
     };
     function showConfirmed(sessionKey){
       var meta=SESSION_META[sessionKey]||SESSION_META['1pm'];
@@ -6335,7 +6342,7 @@ document.addEventListener('DOMContentLoaded', function(){
     try {
       var _rfParams=new URLSearchParams(location.search);
       if(_rfParams.get('paid')==='reformer'){
-        var _s=_rfParams.get('s'); if(_s!=='1pm'&&_s!=='2pm') _s='1pm';
+        var _s=_rfParams.get('s'); if(_s!=='1pm'&&_s!=='2pm'&&_s!=='3pm') _s='1pm';
         showConfirmed(_s);
       } else if(_rfParams.get('book')==='reformer'){
         // Deep link (e.g. from the shared iMessage flyer) → open the booking popup.
@@ -8367,6 +8374,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var RF_ADD_MAP = {
       'rk1pm':  { session:'1pm',    slabel:'1:00 PM session',  event:'riddim-kompa-reformer-2026-09-13', name:'Riddim & Kompa — West Hempstead, 1 PM' },
       'rk2pm':  { session:'2pm',    slabel:'2:00 PM session',  event:'riddim-kompa-reformer-2026-09-13', name:'Riddim & Kompa — West Hempstead, 2 PM' },
+      'rk3pm':  { session:'3pm',    slabel:'3:00 PM session',  event:'riddim-kompa-reformer-2026-09-13', name:'Riddim & Kompa — West Hempstead, 3 PM' },
       'rkbk12': { session:'bk12',   slabel:'12:00 PM session', event:'riddim-kompa-brooklyn-2026-09-26', name:'Riddim & Kompa — Brooklyn, 12 PM' },
       'rkbk1':  { session:'bk1',    slabel:'1:00 PM session',  event:'riddim-kompa-brooklyn-2026-09-26', name:'Riddim & Kompa — Brooklyn, 1 PM' },
       'rkbk2':  { session:'bk2',    slabel:'2:00 PM session',  event:'riddim-kompa-brooklyn-2026-09-26', name:'Riddim & Kompa — Brooklyn, 2 PM' },
@@ -10924,8 +10932,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // Per-event / per-session data the generic reminder fills in (name, date, location, amount, Stripe link).
   var RF_PAY = {
     'riddim-kompa-reformer-2026-09-13': { name:'Riddim & Kompa on the Reformer — West Hempstead', date:'Sunday, September 13', loc:'Valley Studio, West Hempstead NY', amount:'$45.00',
-      slab:{ '1pm':'1:00 PM session','2pm':'2:00 PM session' },
-      links:{ '1pm':'https://book.auricmovement.com/?book=reformer','2pm':'https://book.auricmovement.com/?book=reformer' } },
+      slab:{ '1pm':'1:00 PM session','2pm':'2:00 PM session','3pm':'3:00 PM session' },
+      links:{ '1pm':'https://book.auricmovement.com/?book=reformer','2pm':'https://book.auricmovement.com/?book=reformer','3pm':'https://book.auricmovement.com/?book=reformer' } },
     'riddim-kompa-brooklyn-2026-09-26': { name:'Riddim & Kompa on the Reformer — Brooklyn', date:'Saturday, September 26', loc:'Maison Luxe Wellness Pilates, Brooklyn NY', amount:'$45.00',
       slab:{ 'bk12':'12:00 PM session','bk1':'1:00 PM session','bk2':'2:00 PM session' },
       links:{ 'bk12':'https://buy.stripe.com/6oU14m20W5mxbkwdMS9sk0a','bk1':'https://buy.stripe.com/9B6cN44949CN60c9wC9sk08','bk2':'https://buy.stripe.com/5kQ8wO350g1b2O0eQW9sk0b' } },
@@ -11610,6 +11618,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var RF_ADMIN_SESS = {
     '1pm': { time:'1:00 PM', arrival:'12:55 PM', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-west-hempstead-1pm' },
     '2pm': { time:'2:00 PM', arrival:'1:55 PM', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-west-hempstead-2pm' },
+    '3pm': { time:'3:00 PM', arrival:'2:55 PM', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-west-hempstead-3pm' },
     'bk12': { time:'12:00 PM', arrival:'11:55 AM', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-brooklyn-12pm' },
     'bk1':  { time:'1:00 PM', arrival:'12:55 PM', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-brooklyn-1pm' },
     'bk2':  { time:'2:00 PM', arrival:'1:55 PM', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-brooklyn-2pm' },
@@ -11666,7 +11675,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
       block.appendChild(rfWaitlistBlock(rows, 'riddim-kompa-reformer-2026-09-13'));
-      var SLAB = { '1pm':'1 PM', '2pm':'2 PM' }; var _curSess=null, _curSessBlock=null;
+      var SLAB = { '1pm':'1 PM', '2pm':'2 PM', '3pm':'3 PM' }; var _curSess=null, _curSessBlock=null;
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
         if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.74rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); block.appendChild(_curSessBlock); }
@@ -11692,7 +11701,7 @@ document.addEventListener('DOMContentLoaded', function() {
           }
           return btn("rfAdminSetSession("+id+",'"+sess+"')",'#f4ecdd','#e0cfae','#7a5a2a','→ Move to '+label);
         }
-        var timeBtn = timeOpt('1pm','1 PM') + timeOpt('2pm','2 PM');
+        var timeBtn = timeOpt('1pm','1 PM') + timeOpt('2pm','2 PM') + timeOpt('3pm','3 PM');
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
