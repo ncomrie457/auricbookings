@@ -8824,7 +8824,7 @@ document.addEventListener('DOMContentLoaded', function() {
           item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span>'+(rec.isPair?' <span style="font-size:.7rem;background:var(--brown);color:#fff;padding:.1rem .4rem;border-radius:10px;font-weight:700;letter-spacing:.5px;">PAIR</span>':'')+paymentBadge(rec)+(noShowMC?' <span style="font-size:.7rem;background:#c0392b;color:#fff;padding:.1rem .4rem;border-radius:10px;font-weight:700;letter-spacing:.5px;">NO-SHOW</span>':'')+(attendedMC?' <span style="font-size:.7rem;background:#2e7d32;color:#fff;padding:.1rem .4rem;border-radius:10px;font-weight:700;letter-spacing:.5px;">ATTENDED</span>':'')+'<br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+pairHTML+notesHTML+adminNotesField('matchat_registrations', rec.code, rec.adminNotes)+'</div>'+
             '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
             '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
-            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+promoteBtn+demoteBtn+attendBtn+noShowBtn+confirmBtn+pendingBtn+waiverBtn+editBtn+moveBtn+removeBtn+'</div></div>';
+            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+promoteBtn+demoteBtn+attendBtn+noShowBtn+confirmBtn+pendingBtn+waiverBtn+editBtn+removeBtn+'</div></div>';
           mcBlock.appendChild(item);
         });
       }
@@ -11605,7 +11605,7 @@ document.addEventListener('DOMContentLoaded', function() {
           item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span>'+paymentBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+notesHTML+adminNotesField('create_recharge_registrations', rec.code, rec.adminNotes)+'</div>'+
             '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
             '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
-            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+attendBtn+confirmBtn+payReminderBtn+waiverBtn+editBtn+moveBtn+removeBtn+'</div></div>';
+            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+attendBtn+confirmBtn+payReminderBtn+waiverBtn+editBtn+removeBtn+'</div></div>';
           (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
         });
       }
