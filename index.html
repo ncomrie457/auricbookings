@@ -11706,7 +11706,8 @@ document.addEventListener('DOMContentLoaded', function() {
       var paid  = display.filter(function(r){ return r.is_paid; }).length;
       var paid1 = display.filter(function(r){ return r.session==='1pm' && r.is_paid; }).length;
       var paid2 = display.filter(function(r){ return r.session==='2pm' && r.is_paid; }).length;
-      block.innerHTML = '<h3 style="color:var(--gold-text);">Riddim &amp; Kompa on the Reformer — Sep 13th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(1 PM '+paid1+'/6 · 2 PM '+paid2+'/6)</span></h3>';
+      var paid3 = display.filter(function(r){ return r.session==='3pm' && r.is_paid; }).length;
+      block.innerHTML = '<h3 style="color:var(--gold-text);">Riddim &amp; Kompa on the Reformer — Sep 13th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(1 PM '+paid1+'/6 · 2 PM '+paid2+'/6 · 3 PM '+paid3+'/6)</span></h3>';
       block.innerHTML += '<button onclick="rfSendThankYou(\'valley\', this)" style="margin:.1rem 0 .7rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F33A} Send Mèsi Anpil thank-you ('+paid+' paid) — after the event</button>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
