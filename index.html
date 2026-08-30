@@ -8824,7 +8824,7 @@ document.addEventListener('DOMContentLoaded', function() {
           item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span>'+(rec.isPair?' <span style="font-size:.7rem;background:var(--brown);color:#fff;padding:.1rem .4rem;border-radius:10px;font-weight:700;letter-spacing:.5px;">PAIR</span>':'')+paymentBadge(rec)+(noShowMC?' <span style="font-size:.7rem;background:#c0392b;color:#fff;padding:.1rem .4rem;border-radius:10px;font-weight:700;letter-spacing:.5px;">NO-SHOW</span>':'')+(attendedMC?' <span style="font-size:.7rem;background:#2e7d32;color:#fff;padding:.1rem .4rem;border-radius:10px;font-weight:700;letter-spacing:.5px;">ATTENDED</span>':'')+'<br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+pairHTML+notesHTML+adminNotesField('matchat_registrations', rec.code, rec.adminNotes)+'</div>'+
             '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
             '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
-            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+promoteBtn+demoteBtn+attendBtn+noShowBtn+confirmBtn+pendingBtn+waiverBtn+editBtn+removeBtn+'</div></div>';
+            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+promoteBtn+demoteBtn+attendBtn+noShowBtn+confirmBtn+pendingBtn+waiverBtn+editBtn+moveBtn+removeBtn+'</div></div>';
           mcBlock.appendChild(item);
         });
       }
@@ -11605,7 +11605,7 @@ document.addEventListener('DOMContentLoaded', function() {
           item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name)+'</span>'+paymentBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email)+'</span>'+notesHTML+adminNotesField('create_recharge_registrations', rec.code, rec.adminNotes)+'</div>'+
             '<div style="text-align:right"><span class="atype '+(rec.type==='confirmed'?'type-confirmed':'type-waitlist')+'">'+rec.type+'</span>'+
             '<br><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.time)+'</span>'+
-            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+attendBtn+confirmBtn+payReminderBtn+waiverBtn+editBtn+removeBtn+'</div></div>';
+            '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+attendBtn+confirmBtn+payReminderBtn+waiverBtn+editBtn+moveBtn+removeBtn+'</div></div>';
           (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
         });
       }
@@ -11630,6 +11630,20 @@ document.addEventListener('DOMContentLoaded', function() {
     'hw1230': { time:'12:30 PM', arrival:'12:25 PM', cal:'https://book.auricmovement.com/calendar/add/?e=halloween-1230pm' },
     'hw130':  { time:'1:30 PM', arrival:'1:25 PM', cal:'https://book.auricmovement.com/calendar/add/?e=halloween-130pm' }
   };
+  // Every reformer event + session a booking can be MOVED into (e.g. a no-show
+  // rebooked onto a future event). Order = how they appear in the picker.
+  var RF_MOVE_TARGETS = [
+    { event:'riddim-kompa-reformer-2026-09-13', session:'1pm',    session_label:'1:00 PM session',  name:'Riddim & Kompa — West Hempstead · Sun Sep 13 · 1 PM' },
+    { event:'riddim-kompa-reformer-2026-09-13', session:'2pm',    session_label:'2:00 PM session',  name:'Riddim & Kompa — West Hempstead · Sun Sep 13 · 2 PM' },
+    { event:'riddim-kompa-reformer-2026-09-13', session:'3pm',    session_label:'3:00 PM session',  name:'Riddim & Kompa — West Hempstead · Sun Sep 13 · 3 PM' },
+    { event:'riddim-kompa-brooklyn-2026-09-26', session:'bk12',   session_label:'12:00 PM session', name:'Riddim & Kompa — Brooklyn · Sat Sep 26 · 12 PM' },
+    { event:'riddim-kompa-brooklyn-2026-09-26', session:'bk1',    session_label:'1:00 PM session',  name:'Riddim & Kompa — Brooklyn · Sat Sep 26 · 1 PM' },
+    { event:'riddim-kompa-brooklyn-2026-09-26', session:'bk2',    session_label:'2:00 PM session',  name:'Riddim & Kompa — Brooklyn · Sat Sep 26 · 2 PM' },
+    { event:'halloween-creek-2026-10-24',       session:'hw1230', session_label:'12:30 PM session', name:'Shhh… Quiet on the Creek · Sat Oct 24 · 12:30 PM' },
+    { event:'halloween-creek-2026-10-24',       session:'hw130',  session_label:'1:30 PM session',  name:'Shhh… Quiet on the Creek · Sat Oct 24 · 1:30 PM' },
+    { event:'turkey-burn-2026-11-21',           session:'tb1230', session_label:'12:30 PM session', name:'Turkey Burn! · Sat Nov 21 · 12:30 PM' },
+    { event:'turkey-burn-2026-11-21',           session:'tb130',  session_label:'1:30 PM session',  name:'Turkey Burn! · Sat Nov 21 · 1:30 PM' }
+  ];
   // Track who has been sent a Founding One (per event + session), so the roster
   // shows a 🎁 badge. Stored in localStorage (this browser).
   var _foundingSent = {}; try { _foundingSent = JSON.parse(localStorage.getItem('auric_founding_sent')||'{}') || {}; } catch(e){}
@@ -11744,9 +11758,10 @@ document.addEventListener('DOMContentLoaded', function() {
         var timeBtn = timeOpt('1pm','1 PM') + timeOpt('2pm','2 PM') + timeOpt('3pm','3 PM');
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
+        var moveBtn = btn('rfAdminMove('+id+')','#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Move event');
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
-          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+removeBtn+'</div></div>';
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
       });
     }
@@ -11806,9 +11821,10 @@ document.addEventListener('DOMContentLoaded', function() {
         var confirmBtn = btn('rfBkAdminConfirm('+id+')','#e8f5e9','#a5d6a7','#2e7d32','\u{1F4E7} Confirm + email');
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
+        var moveBtn = btn('rfAdminMove('+id+')','#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Move event');
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
-          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+removeBtn+'</div></div>';
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
       });
     }
@@ -11866,9 +11882,10 @@ document.addEventListener('DOMContentLoaded', function() {
         var confirmBtn = btn('rfTbAdminConfirm('+id+')','#fdeeea','#f2b8ab','#a8391f','\u{1F4E7} Confirm + email');
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
+        var moveBtn = btn('rfAdminMove('+id+')','#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Move event');
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
-          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+removeBtn+'</div></div>';
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
       });
     }
@@ -11925,9 +11942,10 @@ document.addEventListener('DOMContentLoaded', function() {
         var confirmBtn = btn('rfHwAdminConfirm('+id+')','#f3ecff','#cbb6f0','#5b3a8a','\u{1F383} Confirm + email');
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
+        var moveBtn = btn('rfAdminMove('+id+')','#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Move event');
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
-          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+paidBtn+timeBtn+confirmBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+removeBtn+'</div></div>';
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+paidBtn+timeBtn+confirmBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
       });
     }
@@ -12120,6 +12138,25 @@ document.addEventListener('DOMContentLoaded', function() {
     supabase.rpc('reformer_set_session', { pass: ADMIN_PASSWORD, rid: id, new_session: newSession })
       .then(function(res){ if(res&&res.error){ alert('Could not move them — run the reformer_set_session SQL first.'); return; } rfRefresh(); },
             function(){ alert('Could not change the session time.'); });
+  };
+  // Move a booking to a DIFFERENT event (e.g. a no-show rebooked onto an
+  // upcoming date). Changes event + session; keeps their paid status + waiver.
+  window.rfAdminMove = function(id){
+    var rec = rfRosterById[id]; if(!rec){ return; }
+    var lines = RF_MOVE_TARGETS.map(function(t,i){
+      var cur = (t.event===rec.event && t.session===rec.session) ? '   ← where they are now' : '';
+      return (i+1)+'.  '+t.name+cur;
+    });
+    var ans = prompt('Move '+(rec.name||'this person')+' to which event?\n\nType the number:\n\n'+lines.join('\n'));
+    if(ans===null) return;
+    var t = RF_MOVE_TARGETS[parseInt(ans,10)-1];
+    if(!t){ alert('Please type one of the numbers from the list.'); return; }
+    if(t.event===rec.event && t.session===rec.session){ alert('They are already in that session.'); return; }
+    if(!confirm('Move '+(rec.name||'this person')+'\n\nFrom:  '+(rec.session_label||rec.session||'')+'\nTo:      '+t.name+'\n\nTheir paid status and waiver move with them. Continue?')) return;
+    supabase.rpc('reformer_move', { pass: ADMIN_PASSWORD, rid: id, new_event: t.event, new_session: t.session, new_session_label: t.session_label })
+      .then(function(res){ if(res&&res.error){ alert('Could not move them — run the reformer_move SQL in Supabase first (REFORMER_MOVE.sql).'); return; }
+             alert('✅ Moved to '+t.name+'.\n\nThey now show up under that event’s roster.'); rfRefresh(); },
+            function(){ alert('Could not move them. Try again.'); });
   };
   window.rfAdminClearHealth = function(id){
     var rec = rfRosterById[id]; if(!rec){ return; }
