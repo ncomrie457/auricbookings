@@ -3141,6 +3141,7 @@
       .bq-ae-status{position:absolute;top:.7rem;left:.7rem;font-family:'Jost',sans-serif;font-size:.6rem;letter-spacing:.1em;
         text-transform:uppercase;font-weight:600;padding:.35rem .7rem;border-radius:999px;background:rgba(255,253,249,.94);color:var(--red);}
       .bq-ae-status.ok{color:var(--green);}
+      .bq-ae-status.warn{color:#b5791f;}
       .bq-ae-body{padding:1.1rem 1.25rem 1.35rem;display:flex;flex-direction:column;flex:1;}
       .bq-ae-name{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1.3rem;color:var(--brown);line-height:1.12;}
       .bq-ae-name em{font-style:italic;color:var(--gold-text);}
@@ -3164,8 +3165,8 @@
       document.addEventListener('DOMContentLoaded', function(){
         var grid=document.getElementById('bq-allevents-grid'); if(!grid) return;
         var items=[
-          {id:'event-card-reformer', tag:'Sold out', cls:''},
-          {id:'event-card-reformer-bk', tag:'Now booking', cls:'ok'},
+          {id:'event-card-reformer', tag:'New 3 PM added', cls:'ok'},
+          {id:'event-card-reformer-bk', tag:'Almost sold out', cls:'warn'},
           {id:'event-card-halloween', tag:'Now booking', cls:'ok'},
           {id:'event-card-turkey', tag:'Now booking', cls:'ok'}
         ];
@@ -3175,7 +3176,7 @@
           var img=c.querySelector('.bq-event-photo img'); var src=img?img.getAttribute('src'):'';
           var name=c.querySelector('.bq-event-name'); var sub=c.querySelector('.bq-event-sub');
           out+='<article class="bq-ae-card">'
-            +'<div class="bq-ae-photo" style="background-image:url(\''+src+'\')"><span class="bq-ae-status '+it.cls+'">'+it.tag+'</span></div>'
+            +'<div class="bq-ae-photo" style="background-image:url(\''+src+'\')"><span class="bq-ae-status '+it.cls+'" id="aestatus-'+it.id+'">'+it.tag+'</span></div>'
             +'<div class="bq-ae-body"><div class="bq-ae-name">'+(name?name.innerHTML:'')+'</div>'
             +'<div class="bq-ae-sub">'+(sub?sub.innerHTML:'')+'</div>'
             +'<button type="button" class="bq-ae-btn" data-target="'+it.id+'">Book</button></div></article>';
@@ -3199,6 +3200,31 @@
         grid.querySelectorAll('.bq-ae-btn[data-target]').forEach(function(b){
           b.addEventListener('click', function(){ var t=document.getElementById(b.getAttribute('data-target')); if(t){ t.click(); window.scrollTo({top:0,behavior:'smooth'}); } });
         });
+
+        // Refine the Riddim & Kompa status pills from real paid counts so they
+        // stay accurate on their own: West Hempstead reads "New 3 PM added"
+        // until all three sessions fill (then "Sold out"); Brooklyn reads
+        // "Almost sold out" until it fills. Fails silently → keeps defaults.
+        try {
+          if(window.supabase && window.supabase.createClient){
+            var _sb=window.supabase.createClient('https://qvmiwyxerotkqpbuhpun.supabase.co','sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ');
+            _sb.rpc('reformer_spot_counts').then(function(res){
+              if(!res||res.error||!res.data) return;
+              var paid={}; res.data.forEach(function(r){ paid[r.session]=Number(r.paid)||0; });
+              function setTag(id,text,cls){ var el=document.getElementById('aestatus-'+id); if(el){ el.textContent=text; el.className='bq-ae-status '+(cls||''); } }
+              // West Hempstead · Sep 13 — cap 6 per session
+              var CW=6, w1=paid['1pm']||0, w2=paid['2pm']||0, w3=paid['3pm']||0;
+              if(w1>=CW && w2>=CW && w3>=CW) setTag('event-card-reformer','Sold out','');
+              else if(w1>=CW && w2>=CW && w3<CW) setTag('event-card-reformer','New 3 PM added','ok');
+              else setTag('event-card-reformer','Now booking','ok');
+              // Brooklyn · Sep 26 — cap 5 per session
+              var CB=5, rem=(CB-(paid['bk12']||0))+(CB-(paid['bk1']||0))+(CB-(paid['bk2']||0)); if(rem<0) rem=0;
+              if(rem<=0) setTag('event-card-reformer-bk','Sold out','');
+              else if(rem<=3) setTag('event-card-reformer-bk','Almost sold out','warn');
+              else setTag('event-card-reformer-bk','Now booking','ok');
+            }, function(){});
+          }
+        } catch(e){}
       });
     </script>
 
