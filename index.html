@@ -4794,7 +4794,11 @@
         </div>
         <div class="ce-field" id="ce-exturl-wrap" style="display:none;"><label class="ce-lab">Link URL</label><input type="url" id="ce-exturl" placeholder="https://…"></div>
 
-        <button type="button" id="ce-publish" class="btn btn-primary" style="font-size:.85rem;">&#128197; Publish Event</button>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+          <button type="button" id="ce-publish" class="btn btn-primary" style="font-size:.85rem;">&#128197; Publish Event</button>
+          <button type="button" id="ce-draft" class="btn btn-secondary" style="font-size:.85rem;">&#128190; Save as Draft</button>
+        </div>
+        <div style="margin-top:.4rem;font-size:.72rem;color:var(--text-muted);">Drafts are saved but stay hidden from your site until you publish them.</div>
         <div id="ce-status" style="margin-top:.6rem;font-size:.82rem;"></div>
       </div>
 
@@ -4862,11 +4866,13 @@
         var cta=document.getElementById('ce-cta'), extWrap=document.getElementById('ce-exturl-wrap');
         if(cta&&extWrap){ cta.addEventListener('change', function(){ extWrap.style.display = (cta.value==='external') ? 'block' : 'none'; }); }
         var pub=document.getElementById('ce-publish');
-        if(pub) pub.addEventListener('click', publishEvent);
+        if(pub) pub.addEventListener('click', function(){ saveEvent(true); });
+        var draft=document.getElementById('ce-draft');
+        if(draft) draft.addEventListener('click', function(){ saveEvent(false); });
       }
       function val(id){ var el=document.getElementById(id); return el ? (el.value||'').trim() : ''; }
       function setStatus(msg,color){ var s=document.getElementById('ce-status'); if(s){ s.textContent=msg; s.style.color=color||'var(--text-muted)'; } }
-      function publishEvent(){
+      function saveEvent(publish){
         var title=val('ce-title');
         if(title.length<2){ setStatus('Please enter an event name.', 'var(--red)'); return; }
         var cta=val('ce-cta')||'rsvp', ext=val('ce-exturl');
@@ -4875,20 +4881,21 @@
         var row={ title:title, subtitle:val('ce-subtitle')||null, event_date:val('ce-date')||null,
           time_text:val('ce-time')||null, location:val('ce-location')||null, price_text:val('ce-price')||null,
           description:val('ce-desc')||null, flyer_data:_ceFlyerData||null, cta_type:cta,
-          external_url:cta==='external'?ext:null, published:true };
-        setStatus('Publishing…');
-        var btn=document.getElementById('ce-publish'); if(btn) btn.disabled=true;
+          external_url:cta==='external'?ext:null, published:!!publish };
+        setStatus(publish?'Publishing…':'Saving draft…');
+        var btn=document.getElementById('ce-publish'), btn2=document.getElementById('ce-draft');
+        if(btn) btn.disabled=true; if(btn2) btn2.disabled=true;
         c.from('custom_events').insert([row]).then(function(res){
-          if(btn) btn.disabled=false;
-          if(res&&res.error){ setStatus('Could not publish — run the CUSTOM_EVENTS_SETUP.sql in Supabase first. ('+(res.error.message||'')+')', 'var(--red)'); return; }
-          setStatus('✅ Published! It’s live on your site now.', 'var(--green)');
+          if(btn) btn.disabled=false; if(btn2) btn2.disabled=false;
+          if(res&&res.error){ setStatus('Could not save — run the CUSTOM_EVENTS_SETUP.sql in Supabase first. ('+(res.error.message||'')+')', 'var(--red)'); return; }
+          setStatus(publish?'✅ Published! It’s live on your site now.':'💾 Saved as draft. Publish it any time from “Your Added Events” below.', 'var(--green)');
           // Reset the form
           ['ce-title','ce-subtitle','ce-date','ce-time','ce-location','ce-price','ce-desc','ce-exturl'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
           _ceFlyerData=null; var prev=document.getElementById('ce-flyer-preview'); if(prev){ prev.style.display='none'; prev.src=''; }
           var dt=document.getElementById('ce-drop-text'); if(dt) dt.textContent='📷 Tap to upload a flyer image (JPG or PNG)';
           renderAdminList();
           renderPublic();
-        }, function(){ if(btn) btn.disabled=false; setStatus('Could not publish. Try again.', 'var(--red)'); });
+        }, function(){ if(btn) btn.disabled=false; if(btn2) btn2.disabled=false; setStatus('Could not save. Try again.', 'var(--red)'); });
       }
 
       // ── Admin management list ────────────────────────────────────────
