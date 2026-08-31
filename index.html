@@ -4604,12 +4604,14 @@
       <button type="button" class="admin-tab active" data-tab="rosters">&#128451;&#65039; Rosters</button>
       <button type="button" class="admin-tab" data-tab="reminders">&#9993;&#65039; Reminders &amp; Emails</button>
       <button type="button" class="admin-tab" data-tab="add">&#10133; Add / Edit</button>
+      <button type="button" class="admin-tab" data-tab="addevent">&#128197; Add Event</button>
       <button type="button" class="admin-tab" data-tab="lists">&#128279; Lists &amp; Agreements</button>
       <button type="button" class="admin-tab" data-tab="recog">&#127991;&#65039; Recognition</button>
     </nav>
     <div id="admin-tab-rosters" class="admin-tabpanel"></div>
     <div id="admin-tab-reminders" class="admin-tabpanel" hidden></div>
     <div id="admin-tab-add" class="admin-tabpanel" hidden></div>
+    <div id="admin-tab-addevent" class="admin-tabpanel" hidden></div>
     <div id="admin-tab-lists" class="admin-tabpanel" hidden></div>
     <div id="admin-tab-recog" class="admin-tabpanel" hidden></div>
     <script>
@@ -4620,6 +4622,7 @@
           rosters:['admin-body'],
           reminders:['admin-reminder-section','admin-waitlist-section'],
           add:['admin-manual-add-section'],
+          addevent:['admin-add-event-section'],
           lists:['admin-shared-lists','admin-agreements-section','admin-club-section','admin-notify-list-section'],
           recog:['admin-badges-section','admin-donor-section']
         };
@@ -4660,9 +4663,10 @@
           btn.addEventListener('click', function(){
             Array.prototype.forEach.call(nav.querySelectorAll('.admin-tab'), function(b){ b.classList.remove('active'); });
             btn.classList.add('active');
-            ['rosters','reminders','add','lists','recog'].forEach(function(t){
+            ['rosters','reminders','add','addevent','lists','recog'].forEach(function(t){
               var p=document.getElementById('admin-tab-'+t); if(p) p.hidden = (t!==btn.getAttribute('data-tab'));
             });
+            if(btn.getAttribute('data-tab')==='addevent' && window.renderAddEventAdmin) window.renderAddEventAdmin();
           });
         });
       }
@@ -4743,6 +4747,322 @@
       <button type="button" id="admin-add-btn" class="btn btn-primary" style="font-size:.85rem;">&#10133; Add Registration</button>
       <div id="admin-add-status" style="margin-top:.5rem;font-size:.82rem;"></div>
     </div>
+
+    <!-- Add Event (self-serve announcement / RSVP events) -->
+    <div id="admin-add-event-section" style="margin-top:1.5rem;">
+      <style>
+        #admin-add-event-section .ce-field{margin-bottom:.8rem;}
+        #admin-add-event-section label.ce-lab{font-size:.78rem;font-weight:600;color:var(--brown);display:block;margin-bottom:.3rem;}
+        #admin-add-event-section input[type=text],#admin-add-event-section input[type=date],#admin-add-event-section input[type=url],#admin-add-event-section textarea,#admin-add-event-section select{width:100%;padding:.55rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;}
+        #admin-add-event-section textarea{min-height:80px;resize:vertical;}
+        #admin-add-event-section .ce-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;}
+        @media(max-width:640px){#admin-add-event-section .ce-grid{grid-template-columns:1fr;}}
+        #admin-add-event-section .ce-drop{border:2px dashed #d8c9ac;border-radius:12px;padding:1rem;text-align:center;background:#fffdf8;cursor:pointer;}
+        #admin-add-event-section .ce-drop:hover{border-color:var(--gold);}
+        #admin-add-event-section .ce-item{display:flex;gap:.8rem;align-items:flex-start;padding:.7rem;border:1px solid var(--border);border-radius:10px;background:#fff;margin-bottom:.6rem;}
+        #admin-add-event-section .ce-item img{width:64px;height:80px;object-fit:cover;border-radius:6px;border:1px solid var(--border);flex:0 0 auto;background:#f4ecdd;}
+        #admin-add-event-section .ce-btn{border-radius:6px;padding:.25rem .55rem;font-size:.72rem;cursor:pointer;font-family:'Jost',sans-serif;border:1px solid var(--border);background:#fff;color:var(--brown);}
+      </style>
+      <div style="padding:1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:12px;">
+        <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--brown);margin-bottom:.4rem;">&#128197; Add a New Event</h3>
+        <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.5;">Upload a flyer and fill in the details. It publishes to your site as an event card with an RSVP signup &mdash; no payment or waiver. When you&rsquo;re ready to take card payments for it, just ask me to switch that on.</p>
+
+        <div class="ce-field">
+          <label class="ce-lab">Flyer</label>
+          <div class="ce-drop" id="ce-drop">
+            <input type="file" id="ce-flyer" accept="image/*" style="display:none;">
+            <div id="ce-drop-text" style="font-size:.82rem;color:var(--text-muted);">&#128247; Tap to upload a flyer image (JPG or PNG)</div>
+            <img id="ce-flyer-preview" style="display:none;max-height:220px;max-width:100%;border-radius:8px;margin-top:.5rem;" alt="Flyer preview">
+          </div>
+        </div>
+
+        <div class="ce-field"><label class="ce-lab">Event name <span style="color:var(--red);">*</span></label><input type="text" id="ce-title" placeholder="e.g. Sound Bath &amp; Stretch"></div>
+        <div class="ce-field"><label class="ce-lab">Tagline / subtitle</label><input type="text" id="ce-subtitle" placeholder="e.g. A slow, restorative evening"></div>
+        <div class="ce-grid">
+          <div class="ce-field"><label class="ce-lab">Date</label><input type="date" id="ce-date"></div>
+          <div class="ce-field"><label class="ce-lab">Time</label><input type="text" id="ce-time" placeholder="e.g. 6:00 PM"></div>
+          <div class="ce-field"><label class="ce-lab">Location</label><input type="text" id="ce-location" placeholder="e.g. Valley Studio, West Hempstead NY"></div>
+          <div class="ce-field"><label class="ce-lab">Price</label><input type="text" id="ce-price" placeholder="e.g. $40"></div>
+        </div>
+        <div class="ce-field"><label class="ce-lab">Description</label><textarea id="ce-desc" placeholder="A few sentences about the event…"></textarea></div>
+        <div class="ce-field">
+          <label class="ce-lab">Button</label>
+          <select id="ce-cta">
+            <option value="rsvp">Collect RSVPs (name + email signup)</option>
+            <option value="external">Send to a link (Stripe / Eventbrite / etc.)</option>
+          </select>
+        </div>
+        <div class="ce-field" id="ce-exturl-wrap" style="display:none;"><label class="ce-lab">Link URL</label><input type="url" id="ce-exturl" placeholder="https://…"></div>
+
+        <button type="button" id="ce-publish" class="btn btn-primary" style="font-size:.85rem;">&#128197; Publish Event</button>
+        <div id="ce-status" style="margin-top:.6rem;font-size:.82rem;"></div>
+      </div>
+
+      <div style="margin-top:1.25rem;padding:1.25rem;background:#fff;border:1px solid var(--border);border-radius:12px;">
+        <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--brown);margin-bottom:.8rem;">Your Added Events</h3>
+        <div id="admin-events-list"><div style="color:var(--text-muted);font-size:.85rem;">Loading…</div></div>
+      </div>
+    </div>
+
+    <script>
+    /* ─── Self-serve Add Event (announcement / RSVP events) ─────────────
+       Stores events + RSVPs in Supabase (custom_events / custom_event_rsvps).
+       One client, reused: it carries the owner's login for admin writes and
+       acts as anon for public reads/RSVPs. Fails soft everywhere. */
+    (function(){
+      var CE_URL='https://qvmiwyxerotkqpbuhpun.supabase.co';
+      var CE_KEY='sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ';
+      var _ceSb=null;
+      function ceSb(){ if(_ceSb) return _ceSb; try{ if(window.supabase&&window.supabase.createClient) _ceSb=window.supabase.createClient(CE_URL,CE_KEY); }catch(e){} return _ceSb; }
+      function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+      function fmtDate(d){ if(!d) return ''; try{ var dt=new Date(d+'T00:00:00'); if(isNaN(dt.getTime())) return ''; return dt.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}); }catch(e){ return ''; } }
+      function fmtShort(d){ if(!d) return ''; try{ var dt=new Date(d+'T00:00:00'); if(isNaN(dt.getTime())) return ''; var mm=('0'+(dt.getMonth()+1)).slice(-2),dd=('0'+dt.getDate()).slice(-2),yy=String(dt.getFullYear()).slice(-2); return mm+'.'+dd+'.'+yy; }catch(e){ return ''; } }
+
+      // Downscale + compress a flyer to a small JPEG data URL (keeps DB rows light).
+      function compressImage(file, cb){
+        try{
+          var reader=new FileReader();
+          reader.onload=function(e){
+            var img=new Image();
+            img.onload=function(){
+              var maxW=1000, scale=Math.min(1, maxW/(img.width||maxW));
+              var w=Math.max(1,Math.round((img.width||maxW)*scale)), h=Math.max(1,Math.round((img.height||maxW)*scale));
+              try{
+                var c=document.createElement('canvas'); c.width=w; c.height=h;
+                var g=c.getContext('2d'); g.fillStyle='#ffffff'; g.fillRect(0,0,w,h); g.drawImage(img,0,0,w,h);
+                cb(c.toDataURL('image/jpeg',0.82));
+              }catch(err){ cb(e.target.result); }
+            };
+            img.onerror=function(){ cb(null); };
+            img.src=e.target.result;
+          };
+          reader.onerror=function(){ cb(null); };
+          reader.readAsDataURL(file);
+        }catch(err){ cb(null); }
+      }
+
+      // ── Admin form ──────────────────────────────────────────────────
+      var _ceFlyerData=null, _ceWired=false;
+      function wireForm(){
+        if(_ceWired) return; _ceWired=true;
+        var drop=document.getElementById('ce-drop'), fileEl=document.getElementById('ce-flyer');
+        var prev=document.getElementById('ce-flyer-preview'), dropText=document.getElementById('ce-drop-text');
+        if(drop&&fileEl){
+          drop.addEventListener('click', function(){ fileEl.click(); });
+          fileEl.addEventListener('change', function(){
+            var f=this.files&&this.files[0]; if(!f) return;
+            if(dropText) dropText.textContent='Compressing…';
+            compressImage(f, function(data){
+              _ceFlyerData=data;
+              if(data&&prev){ prev.src=data; prev.style.display='block'; }
+              if(dropText) dropText.textContent = data ? '✓ Flyer ready — tap to replace' : '⚠️ Could not read that image — try another.';
+            });
+          });
+        }
+        var cta=document.getElementById('ce-cta'), extWrap=document.getElementById('ce-exturl-wrap');
+        if(cta&&extWrap){ cta.addEventListener('change', function(){ extWrap.style.display = (cta.value==='external') ? 'block' : 'none'; }); }
+        var pub=document.getElementById('ce-publish');
+        if(pub) pub.addEventListener('click', publishEvent);
+      }
+      function val(id){ var el=document.getElementById(id); return el ? (el.value||'').trim() : ''; }
+      function setStatus(msg,color){ var s=document.getElementById('ce-status'); if(s){ s.textContent=msg; s.style.color=color||'var(--text-muted)'; } }
+      function publishEvent(){
+        var title=val('ce-title');
+        if(title.length<2){ setStatus('Please enter an event name.', 'var(--red)'); return; }
+        var cta=val('ce-cta')||'rsvp', ext=val('ce-exturl');
+        if(cta==='external' && !/^https?:\/\//i.test(ext)){ setStatus('Please enter a valid link (starting with http).', 'var(--red)'); return; }
+        var c=ceSb(); if(!c){ setStatus('Could not connect. Refresh and try again.', 'var(--red)'); return; }
+        var row={ title:title, subtitle:val('ce-subtitle')||null, event_date:val('ce-date')||null,
+          time_text:val('ce-time')||null, location:val('ce-location')||null, price_text:val('ce-price')||null,
+          description:val('ce-desc')||null, flyer_data:_ceFlyerData||null, cta_type:cta,
+          external_url:cta==='external'?ext:null, published:true };
+        setStatus('Publishing…');
+        var btn=document.getElementById('ce-publish'); if(btn) btn.disabled=true;
+        c.from('custom_events').insert([row]).then(function(res){
+          if(btn) btn.disabled=false;
+          if(res&&res.error){ setStatus('Could not publish — run the CUSTOM_EVENTS_SETUP.sql in Supabase first. ('+(res.error.message||'')+')', 'var(--red)'); return; }
+          setStatus('✅ Published! It’s live on your site now.', 'var(--green)');
+          // Reset the form
+          ['ce-title','ce-subtitle','ce-date','ce-time','ce-location','ce-price','ce-desc','ce-exturl'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+          _ceFlyerData=null; var prev=document.getElementById('ce-flyer-preview'); if(prev){ prev.style.display='none'; prev.src=''; }
+          var dt=document.getElementById('ce-drop-text'); if(dt) dt.textContent='📷 Tap to upload a flyer image (JPG or PNG)';
+          renderAdminList();
+          renderPublic();
+        }, function(){ if(btn) btn.disabled=false; setStatus('Could not publish. Try again.', 'var(--red)'); });
+      }
+
+      // ── Admin management list ────────────────────────────────────────
+      function renderAdminList(){
+        var host=document.getElementById('admin-events-list'); if(!host) return;
+        var c=ceSb(); if(!c){ host.innerHTML='<div style="color:var(--text-muted);font-size:.85rem;">Connect unavailable.</div>'; return; }
+        c.from('custom_events').select('*').order('event_date',{ascending:true,nullsFirst:false}).then(function(res){
+          if(res&&res.error){ host.innerHTML='<div class="empty-state">Run CUSTOM_EVENTS_SETUP.sql in Supabase to turn this on.</div>'; return; }
+          var evs=(res&&res.data)||[];
+          if(!evs.length){ host.innerHTML='<div style="color:var(--text-muted);font-size:.85rem;">No added events yet. Publish one above and it’ll appear here.</div>'; return; }
+          c.from('custom_event_rsvps').select('event_id').then(function(rr){
+            var counts={}; if(rr&&rr.data){ rr.data.forEach(function(r){ counts[r.event_id]=(counts[r.event_id]||0)+1; }); }
+            host.innerHTML='';
+            evs.forEach(function(ev){
+              var n=counts[ev.id]||0;
+              var item=document.createElement('div'); item.className='ce-item';
+              var meta=[fmtDate(ev.event_date), ev.time_text, ev.location].filter(Boolean).join(' · ');
+              var pub = ev.published
+                ? '<span style="font-size:.68rem;background:#e8f5e9;color:#2e7d32;border-radius:10px;padding:.1rem .45rem;font-weight:700;">LIVE</span>'
+                : '<span style="font-size:.68rem;background:#f1eee9;color:#8a7d6a;border-radius:10px;padding:.1rem .45rem;font-weight:700;">DRAFT</span>';
+              var ctaLbl = ev.cta_type==='external' ? 'Links out' : (n+' RSVP'+(n===1?'':'s'));
+              item.innerHTML=
+                (ev.flyer_data?'<img src="'+esc(ev.flyer_data)+'" alt="">':'<div class="ce-item" style="width:64px;height:80px;border:1px solid var(--border);border-radius:6px;background:#f4ecdd;flex:0 0 auto;"></div>')+
+                '<div style="flex:1;min-width:0;">'+
+                  '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.05rem;color:var(--brown);font-weight:600;">'+esc(ev.title)+' '+pub+'</div>'+
+                  '<div style="font-size:.76rem;color:var(--text-muted);margin:.15rem 0;">'+esc(meta||'No date set')+'</div>'+
+                  '<div style="font-size:.76rem;color:var(--gold-text);font-weight:600;">'+esc(ctaLbl)+'</div>'+
+                  '<div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.5rem;">'+
+                    (ev.cta_type==='external'?'':'<button class="ce-btn" data-act="rsvps" data-id="'+ev.id+'">👁 View RSVPs</button>')+
+                    '<button class="ce-btn" data-act="toggle" data-id="'+ev.id+'">'+(ev.published?'🚫 Unpublish':'✅ Publish')+'</button>'+
+                    '<button class="ce-btn" data-act="del" data-id="'+ev.id+'" style="border-color:#f5c6c2;color:var(--red);">🗑 Delete</button>'+
+                  '</div>'+
+                  '<div class="ce-rsvps" id="ce-rsvps-'+ev.id+'" style="display:none;margin-top:.6rem;"></div>'+
+                '</div>';
+              host.appendChild(item);
+            });
+            host.querySelectorAll('.ce-btn').forEach(function(b){
+              b.addEventListener('click', function(){ ceAdminAction(b.getAttribute('data-act'), b.getAttribute('data-id')); });
+            });
+          }, function(){ host.innerHTML='<div class="empty-state">Could not load.</div>'; });
+        }, function(){ host.innerHTML='<div class="empty-state">Could not load.</div>'; });
+      }
+      function ceAdminAction(act,id){
+        var c=ceSb(); if(!c) return;
+        if(act==='del'){
+          if(!confirm('Delete this event and all its RSVPs? This cannot be undone.')) return;
+          c.from('custom_events').delete().eq('id',id).then(function(res){ if(res&&res.error){ alert('Could not delete.'); return; } renderAdminList(); renderPublic(); }, function(){ alert('Could not delete.'); });
+        } else if(act==='toggle'){
+          c.from('custom_events').select('published').eq('id',id).single().then(function(res){
+            var cur=res&&res.data?res.data.published:true;
+            c.from('custom_events').update({published:!cur}).eq('id',id).then(function(r2){ if(r2&&r2.error){ alert('Could not update.'); return; } renderAdminList(); renderPublic(); }, function(){ alert('Could not update.'); });
+          }, function(){ alert('Could not update.'); });
+        } else if(act==='rsvps'){
+          var box=document.getElementById('ce-rsvps-'+id); if(!box) return;
+          if(box.style.display!=='none'){ box.style.display='none'; return; }
+          box.style.display='block'; box.innerHTML='<span style="font-size:.78rem;color:var(--text-muted);">Loading…</span>';
+          c.from('custom_event_rsvps').select('*').eq('event_id',id).order('created_at',{ascending:true}).then(function(res){
+            if(res&&res.error){ box.innerHTML='<span style="font-size:.78rem;color:var(--red);">Could not load RSVPs.</span>'; return; }
+            var list=(res&&res.data)||[];
+            if(!list.length){ box.innerHTML='<span style="font-size:.78rem;color:var(--text-muted);">No RSVPs yet.</span>'; return; }
+            var emails=list.map(function(r){return r.email;}).filter(Boolean).join(', ');
+            var html='<div style="font-size:.72rem;color:var(--text-muted);margin-bottom:.35rem;">'+list.length+' RSVP'+(list.length===1?'':'s')+' · <a href="mailto:?bcc='+encodeURIComponent(emails)+'" style="color:var(--gold-text);">✉️ email all</a></div>';
+            list.forEach(function(r){
+              html+='<div style="font-size:.78rem;padding:.3rem 0;border-top:1px solid var(--border);"><strong>'+esc(r.name||'—')+'</strong> · '+esc(r.email||'')+(r.note?'<br><span style="color:var(--text-muted);">'+esc(r.note)+'</span>':'')+'</div>';
+            });
+            box.innerHTML=html;
+          }, function(){ box.innerHTML='<span style="font-size:.78rem;color:var(--red);">Could not load RSVPs.</span>'; });
+        }
+      }
+      window.renderAddEventAdmin=function(){ wireForm(); renderAdminList(); };
+
+      // ── Public: event cards + RSVP popup ─────────────────────────────
+      function ensureOverlay(){
+        if(document.getElementById('ce-rsvp-overlay')) return;
+        var o=document.createElement('div'); o.id='ce-rsvp-overlay';
+        o.style.cssText='display:none;position:fixed;inset:0;z-index:9999;background:rgba(40,30,20,.55);align-items:center;justify-content:center;padding:1rem;';
+        o.innerHTML='<div style="background:#fdfaf4;max-width:420px;width:100%;border-radius:16px;padding:1.6rem;box-shadow:0 30px 80px -30px rgba(0,0,0,.5);font-family:\'Jost\',sans-serif;">'+
+          '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;">'+
+            '<h3 id="ce-rsvp-title" style="font-family:\'Cormorant Garamond\',serif;font-size:1.5rem;color:var(--brown);font-weight:600;margin:0;">RSVP</h3>'+
+            '<button id="ce-rsvp-x" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text-muted);line-height:1;">×</button>'+
+          '</div>'+
+          '<p id="ce-rsvp-sub" style="font-size:.82rem;color:var(--text-muted);margin:.3rem 0 1rem;"></p>'+
+          '<div id="ce-rsvp-form">'+
+            '<input type="text" id="ce-rsvp-name" placeholder="Your name" style="width:100%;padding:.6rem .8rem;border:1px solid var(--border);border-radius:9px;margin-bottom:.6rem;font-family:inherit;font-size:.9rem;box-sizing:border-box;">'+
+            '<input type="email" id="ce-rsvp-email" placeholder="Your email" style="width:100%;padding:.6rem .8rem;border:1px solid var(--border);border-radius:9px;margin-bottom:.6rem;font-family:inherit;font-size:.9rem;box-sizing:border-box;">'+
+            '<textarea id="ce-rsvp-note" placeholder="Anything you’d like us to know (optional)" style="width:100%;padding:.6rem .8rem;border:1px solid var(--border);border-radius:9px;margin-bottom:.7rem;font-family:inherit;font-size:.9rem;box-sizing:border-box;min-height:60px;resize:vertical;"></textarea>'+
+            '<button id="ce-rsvp-submit" class="btn btn-primary" style="width:100%;">Reserve my spot</button>'+
+            '<div id="ce-rsvp-status" style="margin-top:.6rem;font-size:.82rem;text-align:center;"></div>'+
+          '</div>'+
+        '</div>';
+        document.body.appendChild(o);
+        o.querySelector('#ce-rsvp-x').addEventListener('click', function(){ o.style.display='none'; });
+        o.addEventListener('click', function(e){ if(e.target===o) o.style.display='none'; });
+        o.querySelector('#ce-rsvp-submit').addEventListener('click', submitRsvp);
+      }
+      var _ceCurrentEvent=null;
+      function openRsvp(ev){
+        ensureOverlay();
+        _ceCurrentEvent=ev;
+        var o=document.getElementById('ce-rsvp-overlay');
+        o.querySelector('#ce-rsvp-title').textContent='RSVP — '+ev.title;
+        var bits=[fmtDate(ev.event_date), ev.time_text, ev.location].filter(Boolean).join(' · ');
+        o.querySelector('#ce-rsvp-sub').textContent=bits;
+        o.querySelector('#ce-rsvp-name').value=''; o.querySelector('#ce-rsvp-email').value=''; o.querySelector('#ce-rsvp-note').value='';
+        o.querySelector('#ce-rsvp-status').textContent='';
+        o.querySelector('#ce-rsvp-form').style.display='';
+        o.style.display='flex';
+      }
+      function submitRsvp(){
+        if(!_ceCurrentEvent) return;
+        var o=document.getElementById('ce-rsvp-overlay');
+        var name=(o.querySelector('#ce-rsvp-name').value||'').trim();
+        var email=(o.querySelector('#ce-rsvp-email').value||'').trim();
+        var note=(o.querySelector('#ce-rsvp-note').value||'').trim();
+        var st=o.querySelector('#ce-rsvp-status');
+        if(name.length<2){ st.textContent='Please enter your name.'; st.style.color='var(--red)'; return; }
+        if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ st.textContent='Please enter a valid email.'; st.style.color='var(--red)'; return; }
+        var c=ceSb(); if(!c){ st.textContent='Could not connect. Try again.'; st.style.color='var(--red)'; return; }
+        var btn=o.querySelector('#ce-rsvp-submit'); btn.disabled=true; st.textContent='Sending…'; st.style.color='var(--text-muted)';
+        c.from('custom_event_rsvps').insert([{ event_id:_ceCurrentEvent.id, name:name, email:email, note:note||null }]).then(function(res){
+          btn.disabled=false;
+          if(res&&res.error){ st.textContent='Could not save. Please try again.'; st.style.color='var(--red)'; return; }
+          o.querySelector('#ce-rsvp-form').style.display='none';
+          o.querySelector('#ce-rsvp-sub').textContent='';
+          o.querySelector('#ce-rsvp-title').innerHTML='✨ You’re on the list!';
+        }, function(){ btn.disabled=false; st.textContent='Could not save. Please try again.'; st.style.color='var(--red)'; });
+      }
+
+      function cardClick(ev){
+        if(ev.cta_type==='external' && ev.external_url){ window.open(ev.external_url,'_blank','noopener'); return; }
+        openRsvp(ev);
+      }
+      function renderPublic(){
+        var c=ceSb(); if(!c) return;
+        c.from('custom_events').select('*').eq('published',true).order('event_date',{ascending:true,nullsFirst:false}).then(function(res){
+          if(!res||res.error||!res.data) return;
+          var evs=res.data;
+          // Clear any previously injected custom cards (avoids duplicates on refresh).
+          document.querySelectorAll('[data-custom-event]').forEach(function(n){ n.remove(); });
+          var grid=document.getElementById('bq-allevents-grid');
+          var eventsWrap=document.querySelector('.bq-events');
+          evs.forEach(function(ev){
+            var flyer=ev.flyer_data||'';
+            var sub=[ev.time_text, ev.price_text].filter(Boolean).join(' · ');
+            var loc=ev.location||'';
+            // 1) Events-tab card (matches .bq-event)
+            if(eventsWrap){
+              var b=document.createElement('button'); b.type='button'; b.className='bq-event scroll-reveal'; b.setAttribute('data-custom-event','1');
+              b.innerHTML='<div class="bq-event-photo">'+(flyer?'<img src="'+esc(flyer)+'" alt="'+esc(ev.title)+'" style="object-fit:cover;" loading="lazy">':'')+'</div>'+
+                '<div class="bq-event-date">'+(ev.event_date?esc(fmtShort(ev.event_date))+' &middot; ':'')+esc(ev.title)+'</div>'+
+                '<div class="bq-event-name">'+esc(ev.title)+'</div>'+
+                (loc?'<div class="bq-event-loc">'+esc(loc)+'</div>':'')+
+                (sub?'<div class="bq-event-sub">'+esc(sub)+'</div>':'')+
+                '<span class="bq-event-link">'+(ev.cta_type==='external'?'Details':'RSVP')+' <span aria-hidden="true">&#8594;</span></span>';
+              b.addEventListener('click', function(){ cardClick(ev); });
+              eventsWrap.insertBefore(b, eventsWrap.firstChild);
+            }
+            // 2) Homepage All-Events grid card (matches .bq-ae-card)
+            if(grid){
+              var art=document.createElement('article'); art.className='bq-ae-card'; art.setAttribute('data-custom-event','1');
+              art.innerHTML='<div class="bq-ae-photo" style="background-image:url(\''+(flyer? esc(flyer).replace(/'/g,"%27") : '')+'\')"><span class="bq-ae-status ok">'+(ev.cta_type==='external'?'Now booking':'RSVP open')+'</span></div>'+
+                '<div class="bq-ae-body"><div class="bq-ae-name">'+esc(ev.title)+'</div>'+
+                '<div class="bq-ae-sub">'+esc([fmtDate(ev.event_date), sub, loc].filter(Boolean).join(' &middot; '))+'</div>'+
+                '<button type="button" class="bq-ae-btn">'+(ev.cta_type==='external'?'Book':'RSVP')+'</button></div>';
+              art.querySelector('.bq-ae-btn').addEventListener('click', function(){ cardClick(ev); });
+              grid.appendChild(art);
+            }
+          });
+        }, function(){});
+      }
+      window.renderCustomEventsPublic=renderPublic;
+      if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', renderPublic); else renderPublic();
+    })();
+    </script>
 
     <!-- Event Badges -->
     <div id="admin-badges-section" style="margin-top:1.5rem;padding:1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:12px;">
