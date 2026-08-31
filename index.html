@@ -2805,6 +2805,7 @@
       <button type="button" class="bq-loc-btn" data-loc="long-island">Long Island</button>
       <button type="button" class="bq-loc-btn" data-loc="brooklyn">Brooklyn</button>
       <button type="button" class="bq-loc-btn" data-loc="manhattan">Manhattan</button>
+      <button type="button" class="bq-loc-btn" data-loc="riddim">Riddim &times; Kompa</button>
     </div>
     <script>
       document.addEventListener('DOMContentLoaded', function(){
@@ -2819,21 +2820,34 @@
         }
         // Past events don't belong under "Upcoming Events" — hide them.
         cards.forEach(function(c){ if(isPast(c)) c.style.display='none'; });
-        // Only show a location button if it has at least one upcoming event.
+        var rkExtra=document.getElementById('rk-extra');
+        function isRiddim(c){ return c.getAttribute('data-riddim')==='true'; }
+        // Only show a filter button if it has at least one upcoming matching event.
         Array.prototype.forEach.call(bar.querySelectorAll('.bq-loc-btn'), function(btn){
           var loc=btn.getAttribute('data-loc'); if(loc==='all') return;
-          var has=cards.some(function(c){ return !isPast(c) && (c.getAttribute('data-location')||'all')===loc; });
+          var has=cards.some(function(c){
+            if(isPast(c)) return false;
+            return loc==='riddim' ? isRiddim(c) : (c.getAttribute('data-location')||'all')===loc;
+          });
           if(!has) btn.style.display='none';
         });
+        function applyFilter(loc){
+          cards.forEach(function(c){
+            if(isPast(c)){ c.style.display='none'; return; }
+            var show = loc==='all' ? true
+                     : loc==='riddim' ? isRiddim(c)
+                     : (c.getAttribute('data-location')||'all')===loc;
+            c.style.display = show ? '' : 'none';
+          });
+          // The Two Islands facts + playlist belong to the Riddim × Kompa view only.
+          if(rkExtra) rkExtra.style.display = (loc==='riddim') ? 'block' : 'none';
+        }
+        applyFilter('all');
         bar.addEventListener('click', function(e){
           var btn=e.target.closest('.bq-loc-btn'); if(!btn) return;
           Array.prototype.forEach.call(bar.querySelectorAll('.bq-loc-btn'), function(b){ b.classList.remove('active'); });
           btn.classList.add('active');
-          var loc=btn.getAttribute('data-loc');
-          cards.forEach(function(c){
-            if(isPast(c)){ c.style.display='none'; return; }
-            c.style.display = (loc==='all' || (c.getAttribute('data-location')||'all')===loc) ? '' : 'none';
-          });
+          applyFilter(btn.getAttribute('data-loc'));
         });
       });
     </script>
@@ -2901,7 +2915,7 @@
       </button>
 
       <!-- Reformer Pilates — Sept 13. Opens a time-picker overlay with Stripe buy buttons. -->
-      <button type="button" id="event-card-reformer" class="bq-event scroll-reveal" data-event-date="2026-09-13" data-event-name="Reformer Pilates" data-location="long-island">
+      <button type="button" id="event-card-reformer" class="bq-event scroll-reveal" data-event-date="2026-09-13" data-event-name="Reformer Pilates" data-location="long-island" data-riddim="true">
         <div class="bq-event-photo">
           <picture>
             <source srcset="reformer-flier-card.webp?v=4" type="image/webp">
@@ -2911,14 +2925,14 @@
         </div>
         <div class="bq-event-date">09.13.26 &#183; Riddim &amp; Kompa</div>
         <div class="bq-event-name">Riddim &amp; Kompa <em>on the Reformer</em></div>
-        <div class="bq-event-loc">West Hempstead, NY</div>
+        <div class="bq-event-loc">Long Island &#183; West Hempstead, NY</div>
         <div class="bq-event-sub">Sun &#183; 1, 2 &amp; 3 PM (45 min) &#183; $45 &#183; Valley Studio, West Hempstead NY</div>
         <div class="bq-event-raffle">&#127903; Prize drawing &#183; win a 4-class package</div>
         <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
       </button>
 
       <!-- Riddim & Kompa on the Reformer — Brooklyn, Sept 26. Opens the Brooklyn booking overlay. -->
-      <button type="button" id="event-card-reformer-bk" class="bq-event scroll-reveal" data-event-date="2026-09-26" data-event-name="Riddim &amp; Kompa &#8212; Brooklyn" data-location="brooklyn">
+      <button type="button" id="event-card-reformer-bk" class="bq-event scroll-reveal" data-event-date="2026-09-26" data-event-name="Riddim &amp; Kompa &#8212; Brooklyn" data-location="brooklyn" data-riddim="true">
         <div class="bq-event-photo">
           <img src="riddim-kompa-brooklyn-flyer.jpg?v=3" alt="Riddim &amp; Kompa on the Reformer &#8212; Brooklyn. Saturday, September 26 at Maison Luxe Wellness Pilates, Brooklyn NY &#183; three sessions (12, 1 &amp; 2 PM) &#183; $45, complimentary goodie bag" loading="lazy" decoding="async">
         </div>
@@ -2994,6 +3008,7 @@
          Two islands, one rhythm — what Jamaica & Haiti share (full width),
          with the Reformer playlist stacked underneath.
     ──────────────────────────────────────────────────────── -->
+    <div id="rk-extra" style="display:none;">
     <div class="bq-playlist-divider" aria-hidden="true" style="max-width:1100px;margin:2.75rem auto 0;padding:0 1rem;"><span style="display:block;border-top:1px solid var(--border);"></span></div>
     <section class="bq-common-section" aria-labelledby="bq-common-title" style="margin-top:2.25rem;">
       <div style="max-width:1100px;margin:0 auto;padding:0 1rem;">
@@ -3054,6 +3069,7 @@
         </div>
       </div>
     </section>
+    </div><!-- /rk-extra -->
 
   </div>
 
