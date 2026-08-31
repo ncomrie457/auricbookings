@@ -2991,36 +2991,26 @@
     </div>
 
     <!-- ────────────────────────────────────────────────────────
-         The Playlist — Riddim & Kompa (Spotify embed), by the event
+         Jamaica × Haiti facts (left) + the Reformer Playlist (right),
+         side by side by the event. Stacks on mobile.
     ──────────────────────────────────────────────────────── -->
+    <style>
+      .rk-split{display:grid;grid-template-columns:1fr minmax(0,520px);gap:2.75rem;align-items:start;max-width:1100px;margin:0 auto;padding:0 1rem;}
+      .rk-facts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:1.5rem;}
+      @media (max-width:860px){ .rk-split{grid-template-columns:1fr;gap:2.5rem;} }
+    </style>
     <div class="bq-playlist-divider" aria-hidden="true" style="max-width:1100px;margin:2.75rem auto 0;padding:0 1rem;"><span style="display:block;border-top:1px solid var(--border);"></span></div>
-    <section class="bq-playlist-section" aria-labelledby="bq-playlist-title" style="margin-top:2.25rem;">
-      <div style="max-width:560px;margin:0 0 0 auto;padding:0 1rem;">
-        <div class="bq-section-head" style="text-align:left;">
-          <div class="bq-section-eyebrow">Press Play &middot; 09.13 &amp; 09.26 Reformer</div>
-          <h2 class="bq-section-title" id="bq-playlist-title">The Reformer <em>Playlist</em></h2>
-        </div>
-        <p style="text-align:left;font-family:'Jost',sans-serif;font-size:1rem;color:var(--text-muted);line-height:1.7;margin:.85rem 0 1.5rem;">The riddim &amp; kompa we&rsquo;ll move to at <strong>Riddim &amp; Kompa on the Reformer</strong> (Sept 13, West Hempstead &amp; Sept 26, Brooklyn). Press play, follow along, and come ready to flow. &#127925;</p>
-        <iframe title="Riddim &amp; Kompa on the Reformer playlist — YouTube Music" style="border-radius:12px;display:block;" src="https://www.youtube.com/embed/videoseries?list=PLWkSGAeCgvDo" width="100%" height="420" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe>
-        <div style="text-align:left;margin-top:1.1rem;">
-          <a href="https://music.youtube.com/playlist?list=PLWkSGAeCgvDo" target="_blank" rel="noopener noreferrer" style="font-family:'Jost',sans-serif;font-size:.85rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--gold-text);text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;">Open in YouTube Music <span aria-hidden="true">&rarr;</span></a>
-        </div>
-      </div>
-    </section>
+    <section class="bq-playlist-section" aria-label="Riddim and Kompa — two islands and the playlist" style="margin-top:2.25rem;">
+      <div class="rk-split">
 
-    <!-- ────────────────────────────────────────────────────────
-         Two islands, one rhythm — what Jamaica & Haiti share.
-         Sits by the event: Riddim (JA) × Kompa (HT) is the whole idea.
-    ──────────────────────────────────────────────────────── -->
-    <div class="bq-playlist-divider" aria-hidden="true" style="max-width:1100px;margin:2.75rem auto 0;padding:0 1rem;"><span style="display:block;border-top:1px solid var(--border);"></span></div>
-    <section class="bq-common-section" aria-labelledby="bq-common-title" style="margin-top:2.25rem;">
-      <div style="max-width:1100px;margin:0 auto;padding:0 1rem;">
-        <div class="bq-section-head" style="text-align:center;">
-          <div class="bq-section-eyebrow">Riddim &#127471;&#127474; &times; Kompa &#127469;&#127481;</div>
-          <h2 class="bq-section-title" id="bq-common-title">Two Islands, <em>One Rhythm</em></h2>
-          <p style="max-width:560px;margin:.85rem auto 0;font-family:'Jost',sans-serif;font-size:1rem;color:var(--text-muted);line-height:1.7;">Jamaica and Haiti are two sides of the same warm water. A few things they share &mdash; and why the two sounds belong on one floor.</p>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-top:1.75rem;">
+        <!-- LEFT: what Jamaica & Haiti share -->
+        <div>
+          <div class="bq-section-head" style="text-align:left;">
+            <div class="bq-section-eyebrow">Riddim &#127471;&#127474; &times; Kompa &#127469;&#127481;</div>
+            <h2 class="bq-section-title" id="bq-common-title">Two Islands, <em>One Rhythm</em></h2>
+            <p style="text-align:left;max-width:520px;margin:.85rem 0 0;font-family:'Jost',sans-serif;font-size:1rem;color:var(--text-muted);line-height:1.7;">Jamaica and Haiti are two sides of the same warm water. A few things they share &mdash; and why the two sounds belong on one floor.</p>
+          </div>
+          <div class="rk-facts-grid">
           <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:1.25rem 1.35rem;">
             <div style="font-size:1.4rem;line-height:1;margin-bottom:.5rem;">&#9994;&#127997;</div>
             <div style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:600;color:var(--brown);margin-bottom:.35rem;">Freedom, hard-won</div>
@@ -3052,6 +3042,21 @@
             <div style="font-family:'Jost',sans-serif;font-size:.9rem;color:var(--text-muted);line-height:1.65;">Some of the largest Jamaican and Haitian communities outside the islands call New York home &mdash; exactly where we&rsquo;ll dance.</div>
           </div>
         </div>
+        </div>
+
+        <!-- RIGHT: the Reformer playlist -->
+        <div>
+          <div class="bq-section-head" style="text-align:left;">
+            <div class="bq-section-eyebrow">Press Play &middot; 09.13 &amp; 09.26 Reformer</div>
+            <h2 class="bq-section-title" id="bq-playlist-title">The Reformer <em>Playlist</em></h2>
+          </div>
+          <p style="text-align:left;font-family:'Jost',sans-serif;font-size:1rem;color:var(--text-muted);line-height:1.7;margin:.85rem 0 1.5rem;">The riddim &amp; kompa we&rsquo;ll move to at <strong>Riddim &amp; Kompa on the Reformer</strong> (Sept 13, West Hempstead &amp; Sept 26, Brooklyn). Press play, follow along, and come ready to flow. &#127925;</p>
+          <iframe title="Riddim &amp; Kompa on the Reformer playlist — YouTube Music" style="border-radius:12px;display:block;" src="https://www.youtube.com/embed/videoseries?list=PLWkSGAeCgvDo" width="100%" height="420" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe>
+          <div style="text-align:left;margin-top:1.1rem;">
+            <a href="https://music.youtube.com/playlist?list=PLWkSGAeCgvDo" target="_blank" rel="noopener noreferrer" style="font-family:'Jost',sans-serif;font-size:.85rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--gold-text);text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;">Open in YouTube Music <span aria-hidden="true">&rarr;</span></a>
+          </div>
+        </div>
+
       </div>
     </section>
 
