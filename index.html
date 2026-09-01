@@ -6304,8 +6304,13 @@ document.addEventListener('DOMContentLoaded', function(){
       <span class="rf-raffle-fine">Winner drawn at random at the event &mdash; must be present to win. One fun catch &mdash; try a different instructor for each of the four classes.<br>No purchase necessary to enter; free entry available &mdash; <a href="/raffle-rules" target="_blank" rel="noopener" style="color:#9a6535;text-decoration:underline;">official rules</a>.</span>
     </div>
 
-    <form id="tb28-step-form" novalidate>
-      <div class="rf-chosen">Booking: <strong>Saturday, Nov 28 &middot; 12:30 PM session</strong></div>
+    <div id="tb28-step-time">
+      <p class="rf-meta" style="margin-bottom:.7rem;font-weight:600;color:var(--brown);">Pick your time:</p>
+      <button type="button" class="rf-time" data-session="tb28_1230" data-label="12:30 PM session">&#128340; 12:30 PM &mdash; 1:15 PM<small>45-minute reformer session</small></button>
+    </div>
+
+    <form id="tb28-step-form" style="display:none;" novalidate>
+      <div class="rf-chosen">Booking: <strong id="tb28-chosen-label">Saturday, Nov 28 &middot; 12:30 PM session</strong> &middot; <a id="tb28-change-time" role="button" tabindex="0">change time</a></div>
       <div class="rf-field"><label for="tb28-name">Full name</label><input type="text" id="tb28-name" autocomplete="name" placeholder="Your name"></div>
       <div class="rf-field"><label for="tb28-email">Email</label><input type="email" id="tb28-email" autocomplete="email" placeholder="you@email.com"></div>
       <div class="rf-field"><label for="tb28-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="tb28-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
@@ -6380,7 +6385,8 @@ document.addEventListener('DOMContentLoaded', function(){
   var _sb=null;
   function sb(){ if(_sb) return _sb; try { if(window.supabase && window.supabase.createClient){ _sb = window.supabase.createClient('https://qvmiwyxerotkqpbuhpun.supabase.co','sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ'); }} catch(e){} return _sb; }
 
-  var stepForm=document.getElementById('tb28-step-form'),
+  var stepTime=document.getElementById('tb28-step-time'),
+      stepForm=document.getElementById('tb28-step-form'),
       stepPay =document.getElementById('tb28-step-pay'),
       nameEl=document.getElementById('tb28-name'), emailEl=document.getElementById('tb28-email'),
       refEl=document.getElementById('tb28-referral'), healthEl=document.getElementById('tb28-health'),
@@ -6396,6 +6402,12 @@ document.addEventListener('DOMContentLoaded', function(){
   document.getElementById('turkey28-close').addEventListener('click', closeOv);
   document.getElementById('turkey28-close2').addEventListener('click', closeOv);
   ov.addEventListener('click', function(e){ if(e.target===ov) closeOv(); });
+
+  // Single session — picking the time reveals the form (matches the other events).
+  Array.prototype.forEach.call(stepTime.querySelectorAll('.rf-time'), function(btn){
+    btn.addEventListener('click', function(){ stepTime.style.display='none'; stepForm.style.display=''; });
+  });
+  document.getElementById('tb28-change-time').addEventListener('click', function(){ stepForm.style.display='none'; stepTime.style.display=''; });
 
   document.getElementById('tb28-open-waiver').addEventListener('click', function(){
     if(!waiverBox.innerHTML){
@@ -6446,7 +6458,7 @@ document.addEventListener('DOMContentLoaded', function(){
   // ── Payment confirmation (Stripe returns to ?paid=turkey28) ──
   function tb28ShowConfirmed(){
     document.getElementById('tb28-conf-cal').innerHTML=window.auricCalButtons('https://book.auricmovement.com/calendar/add/?e=turkey-burn-1128-1230pm');
-    stepForm.style.display='none'; stepPay.style.display='none';
+    stepTime.style.display='none'; stepForm.style.display='none'; stepPay.style.display='none';
     document.getElementById('tb28-step-confirmed').style.display='';
     openOv();
     try { var arr=JSON.parse(localStorage.getItem('auric_turkey28')||'[]'); if(arr.length){ arr[arr.length-1].is_paid=true; localStorage.setItem('auric_turkey28', JSON.stringify(arr)); } } catch(e){}
