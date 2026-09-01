@@ -2809,6 +2809,16 @@
     </div>
     <script>
       document.addEventListener('DOMContentLoaded', function(){
+        // Preload the Upcoming-Events flyers so they appear together (they live in a
+        // hidden tab, so their lazy images otherwise pop in one-by-one on first view).
+        try {
+          document.querySelectorAll('#tab-events .bq-event-photo source[srcset]').forEach(function(s){
+            var ss=(s.getAttribute('srcset')||'').split(',')[0].trim().split(' ')[0]; if(ss){ var p=new Image(); p.src=ss; }
+          });
+          document.querySelectorAll('#tab-events .bq-event-photo img').forEach(function(img){
+            var src=img.getAttribute('src'); if(src){ img.loading='eager'; var p=new Image(); p.src=src; }
+          });
+        } catch(e){}
         var bar=document.getElementById('bq-loc-filter'); if(!bar) return;
         var cards=[].slice.call(document.querySelectorAll('#tab-events .bq-events .bq-event'));
         var today=new Date(); today.setHours(0,0,0,0);
