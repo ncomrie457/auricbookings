@@ -6053,7 +6053,7 @@ document.addEventListener('DOMContentLoaded', function(){
     <button type="button" class="rf-x" id="turkey-close" aria-label="Close">&times;</button>
     <div class="rf-eyebrow">Auric Movement</div>
     <h2 class="rf-title">Turkey Burn!</h2>
-    <p class="rf-meta">Saturday, November 21 &middot; Valley Studio, West Hempstead NY</p>
+    <p class="rf-meta"><span id="tb-head-date">Saturday, November 21</span> &middot; Valley Studio, West Hempstead NY</p>
     <p class="rf-meta"><strong>$45</strong> &middot; 45-minute session &middot; only 6 spots each</p>
     <p class="rf-goodie">Come sweat out the Thanksgiving food on the Reformer &#127831;</p>
     <div class="rf-raffle">
@@ -6265,6 +6265,7 @@ document.addEventListener('DOMContentLoaded', function(){
     var m=TB_CONF[sk]||TB_CONF['tb1230'];
     document.getElementById('tb-conf-label').textContent=m.label;
     var _tbd=document.getElementById('tb-conf-date'); if(_tbd && m.date) _tbd.textContent=m.date;
+    var _tbh=document.getElementById('tb-head-date'); if(_tbh && m.date) _tbh.textContent=m.date;
     document.getElementById('tb-conf-cal').innerHTML=window.auricCalButtons(m.cal);
     stepTime.style.display='none'; stepForm.style.display='none'; stepPay.style.display='none';
     document.getElementById('tb-step-confirmed').style.display='';
