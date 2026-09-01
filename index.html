@@ -5767,7 +5767,8 @@ Can't wait to move and connect with you!</textarea>
     'halloween-1230pm':{t:AC_HW,s:'20261024T163000Z',e:'20261024T171500Z',l:AC_VALLEY},
     'halloween-130pm':{t:AC_HW,s:'20261024T173000Z',e:'20261024T181500Z',l:AC_VALLEY},
     'turkey-burn-1230pm':{t:AC_TB,s:'20261121T173000Z',e:'20261121T181500Z',l:AC_VALLEY},
-    'turkey-burn-130pm':{t:AC_TB,s:'20261121T183000Z',e:'20261121T191500Z',l:AC_VALLEY}
+    'turkey-burn-130pm':{t:AC_TB,s:'20261121T183000Z',e:'20261121T191500Z',l:AC_VALLEY},
+    'turkey-burn-1128-1230pm':{t:AC_TB,s:'20261128T173000Z',e:'20261128T181500Z',l:AC_VALLEY}
   };
   function acIso(z){ return z.replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/,'$1-$2-$3T$4:$5:$6Z'); }
   function acKeyFrom(cal){ var m=(cal||'').split('e='); return m.length>1?m[1]:cal; }
@@ -6106,7 +6107,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     <div id="tb-step-confirmed" style="display:none;">
       <div class="rf-conf-banner">&#10004; Payment received &mdash; you&rsquo;re booked!</div>
-      <p class="rf-meta" style="margin:0 0 1rem;">See you Saturday, November 21 for your <strong id="tb-conf-label"></strong>. Come sweat out the Thanksgiving food &#127831;</p>
+      <p class="rf-meta" style="margin:0 0 1rem;">See you <span id="tb-conf-date">Saturday, November 21</span> for your <strong id="tb-conf-label"></strong>. Come sweat out the Thanksgiving food &#127831;</p>
       <p class="rf-meta" style="margin:0 0 1rem;">&#127903; You&rsquo;re entered to win a 4-class Valley Studio package &mdash; drawn at random at the event (must be present).</p>
       <div id="tb-conf-cal" class="rf-cal-wrap"></div>
       <div class="bag-reserve-cta" style="margin:1.1rem 0 0;padding:.95rem 1.1rem;background:#fffdf9;border:1px solid #e6dbc8;border-radius:12px;">
@@ -6256,12 +6257,14 @@ document.addEventListener('DOMContentLoaded', function(){
   try { if(new URLSearchParams(location.search).get('book')==='turkey'){ setTimeout(openOv, 450); } } catch(e){}
   // ── Payment confirmation (Stripe returns to ?paid=turkey&s=tb1230|tb130) ──
   var TB_CONF = {
-    'tb1230': { label:'12:30 PM session', cal:'https://book.auricmovement.com/calendar/add/?e=turkey-burn-1230pm' },
-    'tb130':  { label:'1:30 PM session',  cal:'https://book.auricmovement.com/calendar/add/?e=turkey-burn-130pm' }
+    'tb1230':    { label:'12:30 PM session', date:'Saturday, November 21', cal:'https://book.auricmovement.com/calendar/add/?e=turkey-burn-1230pm' },
+    'tb130':     { label:'1:30 PM session',  date:'Saturday, November 21', cal:'https://book.auricmovement.com/calendar/add/?e=turkey-burn-130pm' },
+    'tb28_1230': { label:'12:30 PM session', date:'Saturday, November 28', cal:'https://book.auricmovement.com/calendar/add/?e=turkey-burn-1128-1230pm' }
   };
   function tbShowConfirmed(sk){
     var m=TB_CONF[sk]||TB_CONF['tb1230'];
     document.getElementById('tb-conf-label').textContent=m.label;
+    var _tbd=document.getElementById('tb-conf-date'); if(_tbd && m.date) _tbd.textContent=m.date;
     document.getElementById('tb-conf-cal').innerHTML=window.auricCalButtons(m.cal);
     stepTime.style.display='none'; stepForm.style.display='none'; stepPay.style.display='none';
     document.getElementById('tb-step-confirmed').style.display='';
