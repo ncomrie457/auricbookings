@@ -3230,7 +3230,7 @@
       document.addEventListener('DOMContentLoaded', function(){
         var grid=document.getElementById('bq-allevents-grid'); if(!grid) return;
         var items=[
-          {id:'event-card-reformer', tag:'New 3 PM added', cls:'ok'},
+          {id:'event-card-reformer', tag:'Almost sold out', cls:'warn'},
           {id:'event-card-reformer-bk', tag:'Almost sold out', cls:'warn'},
           {id:'event-card-halloween', tag:'Now booking', cls:'ok'},
           {id:'event-card-turkey', tag:'Now booking', cls:'ok'}
@@ -3279,8 +3279,9 @@
               function setTag(id,text,cls){ var el=document.getElementById('aestatus-'+id); if(el){ el.textContent=text; el.className='bq-ae-status '+(cls||''); } }
               // West Hempstead · Sep 13 — cap 6 per session
               var CW=6, w1=paid['1pm']||0, w2=paid['2pm']||0, w3=paid['3pm']||0;
-              if(w1>=CW && w2>=CW && w3>=CW) setTag('event-card-reformer','Sold out','');
-              else if(w1>=CW && w2>=CW && w3<CW) setTag('event-card-reformer','New 3 PM added','ok');
+              var remW=(CW-w1)+(CW-w2)+(CW-w3); if(remW<0) remW=0;
+              if(remW<=0) setTag('event-card-reformer','Sold out','');
+              else if(remW<=3) setTag('event-card-reformer','Almost sold out','warn');
               else setTag('event-card-reformer','Now booking','ok');
               // Brooklyn · Sep 26 — cap 5 per session
               var CB=5, rem=(CB-(paid['bk12']||0))+(CB-(paid['bk1']||0))+(CB-(paid['bk2']||0)); if(rem<0) rem=0;
