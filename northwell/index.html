@@ -84,6 +84,25 @@
     #ov .err{display:none;color:#b0432e;font-size:.8rem;margin-top:.6rem;}
     #ov .go{width:100%;margin-top:1.1rem;padding:.8rem;border:none;border-radius:999px;background:var(--gold-deep);color:#fff;font-family:inherit;font-size:.95rem;font-weight:600;cursor:pointer;}
     #ov .cancel{width:100%;margin-top:.5rem;padding:.6rem;border:none;background:none;color:var(--muted);font-family:inherit;font-size:.82rem;cursor:pointer;}
+    /* download + request-changes + draft */
+    .dlrow{display:flex;gap:.7rem;margin:1rem 1.2rem 0;}
+    .dlbtn{flex:1;padding:.75rem;border:1px solid var(--border);border-radius:11px;background:var(--card);color:var(--brown-deep);font-family:'Jost',sans-serif;font-weight:600;font-size:.82rem;cursor:pointer;letter-spacing:.03em;}
+    .dlbtn:hover{border-color:var(--gold);color:var(--gold-deep);}
+    .btn.secondary{background:transparent;color:var(--gold-deep);border:1px solid var(--gold);}
+    .btn.secondary:hover{background:#faf3e6;}
+    .altlink{display:block;width:100%;margin-top:.7rem;text-align:center;background:none;border:none;color:var(--muted);font-family:inherit;font-size:.82rem;cursor:pointer;text-decoration:underline;}
+    .altlink:hover{color:var(--gold-deep);}
+    .draftnote{text-align:center;font-size:.78rem;color:var(--gold-deep);margin-top:.6rem;display:none;}
+    #changeblock{display:none;margin-top:1rem;border-top:1px solid var(--border);padding-top:1rem;}
+    #changeblock textarea{width:100%;min-height:120px;padding:.8rem .9rem;border:1px solid var(--border);border-radius:11px;font-family:'Jost',sans-serif;font-size:1rem;color:var(--ink);background:#fffdf9;resize:vertical;}
+    #changeblock textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(169,133,63,.18);}
+    @media print{
+      body{background:#fff;}
+      #signblock, .dlrow, .scrollnote, .disclaimer, .foot, #editbar, #ov, #eb-msg{display:none !important;}
+      .card{box-shadow:none;border:none;margin:0 0 1rem;}
+      .terms{max-height:none;overflow:visible;border:none;padding:0;}
+      .wrap{max-width:100%;}
+    }
   </style>
 </head>
 <body>
@@ -162,6 +181,12 @@
       <p class="scrollnote">Please scroll through the full agreement above before signing.</p>
     </div>
 
+    <!-- Download / print -->
+    <div class="dlrow">
+      <button type="button" class="dlbtn" id="dlWord">&#128196; Download Word</button>
+      <button type="button" class="dlbtn" id="dlPdf">&#128424;&#65039; Download / Print PDF</button>
+    </div>
+
     <!-- Signature -->
     <div class="card" id="signblock">
       <h2>Sign the agreement</h2>
@@ -188,13 +213,34 @@
         </div>
         <label class="agree"><input type="checkbox" id="agree"> I have read and agree to the Professional Services Agreement above, and I intend this typed name to be my legally binding electronic signature on behalf of the organization named.</label>
         <button type="submit" class="btn" id="submit">Sign &amp; submit</button>
+        <button type="button" class="btn secondary" id="saveDraft">Save draft</button>
         <p class="finehint">Signed <span id="today"></span>. A copy of what you signed is recorded with the date and time.</p>
+        <p class="draftnote" id="draftNote"></p>
         <div class="msg err" id="err"></div>
+        <button type="button" class="altlink" id="wantChanges">Prefer to request changes before signing?</button>
       </form>
+
+      <!-- Request changes -->
+      <div id="changeblock">
+        <h2 style="font-size:1.2rem;">Request changes</h2>
+        <p style="color:var(--muted);font-size:.9rem;margin-bottom:.7rem;">Tell us what you&rsquo;d like changed and we&rsquo;ll send a revised version. We&rsquo;ll use the name &amp; email above to follow up.</p>
+        <div class="field">
+          <label for="change-msg">Your requested changes</label>
+          <textarea id="change-msg" placeholder="e.g., adjust the cancellation window to 14 days; add our standard insurance limits; change the fee to…"></textarea>
+        </div>
+        <button type="button" class="btn" id="sendChanges">Send requested changes</button>
+        <div class="msg err" id="cErr"></div>
+      </div>
+
       <div class="confirmed" id="done">
         <div class="seal">&#10003;</div>
         <h3>Signed — thank you</h3>
         <p>Your signature has been recorded. Auric Movement will follow up to confirm the event details in Exhibit A. A countersigned copy will be shared with you.</p>
+      </div>
+      <div class="confirmed" id="cDone">
+        <div class="seal">&#9998;</div>
+        <h3>Changes sent</h3>
+        <p>Thank you &mdash; your requested changes have been sent to Auric Movement. We&rsquo;ll follow up with a revised agreement.</p>
       </div>
     </div>
 
@@ -286,7 +332,7 @@
           localStorage.setItem('auric_agreement_signatures', JSON.stringify(arr));
         } catch(e){}
 
-        function finish(){ form.style.display='none'; done.style.display='block'; done.scrollIntoView({behavior:'smooth',block:'center'}); }
+        function finish(){ try{ localStorage.removeItem('auric_northwell_sign_draft'); }catch(e){} form.style.display='none'; done.style.display='block'; done.scrollIntoView({behavior:'smooth',block:'center'}); }
 
         if (sb) {
           sb.from('agreement_signatures').insert([rec]).then(function(res){
@@ -371,6 +417,78 @@
           if(res && res.error){ ebShow('Could not save — run AGREEMENT_CONTENT_SETUP.sql and make sure you are signed in as the owner. ('+(res.error.message||'')+')', false); return; }
           exitEdit(); ebShow('Saved. Northwell will now see your edited version.', true);
         }, function(){ btn.disabled=false; btn.textContent='Save'; ebShow('Network error — please try again.', false); });
+      });
+
+      // ── Helpers ─────────────────────────────────────────────────────
+      function val(id){ var e=document.getElementById(id); return e ? (e.value||'').trim() : ''; }
+      function setv(id,v){ var e=document.getElementById(id); if(e && v!=null) e.value=v; }
+
+      // ── Save draft (this device) ────────────────────────────────────
+      var DRAFT_KEY='auric_northwell_sign_draft';
+      var draftNote=document.getElementById('draftNote');
+      function showDraftNote(t){ if(draftNote){ draftNote.textContent=t; draftNote.style.display='block'; } }
+      function clearDraft(){ try{ localStorage.removeItem(DRAFT_KEY); }catch(e){} }
+      document.getElementById('saveDraft').addEventListener('click', function(){
+        try {
+          localStorage.setItem(DRAFT_KEY, JSON.stringify({ nm:val('nm'), ti:val('ti'), org:val('org'), em:val('em'), sig:val('sig'), change:val('change-msg') }));
+          showDraftNote('Draft saved on this device — come back any time to finish.');
+        } catch(e){ showDraftNote('Could not save a draft in this browser.'); }
+      });
+      (function restoreDraft(){
+        try {
+          var d=JSON.parse(localStorage.getItem(DRAFT_KEY)||'null'); if(!d) return;
+          setv('nm',d.nm); setv('ti',d.ti); if(d.org) setv('org',d.org); setv('em',d.em); setv('sig',d.sig); setv('change-msg',d.change);
+          if(d.nm||d.em||d.sig||d.change) showDraftNote('Draft restored from this device.');
+        } catch(e){}
+      })();
+
+      // ── Download as Word (.doc) ─────────────────────────────────────
+      document.getElementById('dlWord').addEventListener('click', function(){
+        var lines='';
+        try { document.querySelectorAll('#deal li').forEach(function(li){
+          var k=li.querySelector('.k'), v=li.querySelector('.v');
+          if(k&&v) lines+='<p style="margin:2px 0;"><b>'+k.textContent+':</b> '+v.innerHTML+'</p>';
+        }); } catch(e){}
+        var terms=document.getElementById('terms').innerHTML;
+        var html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>Auric Movement — Professional Services Agreement</title></head>'
+          +'<body style="font-family:Georgia,serif;font-size:11pt;color:#2b2b2b;">'
+          +'<h1 style="color:#5B4A36;">Professional Services Agreement</h1>'
+          +'<h2 style="color:#5B4A36;">At a glance</h2>'+lines
+          +'<hr>'+terms+'</body></html>';
+        var blob=new Blob(['﻿',html],{type:'application/msword'});
+        var url=URL.createObjectURL(blob);
+        var a=document.createElement('a'); a.href=url; a.download='Auric-Northwell-Pilates-Agreement.doc';
+        document.body.appendChild(a); a.click();
+        setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 600);
+      });
+
+      // ── Download / print PDF ────────────────────────────────────────
+      document.getElementById('dlPdf').addEventListener('click', function(){ window.print(); });
+
+      // ── Request changes ─────────────────────────────────────────────
+      var changeblock=document.getElementById('changeblock');
+      document.getElementById('wantChanges').addEventListener('click', function(){
+        changeblock.style.display='block';
+        changeblock.scrollIntoView({behavior:'smooth', block:'center'});
+        try{ document.getElementById('change-msg').focus(); }catch(e){}
+      });
+      document.getElementById('sendChanges').addEventListener('click', function(){
+        var cErr=document.getElementById('cErr'); cErr.style.display='none';
+        var name=val('nm'), email=val('em'), msg=val('change-msg');
+        function ce(m){ cErr.textContent=m; cErr.style.display='block'; }
+        if(!name){ ce('Please add your name in the form above first.'); return; }
+        if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ ce('Please add a valid email in the form above first.'); return; }
+        if(!msg){ ce('Please describe the changes you’d like.'); return; }
+        var b=this; b.disabled=true; b.textContent='Sending…';
+        var rec={ agreement:CONTENT_ID, signer_name:name, signer_title:val('ti'), signer_org:val('org')||null, signer_email:email, typed_signature:null, agreed:false, change_request:msg, user_agent:(navigator&&navigator.userAgent)||null };
+        try { var arr=JSON.parse(localStorage.getItem('auric_agreement_change_requests')||'[]'); arr.push(Object.assign({at:new Date().toISOString()},rec)); localStorage.setItem('auric_agreement_change_requests', JSON.stringify(arr)); } catch(e){}
+        function cfin(){ clearDraft(); document.getElementById('sign-form').style.display='none'; changeblock.style.display='none'; document.getElementById('cDone').style.display='block'; document.getElementById('cDone').scrollIntoView({behavior:'smooth',block:'center'}); }
+        if(sb){
+          sb.from('agreement_signatures').insert([rec]).then(function(res){
+            if(res&&res.error){ b.disabled=false; b.textContent='Send requested changes'; ce('Could not send — the signatures table may need the change_request column (re-run AGREEMENT_SIGNATURES_SETUP.sql). ('+(res.error.message||'')+')'); return; }
+            cfin();
+          }, function(){ b.disabled=false; b.textContent='Send requested changes'; ce('Network error — please try again.'); });
+        } else { cfin(); }
       });
     })();
   </script>
