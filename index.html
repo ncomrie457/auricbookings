@@ -2954,14 +2954,27 @@
       </button>
 
       <!-- Turkey Burn! — Nov 21, Valley Studio. Opens the Turkey Burn booking overlay. -->
-      <button type="button" id="event-card-turkey" class="bq-event scroll-reveal" data-event-date="2026-11-21" data-event-name="Turkey Burn!" data-location="long-island">
+      <button type="button" id="event-card-turkey" class="bq-event scroll-reveal" data-event-date="2026-11-21" data-event-name="Pre-Turkey Burn" data-location="long-island">
         <div class="bq-event-photo">
-          <img src="turkey-burn-flyer.jpg?v=3" alt="Turkey Burn! on the Reformer &#8212; Saturday, November 21 at Valley Studio, West Hempstead NY &#183; two sessions (12:30 &amp; 1:30 PM) &#183; $45" loading="lazy" decoding="async">
+          <img src="turkey-burn-flyer.jpg?v=3" alt="Pre-Turkey Burn on the Reformer &#8212; Saturday, November 21 at Valley Studio, West Hempstead NY &#183; two sessions (12:30 &amp; 1:30 PM) &#183; $45" loading="lazy" decoding="async">
         </div>
-        <div class="bq-event-date">11.21.26 &#183; Turkey Burn</div>
-        <div class="bq-event-name">Turkey <em>Burn!</em></div>
+        <div class="bq-event-date">11.21.26 &#183; Pre-Turkey Burn</div>
+        <div class="bq-event-name">Pre-Turkey <em>Burn</em></div>
         <div class="bq-event-loc">West Hempstead, NY</div>
         <div class="bq-event-sub">Sat &#183; 12:30 &amp; 1:30 PM &#183; $45 &#183; Valley Studio, West Hempstead NY</div>
+        <div class="bq-event-raffle">&#127903; Prize drawing &#183; win a 4-class package</div>
+        <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
+      </button>
+
+      <!-- Post-Turkey Burn — Nov 28, Valley Studio. Opens the Post-Turkey Burn booking overlay. -->
+      <button type="button" id="event-card-turkey28" class="bq-event scroll-reveal" data-event-date="2026-11-28" data-event-name="Post-Turkey Burn" data-location="long-island">
+        <div class="bq-event-photo">
+          <img src="turkey-burn-flyer.jpg?v=3" alt="Post-Turkey Burn on the Reformer &#8212; Saturday, November 28 at Valley Studio, West Hempstead NY &#183; 12:30 PM &#183; $45" loading="lazy" decoding="async">
+        </div>
+        <div class="bq-event-date">11.28.26 &#183; Post-Turkey Burn</div>
+        <div class="bq-event-name">Post-Turkey <em>Burn</em></div>
+        <div class="bq-event-loc">West Hempstead, NY</div>
+        <div class="bq-event-sub">Sat &#183; 12:30 PM &#183; $45 &#183; Valley Studio, West Hempstead NY</div>
         <div class="bq-event-raffle">&#127903; Prize drawing &#183; win a 4-class package</div>
         <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
       </button>
@@ -3233,7 +3246,8 @@
           {id:'event-card-reformer', tag:'Almost sold out', cls:'warn'},
           {id:'event-card-reformer-bk', tag:'Almost sold out', cls:'warn'},
           {id:'event-card-halloween', tag:'Now booking', cls:'ok'},
-          {id:'event-card-turkey', tag:'Now booking', cls:'ok'}
+          {id:'event-card-turkey', tag:'Now booking', cls:'ok'},
+          {id:'event-card-turkey28', tag:'Now booking', cls:'ok'}
         ];
         var out='';
         items.forEach(function(it){
@@ -6052,7 +6066,7 @@ document.addEventListener('DOMContentLoaded', function(){
   <div class="rf-modal">
     <button type="button" class="rf-x" id="turkey-close" aria-label="Close">&times;</button>
     <div class="rf-eyebrow">Auric Movement</div>
-    <h2 class="rf-title">Turkey Burn!</h2>
+    <h2 class="rf-title">Pre-Turkey Burn</h2>
     <p class="rf-meta"><span id="tb-head-date">Saturday, November 21</span> &middot; Valley Studio, West Hempstead NY</p>
     <p class="rf-meta"><strong>$45</strong> &middot; 45-minute session &middot; only 6 spots each</p>
     <p class="rf-goodie">Come sweat out the Thanksgiving food on the Reformer &#127831;</p>
@@ -6258,8 +6272,7 @@ document.addEventListener('DOMContentLoaded', function(){
   // ── Payment confirmation (Stripe returns to ?paid=turkey&s=tb1230|tb130) ──
   var TB_CONF = {
     'tb1230':    { label:'12:30 PM session', date:'Saturday, November 21', cal:'https://book.auricmovement.com/calendar/add/?e=turkey-burn-1230pm' },
-    'tb130':     { label:'1:30 PM session',  date:'Saturday, November 21', cal:'https://book.auricmovement.com/calendar/add/?e=turkey-burn-130pm' },
-    'tb28_1230': { label:'12:30 PM session', date:'Saturday, November 28', cal:'https://book.auricmovement.com/calendar/add/?e=turkey-burn-1128-1230pm' }
+    'tb130':     { label:'1:30 PM session',  date:'Saturday, November 21', cal:'https://book.auricmovement.com/calendar/add/?e=turkey-burn-130pm' }
   };
   function tbShowConfirmed(sk){
     var m=TB_CONF[sk]||TB_CONF['tb1230'];
@@ -6273,6 +6286,172 @@ document.addEventListener('DOMContentLoaded', function(){
     try { var arr=JSON.parse(localStorage.getItem('auric_turkey_burn')||'[]'); if(arr.length){ arr[arr.length-1].is_paid=true; localStorage.setItem('auric_turkey_burn', JSON.stringify(arr)); } } catch(e){}
   }
   try { var _tp=new URLSearchParams(location.search); if(_tp.get('paid')==='turkey'){ var _ts=_tp.get('s'); if(!TB_CONF[_ts]) _ts='tb1230'; setTimeout(function(){ tbShowConfirmed(_ts); }, 300); } } catch(e){}
+});
+</script>
+
+<!-- ══ Post-Turkey Burn booking overlay (Nov 28, Valley Studio) ══ -->
+<div id="turkey28-overlay" style="display:none;position:fixed;inset:0;background:rgba(44,26,14,.85);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);z-index:9999;align-items:center;justify-content:center;padding:1rem;overflow-y:auto;">
+  <div class="rf-modal">
+    <button type="button" class="rf-x" id="turkey28-close" aria-label="Close">&times;</button>
+    <div class="rf-eyebrow">Auric Movement</div>
+    <h2 class="rf-title">Post-Turkey Burn</h2>
+    <p class="rf-meta">Saturday, November 28 &middot; Valley Studio, West Hempstead NY</p>
+    <p class="rf-meta"><strong>$45</strong> &middot; 45-minute session &middot; 12:30 PM</p>
+    <p class="rf-goodie">Sweat off the Thanksgiving feast on the Reformer &#127831;</p>
+    <div class="rf-raffle">
+      <span class="rf-raffle-tag">&#127903; Prize drawing</span>
+      <strong>Every paid attendee is entered to win a 4-class package at Valley Studio.</strong>
+      <span class="rf-raffle-fine">Winner drawn at random at the event &mdash; must be present to win. One fun catch &mdash; try a different instructor for each of the four classes.<br>No purchase necessary to enter; free entry available &mdash; <a href="/raffle-rules" target="_blank" rel="noopener" style="color:#9a6535;text-decoration:underline;">official rules</a>.</span>
+    </div>
+
+    <form id="tb28-step-form" novalidate>
+      <div class="rf-chosen">Booking: <strong>Saturday, Nov 28 &middot; 12:30 PM session</strong></div>
+      <div class="rf-field"><label for="tb28-name">Full name</label><input type="text" id="tb28-name" autocomplete="name" placeholder="Your name"></div>
+      <div class="rf-field"><label for="tb28-email">Email</label><input type="email" id="tb28-email" autocomplete="email" placeholder="you@email.com"></div>
+      <div class="rf-field"><label for="tb28-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="tb28-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
+      <div class="rf-field"><label for="tb28-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="tb28-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:9px;font-family:'Jost',sans-serif;font-size:.92rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
+      <div class="rf-ack">
+        <input type="checkbox" id="tb28-refund">
+        <label for="tb28-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">All sales are final &mdash; no refunds or credits. Can&rsquo;t make it? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names.</span></label>
+      </div>
+      <div class="rf-ack">
+        <input type="checkbox" id="tb28-waiver" disabled>
+        <label for="tb28-waiver">I have read and agree to the <a id="tb28-open-waiver" role="button" tabindex="0">liability waiver</a>. <span class="rf-opt">(open it to continue)</span></label>
+      </div>
+      <div id="tb28-waiver-box" style="display:none;max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:9px;padding:.75rem .85rem;margin:.2rem 0 .4rem;background:#fdfbf7;font-size:.82rem;line-height:1.6;color:#3d322a;"></div>
+      <div class="rf-field"><label for="tb28-sign">Signature &mdash; type your full name</label><input type="text" id="tb28-sign" autocomplete="off" placeholder="Type your full name to sign"></div>
+      <div class="rf-field">
+        <label for="tb28-sigpad">And draw your signature</label>
+        <div style="position:relative;">
+          <canvas id="tb28-sigpad" width="500" height="140" style="width:100%;height:140px;border:1px solid var(--border);border-radius:9px;background:#fff;touch-action:none;cursor:crosshair;display:block;"></canvas>
+          <button type="button" id="tb28-sig-clear" style="position:absolute;top:6px;right:8px;background:#fff;border:1px solid var(--border);border-radius:6px;font-size:.72rem;padding:.2rem .55rem;cursor:pointer;font-family:'Jost',sans-serif;color:#8a5a2a;">Clear</button>
+        </div>
+      </div>
+      <div class="rf-err" id="tb28-form-err" role="alert"></div>
+      <button type="submit" class="rf-btn" id="tb28-continue" disabled>Continue to payment &rarr;</button>
+    </form>
+
+    <div id="tb28-step-pay" style="display:none;">
+      <p class="rf-meta" style="margin-bottom:1rem;">&#10004; You&rsquo;re all set, <strong id="tb28-pay-name"></strong>. Complete payment to lock your 12:30 PM spot:</p>
+      <stripe-buy-button buy-button-id="buy_btn_1UAvzNCyx5PIptEiEXn4BW68" publishable-key="pk_live_51TSmNuCyx5PIptEi8SCgMFB3I7ECVFeAzDOwjj1ZLrVZX1scB6cH8wAjNor3SFilMwMuqo0aFsbsckjYLU33iSAp00tmUxBVlK"></stripe-buy-button>
+      <p class="rf-policy" style="margin-top:.9rem;">You&rsquo;ll get a Stripe receipt by email. Questions? auricmovement@outlook.com</p>
+      <div style="margin-top:1rem;border-top:1px solid var(--border);padding-top:.9rem;">
+        <button type="button" id="tb28-pay-later" class="rf-close-link" style="margin-top:0;">I&rsquo;ll pay later</button>
+        <p id="tb28-pay-later-note" class="rf-policy" style="display:none;margin-top:.7rem;color:#8a5a2a;">Got it &mdash; we&rsquo;ve saved your details. Heads up: <strong>spots aren&rsquo;t held and are released first come, first served until payment is received</strong>, so pay soon to secure your place.</p>
+      </div>
+    </div>
+
+    <div id="tb28-step-confirmed" style="display:none;">
+      <div class="rf-conf-banner">&#10004; Payment received &mdash; you&rsquo;re booked!</div>
+      <p class="rf-meta" style="margin:0 0 1rem;">See you Saturday, November 28 for your <strong>12:30 PM session</strong>. Sweat off the Thanksgiving feast &#127831;</p>
+      <p class="rf-meta" style="margin:0 0 1rem;">&#127903; You&rsquo;re entered to win a 4-class Valley Studio package &mdash; drawn at random at the event (must be present).</p>
+      <div id="tb28-conf-cal" class="rf-cal-wrap"></div>
+      <div class="bag-reserve-cta" style="margin:1.1rem 0 0;padding:.95rem 1.1rem;background:#fffdf9;border:1px solid #e6dbc8;border-radius:12px;">
+        <span style="display:block;font-family:Georgia,serif;font-size:1rem;color:#5A3A1A;font-weight:600;">&#128092; Want the AURIC MVMT bag too?</span>
+        <span style="display:block;font-size:.85rem;color:#6b5d4f;margin:.3rem 0 .35rem;line-height:1.55;">Reserve yours &mdash; $30, pay at pickup. No payment now &mdash; one click and we&rsquo;ll set one aside.</span>
+        <span style="display:block;font-size:.8rem;color:#9c6b34;font-weight:600;margin:0 0 .75rem;">Limited quantity &mdash; first come, first served. Reserve to hold yours.</span>
+        <button type="button" onclick="auricBagReserve(this,'auric_turkey28')" style="border:none;border-radius:999px;background:#5A3A1A;color:#f5efe0;font-family:inherit;font-weight:600;font-size:.9rem;letter-spacing:.02em;padding:.6rem 1.4rem;cursor:pointer;">Yes, reserve mine &#10022;</button>
+      </div>
+    </div>
+
+    <div class="rf-getting">
+      <h4>Getting there</h4>
+      <p><strong>Valley Studio</strong><br>45 Cherry Valley Ave, West Hempstead, NY 11552</p>
+      <p><a class="rf-map" href="https://maps.google.com/?q=45+Cherry+Valley+Ave+West+Hempstead+NY+11552" target="_blank" rel="noopener noreferrer">Open in Google Maps &rarr;</a></p>
+    </div>
+
+    <button type="button" class="rf-close-link" id="turkey28-close2">Close</button>
+  </div>
+</div>
+
+<script>
+/* Post-Turkey Burn! booking flow (Nov 28) — shares reformer_registrations via
+   event='turkey-burn-2026-11-28'; single 12:30 session; Stripe buy button.
+   Confirmation returns via ?paid=turkey28. */
+document.addEventListener('DOMContentLoaded', function(){
+  var card = document.getElementById('event-card-turkey28');
+  var ov   = document.getElementById('turkey28-overlay');
+  if(!card || !ov) return;
+
+  var TB28_EVENT = 'turkey-burn-2026-11-28';
+  var TB28_SESSION = 'tb28_1230';
+  var TB28_LABEL = '12:30 PM session';
+
+  var _sb=null;
+  function sb(){ if(_sb) return _sb; try { if(window.supabase && window.supabase.createClient){ _sb = window.supabase.createClient('https://qvmiwyxerotkqpbuhpun.supabase.co','sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ'); }} catch(e){} return _sb; }
+
+  var stepForm=document.getElementById('tb28-step-form'),
+      stepPay =document.getElementById('tb28-step-pay'),
+      nameEl=document.getElementById('tb28-name'), emailEl=document.getElementById('tb28-email'),
+      refEl=document.getElementById('tb28-referral'), healthEl=document.getElementById('tb28-health'),
+      refundEl=document.getElementById('tb28-refund'), waiverEl=document.getElementById('tb28-waiver'),
+      signEl=document.getElementById('tb28-sign'), formErr=document.getElementById('tb28-form-err'),
+      continueBtn=document.getElementById('tb28-continue'),
+      waiverBox=document.getElementById('tb28-waiver-box');
+  var tbSig=window.AuricSigPad(document.getElementById('tb28-sigpad'), document.getElementById('tb28-sig-clear'));
+
+  function openOv(){ ov.style.display='flex'; document.body.style.overflow='hidden'; }
+  function closeOv(){ ov.style.display='none'; document.body.style.overflow=''; }
+  card.addEventListener('click', openOv);
+  document.getElementById('turkey28-close').addEventListener('click', closeOv);
+  document.getElementById('turkey28-close2').addEventListener('click', closeOv);
+  ov.addEventListener('click', function(e){ if(e.target===ov) closeOv(); });
+
+  document.getElementById('tb28-open-waiver').addEventListener('click', function(){
+    if(!waiverBox.innerHTML){
+      var cl=(window.__RF_CLAUSES||[]);
+      var html=cl.map(function(c){ return '<p style="margin:0 0 .6rem;">'+c+'</p>'; }).join('');
+      html+='<p style="margin:.6rem 0 .2rem;font-weight:600;">Refund policy</p><p style="margin:0;">'+(window.__RF_REFUND_TEXT||'')+'</p>';
+      waiverBox.innerHTML=html;
+    }
+    var showing = waiverBox.style.display && waiverBox.style.display!=='none';
+    waiverBox.style.display = showing ? 'none' : 'block';
+    waiverEl.disabled=false;
+  });
+  function syncContinue(){ continueBtn.disabled = !(refundEl.checked && waiverEl.checked); }
+  refundEl.addEventListener('change', syncContinue);
+  waiverEl.addEventListener('change', syncContinue);
+
+  stepForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    var name=nameEl.value.trim(), email=emailEl.value.trim(), sign=signEl.value.trim();
+    if(name.length<2){ formErr.textContent='Please enter your full name.'; nameEl.focus(); return; }
+    if(!/.+@.+\..+/.test(email)){ formErr.textContent='Please enter a valid email.'; emailEl.focus(); return; }
+    if(!refundEl.checked){ formErr.textContent='Please confirm you understand the refund policy.'; return; }
+    if(!waiverEl.checked){ formErr.textContent='Please open and agree to the liability waiver.'; return; }
+    if(sign.length<2){ formErr.textContent='Please type your full name to sign.'; signEl.focus(); return; }
+    if(tbSig.isEmpty()){ formErr.textContent='Please draw your signature in the box.'; return; }
+    formErr.textContent='';
+    var rec={
+      name:name, email:email, session:TB28_SESSION, session_label:TB28_LABEL,
+      referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
+      signature:sign, signature_data:tbSig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:18),
+      refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
+      waiver_agreed:true, is_paid:false, created_at:new Date().toISOString(), event:TB28_EVENT
+    };
+    try { var k='auric_turkey28'; var a=JSON.parse(localStorage.getItem(k)||'[]'); a.push(rec); localStorage.setItem(k,JSON.stringify(a)); } catch(e){}
+    try { var c=sb(); if(c) window.rfSafeInsert(c, rec); } catch(e){}
+    document.getElementById('tb28-pay-name').textContent=name.split(' ')[0];
+    stepForm.style.display='none'; stepPay.style.display='';
+    stepPay.scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
+  document.getElementById('tb28-pay-later').addEventListener('click', function(){
+    document.getElementById('tb28-pay-later-note').style.display='block';
+    if(this._pp) return; this._pp=1;
+    window.auricSendPayPending && window.auricSendPayPending({ event:TB28_EVENT,
+      name:(nameEl.value||'').trim(), email:(emailEl.value||'').trim(), sessionLabel:TB28_LABEL, stripeUrl:'' });
+  });
+  // Deep link → open the booking popup.
+  try { if(new URLSearchParams(location.search).get('book')==='turkey28'){ setTimeout(openOv, 450); } } catch(e){}
+  // ── Payment confirmation (Stripe returns to ?paid=turkey28) ──
+  function tb28ShowConfirmed(){
+    document.getElementById('tb28-conf-cal').innerHTML=window.auricCalButtons('https://book.auricmovement.com/calendar/add/?e=turkey-burn-1128-1230pm');
+    stepForm.style.display='none'; stepPay.style.display='none';
+    document.getElementById('tb28-step-confirmed').style.display='';
+    openOv();
+    try { var arr=JSON.parse(localStorage.getItem('auric_turkey28')||'[]'); if(arr.length){ arr[arr.length-1].is_paid=true; localStorage.setItem('auric_turkey28', JSON.stringify(arr)); } } catch(e){}
+  }
+  try { if(new URLSearchParams(location.search).get('paid')==='turkey28'){ setTimeout(tb28ShowConfirmed, 300); } } catch(e){}
 });
 </script>
 
@@ -9161,6 +9340,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var reformerBkContainer = document.createElement('div'); reformerBkContainer.id = 'admin-reformer-bk-container';
     var halloweenContainer = document.createElement('div'); halloweenContainer.id = 'admin-halloween-container';
     var turkeyContainer   = document.createElement('div'); turkeyContainer.id   = 'admin-turkey-container';
+    var turkey28Container = document.createElement('div'); turkey28Container.id = 'admin-turkey28-container';
     var bloomContainer    = document.createElement('div'); bloomContainer.id    = 'admin-bloom-container';
     var riddimContainer   = document.createElement('div'); riddimContainer.id   = 'admin-riddim-interest-container';
     var bagContainer      = document.createElement('div'); bagContainer.id      = 'admin-bag-reserve-container';
@@ -9168,6 +9348,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Tag each event section with its date so the filter can sort past vs upcoming.
     bloomContainer.setAttribute('data-event-date', '2026-12-13');
     turkeyContainer.setAttribute('data-event-date', '2026-11-21');
+    turkey28Container.setAttribute('data-event-date', '2026-11-28');
     halloweenContainer.setAttribute('data-event-date', '2026-10-24');
     reformerBkContainer.setAttribute('data-event-date', '2026-09-26');
     reformerContainer.setAttribute('data-event-date', '2026-09-13');
@@ -9191,7 +9372,8 @@ document.addEventListener('DOMContentLoaded', function() {
     body.appendChild(reformerContainer);   // Riddim & Kompa — Valley — Sep 13
     body.appendChild(reformerBkContainer); // Riddim & Kompa — Brooklyn — Sep 26
     body.appendChild(halloweenContainer);  // Shhh… Quiet on the Creek — Oct 24
-    body.appendChild(turkeyContainer);     // Turkey Burn! — Nov 21
+    body.appendChild(turkeyContainer);     // Pre-Turkey Burn — Nov 21
+    body.appendChild(turkey28Container);   // Post-Turkey Burn — Nov 28
     body.appendChild(bloomContainer);      // Something's Blooming — Dec 13
     body.appendChild(riddimContainer);     // Riddim & Kompa — next-date interest list
     body.appendChild(bagContainer);        // AURIC MVMT bag — reserve list
@@ -9218,6 +9400,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof renderReformerSection === 'function') renderReformerSection(reformerContainer);
     if (typeof renderReformerBkSection === 'function') renderReformerBkSection(reformerBkContainer);
     if (typeof renderReformerTbSection === 'function') renderReformerTbSection(turkeyContainer);
+    if (typeof renderReformerTb28Section === 'function') renderReformerTb28Section(turkey28Container);
     if (typeof renderReformerHwSection === 'function') renderReformerHwSection(halloweenContainer);
     if (typeof renderBloomingSection === 'function') renderBloomingSection(bloomContainer);
     if (typeof renderRiddimInterestSection === 'function') renderRiddimInterestSection(riddimContainer);
@@ -12127,7 +12310,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function foundingKey(email,ev,sess){ return (email||'').toLowerCase()+'|'+(ev||'')+'|'+(sess||''); }
   function fbBadge(rec){ return _foundingSent[foundingKey(rec.email, rec.event, rec.session)] ? ' <span class="atype" style="background:#eef3e8;color:#3b6b3f;">🎁 Founding One</span>' : ''; }
   window.markFoundingSent = function(email,ev,sess){ _foundingSent[foundingKey(email,ev,sess)] = true; try { localStorage.setItem('auric_founding_sent', JSON.stringify(_foundingSent)); } catch(e){} if(typeof rfRefresh==='function') rfRefresh(); };
-  function rfRefresh(){ if(rfAdminContainer) renderReformerSection(rfAdminContainer); if(rfBkAdminContainer) renderReformerBkSection(rfBkAdminContainer); if(rfTbAdminContainer) renderReformerTbSection(rfTbAdminContainer); if(rfHwAdminContainer) renderReformerHwSection(rfHwAdminContainer); }
+  function rfRefresh(){ if(rfAdminContainer) renderReformerSection(rfAdminContainer); if(rfBkAdminContainer) renderReformerBkSection(rfBkAdminContainer); if(rfTbAdminContainer) renderReformerTbSection(rfTbAdminContainer); if(rfTb28AdminContainer) renderReformerTb28Section(rfTb28AdminContainer); if(rfHwAdminContainer) renderReformerHwSection(rfHwAdminContainer); }
   // Build a "⏳ Waitlist" sub-block for one event (rows = full roster; filters type='waitlist').
   function rfWaitlistBlock(allRows, eventId){
     var waits = (allRows||[]).filter(function(r){ return r.type==='waitlist' && r.event===eventId; });
@@ -12316,6 +12499,51 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ─── Turkey Burn! roster (shares reformer_registrations) ───────────────
   var rfTbAdminContainer = null;
+  var rfTb28AdminContainer = null;
+  function renderReformerTb28Section(container){
+    if(!container) return;
+    rfTb28AdminContainer = container;
+    var _prevBlk = container.querySelector('.admin-session-block');
+    var block = document.createElement('div'); block.className='admin-session-block' + ((_prevBlk ? _prevBlk.classList.contains('collapsed') : isEventPast('2026-11-28'))?' collapsed':'');
+    function btn(onclick,bg,bd,fg,label){ return '<button onclick="'+onclick+'" style="background:'+bg+';border:1px solid '+bd+';color:'+fg+';border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">'+label+'</button>'; }
+    function render(rows, err){
+      rows.forEach(function(r){ rfRosterById[r.id] = r; });
+      var display = rows.filter(function(r){ return r.event === 'turkey-burn-2026-11-28' && r.type!=='waitlist'; });
+      var paid = display.filter(function(r){ return r.is_paid; }).length;
+      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F983} Post-Turkey Burn · Nov 28th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(12:30 PM)</span></h3>';
+      if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
+      if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
+      display.sort(function(a,b){ return (a.created_at||'').localeCompare(b.created_at||''); });
+      display.forEach(function(rec){
+        rfRosterById[rec.id] = rec;
+        var id = rec.id;
+        var item=document.createElement('div'); item.className='admin-sub-item';
+        var badge = rec.is_paid ? '<span class="atype" style="background:#e8f5e9;color:#2e7d32;">paid</span>' : '<span class="atype" style="background:#fef9e7;color:#7a6320;">pending</span>';
+        var ref = rec.referred_by ? '<br><span style="font-size:.75rem;color:#8a5a2a;">\u{1F91D} Referred by '+escapeHTML(rec.referred_by)+'</span>' : '';
+        var health = rec.health ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;white-space:pre-line;"><strong style="color:var(--gold-text);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">\u{1FA79} Health disclosure:</strong><br>'+escapeHTML(rec.health)+'</div>' : '';
+        var sig = rec.signature ? '<br><span style="font-size:.72rem;color:var(--text-muted);">\u{270D}\u{FE0F} Signed: '+escapeHTML(rec.signature)+'</span>' : '';
+        var when = ''; try { when = rec.created_at ? new Date(rec.created_at).toLocaleString() : ''; } catch(e){}
+        var paidBtn = rec.is_paid
+          ? btn('rfAdminSetPaid('+id+',false)','#fff4e5','#f0c890','#a86617','⏳ Mark unpaid')
+          : btn('rfAdminSetPaid('+id+',true)','#e8f5e9','#a5d6a7','#2e7d32','✅ Mark paid');
+        var waiverBtn = rec.signature ? btn('rfAdminWaiver('+id+')','#eef4fb','#b5d4f4','#185fa5','\u{1F4C4} Waiver') : '';
+        var clearHealthBtn = rec.health ? btn('rfAdminClearHealth('+id+')','#fef4e5','#f0c890','#a86617','\u{1FA79} Clear health') : '';
+        var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
+          '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">12:30 PM</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+paidBtn+waiverBtn+clearHealthBtn+removeBtn+'</div></div>';
+        block.appendChild(item);
+      });
+    }
+    container.innerHTML=''; container.appendChild(block);
+    try {
+      supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(res){
+        if(res && res.error){ render([], true); return; }
+        render((res && res.data) || [], false);
+      }, function(){ render([], true); });
+    } catch(e){ render([], true); }
+  }
+
   function renderReformerTbSection(container){
     if(!container) return;
     rfTbAdminContainer = container;
