@@ -9118,7 +9118,8 @@ document.addEventListener('DOMContentLoaded', function() {
             + (r.signer_email?'<br><span class="aemail">'+escapeHTML(r.signer_email)+'</span>':'')
             + (r.signer_org?'<br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(r.signer_org)+'</span>':'')
             + '<br><span style="font-size:.72rem;color:var(--gold-text);font-style:italic;">signed: &ldquo;'+escapeHTML(r.typed_signature||'')+'&rdquo;</span>'
-            + '</div><div style="text-align:right;"><span style="font-size:.72rem;color:var(--text-muted);">'+escapeHTML(when(r))+'</span></div></div>';
+            + '</div><div style="text-align:right;"><span style="font-size:.72rem;color:var(--text-muted);">'+escapeHTML(when(r))+'</span>'
+            + '<br><button onclick="removeNorthwellRow(\''+r.id+'\')" style="margin-top:.3rem;background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128465; Remove</button></div></div>';
         });
         html += '<div style="font-size:.72rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#a86617;margin:.9rem 0 .4rem;">&#9998; Change requests ('+changes.length+')</div>';
         if (!changes.length) html += '<div style="color:var(--text-muted);font-size:.8rem;">None.</div>';
@@ -9127,12 +9128,20 @@ document.addEventListener('DOMContentLoaded', function() {
             + '<div style="display:flex;justify-content:space-between;gap:.5rem;">'
             + '<div><span class="aname">'+escapeHTML(r.signer_name||'')+'</span>'
             + (r.signer_email?'<br><span class="aemail">'+escapeHTML(r.signer_email)+'</span>':'')+'</div>'
-            + '<div style="text-align:right;"><span style="font-size:.72rem;color:var(--text-muted);">'+escapeHTML(when(r))+'</span></div></div>'
+            + '<div style="text-align:right;"><span style="font-size:.72rem;color:var(--text-muted);">'+escapeHTML(when(r))+'</span>'
+            + '<br><button onclick="removeNorthwellRow(\''+r.id+'\')" style="margin-top:.3rem;background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128465;</button></div></div>'
             + '<div style="margin-top:.4rem;padding:.5rem .65rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.82rem;color:#3d322a;white-space:pre-line;line-height:1.55;">'+escapeHTML(r.change_request||'')+'</div></div>';
         });
         body.innerHTML = html;
       }, function(){ body.innerHTML = '<div class="empty-state">Could not load.</div>'; });
   }
+  window.removeNorthwellRow = function(id){
+    if (!confirm('Remove this entry? This cannot be undone.')) return;
+    supabase.from('agreement_signatures').delete().eq('id', id).then(function(res){
+      if (res && res.error){ alert('Could not remove: ' + res.error.message + '\n\nIf this mentions permissions, re-run AGREEMENT_SIGNATURES_SETUP.sql (it adds the delete policy).'); return; }
+      renderNorthwellAgreement();
+    }, function(){ alert('Could not remove. Please try again.'); });
+  };
 
   var adminEventFilterValue = 'all'; // admin panel event filter: 'all' | 'recent' | 'past'
   function renderAdmin(){

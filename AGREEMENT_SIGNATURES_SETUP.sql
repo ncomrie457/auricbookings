@@ -39,7 +39,12 @@ drop policy if exists sig_owner_read on public.agreement_signatures;
 create policy sig_owner_read on public.agreement_signatures
   for select to authenticated using (public.is_owner());
 
+-- Only the owner can delete (for test / spam cleanup).
+drop policy if exists sig_owner_del on public.agreement_signatures;
+create policy sig_owner_del on public.agreement_signatures
+  for delete to authenticated using (public.is_owner());
+
 grant insert on public.agreement_signatures to anon, authenticated;
-grant select on public.agreement_signatures to authenticated;
+grant select, delete on public.agreement_signatures to authenticated;
 
 select 'agreement_signatures ready — the /northwell signing page can now record signatures.' as status;
