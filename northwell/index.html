@@ -61,6 +61,29 @@
     .foot{margin:2rem 1.2rem 0;text-align:center;}
     .foot .home{display:block;margin-top:1.2rem;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);text-decoration:none;}
     .foot .home:hover{color:var(--brown);}
+    .foot .owner{display:inline-block;margin-top:1rem;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:#cbbfa8;background:none;border:none;cursor:pointer;font-family:inherit;}
+    .foot .owner:hover{color:var(--gold);}
+    /* Owner edit mode */
+    .editing #deal, .editing #terms{outline:2px dashed var(--gold);outline-offset:4px;background:#fffef7;border-radius:8px;}
+    [contenteditable="true"]{cursor:text;}
+    #editbar{position:fixed;left:0;right:0;bottom:0;z-index:90;display:none;gap:.6rem;justify-content:center;align-items:center;padding:.8rem 1rem;background:#5a4327;color:#fff;box-shadow:0 -6px 24px rgba(0,0,0,.2);}
+    #editbar.show{display:flex;}
+    #editbar span{font-size:.82rem;opacity:.85;margin-right:.4rem;}
+    #editbar button{border:none;border-radius:999px;padding:.55rem 1.2rem;font-family:'Jost',sans-serif;font-weight:600;font-size:.82rem;letter-spacing:.05em;cursor:pointer;}
+    #ebSave{background:var(--gold);color:#3a2c14;}
+    #ebCancel{background:rgba(255,255,255,.15);color:#fff;}
+    #eb-msg{position:fixed;left:0;right:0;bottom:64px;text-align:center;font-size:.85rem;z-index:91;display:none;}
+    /* login modal */
+    #ov{position:fixed;inset:0;background:rgba(44,26,14,.85);z-index:100001;display:none;align-items:center;justify-content:center;padding:1rem;}
+    #ov.show{display:flex;}
+    #ov .box{background:#fdfbf7;border:1px solid #e6dbc8;border-radius:16px;max-width:380px;width:100%;padding:1.6rem 1.5rem;box-shadow:0 24px 64px rgba(44,26,14,.4);}
+    #ov h3{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--brown-deep);font-size:1.4rem;margin:0 0 .3rem;}
+    #ov p{color:var(--muted);font-size:.82rem;margin:0 0 1rem;}
+    #ov label{display:block;font-size:.72rem;font-weight:600;color:var(--brown);margin:.5rem 0 .3rem;text-transform:uppercase;letter-spacing:.05em;}
+    #ov input{width:100%;padding:.7rem .8rem;border:1px solid #e6dbc8;border-radius:9px;font-size:1rem;font-family:inherit;box-sizing:border-box;}
+    #ov .err{display:none;color:#b0432e;font-size:.8rem;margin-top:.6rem;}
+    #ov .go{width:100%;margin-top:1.1rem;padding:.8rem;border:none;border-radius:999px;background:var(--gold-deep);color:#fff;font-family:inherit;font-size:.95rem;font-weight:600;cursor:pointer;}
+    #ov .cancel{width:100%;margin-top:.5rem;padding:.6rem;border:none;background:none;color:var(--muted);font-family:inherit;font-size:.82rem;cursor:pointer;}
   </style>
 </head>
 <body>
@@ -75,7 +98,7 @@
     <!-- Deal summary -->
     <div class="card">
       <h2>At a glance</h2>
-      <ul class="deal">
+      <ul class="deal" id="deal">
         <li><span class="k">Provider</span><span class="v">Auric Movement LLC</span></li>
         <li><span class="k">Client</span><span class="v">Northwell Health — Lenox Hill Hospital,<br>Office of Academic Affairs</span></li>
         <li><span class="k">Service</span><span class="v">Pilates instruction event(s)</span></li>
@@ -180,8 +203,32 @@
 
     <footer class="foot">
       <a class="home" href="https://book.auricmovement.com/">&larr; Auric Movement</a>
+      <button type="button" class="owner" id="ownerEdit">Owner: edit agreement</button>
     </footer>
 
+  </div>
+
+  <!-- Owner edit toolbar -->
+  <div id="eb-msg"></div>
+  <div id="editbar">
+    <span>Editing — click the deal points or terms to change them.</span>
+    <button id="ebSave">Save</button>
+    <button id="ebCancel">Cancel</button>
+  </div>
+
+  <!-- Owner login -->
+  <div id="ov">
+    <div class="box">
+      <h3>Owner sign in</h3>
+      <p>Sign in with your Auric Movement admin account to edit this agreement.</p>
+      <label for="ovEmail">Email</label>
+      <input id="ovEmail" type="email" autocomplete="username">
+      <label for="ovPass">Password</label>
+      <input id="ovPass" type="password" autocomplete="current-password">
+      <div class="err" id="ovErr"></div>
+      <button class="go" id="ovGo">Sign in</button>
+      <button class="cancel" id="ovCancel">Cancel</button>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -254,6 +301,77 @@
         } else {
           finish();
         }
+      });
+
+      // ── Load owner-edited content (if any) ─────────────────────────
+      var CONTENT_ID = 'northwell';
+      var dealEl = document.getElementById('deal');
+      var termsEl = document.getElementById('terms');
+      if (sb) {
+        sb.from('agreement_content').select('deal_html,terms_html').eq('id', CONTENT_ID).maybeSingle().then(function(res){
+          if (res && res.data) {
+            if (res.data.deal_html) dealEl.innerHTML = res.data.deal_html;
+            if (res.data.terms_html) termsEl.innerHTML = res.data.terms_html;
+          }
+        }, function(){});
+      }
+
+      // ── Owner edit mode (gated by Supabase owner login) ────────────
+      var ov = document.getElementById('ov');
+      var editbar = document.getElementById('editbar');
+      var ebMsg = document.getElementById('eb-msg');
+      function ebShow(msg, ok){ ebMsg.textContent = msg; ebMsg.style.color = ok ? '#2e7d32' : '#b0432e'; ebMsg.style.display='block'; setTimeout(function(){ ebMsg.style.display='none'; }, 4000); }
+      function enterEdit(){
+        document.body.classList.add('editing');
+        dealEl.setAttribute('contenteditable','true');
+        termsEl.setAttribute('contenteditable','true');
+        editbar.classList.add('show');
+        dealEl.scrollIntoView({behavior:'smooth', block:'center'});
+      }
+      function exitEdit(){
+        document.body.classList.remove('editing');
+        dealEl.removeAttribute('contenteditable');
+        termsEl.removeAttribute('contenteditable');
+        editbar.classList.remove('show');
+      }
+      function hasSession(cb){
+        try { var p = sb.auth.getSession(); if (p && p.then){ p.then(function(r){ cb(!!(r && r.data && r.data.session)); }, function(){ cb(false); }); } else cb(false); }
+        catch(e){ cb(false); }
+      }
+      function openLogin(after){
+        ov.classList.add('show');
+        setTimeout(function(){ try{ document.getElementById('ovEmail').focus(); }catch(e){} }, 50);
+        var go = document.getElementById('ovGo'), cancel = document.getElementById('ovCancel'), err = document.getElementById('ovErr');
+        function close(){ ov.classList.remove('show'); }
+        cancel.onclick = function(){ close(); };
+        ov.onclick = function(e){ if(e.target===ov) close(); };
+        go.onclick = function(){
+          var email=(document.getElementById('ovEmail').value||'').trim(), pw=document.getElementById('ovPass').value||'';
+          if(!email||!pw){ err.textContent='Enter your email and password.'; err.style.display='block'; return; }
+          go.disabled=true; go.textContent='Signing in…'; err.style.display='none';
+          sb.auth.signInWithPassword({ email:email, password:pw }).then(function(r){
+            go.disabled=false; go.textContent='Sign in';
+            if(r && r.error){ err.textContent=r.error.message||'Sign in failed.'; err.style.display='block'; return; }
+            close(); after();
+          }, function(){ go.disabled=false; go.textContent='Sign in'; err.textContent='Sign in failed. Try again.'; err.style.display='block'; });
+        };
+      }
+      var ownerBtn = document.getElementById('ownerEdit');
+      if (ownerBtn) ownerBtn.addEventListener('click', function(){
+        if(!sb){ alert('Editing is unavailable right now.'); return; }
+        hasSession(function(has){ if(has) enterEdit(); else openLogin(enterEdit); });
+      });
+      document.getElementById('ebCancel').addEventListener('click', function(){
+        if(confirm('Discard your changes? The page will reload the saved version.')) location.reload();
+      });
+      document.getElementById('ebSave').addEventListener('click', function(){
+        var btn=this; btn.disabled=true; btn.textContent='Saving…';
+        var row = { id: CONTENT_ID, deal_html: dealEl.innerHTML, terms_html: termsEl.innerHTML, updated_at: new Date().toISOString() };
+        sb.from('agreement_content').upsert(row, { onConflict: 'id' }).then(function(res){
+          btn.disabled=false; btn.textContent='Save';
+          if(res && res.error){ ebShow('Could not save — run AGREEMENT_CONTENT_SETUP.sql and make sure you are signed in as the owner. ('+(res.error.message||'')+')', false); return; }
+          exitEdit(); ebShow('Saved. Northwell will now see your edited version.', true);
+        }, function(){ btn.disabled=false; btn.textContent='Save'; ebShow('Network error — please try again.', false); });
       });
     })();
   </script>
