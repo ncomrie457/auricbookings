@@ -20,8 +20,12 @@ create table if not exists public.agreement_signatures (
   signer_email    text,
   typed_signature text,
   agreed          boolean default true,
+  change_request  text,          -- set when the signer requests changes instead of signing
   user_agent      text
 );
+
+-- Ensure the column exists on installs created before change requests were added.
+alter table public.agreement_signatures add column if not exists change_request text;
 
 alter table public.agreement_signatures enable row level security;
 
