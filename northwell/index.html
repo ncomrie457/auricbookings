@@ -277,6 +277,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script>
     (function(){
       var AGREEMENT_VERSION = 'northwell-pilates-psa-2026-09-01';
@@ -284,6 +285,26 @@
       var SB_KEY = 'sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ';
       var sb = null;
       try { if (window.supabase && window.supabase.createClient) sb = window.supabase.createClient(SB_URL, SB_KEY); } catch(e){}
+
+      // Owner email notification (best-effort; reuses the site's shared admin template).
+      var EJS_PUBLIC='xr1kT3l8rFhNodudq', EJS_SERVICE='service_ieahnue', EJS_ADMIN_TMPL='template_6qkcf8j', OWNER_EMAIL='auricmovement@outlook.com';
+      try { if (window.emailjs) emailjs.init(EJS_PUBLIC); } catch(e){}
+      function notifyOwner(kind, r){
+        if (!window.emailjs) return;
+        try {
+          emailjs.send(EJS_SERVICE, EJS_ADMIN_TMPL, {
+            admin_email: OWNER_EMAIL, to_email: OWNER_EMAIL,
+            from_name: (r.signer_name||'') + (r.signer_title ? (' — ' + r.signer_title) : ''),
+            participant_email: r.signer_email || '',
+            registration_type: kind==='change' ? 'Northwell PSA — CHANGE REQUEST' : 'Northwell PSA — SIGNED',
+            session_label: r.signer_org || 'Northwell / Lenox Hill',
+            arrival_time: r.signer_org || '',
+            sign_time: new Date().toLocaleString(),
+            clauses_agreed: kind==='change' ? ('Requested changes: ' + (r.change_request||'')) : ('Signed: "' + (r.typed_signature||'') + '"'),
+            cancel_code: ''
+          }).then(function(){}, function(){});
+        } catch(e){}
+      }
 
       var d = new Date();
       try { document.getElementById('today').textContent = 'on ' + d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}); } catch(e){}
@@ -341,6 +362,7 @@
               showError('Could not record the signature — the signatures table may not be set up yet. (' + (res.error.message||'') + ')');
               return;
             }
+            notifyOwner('sign', rec);
             finish();
           }, function(){ btn.disabled=false; btn.textContent='Sign & submit'; showError('Network error — please try again.'); });
         } else {
@@ -486,7 +508,7 @@
         if(sb){
           sb.from('agreement_signatures').insert([rec]).then(function(res){
             if(res&&res.error){ b.disabled=false; b.textContent='Send requested changes'; ce('Could not send — the signatures table may need the change_request column (re-run AGREEMENT_SIGNATURES_SETUP.sql). ('+(res.error.message||'')+')'); return; }
-            cfin();
+            notifyOwner('change', rec); cfin();
           }, function(){ b.disabled=false; b.textContent='Send requested changes'; ce('Network error — please try again.'); });
         } else { cfin(); }
       });
