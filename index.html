@@ -4772,6 +4772,11 @@
       <div id="admin-agreements-body"></div>
     </div>
 
+    <div id="admin-northwell-section" style="margin-top:1.5rem;">
+      <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold-text);margin-bottom:.6rem;border-bottom:1px solid var(--border);padding-bottom:.4rem;">&#127973; Northwell Agreement &mdash; Signatures &amp; Requests</h3>
+      <div id="admin-northwell-body"><div style="color:var(--text-muted);font-size:.85rem;">Loading…</div></div>
+    </div>
+
     <!-- Manual Add -->
     <div id="admin-manual-add-section" style="margin-top:1.5rem;padding:1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:12px;">
       <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--brown);margin-bottom:1rem;">&#10133; Manually Add Registration</h3>
@@ -9090,6 +9095,45 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch(e){ alert('Could not generate the PDF.'); if(window.console) console.error(e); }
   };
 
+  // ── Northwell agreement — signatures & change requests (/northwell) ──
+  function renderNorthwellAgreement(){
+    var body = document.getElementById('admin-northwell-body');
+    if (!body) return;
+    body.innerHTML = '<div style="color:var(--text-muted);font-size:.85rem;">Loading…</div>';
+    supabase.from('agreement_signatures').select('*').order('created_at', { ascending:false })
+      .then(function(res){
+        if (res && res.error){ body.innerHTML = '<div class="empty-state">Run AGREEMENT_SIGNATURES_SETUP.sql to enable — signatures and change requests will appear here.</div>'; return; }
+        var rows = (res && res.data) || [];
+        if (!rows.length){ body.innerHTML = '<div style="color:var(--text-muted);font-size:.85rem;">No signatures or change requests yet.</div>'; return; }
+        var signed  = rows.filter(function(r){ return !r.change_request && (r.agreed || r.typed_signature); });
+        var changes = rows.filter(function(r){ return r.change_request; });
+        function when(r){ return r.created_at ? new Date(r.created_at).toLocaleString() : ''; }
+        var html = '';
+        html += '<div style="font-size:.72rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#2e7d32;margin:.2rem 0 .4rem;">&#9989; Signed ('+signed.length+')</div>';
+        if (!signed.length) html += '<div style="color:var(--text-muted);font-size:.8rem;margin-bottom:.6rem;">None yet.</div>';
+        signed.forEach(function(r){
+          html += '<div class="admin-sub-item"><div style="flex:1;min-width:0;">'
+            + '<span class="aname">'+escapeHTML(r.signer_name||'')+'</span>'
+            + (r.signer_title?' <span style="font-size:.72rem;color:var(--text-muted);">&middot; '+escapeHTML(r.signer_title)+'</span>':'')
+            + (r.signer_email?'<br><span class="aemail">'+escapeHTML(r.signer_email)+'</span>':'')
+            + (r.signer_org?'<br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(r.signer_org)+'</span>':'')
+            + '<br><span style="font-size:.72rem;color:var(--gold-text);font-style:italic;">signed: &ldquo;'+escapeHTML(r.typed_signature||'')+'&rdquo;</span>'
+            + '</div><div style="text-align:right;"><span style="font-size:.72rem;color:var(--text-muted);">'+escapeHTML(when(r))+'</span></div></div>';
+        });
+        html += '<div style="font-size:.72rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#a86617;margin:.9rem 0 .4rem;">&#9998; Change requests ('+changes.length+')</div>';
+        if (!changes.length) html += '<div style="color:var(--text-muted);font-size:.8rem;">None.</div>';
+        changes.forEach(function(r){
+          html += '<div class="admin-sub-item" style="flex-direction:column;align-items:stretch;">'
+            + '<div style="display:flex;justify-content:space-between;gap:.5rem;">'
+            + '<div><span class="aname">'+escapeHTML(r.signer_name||'')+'</span>'
+            + (r.signer_email?'<br><span class="aemail">'+escapeHTML(r.signer_email)+'</span>':'')+'</div>'
+            + '<div style="text-align:right;"><span style="font-size:.72rem;color:var(--text-muted);">'+escapeHTML(when(r))+'</span></div></div>'
+            + '<div style="margin-top:.4rem;padding:.5rem .65rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.82rem;color:#3d322a;white-space:pre-line;line-height:1.55;">'+escapeHTML(r.change_request||'')+'</div></div>';
+        });
+        body.innerHTML = html;
+      }, function(){ body.innerHTML = '<div class="empty-state">Could not load.</div>'; });
+  }
+
   var adminEventFilterValue = 'all'; // admin panel event filter: 'all' | 'recent' | 'past'
   function renderAdmin(){
     var body=document.getElementById('admin-body');
@@ -9167,6 +9211,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof renderBagReserveSection === 'function') renderBagReserveSection(bagContainer);
     if (typeof renderWaitlistNotify === 'function') renderWaitlistNotify();
     if (typeof renderSignedAgreements === 'function') renderSignedAgreements();
+    if (typeof renderNorthwellAgreement === 'function') renderNorthwellAgreement();
 
     getData(function(data){
       sessionsContainer.innerHTML='';
