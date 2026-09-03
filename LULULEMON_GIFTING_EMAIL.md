@@ -1,13 +1,14 @@
 # Lululemon — Merchandise Donation Request
 
 Warm outreach from Auric Movement LLC to lululemon following a conversation between
-[MOM'S NAME] and the store's community contact, who asked what merchandise we're
+[MOM'S NAME] and the store's community manager, who asked what merchandise we're
 looking for.
 
 **Before sending — fill in the bracketed fields:**
 
-- `[NAME]` — the lululemon contact your mom spoke with (usually the store's Community
-  Specialist / Community Lead — gifting is handled at store level, not corporate).
+- `[NAME]` — the community manager your mom spoke with. Send it straight to them:
+  community managers own store-level gifting and local partnerships, so this decision
+  is theirs to make and doesn't need to go to corporate.
 - `[MOM'S NAME]` — how she introduced herself to them.
 - `[STORE]` — e.g. Roosevelt Field, Americana Manhasset, Williamsburg.
 - `[FOLLOWER COUNT]` — current @auricmovement Instagram following.
@@ -27,7 +28,7 @@ looking for.
 
 ## Email
 
-**To:** [NAME] — lululemon [STORE]
+**To:** [NAME] — Community Manager, lululemon [STORE]
 **Subject:** Auric Movement × lululemon — following up from [MOM'S NAME]
 
 Hi [NAME],
@@ -82,11 +83,11 @@ one event to see how it goes, we'd be glad to do that.
 - Professional event photography and video, shared with you to use on your own channels
 - A verbal shout-out in-studio at the top of every session
 - An open invitation for you and your educators to join any Auric class on the house —
-  and if you'd ever like to host, we'd love to bring a pop-up class to the store or to a
-  community event you're running
+  and if you'd ever like to host, we'd love to bring a pop-up class to the store, or to
+  lead a class at any community event or run club you're programming
 
 Just let me know what's easiest on your end — whether that's a form to fill out, a lead
-time you need, or a pickup at the store. I'm happy to come by in person, and I can send
+time you need for a product request, or a pickup at the store. I'm happy to come by in person, and I can send
 flyers and past event recaps any time.
 
 Thank you again, truly. Looking forward to it.
