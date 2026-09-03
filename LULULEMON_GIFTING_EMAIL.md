@@ -87,12 +87,13 @@ one event to see how it goes, we'd be glad to do that.
   lead a class at any community event or run club you're programming
 
 Just let me know what's easiest on your end — whether that's a form to fill out, a lead
-time you need for a product request, or a pickup at the store. I'm happy to come by in person, and I can send
-flyers and past event recaps any time.
+time you need for a product request, or a pickup at the store. I'm happy to come by in
+person, and I can send flyers and past event recaps any time.
 
-Thank you again, truly. Looking forward to it.
+Please let me know if any additional information is needed. I look forward to a
+potential partnership.
 
-Warmly,
+Best,
 
 **Niara Comrie**
 Founder & Certified Instructor, Auric Movement LLC
@@ -134,7 +135,10 @@ If the timing doesn't work right now, that's completely okay — just let me kno
 check back next season. The offer of a free class for you and your team stands either
 way.
 
-Thank you!
+Please let me know if any additional information is needed. I look forward to a
+potential partnership.
+
+Best,
 
 Niara Comrie
 Founder, Auric Movement LLC
