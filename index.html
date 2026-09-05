@@ -3405,6 +3405,132 @@
       </style>
     </section>
 
+    <!-- Featured Partners — auto-hides until you add partners to the PARTNERS list below -->
+    <section class="bq-partners-section" id="bq-partners" hidden aria-label="Featured partners">
+      <div class="bq-partners-inner">
+        <div class="bq-section-eyebrow">In Good Company</div>
+        <h2 class="bq-section-title">Featured <em>Partners</em></h2>
+        <p class="bq-partners-desc">The brands we love &#8212; featured in our gift bags and at our events.</p>
+
+        <div class="bq-partners-carousel">
+          <button type="button" class="bq-partners-arrow bq-partners-prev" aria-label="Previous partner">&#8249;</button>
+          <div class="bq-partners-viewport">
+            <div class="bq-partners-track" id="bq-partners-track"></div>
+          </div>
+          <button type="button" class="bq-partners-arrow bq-partners-next" aria-label="Next partner">&#8250;</button>
+        </div>
+        <div class="bq-partners-dots" id="bq-partners-dots" role="tablist" aria-label="Choose partner"></div>
+      </div>
+
+      <style>
+        .bq-partners-section{padding:3.5rem 1.25rem 1rem;text-align:center;}
+        .bq-partners-inner{max-width:760px;margin:0 auto;}
+        .bq-partners-desc{font-family:'Jost',sans-serif;color:#6b5c46;font-size:1rem;max-width:34rem;margin:.6rem auto 2rem;line-height:1.6;}
+        .bq-partners-carousel{position:relative;display:flex;align-items:center;justify-content:center;gap:.5rem;}
+        .bq-partners-viewport{overflow:hidden;width:100%;max-width:420px;border-radius:20px;}
+        .bq-partners-track{display:flex;transition:transform .5s ease;}
+        .bq-partners-slide{flex:0 0 100%;box-sizing:border-box;padding:.25rem;}
+        .bq-partners-card{background:#fff;border:1px solid #e7dcc2;border-radius:20px;padding:1.1rem 1.1rem 1.35rem;box-shadow:0 10px 30px rgba(90,67,39,.08);}
+        .bq-partners-imgwrap{width:100%;aspect-ratio:4/3;border-radius:14px;overflow:hidden;background:#f3ecdd;display:flex;align-items:center;justify-content:center;}
+        .bq-partners-imgwrap img{width:100%;height:100%;object-fit:cover;display:block;}
+        .bq-partners-name{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:#3b4a2f;margin:.7rem 0 .1rem;font-weight:600;}
+        .bq-partners-event{font-family:'Jost',sans-serif;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:#a9853f;margin-bottom:.35rem;}
+        .bq-partners-handle{font-family:'Jost',sans-serif;font-size:.9rem;color:#6b5c46;text-decoration:none;}
+        .bq-partners-handle:hover{color:#a9853f;}
+        .bq-partners-arrow{flex:0 0 auto;width:38px;height:38px;border-radius:50%;border:1px solid #d9cba6;background:#fff;color:#3b4a2f;font-size:1.3rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s;}
+        .bq-partners-arrow:hover{background:#3b4a2f;color:#f7f2ea;}
+        .bq-partners-dots{display:flex;gap:8px;justify-content:center;margin-top:1.1rem;}
+        .bq-partners-dot{width:8px;height:8px;border-radius:50%;border:none;padding:0;background:#d9cba6;cursor:pointer;transition:background .2s,transform .2s;}
+        .bq-partners-dot[aria-selected="true"]{background:#a9853f;transform:scale(1.3);}
+        @media(max-width:520px){.bq-partners-arrow{width:32px;height:32px;font-size:1.1rem;}}
+      </style>
+
+      <script>
+      (function(){
+        // ─────────────────────────────────────────────────────────────
+        //  ADD YOUR PARTNERS HERE. The section stays hidden until there is
+        //  at least one. Each entry:
+        //    name   – brand name (required)
+        //    img    – logo OR product/event photo path (required),
+        //             e.g. 'partners/kreyol-essence.jpg' (put files in a
+        //             /partners folder) or a full https URL
+        //    event  – (optional) where they were featured, e.g. 'Riddim × Kompa'
+        //    handle – (optional) IG handle shown as text, e.g. '@kreyolessence'
+        //    url    – (optional) link opened when the handle is tapped
+        //
+        //  EXAMPLE (delete the // to turn it on):
+        //  { name:'Kreyòl Essence', img:'partners/kreyol-essence.jpg',
+        //    event:'Riddim × Kompa', handle:'@kreyolessence',
+        //    url:'https://instagram.com/kreyolessence' },
+        // ─────────────────────────────────────────────────────────────
+        var PARTNERS = [
+          // add partners here as they confirm
+        ];
+
+        var section = document.getElementById('bq-partners');
+        if(!section || !PARTNERS.length) return;   // stays hidden while empty
+        section.hidden = false;
+
+        var track = document.getElementById('bq-partners-track');
+        var dotsWrap = document.getElementById('bq-partners-dots');
+        function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+
+        track.innerHTML = PARTNERS.map(function(p){
+          var handle = p.handle ? (p.url
+            ? '<a class="bq-partners-handle" href="'+esc(p.url)+'" target="_blank" rel="noopener">'+esc(p.handle)+'</a>'
+            : '<span class="bq-partners-handle">'+esc(p.handle)+'</span>') : '';
+          var ev = p.event ? '<div class="bq-partners-event">'+esc(p.event)+'</div>' : '';
+          return '<div class="bq-partners-slide"><div class="bq-partners-card">'
+            + '<div class="bq-partners-imgwrap"><img src="'+esc(p.img)+'" alt="'+esc(p.name)+'" loading="lazy"></div>'
+            + '<div class="bq-partners-name">'+esc(p.name)+'</div>'
+            + ev + handle
+            + '</div></div>';
+        }).join('');
+
+        var idx = 0, n = PARTNERS.length;
+        dotsWrap.innerHTML = PARTNERS.map(function(_,i){
+          return '<button type="button" class="bq-partners-dot" role="tab" aria-label="Partner '+(i+1)+'"'+(i===0?' aria-selected="true"':'')+' data-i="'+i+'"></button>';
+        }).join('');
+        var dots = [].slice.call(dotsWrap.querySelectorAll('.bq-partners-dot'));
+
+        function go(i){
+          idx = (i+n)%n;
+          track.style.transform = 'translateX(-'+(idx*100)+'%)';
+          dots.forEach(function(d,di){ d.setAttribute('aria-selected', di===idx?'true':'false'); });
+        }
+        var prev = section.querySelector('.bq-partners-prev');
+        var next = section.querySelector('.bq-partners-next');
+        var single = n < 2;
+        if(single){ if(prev)prev.style.display='none'; if(next)next.style.display='none'; dotsWrap.style.display='none'; }
+        if(prev) prev.addEventListener('click', function(){ go(idx-1); rest(); });
+        if(next) next.addEventListener('click', function(){ go(idx+1); rest(); });
+        dots.forEach(function(d){ d.addEventListener('click', function(){ go(+d.getAttribute('data-i')); rest(); }); });
+
+        // Autoplay (pauses on hover / when tab not visible)
+        var timer=null;
+        function play(){ if(single) return; stop(); timer=setInterval(function(){ go(idx+1); }, 4500); }
+        function stop(){ if(timer){ clearInterval(timer); timer=null; } }
+        function rest(){ stop(); play(); }
+        section.addEventListener('mouseenter', stop);
+        section.addEventListener('mouseleave', play);
+        document.addEventListener('visibilitychange', function(){ document.hidden ? stop() : play(); });
+
+        // Swipe (mobile)
+        var x0=null;
+        var vp = section.querySelector('.bq-partners-viewport');
+        vp.addEventListener('touchstart', function(e){ x0=e.touches[0].clientX; stop(); }, {passive:true});
+        vp.addEventListener('touchend', function(e){
+          if(x0===null) return;
+          var dx=e.changedTouches[0].clientX - x0;
+          if(Math.abs(dx)>40){ go(idx + (dx<0?1:-1)); }
+          x0=null; play();
+        }, {passive:true});
+
+        play();
+      })();
+      </script>
+    </section>
+
     <!-- Join Auric Mvmt — inline subscribe -->
     <section class="bq-notify-section">
       <div class="bq-notify-inner">
