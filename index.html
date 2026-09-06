@@ -3415,11 +3415,11 @@
         <div class="bq-partners-carousel">
           <button type="button" class="bq-partners-arrow bq-partners-prev" aria-label="Previous partner">&#8249;</button>
           <div class="bq-partners-viewport">
-            <div class="bq-partners-track" id="bq-partners-track"></div>
+            <div class="bq-partners-track"></div>
           </div>
           <button type="button" class="bq-partners-arrow bq-partners-next" aria-label="Next partner">&#8250;</button>
         </div>
-        <div class="bq-partners-dots" id="bq-partners-dots" role="tablist" aria-label="Choose partner"></div>
+        <div class="bq-partners-dots" role="tablist" aria-label="Choose partner"></div>
       </div>
 
       <style>
@@ -3468,91 +3468,91 @@
             event:'Pilates × Niara', handle:'@drinklmnt',
             url:'https://instagram.com/drinklmnt' },
           { name:'Lemon Perfect', img:'partners/lemon-perfect.jpg?v=2',
-            event:'Pilates × Niara', handle:'@lemonperfect',
+            event:'Create & Recharge', handle:'@lemonperfect',
             url:'https://instagram.com/lemonperfect' },
           { name:'Vital Proteins', img:'partners/vital-proteins.jpg?v=1',
-            event:'Pilates × Niara', handle:'@vitalproteins',
+            event:'Create & Recharge', handle:'@vitalproteins',
             url:'https://instagram.com/vitalproteins' },
           { name:'Grown Alchemist', img:'partners/grown-alchemist.jpg?v=1',
             event:'Juneteenth Celebration', handle:'@grownalchemist',
             url:'https://instagram.com/grownalchemist' },
-          { name:'SkinnyPop', img:'partners/skinnypop.jpg?v=1',
-            event:'Juneteenth Celebration', handle:'@skinnypop',
-            url:'https://instagram.com/skinnypop' },
           { name:'4AM', img:'partners/4am.jpg?v=1',
             event:'Juneteenth Celebration', handle:'@4amskin',
             url:'https://instagram.com/4amskin' },
-          { name:'Breathe Right', img:'partners/breathe-right.jpg?v=1',
-            event:'Juneteenth Celebration', handle:'@breatheright',
-            url:'https://instagram.com/breatheright' },
-          { name:'Nuun', img:'partners/nuun.jpg?v=1',
+          { name:'Nuun', img:'partners/nuun.jpg?v=2',
             event:'Pilates × Niara', handle:'@nuunhydration',
             url:'https://instagram.com/nuunhydration' },
-          { name:'Topicals', img:'partners/topicals.jpg?v=1',
-            event:'Pilates × Niara', handle:'@topicals',
+          { name:'Topicals', img:'partners/topicals.jpg?v=2',
+            event:'Create & Recharge', handle:'@topicals',
             url:'https://instagram.com/topicals' }
         ];
 
-        var section = document.getElementById('bq-partners');
-        if(!section || !PARTNERS.length) return;   // stays hidden while empty
-        section.hidden = false;
-
-        var track = document.getElementById('bq-partners-track');
-        var dotsWrap = document.getElementById('bq-partners-dots');
         function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
 
-        track.innerHTML = PARTNERS.map(function(p){
-          var handle = p.handle ? (p.url
-            ? '<a class="bq-partners-handle" href="'+esc(p.url)+'" target="_blank" rel="noopener">'+esc(p.handle)+'</a>'
-            : '<span class="bq-partners-handle">'+esc(p.handle)+'</span>') : '';
-          var ev = p.event ? '<div class="bq-partners-event">'+esc(p.event)+'</div>' : '';
-          return '<div class="bq-partners-slide"><div class="bq-partners-card">'
-            + '<div class="bq-partners-imgwrap"><img src="'+esc(p.img)+'" alt="'+esc(p.name)+'" loading="lazy"></div>'
-            + '<div class="bq-partners-name">'+esc(p.name)+'</div>'
-            + ev + handle
-            + '</div></div>';
-        }).join('');
+        function initPartners(section){
+          if(!section || !PARTNERS.length || section._partnersInit) return; // stays hidden while empty
+          section._partnersInit = true;
+          section.hidden = false;
 
-        var idx = 0, n = PARTNERS.length;
-        dotsWrap.innerHTML = PARTNERS.map(function(_,i){
-          return '<button type="button" class="bq-partners-dot" role="tab" aria-label="Partner '+(i+1)+'"'+(i===0?' aria-selected="true"':'')+' data-i="'+i+'"></button>';
-        }).join('');
-        var dots = [].slice.call(dotsWrap.querySelectorAll('.bq-partners-dot'));
+          var track = section.querySelector('.bq-partners-track');
+          var dotsWrap = section.querySelector('.bq-partners-dots');
+          if(!track || !dotsWrap) return;
 
-        function go(i){
-          idx = (i+n)%n;
-          track.style.transform = 'translateX(-'+(idx*100)+'%)';
-          dots.forEach(function(d,di){ d.setAttribute('aria-selected', di===idx?'true':'false'); });
+          track.innerHTML = PARTNERS.map(function(p){
+            var handle = p.handle ? (p.url
+              ? '<a class="bq-partners-handle" href="'+esc(p.url)+'" target="_blank" rel="noopener">'+esc(p.handle)+'</a>'
+              : '<span class="bq-partners-handle">'+esc(p.handle)+'</span>') : '';
+            var ev = p.event ? '<div class="bq-partners-event">'+esc(p.event)+'</div>' : '';
+            return '<div class="bq-partners-slide"><div class="bq-partners-card">'
+              + '<div class="bq-partners-imgwrap"><img src="'+esc(p.img)+'" alt="'+esc(p.name)+'" loading="lazy"></div>'
+              + '<div class="bq-partners-name">'+esc(p.name)+'</div>'
+              + ev + handle
+              + '</div></div>';
+          }).join('');
+
+          var idx = 0, n = PARTNERS.length;
+          dotsWrap.innerHTML = PARTNERS.map(function(_,i){
+            return '<button type="button" class="bq-partners-dot" role="tab" aria-label="Partner '+(i+1)+'"'+(i===0?' aria-selected="true"':'')+' data-i="'+i+'"></button>';
+          }).join('');
+          var dots = [].slice.call(dotsWrap.querySelectorAll('.bq-partners-dot'));
+
+          function go(i){
+            idx = (i+n)%n;
+            track.style.transform = 'translateX(-'+(idx*100)+'%)';
+            dots.forEach(function(d,di){ d.setAttribute('aria-selected', di===idx?'true':'false'); });
+          }
+          var prev = section.querySelector('.bq-partners-prev');
+          var next = section.querySelector('.bq-partners-next');
+          var single = n < 2;
+          if(single){ if(prev)prev.style.display='none'; if(next)next.style.display='none'; dotsWrap.style.display='none'; }
+          if(prev) prev.addEventListener('click', function(){ go(idx-1); rest(); });
+          if(next) next.addEventListener('click', function(){ go(idx+1); rest(); });
+          dots.forEach(function(d){ d.addEventListener('click', function(){ go(+d.getAttribute('data-i')); rest(); }); });
+
+          // Autoplay (pauses on hover / when tab not visible)
+          var timer=null;
+          function play(){ if(single) return; stop(); timer=setInterval(function(){ go(idx+1); }, 4500); }
+          function stop(){ if(timer){ clearInterval(timer); timer=null; } }
+          function rest(){ stop(); play(); }
+          section.addEventListener('mouseenter', stop);
+          section.addEventListener('mouseleave', play);
+          document.addEventListener('visibilitychange', function(){ document.hidden ? stop() : play(); });
+
+          // Swipe (mobile)
+          var x0=null;
+          var vp = section.querySelector('.bq-partners-viewport');
+          vp.addEventListener('touchstart', function(e){ x0=e.touches[0].clientX; stop(); }, {passive:true});
+          vp.addEventListener('touchend', function(e){
+            if(x0===null) return;
+            var dx=e.changedTouches[0].clientX - x0;
+            if(Math.abs(dx)>40){ go(idx + (dx<0?1:-1)); }
+            x0=null; play();
+          }, {passive:true});
+
+          play();
         }
-        var prev = section.querySelector('.bq-partners-prev');
-        var next = section.querySelector('.bq-partners-next');
-        var single = n < 2;
-        if(single){ if(prev)prev.style.display='none'; if(next)next.style.display='none'; dotsWrap.style.display='none'; }
-        if(prev) prev.addEventListener('click', function(){ go(idx-1); rest(); });
-        if(next) next.addEventListener('click', function(){ go(idx+1); rest(); });
-        dots.forEach(function(d){ d.addEventListener('click', function(){ go(+d.getAttribute('data-i')); rest(); }); });
 
-        // Autoplay (pauses on hover / when tab not visible)
-        var timer=null;
-        function play(){ if(single) return; stop(); timer=setInterval(function(){ go(idx+1); }, 4500); }
-        function stop(){ if(timer){ clearInterval(timer); timer=null; } }
-        function rest(){ stop(); play(); }
-        section.addEventListener('mouseenter', stop);
-        section.addEventListener('mouseleave', play);
-        document.addEventListener('visibilitychange', function(){ document.hidden ? stop() : play(); });
-
-        // Swipe (mobile)
-        var x0=null;
-        var vp = section.querySelector('.bq-partners-viewport');
-        vp.addEventListener('touchstart', function(e){ x0=e.touches[0].clientX; stop(); }, {passive:true});
-        vp.addEventListener('touchend', function(e){
-          if(x0===null) return;
-          var dx=e.changedTouches[0].clientX - x0;
-          if(Math.abs(dx)>40){ go(idx + (dx<0?1:-1)); }
-          x0=null; play();
-        }, {passive:true});
-
-        play();
+        [].slice.call(document.querySelectorAll('.bq-partners-section')).forEach(initPartners);
       })();
       </script>
     </section>
@@ -4175,6 +4175,23 @@
       </blockquote>
 
       <div style="text-align:center;font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:1.15rem;color:var(--brown);">Have something in mind? Tell us what you&rsquo;re imagining &darr;</div>
+    </section>
+
+    <!-- Featured Partners (shared carousel — styles + JS live in the Home-tab section) -->
+    <section class="bq-partners-section" hidden aria-label="Featured partners" style="padding:1rem 1.25rem 2rem;">
+      <div class="bq-partners-inner">
+        <div class="bq-section-eyebrow">In Good Company</div>
+        <h2 class="bq-section-title">Featured <em>Partners</em></h2>
+        <p class="bq-partners-desc">With gratitude to the brands who have generously gifted product to our events and gift bags. &#129293;</p>
+        <div class="bq-partners-carousel">
+          <button type="button" class="bq-partners-arrow bq-partners-prev" aria-label="Previous partner">&#8249;</button>
+          <div class="bq-partners-viewport">
+            <div class="bq-partners-track"></div>
+          </div>
+          <button type="button" class="bq-partners-arrow bq-partners-next" aria-label="Next partner">&#8250;</button>
+        </div>
+        <div class="bq-partners-dots" role="tablist" aria-label="Choose partner"></div>
+      </div>
     </section>
 
     <!-- Info box -->
