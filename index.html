@@ -7089,7 +7089,8 @@ document.addEventListener('DOMContentLoaded', function(){
       if(this._pp) return; this._pp=1;
       window.auricSendPayPending && window.auricSendPayPending({ event:'riddim-kompa-reformer-2026-09-13',
         name:(document.getElementById('rf-name').value||'').trim(), email:(document.getElementById('rf-email').value||'').trim(),
-        sessionLabel:(document.getElementById('rf-pay-label').textContent||''), stripeUrl:'' });
+        sessionLabel:(document.getElementById('rf-pay-label').textContent||''),
+        stripeUrl:(chosen==='3pm' ? 'https://buy.stripe.com/bJe00igVQg1bgEQ5gm9sk0g' : '') });
     });
 
     // ── Sold-out cap: hide a session once 6 paid bookings exist (fails OPEN) ──
@@ -11791,7 +11792,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var RF_PAY = {
     'riddim-kompa-reformer-2026-09-13': { name:'Riddim & Kompa on the Reformer — West Hempstead', date:'Sunday, September 13', loc:'Valley Studio, West Hempstead NY', amount:'$45.00',
       slab:{ '1pm':'1:00 PM session','2pm':'2:00 PM session','3pm':'3:00 PM session' },
-      links:{ '1pm':'https://book.auricmovement.com/?book=reformer','2pm':'https://book.auricmovement.com/?book=reformer','3pm':'https://book.auricmovement.com/?book=reformer' } },
+      links:{ '1pm':'https://book.auricmovement.com/?book=reformer','2pm':'https://book.auricmovement.com/?book=reformer','3pm':'https://buy.stripe.com/bJe00igVQg1bgEQ5gm9sk0g' } },
     'riddim-kompa-brooklyn-2026-09-26': { name:'Riddim & Kompa on the Reformer — Brooklyn', date:'Saturday, September 26', loc:'Maison Luxe Wellness Pilates, Brooklyn NY', amount:'$45.00',
       slab:{ 'bk12':'12:00 PM session','bk1':'1:00 PM session','bk2':'2:00 PM session' },
       links:{ 'bk12':'https://buy.stripe.com/6oU14m20W5mxbkwdMS9sk0a','bk1':'https://buy.stripe.com/9B6cN44949CN60c9wC9sk08','bk2':'https://buy.stripe.com/5kQ8wO350g1b2O0eQW9sk0b' } },
