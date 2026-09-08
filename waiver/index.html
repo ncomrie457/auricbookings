@@ -136,8 +136,11 @@
       <label for="reg-event-select">Which event are you attending? <span class="required" aria-hidden="true">*</span></label>
       <select id="reg-event-select" aria-required="true" style="width:100%;padding:.8rem 1rem;border:2px solid var(--border);border-radius:10px;font-size:.95rem;font-family:'Jost',sans-serif;color:var(--text);background:var(--cream-light);">
         <option value="">Select your event…</option>
-        <option value="recharge">Create &amp; Recharge — Sat, Aug 15, 2026</option>
-        <option value="matchat">Mat &amp; Chat — Sat, Aug 1, 2026</option>
+        <option value="rk-wh">Riddim &amp; Kompa — West Hempstead · Sun, Sep 13</option>
+        <option value="rk-bk">Riddim &amp; Kompa — Brooklyn · Sat, Sep 26</option>
+        <option value="halloween">Shhh… Quiet on the Creek (Halloween) · Sat, Oct 24</option>
+        <option value="turkey">Pre-Turkey Burn · Sat, Nov 21</option>
+        <option value="turkey28">Post-Turkey Burn · Sat, Nov 28</option>
         <option value="other">Another event / private session</option>
       </select>
       <div id="reg-event-err" class="err-msg" role="alert"></div>
@@ -363,9 +366,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Per-event waiver config. extraClauses are appended to the base set above.
   var WAIVER_EVENTS = {
-    recharge: { name: 'Create & Recharge', date: 'Saturday, August 15, 2026 · 11:30 AM', extraClauses: [CR_ART_CLAUSE], custom: false },
-    matchat:  { name: 'Mat & Chat',        date: 'Saturday, August 1, 2026 · 11:30 AM',  extraClauses: [], custom: false },
-    other:    { name: '',                  date: '',                                      extraClauses: [], custom: true }
+    'rk-wh':    { name: 'Riddim & Kompa on the Reformer — West Hempstead', date: 'Sunday, September 13, 2026',   extraClauses: [], custom: false },
+    'rk-bk':    { name: 'Riddim & Kompa on the Reformer — Brooklyn',       date: 'Saturday, September 26, 2026', extraClauses: [], custom: false },
+    halloween:  { name: 'Shhh… Quiet on the Creek — Halloween Reformer',   date: 'Saturday, October 24, 2026',   extraClauses: [], custom: false },
+    turkey:     { name: 'Pre-Turkey Burn on the Reformer',                 date: 'Saturday, November 21, 2026',  extraClauses: [], custom: false },
+    turkey28:   { name: 'Post-Turkey Burn on the Reformer',                date: 'Saturday, November 28, 2026',  extraClauses: [], custom: false },
+    other:      { name: '',                                                date: '',                             extraClauses: [], custom: true }
   };
   // The clause set currently in play (base by default; swapped when an event is chosen).
   var activeClauses = clauseTexts.slice();
