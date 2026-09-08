@@ -12531,23 +12531,40 @@ document.addEventListener('DOMContentLoaded', function() {
         if(e) e.value = p.email || '';
       });
     }
+    // Aggregate every past attendee across ALL class types (deduped by email).
+    // Each source renders as it arrives, so one slow/failed source can't block the rest.
+    var map = {};
+    function add(name, email){
+      if(!email) return;
+      var k = (email||'').toLowerCase();
+      if(!map[k]) map[k] = { name:name||'', email:email };
+      else if(!map[k].name && name) map[k].name = name;
+    }
+    function render(){
+      var list = Object.keys(map).map(function(k){ return map[k]; })
+        .sort(function(a,b){ return (a.name||a.email).toLowerCase().localeCompare((b.name||b.email).toLowerCase()); });
+      var html = '<option value="">— New guest / type below —</option>';
+      list.forEach(function(p,i){ html += '<option value="'+i+'">'+escapeHTML(p.name||'(no name)')+' — '+escapeHTML(p.email)+'</option>'; });
+      sel.innerHTML = html;
+      sel._list = list;
+    }
+    // 1) Reformer classes (Riddim, Turkey, Post-Turkey, Halloween, Brooklyn)
     try {
       supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(res){
-        var rows = (res && res.data) || [];
-        var map = {};
-        rows.forEach(function(r){
-          if(!r.email || r.type==='waitlist') return;
-          var k = (r.email||'').toLowerCase();
-          if(!map[k]) map[k] = { name:r.name||'', email:r.email };
-          else if(!map[k].name && r.name) map[k].name = r.name;
-        });
-        var list = Object.keys(map).map(function(k){ return map[k]; })
-          .sort(function(a,b){ return (a.name||a.email).toLowerCase().localeCompare((b.name||b.email).toLowerCase()); });
-        var html = '<option value="">— New guest / type below —</option>';
-        list.forEach(function(p,i){ html += '<option value="'+i+'">'+escapeHTML(p.name||'(no name)')+' — '+escapeHTML(p.email)+'</option>'; });
-        sel.innerHTML = html;
-        sel._list = list;
+        ((res && res.data) || []).forEach(function(r){ if(r.type!=='waitlist') add(r.name, r.email); });
+        render();
       }, function(){});
+    } catch(e){}
+    // 2) Mat & Chat
+    try { if(typeof getMCData==='function') getMCData(function(d){ ((d&&d.mc1)||[]).forEach(function(r){ if(r.type==='confirmed') add(r.name, r.email); }); render(); }); } catch(e){}
+    // 3) Create & Recharge
+    try { if(typeof getCRData==='function') getCRData(function(d){ ((d&&d.cr1)||[]).forEach(function(r){ if(r.type==='confirmed') add(r.name, r.email); }); render(); }); } catch(e){}
+    // 4) Pilates x Niara (all sessions)
+    try {
+      if(typeof getData==='function') getData(function(d){
+        (typeof SESSIONS!=='undefined'?SESSIONS:[]).forEach(function(s){ ((d&&d[s.id])||[]).forEach(function(r){ if(r.type==='confirmed') add(r.name, r.email); }); });
+        render();
+      });
     } catch(e){}
   }
   // Build a "⏳ Waitlist" sub-block for one event (rows = full roster; filters type='waitlist').
