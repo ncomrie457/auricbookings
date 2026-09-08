@@ -9556,7 +9556,10 @@ document.addEventListener('DOMContentLoaded', function() {
             + '<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(r.name||'')+'</span>'
             + (r.email?'<br><span class="aemail">'+escapeHTML(r.email)+'</span>':'')+ev+'</div>'
             + '<div style="text-align:right;"><span style="font-size:.72rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'
-            + '<br><button onclick="removeStandaloneWaiver(\''+escapeHTML(r.code||'')+'\')" style="margin-top:.3rem;background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128465; Remove</button></div></div>'
+            + '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'
+            + '<button onclick="downloadStandaloneWaiverPDF(\''+escapeHTML(r.code||'')+'\')" style="background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.2rem .5rem;font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128196; PDF</button>'
+            + '<button onclick="removeStandaloneWaiver(\''+escapeHTML(r.code||'')+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128465; Remove</button>'
+            + '</div></div></div>'
             + note + '</div>';
         });
         body.innerHTML = html;
@@ -9584,6 +9587,92 @@ document.addEventListener('DOMContentLoaded', function() {
       var a = document.createElement('a'); a.href = url; a.download = 'standalone-waivers.csv'; a.click();
       URL.revokeObjectURL(url);
     } catch(e){ alert('Could not export CSV.'); }
+  };
+  // The 19 standalone-waiver clauses (mirrors /waiver) — used to render a
+  // full signed-waiver PDF from the admin panel.
+  var STD_WAIVER_CLAUSES = [
+    "I understand that participation in wellness, movement, and/or energy-based sessions offered by Auric Movement LLC involves physical activity and inherent risks, including but not limited to muscle strain, sprains, fractures, and other injuries.",
+    "I acknowledge that I am voluntarily participating in these sessions and assume all risks of injury or harm that may result from my participation, whether foreseeable or unforeseeable.",
+    "I represent that I am physically and mentally fit to participate and have no medical conditions that would prevent safe participation, or I have obtained clearance from a licensed healthcare provider.",
+    "I agree to disclose any known medical conditions, allergies, injuries, or physical limitations to my instructor before each session.",
+    "I understand that the instructors and staff of Auric Movement LLC are not licensed medical professionals and that no session is a substitute for professional medical advice, diagnosis, or treatment.",
+    "I agree to follow all instructions, safety guidelines, and rules provided by Auric Movement LLC staff during sessions.",
+    "I understand that I may stop participation at any time if I feel pain, discomfort, or distress, and I agree to immediately notify my instructor.",
+    "I release, discharge, and hold harmless Auric Movement LLC, its owners, instructors, employees, agents, and affiliates from any and all claims, liabilities, damages, or expenses arising from my participation.",
+    "I waive any right to bring a lawsuit or legal claim against Auric Movement LLC, its owners, instructors, employees, agents, or affiliates for any injury, illness, or loss sustained during or as a result of my participation.",
+    "I understand that this waiver extends to any claims arising from the negligence of Auric Movement LLC, its owners, instructors, employees, agents, or affiliates, excluding gross negligence or willful misconduct.",
+    "I consent to the use of any photographs, video recordings, or audio recordings taken during sessions for promotional, educational, or marketing purposes by Auric Movement LLC, unless I submit a written opt-out request.",
+    "I understand that personal belongings brought to sessions are my responsibility and that Auric Movement LLC is not liable for any lost, stolen, or damaged items.",
+    "I agree that any disputes arising from this waiver or my participation shall be resolved through binding arbitration in accordance with the rules of the American Arbitration Association, and not through court litigation.",
+    "I acknowledge that this waiver is governed by and construed in accordance with the laws of the State of New York.",
+    "I understand that if any provision of this waiver is found to be unenforceable, the remaining provisions shall remain in full force and effect.",
+    "I confirm that I am at least 18 years of age, or that I have obtained parental or guardian consent if I am a minor.",
+    "I agree that this waiver remains in effect for all future sessions and activities with Auric Movement LLC unless I submit a written revocation.",
+    "I acknowledge that I have had sufficient opportunity to read this waiver, ask questions, and seek independent legal advice before signing.",
+    "I understand that a complimentary gift bag may be provided as a courtesy. I acknowledge that I assume full responsibility for any items received and their use. I release the Released Parties from any liability arising from the receipt or use of gift bag contents."
+  ];
+  window.downloadStandaloneWaiverPDF = function(code){
+    var r = (_standaloneWaivers||[]).find(function(x){ return String(x.code)===String(code); });
+    if (!r){ alert('Could not find that waiver.'); return; }
+    if (!(window.jspdf && window.jspdf.jsPDF)){ alert('PDF library not loaded. Please try again.'); return; }
+    try {
+      var clauses = STD_WAIVER_CLAUSES.slice();
+      if ((r.clauses_agreed||0) > STD_WAIVER_CLAUSES.length){ clauses.push("I acknowledge the additional event-specific clause(s) presented to me at the time of signing."); }
+      var jsPDF = window.jspdf.jsPDF;
+      var doc = new jsPDF({ unit:'pt', format:'letter' });
+      var pageW = doc.internal.pageSize.getWidth(), pageH = doc.internal.pageSize.getHeight();
+      var margin = 54, contentW = pageW - margin*2, y = margin;
+      function pageBreak(need){ if (y > pageH - margin - (need||16)){ doc.addPage(); y = margin; } }
+      // Header band
+      doc.setFillColor(90,58,26); doc.rect(0,0,pageW,72,'F');
+      doc.setFont('times','italic'); doc.setFontSize(26); doc.setTextColor(255,255,255);
+      doc.text('Auric Movement', pageW/2, 34, {align:'center'});
+      doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(230,210,180);
+      doc.text('LIABILITY WAIVER & RELEASE', pageW/2, 52, {align:'center'});
+      y = 100;
+      doc.setFont('times','bold'); doc.setFontSize(16); doc.setTextColor(90,58,26);
+      doc.text('Signed Liability Waiver', margin, y); y += 8;
+      doc.setDrawColor(176,120,64); doc.setLineWidth(1); doc.line(margin, y, pageW-margin, y); y += 20;
+      // Participant box
+      doc.setFillColor(250,245,238); doc.setDrawColor(176,120,64); doc.setLineWidth(0.5);
+      doc.roundedRect(margin, y, contentW, 74, 6, 6, 'FD');
+      doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(90,58,26); doc.text('PARTICIPANT', margin+14, y+16);
+      doc.setFont('helvetica','normal'); doc.setFontSize(12); doc.setTextColor(44,36,32); doc.text(String(r.name||''), margin+14, y+30);
+      doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(90,58,26); doc.text('EMAIL', margin+14, y+48);
+      doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(44,36,32); doc.text(String(r.email||''), margin+14, y+60);
+      if (r.event_name){
+        doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(90,58,26); doc.text('EVENT', margin+contentW/2, y+16);
+        doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(44,36,32); doc.text(String(r.event_name||''), margin+contentW/2, y+30);
+        if (r.event_date) doc.text(String(r.event_date||''), margin+contentW/2, y+44);
+      }
+      doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(90,58,26); doc.text('SIGNED', margin+contentW/2, y+56);
+      doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(44,36,32); doc.text(String(r.time_str||r.timestamp_iso||r.created_at||''), margin+contentW/2, y+66);
+      y += 92;
+      // Clauses
+      doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(154,101,53); doc.text('ACKNOWLEDGED CLAUSES ('+(r.clauses_agreed||clauses.length)+')', margin, y); y += 15;
+      doc.setFont('times','normal'); doc.setFontSize(9.5); doc.setTextColor(45,36,32);
+      clauses.forEach(function(t,i){
+        var lines = doc.splitTextToSize((i+1)+'. '+t, contentW);
+        lines.forEach(function(ln){ pageBreak(16); doc.text(ln, margin, y); y += 13; });
+        y += 3;
+      });
+      if (r.notes){
+        pageBreak(60);
+        doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(154,101,53); doc.text('PARTICIPANT NOTE', margin, y); y += 13;
+        doc.setFont('times','normal'); doc.setFontSize(9.5); doc.setTextColor(45,36,32);
+        doc.splitTextToSize(String(r.notes), contentW).forEach(function(ln){ pageBreak(16); doc.text(ln, margin, y); y += 13; });
+      }
+      // Signature
+      pageBreak(150); y += 8;
+      doc.setDrawColor(230,221,206); doc.setLineWidth(1); doc.line(margin, y, pageW-margin, y); y += 20;
+      doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(154,101,53); doc.text('SIGNATURE', margin, y); y += 8;
+      if (r.signature){ try { doc.addImage(r.signature, 'PNG', margin, y, 220, 80); } catch(e){} }
+      doc.setDrawColor(216,203,180); doc.setLineWidth(0.75); doc.line(margin, y+84, margin+220, y+84);
+      doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(140,125,100);
+      doc.text(String(r.name||'')+'  —  '+String(r.time_str||''), margin, y+96);
+      var safe = (r.name||'signer').replace(/[^a-z0-9]+/gi,'-').toLowerCase();
+      doc.save('waiver-'+safe+'.pdf');
+    } catch(e){ alert('Could not generate the PDF.'); if(window.console) console.error(e); }
   };
 
   var adminEventFilterValue = 'all'; // admin panel event filter: 'all' | 'recent' | 'past'
