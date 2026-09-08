@@ -4882,7 +4882,7 @@
           reminders:['admin-reminder-section','admin-waitlist-section'],
           add:['admin-manual-add-section'],
           addevent:['admin-add-event-section'],
-          lists:['admin-shared-lists','admin-agreements-section','admin-club-section','admin-notify-list-section'],
+          lists:['admin-shared-lists','admin-agreements-section','admin-standalone-waivers-section','admin-club-section','admin-notify-list-section'],
           recog:['admin-badges-section','admin-donor-section']
         };
         Object.keys(MAP).forEach(function(tab){
@@ -4963,6 +4963,12 @@
     <div id="admin-agreements-section" style="margin-top:1.5rem;">
       <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold-text);margin-bottom:.6rem;border-bottom:1px solid var(--border);padding-bottom:.4rem;">&#128196; Signed Agreements</h3>
       <div id="admin-agreements-body"></div>
+    </div>
+
+    <div id="admin-standalone-waivers-section" style="margin-top:1.5rem;">
+      <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold-text);margin-bottom:.6rem;border-bottom:1px solid var(--border);padding-bottom:.4rem;">&#9997;&#65039; Standalone Waivers <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-muted);">(signed at /waiver)</span></h3>
+      <button type="button" onclick="standaloneWaiversCSV()" style="margin:0 0 .6rem;background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:'Jost',sans-serif;">&#11015;&#65039; Export CSV</button>
+      <div id="admin-standalone-waivers-body"><div style="color:var(--text-muted);font-size:.85rem;">Loading…</div></div>
     </div>
 
     <div id="admin-northwell-section" style="margin-top:1.5rem;">
@@ -9528,6 +9534,58 @@ document.addEventListener('DOMContentLoaded', function() {
     }, function(){ alert('Could not remove. Please try again.'); });
   };
 
+  // ── Standalone liability waivers (signed at /waiver → standalone_waivers) ──
+  var _standaloneWaivers = [];
+  function renderStandaloneWaivers(){
+    var body = document.getElementById('admin-standalone-waivers-body');
+    if (!body) return;
+    body.innerHTML = '<div style="color:var(--text-muted);font-size:.85rem;">Loading…</div>';
+    supabase.from('standalone_waivers').select('*').order('created_at', { ascending:false })
+      .then(function(res){
+        if (res && res.error){ body.innerHTML = '<div class="empty-state">No standalone waivers yet.</div>'; return; }
+        var rows = (res && res.data) || [];
+        _standaloneWaivers = rows;
+        if (!rows.length){ body.innerHTML = '<div class="empty-state">No standalone waivers yet.</div>'; return; }
+        var html = '<div style="font-size:.72rem;color:var(--text-muted);margin-bottom:.4rem;">'+rows.length+' signed</div>';
+        rows.forEach(function(r){
+          var when = r.time_str || (r.timestamp_iso ? new Date(r.timestamp_iso).toLocaleString() : (r.created_at ? new Date(r.created_at).toLocaleString() : ''));
+          var ev = r.event_name ? ('<br><span style="font-size:.72rem;color:var(--gold-text);">'+escapeHTML(r.event_name)+(r.event_date?(' &middot; '+escapeHTML(r.event_date)):'')+'</span>') : '';
+          var note = r.notes ? ('<div style="margin-top:.35rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;white-space:pre-line;"><strong style="color:var(--gold-text);font-size:.68rem;letter-spacing:.5px;text-transform:uppercase;">&#129721; Note:</strong><br>'+escapeHTML(r.notes)+'</div>') : '';
+          html += '<div class="admin-sub-item" style="flex-direction:column;align-items:stretch;">'
+            + '<div style="display:flex;justify-content:space-between;gap:.5rem;">'
+            + '<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(r.name||'')+'</span>'
+            + (r.email?'<br><span class="aemail">'+escapeHTML(r.email)+'</span>':'')+ev+'</div>'
+            + '<div style="text-align:right;"><span style="font-size:.72rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'
+            + '<br><button onclick="removeStandaloneWaiver(\''+escapeHTML(r.code||'')+'\')" style="margin-top:.3rem;background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128465; Remove</button></div></div>'
+            + note + '</div>';
+        });
+        body.innerHTML = html;
+      }, function(){ body.innerHTML = '<div class="empty-state">Could not load.</div>'; });
+  }
+  window.removeStandaloneWaiver = function(code){
+    if (!code){ return; }
+    if (!confirm('Remove this signed waiver? This cannot be undone.')) return;
+    supabase.from('standalone_waivers').delete().eq('code', code).then(function(res){
+      if (res && res.error){ alert('Could not remove: ' + res.error.message); return; }
+      renderStandaloneWaivers();
+    }, function(){ alert('Could not remove. Please try again.'); });
+  };
+  window.standaloneWaiversCSV = function(){
+    var rows = _standaloneWaivers || [];
+    if (!rows.length){ alert('No waivers to export yet.'); return; }
+    var esc = function(s){ s = (s==null?'':String(s)); return '"'+s.replace(/"/g,'""')+'"'; };
+    var csv = 'Name,Email,Event,Event Date,Note,Signed,Code\n';
+    rows.forEach(function(r){
+      csv += [esc(r.name), esc(r.email), esc(r.event_name), esc(r.event_date), esc(r.notes), esc(r.time_str||r.timestamp_iso||r.created_at), esc(r.code)].join(',') + '\n';
+    });
+    try {
+      var blob = new Blob([csv], { type:'text/csv' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a'); a.href = url; a.download = 'standalone-waivers.csv'; a.click();
+      URL.revokeObjectURL(url);
+    } catch(e){ alert('Could not export CSV.'); }
+  };
+
   var adminEventFilterValue = 'all'; // admin panel event filter: 'all' | 'recent' | 'past'
   function renderAdmin(){
     var body=document.getElementById('admin-body');
@@ -9610,6 +9668,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof renderWaitlistNotify === 'function') renderWaitlistNotify();
     if (typeof renderSignedAgreements === 'function') renderSignedAgreements();
     if (typeof renderNorthwellAgreement === 'function') renderNorthwellAgreement();
+    if (typeof renderStandaloneWaivers === 'function') renderStandaloneWaivers();
     if (typeof populateReturningGuests === 'function') populateReturningGuests();
 
     getData(function(data){
