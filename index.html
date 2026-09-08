@@ -4973,6 +4973,12 @@
     <!-- Manual Add -->
     <div id="admin-manual-add-section" style="margin-top:1.5rem;padding:1.25rem;background:#faf5ee;border:1px solid var(--border);border-radius:12px;">
       <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--brown);margin-bottom:1rem;">&#10133; Manually Add Registration</h3>
+      <div style="margin-bottom:.85rem;">
+        <label for="admin-add-returning" style="font-size:.78rem;font-weight:600;color:var(--brown);display:block;margin-bottom:.3rem;">&#128101; Returning guest <span style="font-weight:400;color:var(--text-muted);">(pick someone who already attended &mdash; fills name &amp; email below, then choose the event)</span></label>
+        <select id="admin-add-returning" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
+          <option value="">&mdash; New guest / type below &mdash;</option>
+        </select>
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
         <div>
           <label for="admin-add-name" style="font-size:.78rem;font-weight:600;color:var(--brown);display:block;margin-bottom:.3rem;">Full Name</label>
@@ -9604,6 +9610,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof renderWaitlistNotify === 'function') renderWaitlistNotify();
     if (typeof renderSignedAgreements === 'function') renderSignedAgreements();
     if (typeof renderNorthwellAgreement === 'function') renderNorthwellAgreement();
+    if (typeof populateReturningGuests === 'function') populateReturningGuests();
 
     getData(function(data){
       sessionsContainer.innerHTML='';
@@ -12506,7 +12513,43 @@ document.addEventListener('DOMContentLoaded', function() {
   function foundingKey(email,ev,sess){ return (email||'').toLowerCase()+'|'+(ev||'')+'|'+(sess||''); }
   function fbBadge(rec){ return _foundingSent[foundingKey(rec.email, rec.event, rec.session)] ? ' <span class="atype" style="background:#eef3e8;color:#3b6b3f;">🎁 Founding One</span>' : ''; }
   window.markFoundingSent = function(email,ev,sess){ _foundingSent[foundingKey(email,ev,sess)] = true; try { localStorage.setItem('auric_founding_sent', JSON.stringify(_foundingSent)); } catch(e){} if(typeof rfRefresh==='function') rfRefresh(); };
-  function rfRefresh(){ if(rfAdminContainer) renderReformerSection(rfAdminContainer); if(rfBkAdminContainer) renderReformerBkSection(rfBkAdminContainer); if(rfTbAdminContainer) renderReformerTbSection(rfTbAdminContainer); if(rfTb28AdminContainer) renderReformerTb28Section(rfTb28AdminContainer); if(rfHwAdminContainer) renderReformerHwSection(rfHwAdminContainer); }
+  function rfRefresh(){ if(rfAdminContainer) renderReformerSection(rfAdminContainer); if(rfBkAdminContainer) renderReformerBkSection(rfBkAdminContainer); if(rfTbAdminContainer) renderReformerTbSection(rfTbAdminContainer); if(rfTb28AdminContainer) renderReformerTb28Section(rfTb28AdminContainer); if(rfHwAdminContainer) renderReformerHwSection(rfHwAdminContainer); populateReturningGuests(); }
+
+  // Fill the "Returning guest" picker in Manual Add with everyone who has
+  // attended a reformer class (deduped by email). Picking one auto-fills the
+  // name + email fields; the owner then chooses the event and clicks Add.
+  function populateReturningGuests(){
+    var sel = document.getElementById('admin-add-returning');
+    if(!sel) return;
+    if(!sel._wired){
+      sel._wired = true;
+      sel.addEventListener('change', function(){
+        var i = sel.value; if(i==='') return;
+        var p = (sel._list||[])[+i]; if(!p) return;
+        var n = document.getElementById('admin-add-name'), e = document.getElementById('admin-add-email');
+        if(n) n.value = p.name || '';
+        if(e) e.value = p.email || '';
+      });
+    }
+    try {
+      supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(res){
+        var rows = (res && res.data) || [];
+        var map = {};
+        rows.forEach(function(r){
+          if(!r.email || r.type==='waitlist') return;
+          var k = (r.email||'').toLowerCase();
+          if(!map[k]) map[k] = { name:r.name||'', email:r.email };
+          else if(!map[k].name && r.name) map[k].name = r.name;
+        });
+        var list = Object.keys(map).map(function(k){ return map[k]; })
+          .sort(function(a,b){ return (a.name||a.email).toLowerCase().localeCompare((b.name||b.email).toLowerCase()); });
+        var html = '<option value="">— New guest / type below —</option>';
+        list.forEach(function(p,i){ html += '<option value="'+i+'">'+escapeHTML(p.name||'(no name)')+' — '+escapeHTML(p.email)+'</option>'; });
+        sel.innerHTML = html;
+        sel._list = list;
+      }, function(){});
+    } catch(e){}
+  }
   // Build a "⏳ Waitlist" sub-block for one event (rows = full roster; filters type='waitlist').
   function rfWaitlistBlock(allRows, eventId){
     var waits = (allRows||[]).filter(function(r){ return r.type==='waitlist' && r.event===eventId; });
