@@ -5464,7 +5464,7 @@
         <input type="text" id="admin-donor-halloween" data-event-donors="halloween" placeholder="e.g., partner or sponsor names" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
       </div>
       <div style="margin-bottom:.75rem;">
-        <label for="admin-donor-turkey" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Turkey Burn! &mdash; Donors</label>
+        <label for="admin-donor-turkey" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Turkey Burn! <span style="font-weight:400;color:var(--text-muted);">(Nov 21 &amp; 28)</span> &mdash; Donors</label>
         <input type="text" id="admin-donor-turkey" data-event-donors="turkey" placeholder="e.g., partner or sponsor names" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
       </div>
       <div style="margin-bottom:.75rem;">
@@ -8284,9 +8284,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function applyEventBadges() {
     getEventConfig(function(cfg){
-      var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat', recharge: 'event-card-recharge', reformer: 'event-card-reformer', 'reformer-bk': 'event-card-reformer-bk', halloween: 'event-card-halloween', turkey: 'event-card-turkey', blooming: 'event-card-blooming' };
+      var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat', recharge: 'event-card-recharge', reformer: 'event-card-reformer', 'reformer-bk': 'event-card-reformer-bk', halloween: 'event-card-halloween', turkey: ['event-card-turkey','event-card-turkey28'], blooming: 'event-card-blooming' };
       Object.keys(cards).forEach(function(key){
-        var card = document.getElementById(cards[key]);
+        var _ids = cards[key]; if(!Array.isArray(_ids)) _ids = [_ids];
+        _ids.forEach(function(_cardId){
+        var card = document.getElementById(_cardId);
         if (!card) return;
         // Badges go INSIDE the photo container so absolute positioning anchors to the image
         var photo = card.querySelector('.bq-event-photo');
@@ -8324,6 +8326,7 @@ document.addEventListener('DOMContentLoaded', function() {
             sub.parentNode.insertBefore(thanks, sub.nextSibling);
           }
         }
+        });
       });
       // Re-render past events recap cards now that event_config is cached
       // (so donor info shows up on Pilates Juneteenth after it becomes a past event)
