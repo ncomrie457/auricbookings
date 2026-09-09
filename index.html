@@ -5531,6 +5531,7 @@ Can't wait to move and connect with you!</textarea>
       <!-- Question box (highlighted reflection prompt) -->
       <div style="margin-bottom:.85rem;padding-top:.75rem;border-top:1px dashed var(--border);">
         <label for="admin-flex-reminder-question-preset" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Question box <span style="font-weight:400;color:var(--text-muted);">(the highlighted prompt &mdash; pick a preset per event, or write your own)</span></label>
+        <label style="display:flex;align-items:center;gap:.5rem;margin:.1rem 0 .55rem;font-size:.8rem;color:var(--brown);font-weight:500;cursor:pointer;"><input type="checkbox" id="admin-flex-reminder-include-q" checked style="width:16px;height:16px;accent-color:var(--gold);"> Include the question box in this reminder</label>
         <select id="admin-flex-reminder-question-preset" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;margin-bottom:.5rem;"></select>
         <input type="text" id="admin-flex-reminder-question-eyebrow" placeholder="Small label above (e.g., One Little Thing)" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;margin-bottom:.4rem;">
         <input type="text" id="admin-flex-reminder-question" placeholder="The question (e.g., What's the one song you need to hear on the mat?)" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;margin-bottom:.4rem;">
@@ -10546,6 +10547,19 @@ document.addEventListener('DOMContentLoaded', function() {
     var qEyebrow  = (document.getElementById('admin-flex-reminder-question-eyebrow').value || '').trim();
     var qQuestion = (document.getElementById('admin-flex-reminder-question').value || '').trim();
     var qSub      = (document.getElementById('admin-flex-reminder-question-sub').value || '').trim();
+    var qIncludeEl = document.getElementById('admin-flex-reminder-include-q');
+    var qInclude   = qIncludeEl ? qIncludeEl.checked : true;
+    function esc(s){ var d=document.createElement('div'); d.textContent=(s==null?'':s); return d.innerHTML; }
+    // Build the highlighted prompt box as one HTML block; empty string omits it entirely.
+    var questionBlock = (qInclude && qQuestion) ? (
+      '<tr><td style="padding:0 40px 24px;">'
+      + '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f6efe0;border-radius:12px;">'
+      + '<tr><td align="center" style="padding:26px 28px 24px;">'
+      + (qEyebrow ? '<div style="font-family:Georgia,serif;font-size:10px;color:#9a6535;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">'+esc(qEyebrow)+'</div>' : '')
+      + '<p style="font-family:\'Cormorant Garamond\',Georgia,serif;font-style:italic;font-size:24px;line-height:1.35;color:#5A3A1A;margin:0 0 10px 0;">'+esc(qQuestion)+'</p>'
+      + (qSub ? '<p style="font-family:Georgia,serif;font-size:13px;line-height:1.6;color:#8a7a5f;margin:0;">'+esc(qSub)+'</p>' : '')
+      + '</td></tr></table></td></tr>'
+    ) : '';
     var phrasing = getReminderPhrasing(days);
     var greeting = customGreeting || phrasing.greeting;
     var daysText = phrasing.days_text;
@@ -10652,9 +10666,7 @@ document.addEventListener('DOMContentLoaded', function() {
           event_date:    item.sess.date || '',
           arrival_time:  item.sess.arrival,
           class_time:    item.sess.start,
-          question_eyebrow: qEyebrow,
-          custom_question:  qQuestion,
-          question_sub:     qSub,
+          question_block: questionBlock,
           greeting:      greeting,
           days_text:     daysText,
           custom_message: customMessage
