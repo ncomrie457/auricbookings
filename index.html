@@ -5539,6 +5539,7 @@ Can't wait to move and connect with you!</textarea>
         <p style="font-size:.7rem;color:var(--text-muted);margin-top:.25rem;font-style:italic;">Presets change with the event above. Edit any field to customize the highlighted prompt.</p>
       </div>
 
+      <button type="button" id="admin-flex-reminder-save" class="btn" style="width:100%;margin-bottom:.5rem;background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;">&#128190; Save these settings</button>
       <button type="button" id="admin-flex-reminder-send" class="btn btn-primary" style="width:100%;">&#128232; Send Reminder &rarr;</button>
       <div id="admin-flex-reminder-status" style="margin-top:.5rem;font-size:.78rem;color:var(--text-muted);"></div>
     </div>
@@ -10537,6 +10538,44 @@ document.addEventListener('DOMContentLoaded', function() {
       var list = REMINDER_QUESTION_PRESETS[evSel.value] || [];
       applyReminderQuestion(list[parseInt(this.value, 10)]);
     });
+  })();
+
+  // ── Save ALL custom-reminder fields per event (greeting/subject, message,
+  //    days, question box, include toggle). "Save these settings" writes them;
+  //    they reload automatically whenever that event is selected. ──
+  (function(){
+    var evSel = document.getElementById('admin-flex-reminder-event');
+    if (!evSel) return;
+    var F = {
+      greeting:  'admin-flex-reminder-greeting',
+      message:   'admin-flex-reminder-message',
+      days:      'admin-flex-reminder-days',
+      qEyebrow:  'admin-flex-reminder-question-eyebrow',
+      qQuestion: 'admin-flex-reminder-question',
+      qSub:      'admin-flex-reminder-question-sub'
+    };
+    function el(id){ return document.getElementById(id); }
+    function key(ev){ return 'auric_reminder_draft_' + ev; }
+    function saveDraft(){
+      var ev = evSel.value, inc = el('admin-flex-reminder-include-q');
+      var d = {};
+      Object.keys(F).forEach(function(k){ var e = el(F[k]); if(e) d[k] = e.value; });
+      d.includeQ = inc ? inc.checked : true;
+      try { localStorage.setItem(key(ev), JSON.stringify(d)); } catch(e){}
+      var tag = el('admin-flex-reminder-saved'); if (tag){ tag.style.opacity='1'; setTimeout(function(){ tag.style.opacity='0'; }, 1400); }
+      var st = el('admin-flex-reminder-status');
+      if (st){ var label = evSel.options[evSel.selectedIndex] ? evSel.options[evSel.selectedIndex].text : 'this event'; st.textContent = '✅ Saved these settings for ' + label + '.'; setTimeout(function(){ if (st.textContent.indexOf('Saved these') >= 0) st.textContent=''; }, 2800); }
+    }
+    function loadDraft(ev){
+      var raw = null; try { raw = localStorage.getItem(key(ev)); } catch(e){}
+      if (!raw) return; var d; try { d = JSON.parse(raw); } catch(e){ return; }
+      Object.keys(F).forEach(function(k){ var e = el(F[k]); if (e && d[k] != null && (k !== 'days' || d[k] !== '')) e.value = d[k]; });
+      var inc = el('admin-flex-reminder-include-q'); if (inc && typeof d.includeQ === 'boolean') inc.checked = d.includeQ;
+    }
+    var saveBtn = el('admin-flex-reminder-save'); if (saveBtn) saveBtn.addEventListener('click', saveDraft);
+    // Reload the saved draft after the preset/message handlers run on event change.
+    evSel.addEventListener('change', function(){ setTimeout(function(){ loadDraft(evSel.value); }, 0); });
+    loadDraft(evSel.value);
   })();
 
   document.getElementById('admin-flex-reminder-send').addEventListener('click', function(){
