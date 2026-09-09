@@ -13113,8 +13113,11 @@ document.addEventListener('DOMContentLoaded', function() {
         var item=document.createElement('div'); item.className='admin-sub-item';
         var when=''; try{ when=rec.created_at?new Date(rec.created_at).toLocaleString():''; }catch(e){}
         var phone = rec.phone ? '<br><span style="font-size:.75rem;color:var(--text-muted);">\u{1F4DE} '+escapeHTML(rec.phone)+'</span>' : '';
+        var loc = rec.location || 'Brooklyn'; // signups before location tracking are Brooklyn
+        var locBadge = ' <span class="atype" style="background:#eef3e8;color:#3b6b3f;">\u{1F4CD} '+escapeHTML(loc)+'</span>';
+        var times = rec.preferred_times ? '<br><span style="font-size:.75rem;color:var(--text-muted);">\u{1F551} '+escapeHTML(rec.preferred_times)+'</span>' : '';
         var removeBtn='<button onclick="riddimAdminRemove(\''+String(rec.id).replace(/'/g,"\\'")+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F5D1} Remove</button>';
-        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span><br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+phone+'</div>'+
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span>'+locBadge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+phone+times+'</div>'+
           '<div style="text-align:right"><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span><br><div style="margin-top:.3rem;">'+removeBtn+'</div></div>';
         block.appendChild(item);
       });
@@ -13139,10 +13142,10 @@ document.addEventListener('DOMContentLoaded', function() {
   window.riddimExportCSV = function(){
     var rows = riddimRows || [];
     if(!rows.length){ alert('No signups to export yet.'); return; }
-    var csv = 'Name,Email,Instagram/Phone,Signed up\n';
+    var csv = 'Name,Email,Location preference,Preferred days/times,Instagram/Phone,Signed up\n';
     rows.forEach(function(r){
       var when=''; try{ when = r.created_at ? new Date(r.created_at).toLocaleString() : ''; }catch(e){}
-      csv += [csvEscape(r.name), csvEscape(r.email), csvEscape(r.phone||''), csvEscape(when)].join(',') + '\n';
+      csv += [csvEscape(r.name), csvEscape(r.email), csvEscape(r.location||'Brooklyn'), csvEscape(r.preferred_times||''), csvEscape(r.phone||''), csvEscape(when)].join(',') + '\n';
     });
     var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
     var url = URL.createObjectURL(blob);
