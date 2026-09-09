@@ -65,6 +65,14 @@
         <input type="text" id="ri-name" autocomplete="name" placeholder="Your name">
         <label for="ri-email">Email</label>
         <input type="email" id="ri-email" autocomplete="email" placeholder="you@email.com">
+        <label for="ri-location">Which location do you prefer?</label>
+        <select id="ri-location" style="width:100%;padding:.8rem .9rem;border:1px solid var(--border);border-radius:10px;font-family:inherit;font-size:1rem;background:#fff;color:#2c1a0e;">
+          <option value="Either">Either / no preference</option>
+          <option value="West Hempstead">West Hempstead (Long Island)</option>
+          <option value="Brooklyn">Brooklyn</option>
+        </select>
+        <label for="ri-times">Any days or times that work best? <span class="opt">(optional)</span></label>
+        <input type="text" id="ri-times" autocomplete="off" placeholder="e.g. weekend afternoons, Friday evenings">
         <div class="err" id="ri-error"></div>
         <button type="submit" class="btn" id="ri-submit">Add me to the list</button>
       </form>
@@ -92,11 +100,17 @@
       var email=document.getElementById('ri-email').value.trim();
       if(!name){ showError('Please add your name.'); return; }
       if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ showError('Please enter a valid email.'); return; }
+      var location=(document.getElementById('ri-location')||{}).value||'Either';
+      var times=(document.getElementById('ri-times')||{}).value.trim();
       btn.disabled=true; btn.textContent='Saving…';
-      var rec={ name:name, email:email, phone:null, event:'riddim-kompa-next', source:'riddim-interest' };
-      try{ var a=JSON.parse(localStorage.getItem('auric_riddim_interest')||'[]'); a.push(rec); localStorage.setItem('auric_riddim_interest', JSON.stringify(a)); }catch(e){}
+      var recFull={ name:name, email:email, phone:null, event:'riddim-kompa-next', source:'riddim-interest', location:location, preferred_times:(times||null) };
+      var recBase={ name:name, email:email, phone:null, event:'riddim-kompa-next', source:'riddim-interest' };
+      try{ var a=JSON.parse(localStorage.getItem('auric_riddim_interest')||'[]'); a.push(recFull); localStorage.setItem('auric_riddim_interest', JSON.stringify(a)); }catch(e){}
       function done(){ form.style.display='none'; confirmed.style.display='block'; confirmed.scrollIntoView({behavior:'smooth',block:'center'}); }
-      if(sb){ sb.from('blooming_interest').insert([rec]).then(function(res){ if(res&&res.error) console.warn('insert error:', res.error.message); done(); }, function(){ done(); }); }
+      // Resilient insert: try with location/preferred_times; if those columns
+      // don't exist yet, fall back to the base fields so a signup is never lost.
+      function fallback(){ sb.from('blooming_interest').insert([recBase]).then(function(){ done(); }, function(){ done(); }); }
+      if(sb){ sb.from('blooming_interest').insert([recFull]).then(function(res){ if(res&&res.error){ console.warn('insert error:', res.error.message); fallback(); } else { done(); } }, function(){ fallback(); }); }
       else { done(); }
     });
   })();
