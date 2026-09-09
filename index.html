@@ -3125,6 +3125,52 @@
     <a class="bq-tab-next-link" href="#tab-faq" data-nav-tab="btn-faq">FAQ <span aria-hidden="true">&rarr;</span></a>
   </nav>
 </div>
+
+<style>
+  .bq-event-cardstatus{display:inline-block;font-family:'Jost',sans-serif;font-size:.66rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:.24rem .62rem;border-radius:20px;margin:0 0 .5rem;}
+  .bq-event-cardstatus::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;margin-right:.4rem;vertical-align:middle;opacity:.85;}
+  .bq-event-cardstatus.ok{background:#e8f3e8;color:#2e6b34;}
+  .bq-event-cardstatus.warn{background:#fdf0d9;color:#a86617;}
+  .bq-event-cardstatus.sold{background:#fce8e6;color:#b0271f;}
+</style>
+<script>
+  /* Show a live status pill (Now booking / Almost sold out / Sold out) on each
+     upcoming reformer event card in the Events tab, from real paid counts. */
+  document.addEventListener('DOMContentLoaded', function(){
+    var CFG={
+      'event-card-reformer':    { cap:6, sessions:['1pm','2pm','3pm'] },
+      'event-card-reformer-bk': { cap:5, sessions:['bk12','bk1','bk2'] },
+      'event-card-halloween':   { cap:6, sessions:['hw1230','hw130'] },
+      'event-card-turkey':      { cap:6, sessions:['tb1230','tb130'] },
+      'event-card-turkey28':    { cap:6, sessions:['tb28_1230'] }
+    };
+    var pills={};
+    Object.keys(CFG).forEach(function(id){
+      var card=document.getElementById(id); if(!card) return;
+      var pill=document.createElement('div'); pill.className='bq-event-cardstatus ok'; pill.textContent='Now booking';
+      var dateEl=card.querySelector('.bq-event-date');
+      if(dateEl) card.insertBefore(pill, dateEl); else card.appendChild(pill);
+      pills[id]=pill;
+    });
+    function set(id,text,cls){ var p=pills[id]; if(p){ p.textContent=text; p.className='bq-event-cardstatus '+cls; } }
+    try{
+      if(window.supabase && window.supabase.createClient){
+        var _sb=window.supabase.createClient('https://qvmiwyxerotkqpbuhpun.supabase.co','sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ');
+        _sb.rpc('reformer_spot_counts').then(function(res){
+          if(!res||res.error||!res.data) return;
+          var paid={}; res.data.forEach(function(r){ paid[r.session]=Number(r.paid)||0; });
+          Object.keys(CFG).forEach(function(id){
+            var cfg=CFG[id], rem=0;
+            cfg.sessions.forEach(function(s){ var r=cfg.cap-(paid[s]||0); rem+=(r>0?r:0); });
+            if(rem<=0) set(id,'Sold out','sold');
+            else if(rem<=3) set(id,'Almost sold out','warn');
+            else set(id,'Now booking','ok');
+          });
+        }, function(){});
+      }
+    }catch(e){}
+  });
+</script>
 </div><!-- /tab-events -->
 
 <!-- TAB: Home (brand storytelling — default landing) -->
