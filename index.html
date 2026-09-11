@@ -12759,7 +12759,25 @@ document.addEventListener('DOMContentLoaded', function() {
   // shows a 🎁 badge. Stored in localStorage (this browser).
   var _foundingSent = {}; try { _foundingSent = JSON.parse(localStorage.getItem('auric_founding_sent')||'{}') || {}; } catch(e){}
   function foundingKey(email,ev,sess){ return (email||'').toLowerCase()+'|'+(ev||'')+'|'+(sess||''); }
-  function fbBadge(rec){ return _foundingSent[foundingKey(rec.email, rec.event, rec.session)] ? ' <span class="atype" style="background:#eef3e8;color:#3b6b3f;">🎁 Founding One</span>' : ''; }
+  // Auto-detect the FIRST paid booker of each event+session so the roster can
+  // label them "Founding One" without waiting for the gift email to be sent.
+  // Recomputed each render from the roster data (device-independent).
+  var _foundingFirstMap = {};
+  function _rfMarkFirst(display){
+    (display||[]).forEach(function(r){ if(r) delete _foundingFirstMap[String(r.id)]; }); // clear this batch's ids
+    var earliest = {};
+    (display||[]).forEach(function(r){
+      if(!r || !r.is_paid || !r.email) return;
+      var k = (r.event||'')+'|'+(r.session||''), c = r.created_at || '';
+      if(!earliest[k] || c < earliest[k].c || (c===earliest[k].c && String(r.id) < String(earliest[k].id))) earliest[k] = { c:c, id:r.id };
+    });
+    Object.keys(earliest).forEach(function(k){ _foundingFirstMap[String(earliest[k].id)] = true; });
+  }
+  function fbBadge(rec){
+    if(_foundingSent[foundingKey(rec.email, rec.event, rec.session)]) return ' <span class="atype" style="background:#eef3e8;color:#3b6b3f;">🎁 Founding One</span>';
+    if(_foundingFirstMap[String(rec.id)]) return ' <span class="atype" style="background:#f6efe0;color:#9a6535;">✦ Founding One</span>';
+    return '';
+  }
   window.markFoundingSent = function(email,ev,sess){ _foundingSent[foundingKey(email,ev,sess)] = true; try { localStorage.setItem('auric_founding_sent', JSON.stringify(_foundingSent)); } catch(e){} if(typeof rfRefresh==='function') rfRefresh(); };
   function rfRefresh(){ if(rfAdminContainer) renderReformerSection(rfAdminContainer); if(rfBkAdminContainer) renderReformerBkSection(rfBkAdminContainer); if(rfTbAdminContainer) renderReformerTbSection(rfTbAdminContainer); if(rfTb28AdminContainer) renderReformerTb28Section(rfTb28AdminContainer); if(rfHwAdminContainer) renderReformerHwSection(rfHwAdminContainer); populateReturningGuests(); }
 
@@ -12894,6 +12912,7 @@ document.addEventListener('DOMContentLoaded', function() {
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
       block.appendChild(rfWaitlistBlock(rows, 'riddim-kompa-reformer-2026-09-13'));
       var SLAB = { '1pm':'1 PM', '2pm':'2 PM', '3pm':'3 PM' }; var _curSess=null, _curSessBlock=null;
+      _rfMarkFirst(display);
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
         if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.74rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); block.appendChild(_curSessBlock); }
@@ -12962,6 +12981,7 @@ document.addEventListener('DOMContentLoaded', function() {
       display.sort(function(a,b){ return (_bkRank(a.session)-_bkRank(b.session)) || (a.created_at||'').localeCompare(b.created_at||''); });
       block.appendChild(rfWaitlistBlock(rows, 'riddim-kompa-brooklyn-2026-09-26'));
       var SLAB = { 'bk12':'12 PM','bk1':'1 PM','bk2':'2 PM' }; var _curSess=null, _curSessBlock=null;
+      _rfMarkFirst(display);
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
         if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.74rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); block.appendChild(_curSessBlock); }
@@ -13018,6 +13038,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.created_at||'').localeCompare(b.created_at||''); });
+      _rfMarkFirst(display);
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
         var id = rec.id;
@@ -13068,6 +13089,7 @@ document.addEventListener('DOMContentLoaded', function() {
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
       block.appendChild(rfWaitlistBlock(rows, 'turkey-burn-2026-11-21'));
       var SLAB = { 'tb1230':'12:30 PM','tb130':'1:30 PM' }; var _curSess=null, _curSessBlock=null;
+      _rfMarkFirst(display);
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
         if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.74rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); block.appendChild(_curSessBlock); }
@@ -13128,6 +13150,7 @@ document.addEventListener('DOMContentLoaded', function() {
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
       block.appendChild(rfWaitlistBlock(rows, 'halloween-creek-2026-10-24'));
       var SLAB = { 'hw1230':'12:30 PM','hw130':'1:30 PM' }; var _curSess=null, _curSessBlock=null;
+      _rfMarkFirst(display);
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
         if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.74rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); block.appendChild(_curSessBlock); }
