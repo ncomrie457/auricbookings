@@ -15214,5 +15214,34 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 </script>
 
+<style>
+  /* Collapsible prize-drawing box inside the booking overlays */
+  :is(#reformer-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-raffle .rf-raffle-tag{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:0;}
+  :is(#reformer-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-raffle.rf-raffle-collapsed .rf-raffle-body{display:none;}
+  :is(#reformer-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-raffle-body{margin-top:.4rem;}
+  :is(#reformer-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-raffle-chev{font-size:.9em;transition:transform .18s ease;flex:0 0 auto;}
+  :is(#reformer-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-raffle:not(.rf-raffle-collapsed) .rf-raffle-chev{transform:rotate(90deg);}
+</style>
+<script>
+  /* Make each overlay's Prize Drawing box collapsible (collapsed by default),
+     so "Pick your time" sits higher. Tap the header to expand. */
+  document.addEventListener('DOMContentLoaded', function(){
+    Array.prototype.forEach.call(document.querySelectorAll('.rf-raffle'), function(box){
+      if(box._collapsible) return; box._collapsible = true;
+      var tag = box.querySelector('.rf-raffle-tag'); if(!tag) return;
+      var body = document.createElement('div'); body.className = 'rf-raffle-body';
+      Array.prototype.slice.call(box.childNodes).forEach(function(n){ if(n !== tag) body.appendChild(n); });
+      box.appendChild(body);
+      var chev = document.createElement('span'); chev.className = 'rf-raffle-chev'; chev.setAttribute('aria-hidden','true'); chev.textContent = '▸';
+      tag.appendChild(chev);
+      tag.setAttribute('role','button'); tag.setAttribute('tabindex','0'); tag.setAttribute('aria-expanded','false');
+      box.classList.add('rf-raffle-collapsed');
+      function toggle(){ var open = box.classList.toggle('rf-raffle-collapsed'); /* now collapsed? */ tag.setAttribute('aria-expanded', open ? 'false' : 'true'); }
+      tag.addEventListener('click', toggle);
+      tag.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); toggle(); } });
+    });
+  });
+</script>
+
 </body>
 </html>
