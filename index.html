@@ -9524,6 +9524,28 @@ document.addEventListener('DOMContentLoaded', function() {
     box.innerHTML = '<div style="color:var(--text-muted);font-size:.85rem;padding:.5rem;">Loading…</div>';
     sec.scrollIntoView({behavior:'smooth', block:'nearest'});
     getClubData(function(marks){
+      // Reformer events (Riddim & Kompa, Halloween, Turkey Burn) count too.
+      // Admin can read the full roster, so tally "attended" rows in here —
+      // one mark per event, so multiple sessions never double-count.
+      try {
+        supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(r){
+          if (r && !r.error){
+            var seen = {};
+            ((r && r.data) || []).forEach(function(row){
+              if (!row || row.attendance !== 'attended' || !row.email) return;
+              var key = String(row.email).toLowerCase();
+              var ek = key + '|' + (row.event || '');
+              if (seen[ek]) return; seen[ek] = true;
+              if (!marks[key]) marks[key] = { email: row.email, name: row.name || '', count: 0, table: '', code: '' };
+              marks[key].count += 1;
+              if (row.name) marks[key].name = row.name;
+            });
+          }
+          renderClubList();
+        }, function(){ renderClubList(); });
+      } catch(e){ renderClubList(); }
+
+      function renderClubList(){
       var arr = Object.keys(marks).map(function(k){ return marks[k]; });
       if (!arr.length){ box.innerHTML = '<div style="color:var(--text-muted);font-size:.85rem;padding:.5rem;">No attendance marks yet. Tap &ldquo;&#9711; Attended&rdquo; on someone in the lists above to give them a mark.</div>'; return; }
       arr.sort(function(a,b){ return b.count - a.count; });
@@ -9536,6 +9558,7 @@ document.addEventListener('DOMContentLoaded', function() {
         html += '<tr style="border-bottom:1px solid #f0e9dc;"><td style="padding:.4rem;">'+escapeHTML(m.name||'—')+'<br><span style="color:var(--text-muted);font-size:.75rem;">'+escapeHTML(m.email)+'</span></td><td style="text-align:center;"><strong>'+fmtMarks(m.count)+'</strong></td><td style="font-size:.78rem;">'+status+'</td><td style="text-align:right;">'+refBtn+'</td></tr>';
       });
       box.innerHTML = html + '</table>';
+      }
     });
   });
 
@@ -13025,10 +13048,17 @@ document.addEventListener('DOMContentLoaded', function() {
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
         var archiveBtn = btn('rfAdminArchive('+id+')','#eceae4','#d3ccbd','#6b6357','\u{1F5C4}\u{FE0F} Archive');
+        var _att = rec.attendance || '';
+        var attendBtn = (_att==='attended')
+          ? btn("rfAdminSetAttendance("+id+",'')",'#e8f5e9','#a5d6a7','#2e7d32','✓ Attended')
+          : btn("rfAdminSetAttendance("+id+",'attended')",'#fff','var(--gold)','var(--brown)','○ Attended');
+        var noShowBtn = (_att==='noshow')
+          ? btn("rfAdminSetAttendance("+id+",'')",'#fdecea','#f5c6c2','var(--red)','✗ No-show')
+          : btn("rfAdminSetAttendance("+id+",'noshow')",'#fff','#e0d6c4','#8a7d6b','○ No-show');
         var moveBtn = btn('rfAdminMove('+id+')','#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Move event');
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
-          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+archiveBtn+removeBtn+'</div></div>';
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+archiveBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
       });
     }
@@ -13090,10 +13120,17 @@ document.addEventListener('DOMContentLoaded', function() {
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
         var archiveBtn = btn('rfAdminArchive('+id+')','#eceae4','#d3ccbd','#6b6357','\u{1F5C4}\u{FE0F} Archive');
+        var _att = rec.attendance || '';
+        var attendBtn = (_att==='attended')
+          ? btn("rfAdminSetAttendance("+id+",'')",'#e8f5e9','#a5d6a7','#2e7d32','✓ Attended')
+          : btn("rfAdminSetAttendance("+id+",'attended')",'#fff','var(--gold)','var(--brown)','○ Attended');
+        var noShowBtn = (_att==='noshow')
+          ? btn("rfAdminSetAttendance("+id+",'')",'#fdecea','#f5c6c2','var(--red)','✗ No-show')
+          : btn("rfAdminSetAttendance("+id+",'noshow')",'#fff','#e0d6c4','#8a7d6b','○ No-show');
         var moveBtn = btn('rfAdminMove('+id+')','#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Move event');
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
-          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+archiveBtn+removeBtn+'</div></div>';
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+archiveBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
       });
     }
@@ -13140,9 +13177,16 @@ document.addEventListener('DOMContentLoaded', function() {
         var clearHealthBtn = rec.health ? btn('rfAdminClearHealth('+id+')','#fef4e5','#f0c890','#a86617','\u{1FA79} Clear health') : '';
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
         var archiveBtn = btn('rfAdminArchive('+id+')','#eceae4','#d3ccbd','#6b6357','\u{1F5C4}\u{FE0F} Archive');
+        var _att = rec.attendance || '';
+        var attendBtn = (_att==='attended')
+          ? btn("rfAdminSetAttendance("+id+",'')",'#e8f5e9','#a5d6a7','#2e7d32','✓ Attended')
+          : btn("rfAdminSetAttendance("+id+",'attended')",'#fff','var(--gold)','var(--brown)','○ Attended');
+        var noShowBtn = (_att==='noshow')
+          ? btn("rfAdminSetAttendance("+id+",'')",'#fdecea','#f5c6c2','var(--red)','✗ No-show')
+          : btn("rfAdminSetAttendance("+id+",'noshow')",'#fff','#e0d6c4','#8a7d6b','○ No-show');
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">12:30 PM</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
-          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+paidBtn+waiverBtn+clearHealthBtn+archiveBtn+removeBtn+'</div></div>';
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+paidBtn+waiverBtn+clearHealthBtn+attendBtn+noShowBtn+archiveBtn+removeBtn+'</div></div>';
         block.appendChild(item);
       });
     }
@@ -13200,10 +13244,17 @@ document.addEventListener('DOMContentLoaded', function() {
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
         var archiveBtn = btn('rfAdminArchive('+id+')','#eceae4','#d3ccbd','#6b6357','\u{1F5C4}\u{FE0F} Archive');
+        var _att = rec.attendance || '';
+        var attendBtn = (_att==='attended')
+          ? btn("rfAdminSetAttendance("+id+",'')",'#e8f5e9','#a5d6a7','#2e7d32','✓ Attended')
+          : btn("rfAdminSetAttendance("+id+",'attended')",'#fff','var(--gold)','var(--brown)','○ Attended');
+        var noShowBtn = (_att==='noshow')
+          ? btn("rfAdminSetAttendance("+id+",'')",'#fdecea','#f5c6c2','var(--red)','✗ No-show')
+          : btn("rfAdminSetAttendance("+id+",'noshow')",'#fff','#e0d6c4','#8a7d6b','○ No-show');
         var moveBtn = btn('rfAdminMove('+id+')','#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Move event');
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
-          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+archiveBtn+removeBtn+'</div></div>';
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+archiveBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
       });
     }
@@ -13262,10 +13313,17 @@ document.addEventListener('DOMContentLoaded', function() {
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
         var archiveBtn = btn('rfAdminArchive('+id+')','#eceae4','#d3ccbd','#6b6357','\u{1F5C4}\u{FE0F} Archive');
+        var _att = rec.attendance || '';
+        var attendBtn = (_att==='attended')
+          ? btn("rfAdminSetAttendance("+id+",'')",'#e8f5e9','#a5d6a7','#2e7d32','✓ Attended')
+          : btn("rfAdminSetAttendance("+id+",'attended')",'#fff','var(--gold)','var(--brown)','○ Attended');
+        var noShowBtn = (_att==='noshow')
+          ? btn("rfAdminSetAttendance("+id+",'')",'#fdecea','#f5c6c2','var(--red)','✗ No-show')
+          : btn("rfAdminSetAttendance("+id+",'noshow')",'#fff','#e0d6c4','#8a7d6b','○ No-show');
         var moveBtn = btn('rfAdminMove('+id+')','#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Move event');
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
-          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+paidBtn+timeBtn+confirmBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+archiveBtn+removeBtn+'</div></div>';
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+paidBtn+timeBtn+confirmBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+archiveBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
       });
     }
@@ -13513,6 +13571,14 @@ document.addEventListener('DOMContentLoaded', function() {
     supabase.rpc('reformer_archive', { pass: ADMIN_PASSWORD, rid: id, val: false })
       .then(function(res){ if(res&&res.error){ alert('Could not unarchive — run the reformer_archive SQL (REFORMER_ARCHIVE.sql) first.'); return; } rfRefresh(); },
             function(){ alert('Could not unarchive. Try again.'); });
+  };
+  // Attendance — "✓ Attended" / "○ No-show" on the reformer rosters.
+  // 'attended' marks feed the Auric Club (see reformer_club_marks in
+  // REFORMER_ATTENDANCE.sql). Passing '' clears the mark.
+  window.rfAdminSetAttendance = function(id, val){
+    supabase.rpc('reformer_set_attendance', { pass: ADMIN_PASSWORD, rid: id, val: val || '' })
+      .then(function(res){ if(res&&res.error){ alert('Could not save attendance — run REFORMER_ATTENDANCE.sql in Supabase first.'); return; } rfRefresh(); },
+            function(){ alert('Could not save attendance. Try again.'); });
   };
   window.rfAdminSetSession = function(id, newSession){
     var rec = rfRosterById[id]; if(!rec){ return; }
@@ -14581,7 +14647,18 @@ document.addEventListener('DOMContentLoaded', function() {
     res.textContent = 'Looking up your marks…';
     getClubData(function(marks){
       var m = marks[email];
-      var count = m ? m.count : 0;
+      var base = m ? m.count : 0;
+      // Reformer events (Riddim & Kompa, Halloween, Turkey Burn) count too.
+      // reformer_club_marks returns only a number — never any attendee data.
+      try {
+        supabase.rpc('reformer_club_marks', { p_email: email }).then(function(r){
+          var extra = (r && !r.error && typeof r.data === 'number') ? r.data : 0;
+          showClubMarks(m, base + extra, res);
+        }, function(){ showClubMarks(m, base, res); });
+      } catch(e){ showClubMarks(m, base, res); }
+    });
+  }
+  function showClubMarks(m, count, res){
       renderClubCircles(count);
       var name = (m && m.name) ? m.name.split(' ')[0] : '';
       var freeEarned = Math.floor(count/10);
@@ -14595,7 +14672,6 @@ document.addEventListener('DOMContentLoaded', function() {
         res.innerHTML = (name?name+', you':'You')+' have <strong>'+fmtMarks(count)+'</strong> mark'+(count===1?'':'s')+' — '+fmtMarks(4-count)+' more to bring a friend to your 5th event free 👯, '+fmtMarks(10-count)+' for a free event. ✦';
       }
       renderClubReward(count, name);
-    });
   }
 
   // At 4+ marks the member can bring a friend to their 5th event free — shown
