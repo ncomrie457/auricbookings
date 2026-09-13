@@ -5835,6 +5835,22 @@ Can't wait to move and connect with you!</textarea>
   :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-getting h4{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:var(--brown);margin:0 0 .35rem;font-weight:600;}
   :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-getting p{font-size:.82rem;color:#3d322a;line-height:1.5;margin:0 0 .3rem;}
   :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-getting a.rf-map{color:#9a6535;font-weight:600;text-decoration:underline;}
+  /* Wayfinding slideshow (inside "Getting there") */
+  .rf-wayfind{margin:.7rem 0 .3rem;}
+  .rf-wf-cap0{font-size:.78rem;color:var(--text-muted);margin:0 0 .45rem;line-height:1.45;}
+  .rf-wf-cap0 strong{color:var(--brown);}
+  .rf-wf-frame{position:relative;border-radius:12px;overflow:hidden;background:#0e0a06;border:1px solid var(--border);box-shadow:0 8px 24px -14px rgba(90,58,26,.55);}
+  .rf-wf-track{display:flex;transition:transform .35s ease;}
+  .rf-wf-slide{flex:0 0 100%;position:relative;}
+  .rf-wf-slide img{display:block;width:100%;height:auto;}
+  .rf-wf-cap{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(to top,rgba(20,12,6,.82),rgba(20,12,6,0));color:#fff;font-size:.8rem;font-weight:600;padding:1.4rem .7rem .55rem;line-height:1.3;}
+  .rf-wf-cap span{display:inline-block;background:#a9853f;color:#241606;font-size:.66rem;font-weight:800;border-radius:999px;padding:.08rem .42rem;margin-right:.4rem;vertical-align:middle;}
+  .rf-wf-nav{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.9);color:#5A3A1A;font-size:1.2rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.35);z-index:2;}
+  .rf-wf-nav:hover{background:#fff;}
+  .rf-wf-prev{left:8px;} .rf-wf-next{right:8px;}
+  .rf-wf-dots{display:flex;justify-content:center;gap:6px;margin-top:.55rem;}
+  .rf-wf-dot{width:8px;height:8px;border-radius:50%;border:none;padding:0;background:#d8c8a6;cursor:pointer;transition:background .2s,transform .2s;}
+  .rf-wf-dot.on{background:#a9853f;transform:scale(1.25);}
   :is(#reformer-overlay, #reformer-bk-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-close-link{background:none;border:none;color:var(--text-muted);text-decoration:underline;font-size:.8rem;margin-top:1.1rem;cursor:pointer;font-family:'Jost',sans-serif;}
   #rf-waiver-modal{display:none;position:fixed;inset:0;z-index:10000;background:rgba(20,12,6,.6);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1rem;}
   #rf-waiver-modal .rf-wm-card{background:#fff;border-radius:14px;max-width:520px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,.45);font-family:'Jost',sans-serif;overflow:hidden;}
@@ -5963,6 +5979,20 @@ Can't wait to move and connect with you!</textarea>
       <h4>Getting there</h4>
       <p><strong>Valley Studio</strong><br>45 Cherry Valley Ave, West Hempstead, NY 11552</p>
       <p>Once you&rsquo;re there: head inside, make a right, and walk all the way down past the restroom &mdash; Valley Studio is at the very end on the right. Or use the <strong>Valley Studio</strong> sign entrance on the right side of the building.</p>
+      <div class="rf-wayfind" data-wayfind>
+        <p class="rf-wf-cap0"><strong>Photo walk-through</strong> &mdash; swipe or tap the arrows to follow the route from the front door.</p>
+        <div class="rf-wf-frame">
+          <div class="rf-wf-track">
+            <figure class="rf-wf-slide"><img src="wayfinding-1-enter.jpg" alt="Front entrance of Cherry Valley Sports" loading="lazy"><figcaption class="rf-wf-cap"><span>1</span>Enter here &mdash; Cherry Valley Sports front doors</figcaption></figure>
+            <figure class="rf-wf-slide"><img src="wayfinding-2-walk.jpg" alt="Turf hallway &mdash; keep walking then make a right" loading="lazy"><figcaption class="rf-wf-cap"><span>2</span>Keep walking down the turf, then make a right &mdash; <em>not</em> through the glass doors</figcaption></figure>
+            <figure class="rf-wf-slide"><img src="wayfinding-3-studio.jpg" alt="Main room with Valley Studio at the far end" loading="lazy"><figcaption class="rf-wf-cap"><span>3</span>Valley Studio is the door at the very end (restrooms on your right)</figcaption></figure>
+            <figure class="rf-wf-slide"><img src="wayfinding-4-alt.jpg" alt="Alternate parking-lot entrance" loading="lazy"><figcaption class="rf-wf-cap"><span>4</span>Or use the alternate entrance on the parking-lot side</figcaption></figure>
+          </div>
+          <button type="button" class="rf-wf-nav rf-wf-prev" aria-label="Previous photo">&#8249;</button>
+          <button type="button" class="rf-wf-nav rf-wf-next" aria-label="Next photo">&#8250;</button>
+        </div>
+        <div class="rf-wf-dots"></div>
+      </div>
       <p><a class="rf-map" href="https://maps.google.com/?q=45+Cherry+Valley+Ave+West+Hempstead+NY+11552" target="_blank" rel="noopener noreferrer">Open in Google Maps &rarr;</a></p>
       <p style="color:var(--text-muted);">Street parking is available nearby.</p>
     </div>
@@ -6376,6 +6406,20 @@ document.addEventListener('DOMContentLoaded', function(){
       <h4>Getting there</h4>
       <p><strong>Valley Studio</strong><br>45 Cherry Valley Ave, West Hempstead, NY 11552</p>
       <p>Once you&rsquo;re there: head inside, make a right, and walk all the way down past the restroom &mdash; Valley Studio is at the very end on the right. Or use the <strong>Valley Studio</strong> sign entrance on the right side of the building.</p>
+      <div class="rf-wayfind" data-wayfind>
+        <p class="rf-wf-cap0"><strong>Photo walk-through</strong> &mdash; swipe or tap the arrows to follow the route from the front door.</p>
+        <div class="rf-wf-frame">
+          <div class="rf-wf-track">
+            <figure class="rf-wf-slide"><img src="wayfinding-1-enter.jpg" alt="Front entrance of Cherry Valley Sports" loading="lazy"><figcaption class="rf-wf-cap"><span>1</span>Enter here &mdash; Cherry Valley Sports front doors</figcaption></figure>
+            <figure class="rf-wf-slide"><img src="wayfinding-2-walk.jpg" alt="Turf hallway &mdash; keep walking then make a right" loading="lazy"><figcaption class="rf-wf-cap"><span>2</span>Keep walking down the turf, then make a right &mdash; <em>not</em> through the glass doors</figcaption></figure>
+            <figure class="rf-wf-slide"><img src="wayfinding-3-studio.jpg" alt="Main room with Valley Studio at the far end" loading="lazy"><figcaption class="rf-wf-cap"><span>3</span>Valley Studio is the door at the very end (restrooms on your right)</figcaption></figure>
+            <figure class="rf-wf-slide"><img src="wayfinding-4-alt.jpg" alt="Alternate parking-lot entrance" loading="lazy"><figcaption class="rf-wf-cap"><span>4</span>Or use the alternate entrance on the parking-lot side</figcaption></figure>
+          </div>
+          <button type="button" class="rf-wf-nav rf-wf-prev" aria-label="Previous photo">&#8249;</button>
+          <button type="button" class="rf-wf-nav rf-wf-next" aria-label="Next photo">&#8250;</button>
+        </div>
+        <div class="rf-wf-dots"></div>
+      </div>
       <p><a class="rf-map" href="https://maps.google.com/?q=45+Cherry+Valley+Ave+West+Hempstead+NY+11552" target="_blank" rel="noopener noreferrer">Open in Google Maps &rarr;</a></p>
     </div>
 
@@ -6604,6 +6648,20 @@ document.addEventListener('DOMContentLoaded', function(){
       <h4>Getting there</h4>
       <p><strong>Valley Studio</strong><br>45 Cherry Valley Ave, West Hempstead, NY 11552</p>
       <p>Once you&rsquo;re there: head inside, make a right, and walk all the way down past the restroom &mdash; Valley Studio is at the very end on the right. Or use the <strong>Valley Studio</strong> sign entrance on the right side of the building.</p>
+      <div class="rf-wayfind" data-wayfind>
+        <p class="rf-wf-cap0"><strong>Photo walk-through</strong> &mdash; swipe or tap the arrows to follow the route from the front door.</p>
+        <div class="rf-wf-frame">
+          <div class="rf-wf-track">
+            <figure class="rf-wf-slide"><img src="wayfinding-1-enter.jpg" alt="Front entrance of Cherry Valley Sports" loading="lazy"><figcaption class="rf-wf-cap"><span>1</span>Enter here &mdash; Cherry Valley Sports front doors</figcaption></figure>
+            <figure class="rf-wf-slide"><img src="wayfinding-2-walk.jpg" alt="Turf hallway &mdash; keep walking then make a right" loading="lazy"><figcaption class="rf-wf-cap"><span>2</span>Keep walking down the turf, then make a right &mdash; <em>not</em> through the glass doors</figcaption></figure>
+            <figure class="rf-wf-slide"><img src="wayfinding-3-studio.jpg" alt="Main room with Valley Studio at the far end" loading="lazy"><figcaption class="rf-wf-cap"><span>3</span>Valley Studio is the door at the very end (restrooms on your right)</figcaption></figure>
+            <figure class="rf-wf-slide"><img src="wayfinding-4-alt.jpg" alt="Alternate parking-lot entrance" loading="lazy"><figcaption class="rf-wf-cap"><span>4</span>Or use the alternate entrance on the parking-lot side</figcaption></figure>
+          </div>
+          <button type="button" class="rf-wf-nav rf-wf-prev" aria-label="Previous photo">&#8249;</button>
+          <button type="button" class="rf-wf-nav rf-wf-next" aria-label="Next photo">&#8250;</button>
+        </div>
+        <div class="rf-wf-dots"></div>
+      </div>
       <p><a class="rf-map" href="https://maps.google.com/?q=45+Cherry+Valley+Ave+West+Hempstead+NY+11552" target="_blank" rel="noopener noreferrer">Open in Google Maps &rarr;</a></p>
     </div>
 
@@ -6785,6 +6843,20 @@ document.addEventListener('DOMContentLoaded', function(){
       <h4>Getting there</h4>
       <p><strong>Valley Studio</strong><br>45 Cherry Valley Ave, West Hempstead, NY 11552</p>
       <p>Once you&rsquo;re there: head inside, make a right, and walk all the way down past the restroom &mdash; Valley Studio is at the very end on the right. Or use the <strong>Valley Studio</strong> sign entrance on the right side of the building.</p>
+      <div class="rf-wayfind" data-wayfind>
+        <p class="rf-wf-cap0"><strong>Photo walk-through</strong> &mdash; swipe or tap the arrows to follow the route from the front door.</p>
+        <div class="rf-wf-frame">
+          <div class="rf-wf-track">
+            <figure class="rf-wf-slide"><img src="wayfinding-1-enter.jpg" alt="Front entrance of Cherry Valley Sports" loading="lazy"><figcaption class="rf-wf-cap"><span>1</span>Enter here &mdash; Cherry Valley Sports front doors</figcaption></figure>
+            <figure class="rf-wf-slide"><img src="wayfinding-2-walk.jpg" alt="Turf hallway &mdash; keep walking then make a right" loading="lazy"><figcaption class="rf-wf-cap"><span>2</span>Keep walking down the turf, then make a right &mdash; <em>not</em> through the glass doors</figcaption></figure>
+            <figure class="rf-wf-slide"><img src="wayfinding-3-studio.jpg" alt="Main room with Valley Studio at the far end" loading="lazy"><figcaption class="rf-wf-cap"><span>3</span>Valley Studio is the door at the very end (restrooms on your right)</figcaption></figure>
+            <figure class="rf-wf-slide"><img src="wayfinding-4-alt.jpg" alt="Alternate parking-lot entrance" loading="lazy"><figcaption class="rf-wf-cap"><span>4</span>Or use the alternate entrance on the parking-lot side</figcaption></figure>
+          </div>
+          <button type="button" class="rf-wf-nav rf-wf-prev" aria-label="Previous photo">&#8249;</button>
+          <button type="button" class="rf-wf-nav rf-wf-next" aria-label="Next photo">&#8250;</button>
+        </div>
+        <div class="rf-wf-dots"></div>
+      </div>
       <p><a class="rf-map" href="https://maps.google.com/?q=45+Cherry+Valley+Ave+West+Hempstead+NY+11552" target="_blank" rel="noopener noreferrer">Open in Google Maps &rarr;</a></p>
     </div>
 
@@ -15241,6 +15313,51 @@ document.addEventListener('DOMContentLoaded', function() {
       tag.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); toggle(); } });
     });
   });
+</script>
+
+<script>
+/* Wayfinding slideshow — initializes every .rf-wayfind[data-wayfind] instance
+   (one lives inside each Valley Studio "Getting there" block). Supports arrows,
+   dots, and touch swipe. Independent state per instance. */
+(function(){
+  function initWayfind(root){
+    if(root.__wfInit) return; root.__wfInit = true;
+    var track = root.querySelector('.rf-wf-track');
+    var slides = root.querySelectorAll('.rf-wf-slide');
+    var dotsWrap = root.querySelector('.rf-wf-dots');
+    var prev = root.querySelector('.rf-wf-prev');
+    var next = root.querySelector('.rf-wf-next');
+    if(!track || !slides.length) return;
+    var i = 0, n = slides.length;
+    var dots = [];
+    for(var d=0; d<n; d++){
+      (function(idx){
+        var b = document.createElement('button');
+        b.type='button'; b.className='rf-wf-dot'; b.setAttribute('aria-label','Photo '+(idx+1));
+        b.addEventListener('click', function(){ go(idx); });
+        dotsWrap.appendChild(b); dots.push(b);
+      })(d);
+    }
+    function render(){
+      track.style.transform = 'translateX(-'+(i*100)+'%)';
+      for(var k=0;k<n;k++){ dots[k].classList.toggle('on', k===i); }
+    }
+    function go(x){ i = (x+n)%n; render(); }
+    if(prev) prev.addEventListener('click', function(){ go(i-1); });
+    if(next) next.addEventListener('click', function(){ go(i+1); });
+    // touch swipe
+    var x0=null;
+    track.addEventListener('touchstart', function(e){ x0 = e.touches[0].clientX; }, {passive:true});
+    track.addEventListener('touchend', function(e){
+      if(x0===null) return; var dx = e.changedTouches[0].clientX - x0;
+      if(Math.abs(dx) > 40){ go(dx<0 ? i+1 : i-1); } x0=null;
+    }, {passive:true});
+    render();
+  }
+  function initAll(){ document.querySelectorAll('.rf-wayfind[data-wayfind]').forEach(initWayfind); }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', initAll); }
+  else { initAll(); }
+})();
 </script>
 
 </body>

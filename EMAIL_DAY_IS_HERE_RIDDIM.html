@@ -1,0 +1,199 @@
+<!--
+  ════════════════════════════════════════════════════════════
+   Riddim & Kompa on the Reformer — "THE DAY IS HERE" day-of email
+   (built on the Spot-Confirmed design: cream + brown, half
+    Jamaica / half Haiti flag treatment)
+   ────────────────────────────────────────────────────────────
+   Purpose: send the MORNING OF the event to already-booked guests
+   (the event is sold out, so no new confirmations go out). It carries
+   the arrival details, the photo walk-through to Valley Studio, and
+   the "text me / I won't be responsive during sessions" note.
+
+   COPY THIS ENTIRE FILE (Cmd+A → Cmd+C) and paste into a NEW EmailJS
+   template → switch to the "Code"/HTML view → paste over everything → Save.
+   (Keep it separate from your Spot-Confirmed template.)
+
+   Suggested Subject:  Today's the day ✦ See you at Riddim & Kompa
+
+   EmailJS variables used:
+     {{from_name}} {{arrival_time}} {{class_time}}
+   (Date + location are fixed to the Sep 13 Valley Studio event.)
+  ════════════════════════════════════════════════════════════
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Today's the day — Riddim &amp; Kompa on the Reformer</title>
+</head>
+<body style="margin:0;padding:0;background-color:#efe6d6;font-family:Georgia,'Times New Roman',serif;color:#3a2c1e;">
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#efe6d6;padding:32px 16px;">
+  <tr>
+    <td align="center">
+
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#fdfbf7;border-radius:14px;overflow:hidden;box-shadow:0 6px 30px rgba(90,58,26,0.16);max-width:600px;width:100%;">
+
+        <!-- Flag accent stripe: Jamaica (green · gold · black) + Haiti (blue · red) -->
+        <tr>
+          <td style="padding:0;font-size:0;line-height:0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td width="17%" style="height:6px;background-color:#009b3a;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="17%" style="height:6px;background-color:#fed100;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="16%" style="height:6px;background-color:#151515;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="25%" style="height:6px;background-color:#00209f;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="25%" style="height:6px;background-color:#d21034;font-size:0;line-height:0;">&nbsp;</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Header -->
+        <tr>
+          <td align="center" style="background-color:#f7f0e3;padding:38px 30px 28px;border-bottom:1px solid #e6d8c2;">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:#a5794a;letter-spacing:4px;text-transform:uppercase;font-weight:bold;">Auric Movement</div>
+            <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:36px;line-height:1.1;color:#5A3A1A;font-weight:bold;margin-top:12px;">The Day Is Here</div>
+            <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:20px;color:#8a6a45;margin-top:6px;">Riddim &amp; Kompa on the Reformer</div>
+            <img src="https://book.auricmovement.com/riddim-kompa-icon.png" alt="Jamaican and Haitian flags on a reformer" width="240" style="display:block;margin:18px auto 4px;max-width:240px;width:100%;height:auto;border:0;outline:none;">
+            <div style="display:inline-block;background-color:#0a7d33;color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;padding:8px 20px;border-radius:20px;margin-top:8px;">&#10022; Today&rsquo;s the day</div>
+          </td>
+        </tr>
+
+        <!-- Greeting -->
+        <tr>
+          <td style="padding:34px 42px 6px;">
+            <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:24px;color:#5A3A1A;margin:0 0 14px 0;">It&rsquo;s here, {{from_name}}.</p>
+            <p style="font-family:Georgia,serif;font-size:16px;line-height:1.75;color:#3a2c1e;margin:0;">
+              Today&rsquo;s the day &mdash; <strong>Riddim &amp; Kompa on the Reformer, Sunday, September 13th</strong>. We can&rsquo;t wait to move and connect with you. Here&rsquo;s your arrival time and a photo walk-through so you can walk right in.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Your Session -->
+        <tr>
+          <td style="padding:24px 42px 8px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border-left:3px solid #c79a54;border-radius:0 8px 8px 0;">
+              <tr>
+                <td style="padding:20px 24px;">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:12px;">Your Session</div>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;width:120px;"><strong>Date:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">Sunday, September 13th</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Arrival:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{arrival_time}}</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Class starts:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{class_time}}</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;vertical-align:top;"><strong>Location:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.55;">Valley Studio<br>45 Cherry Valley Ave<br>West Hempstead, NY 11552</td></tr>
+                  </table>
+                  <p style="margin:14px 0 0 0;"><a href="https://maps.google.com/?q=45+Cherry+Valley+Ave+West+Hempstead+NY+11552" style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:#b0432e;text-decoration:none;">&#128205; Open in Google Maps &rarr;</a></p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Getting there — photo walk-through -->
+        <tr>
+          <td style="padding:26px 42px 6px;">
+            <h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:24px;color:#5A3A1A;margin:0 0 6px 0;font-weight:500;">Getting there</h2>
+            <p style="font-family:Georgia,serif;font-size:14px;color:#6d5f45;line-height:1.7;margin:0 0 4px 0;">
+              Valley Studio is <em>inside</em> the Cherry Valley Sports building. Follow these four photos from the front doors and you&rsquo;ll walk right to us.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Step 1 -->
+        <tr>
+          <td style="padding:14px 42px 0;">
+            <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#5A3A1A;font-weight:bold;margin:0 0 8px 0;"><span style="display:inline-block;background-color:#a9853f;color:#ffffff;border-radius:999px;padding:2px 9px;font-size:12px;margin-right:8px;">1</span> Enter here &mdash; Cherry Valley Sports front doors</p>
+            <img src="https://book.auricmovement.com/wayfinding-1-enter.jpg" alt="Cherry Valley Sports front entrance" width="516" style="display:block;width:100%;max-width:516px;height:auto;border:1px solid #e6d8c2;border-radius:10px;outline:none;">
+          </td>
+        </tr>
+        <!-- Step 2 -->
+        <tr>
+          <td style="padding:18px 42px 0;">
+            <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#5A3A1A;font-weight:bold;margin:0 0 8px 0;"><span style="display:inline-block;background-color:#a9853f;color:#ffffff;border-radius:999px;padding:2px 9px;font-size:12px;margin-right:8px;">2</span> Walk down the turf, then make a right &mdash; <span style="color:#b0432e;">not</span> through the glass doors</p>
+            <img src="https://book.auricmovement.com/wayfinding-2-walk.jpg" alt="Turf hallway — keep walking, then make a right; not through the glass doors" width="516" style="display:block;width:100%;max-width:516px;height:auto;border:1px solid #e6d8c2;border-radius:10px;outline:none;">
+          </td>
+        </tr>
+        <!-- Step 3 -->
+        <tr>
+          <td style="padding:18px 42px 0;">
+            <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#5A3A1A;font-weight:bold;margin:0 0 8px 0;"><span style="display:inline-block;background-color:#a9853f;color:#ffffff;border-radius:999px;padding:2px 9px;font-size:12px;margin-right:8px;">3</span> Valley Studio is the door at the very end (restrooms on your right)</p>
+            <img src="https://book.auricmovement.com/wayfinding-3-studio.jpg" alt="Main room — Valley Studio is the door at the far end, restrooms on the right" width="516" style="display:block;width:100%;max-width:516px;height:auto;border:1px solid #e6d8c2;border-radius:10px;outline:none;">
+          </td>
+        </tr>
+        <!-- Step 4 -->
+        <tr>
+          <td style="padding:18px 42px 4px;">
+            <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#5A3A1A;font-weight:bold;margin:0 0 8px 0;"><span style="display:inline-block;background-color:#a9853f;color:#ffffff;border-radius:999px;padding:2px 9px;font-size:12px;margin-right:8px;">&#9733;</span> Or use the alternate entrance on the parking-lot side</p>
+            <img src="https://book.auricmovement.com/wayfinding-4-alt.jpg" alt="Alternate entrance — wood sliding doors on the parking-lot side" width="516" style="display:block;width:100%;max-width:516px;height:auto;border:1px solid #e6d8c2;border-radius:10px;outline:none;">
+          </td>
+        </tr>
+
+        <!-- Need anything? -->
+        <tr>
+          <td style="padding:26px 42px 8px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fbeee9;border:1px solid #ecccbf;border-radius:10px;">
+              <tr>
+                <td style="padding:20px 24px;">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#b0432e;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">Need anything today?</div>
+                  <p style="font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0;">
+                    Running late or can&rsquo;t find us? Text Niara at <a href="sms:+13476447978" style="color:#b0432e;font-weight:bold;text-decoration:none;">347-644-7978</a>.<br>
+                    <span style="font-style:italic;color:#7a6650;">Heads up &mdash; I&rsquo;ll be leading sessions all day, so I may not see a text right away. The photos above will get you all the way to the studio.</span>
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- What to bring -->
+        <tr>
+          <td style="padding:16px 42px 6px;">
+            <h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:22px;color:#5A3A1A;margin:0 0 12px 0;font-weight:500;">Before you go</h2>
+            <p style="font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.8;margin:0;">
+              &bull;&nbsp; Comfortable, fitted clothes you can move in<br>
+              &bull;&nbsp; All equipment is provided &mdash; plus a complimentary goodie bag &#127873;
+            </p>
+          </td>
+        </tr>
+
+        <!-- Lateness note -->
+        <tr>
+          <td style="padding:8px 42px 26px;">
+            <p style="font-family:Georgia,serif;font-size:13px;color:#7a6650;line-height:1.65;margin:0;font-style:italic;">
+              &#9200; Please arrive at {{arrival_time}}. Class begins at {{class_time}} with a <strong>5-minute grace period only</strong> &mdash; late arrivals can&rsquo;t be admitted. Give yourself a few extra minutes to park and find the studio.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Closing -->
+        <tr>
+          <td style="padding:0 42px 30px;">
+            <p style="font-family:Georgia,serif;font-size:15px;color:#3a2c1e;line-height:1.75;margin:0 0 10px 0;">See you on the reformer &mdash; come ready to move, breathe, and connect. &#129293;</p>
+            <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:20px;color:#5A3A1A;margin:0;">&mdash; Niara</p>
+          </td>
+        </tr>
+
+        <!-- Footer (half Jamaica / half Haiti) -->
+        <tr>
+          <td style="background:linear-gradient(90deg,#0a7d33 0%,#0a7d33 49%,#fed100 49%,#fed100 51%,#0a2a9c 51%,#0a2a9c 100%);background-color:#0a7d33;padding:28px 34px;" align="center">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#ffffff;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">Auric Movement</div>
+            <div style="font-family:Georgia,serif;font-size:12px;color:#ffffff;line-height:1.8;">
+              Pilates events in NYC &amp; Long Island, hosted with intention.<br>
+              <a href="mailto:auricmovement@outlook.com" style="color:#ffe9a8;text-decoration:none;">auricmovement@outlook.com</a> &middot; <a href="https://book.auricmovement.com" style="color:#ffe9a8;text-decoration:none;">book.auricmovement.com</a>
+            </div>
+            <div style="border-top:1px solid rgba(255,255,255,0.35);margin-top:20px;padding-top:16px;">
+              <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:15px;color:#ffffff;">&#10022; Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect &#10022;</div>
+            </div>
+          </td>
+        </tr>
+
+      </table>
+
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>
