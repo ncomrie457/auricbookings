@@ -12115,6 +12115,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var RF_TMPL_WL_OPEN    = 'template_2oft3ms';  // Riddim & Kompa — waitlist "3 PM just opened" (RIDDIM_KOMPA_3PM_WAITLIST_TEMPLATE) — sent via Resend
   var RF_BK_TMPL_CONFIRM = 'template_pq0dq1h';  // Riddim & Kompa — Brooklyn confirmation (RIDDIM_KOMPA_BROOKLYN_CONFIRMATION_TEMPLATE.html) — sent via Resend
   var RF_TMPL_THANKYOU = 'template_xu6b9xo';   // Riddim & Kompa post-event thank-you (RIDDIM_KOMPA_MESI_ANPIL_TEMPLATE.html) — sent via Resend
+  var RF_TMPL_DAYOF    = 'template_pdfnmgu';   // "The Day Is Here" day-of email for Sep 13 (EMAIL_DAY_IS_HERE_RIDDIM.html). NOTE: currently shares the confirmation template id.
   var RF_HW_TMPL_CONFIRM  = 'template_hhjwepr';   // Halloween "Shhh… Quiet on the Creek" payment confirmation (HALLOWEEN_CREEK_CONFIRMATION_TEMPLATE.html) — sent via Resend
   var RF_HW_TMPL_THANKYOU = 'template_g125fph';  // Halloween "Shhh… Quiet on the Creek" post-event thank-you (HALLOWEEN_CREEK_THANKYOU_TEMPLATE.html) — sent via Resend
   var RF_TB_TMPL_CONFIRM  = 'template_96eon3x';   // Turkey Burn! payment confirmation (TURKEY_BURN_CONFIRMATION_TEMPLATE.html) — sent via Resend
@@ -12985,6 +12986,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var paid2 = display.filter(function(r){ return r.session==='2pm' && r.is_paid; }).length;
       var paid3 = display.filter(function(r){ return r.session==='3pm' && r.is_paid; }).length;
       block.innerHTML = '<h3 style="color:var(--gold-text);">Riddim &amp; Kompa on the Reformer — Sep 13th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(1 PM '+paid1+'/6 · 2 PM '+paid2+'/6 · 3 PM '+paid3+'/6)</span></h3>';
+      block.innerHTML += '<button onclick="rfSendDayOf(this)" style="margin:.1rem .35rem .7rem 0;background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F4E3} Send “The Day Is Here” ('+paid+' paid) — morning of</button>';
       block.innerHTML += '<button onclick="rfSendThankYou(\'valley\', this)" style="margin:.1rem 0 .7rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F33A} Send Mèsi Anpil thank-you ('+paid+' paid) — after the event</button>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
@@ -13664,6 +13666,39 @@ document.addEventListener('DOMContentLoaded', function() {
   // Sends the MÈSI ANPIL template (RIDDIM_KOMPA_MESI_ANPIL_TEMPLATE.html) via Resend to
   // every PAID registrant of one event. which='valley' (Sep 13, West Hempstead) or
   // 'bk' (Sep 26, Brooklyn). Turkey Burn is intentionally excluded (different theme).
+  // "The Day Is Here" — morning-of email to paid Sep 13 (Valley) registrants.
+  // Sends EMAIL_DAY_IS_HERE_RIDDIM.html (template RF_TMPL_DAYOF) with each
+  // guest's name + their session's arrival/class time.
+  window.rfSendDayOf = function(triggerBtn){
+    var all = Object.keys(rfRosterById).map(function(k){ return rfRosterById[k]; });
+    var recips = all.filter(function(r){
+      return r && r.is_paid && r.event === 'riddim-kompa-reformer-2026-09-13'
+        && r.type !== 'waitlist' && !r.archived
+        && r.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(r.email);
+    });
+    if(!recips.length){ alert('No paid Sep 13 registrants to email yet.'); return; }
+    if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
+    if(RF_TMPL_DAYOF.indexOf('REPLACE')!==-1){ alert('Set RF_TMPL_DAYOF to your EmailJS template id first.'); return; }
+    if(!confirm('Send “The Day Is Here” to '+recips.length+' paid Sep 13 registrant(s)?\n\n(Sends through Resend — best on the morning of the event.)')) return;
+    var btn = triggerBtn, originalText = btn ? btn.textContent : '';
+    if(btn){ btn.disabled=true; }
+    var sent=0, failed=0, failedRecipients=[];
+    function sendNext(i){
+      if(i>=recips.length){
+        if(btn){ btn.disabled=false; btn.textContent=originalText; }
+        var msg='✅ Sent '+sent+' “The Day Is Here” email(s).';
+        if(failed>0){ msg+='\n\n⚠️ '+failed+' failed: '+failedRecipients.join(', ')+'\n\nCheck EmailJS Dashboard → History.'; }
+        alert(msg); return;
+      }
+      var rec=recips[i];
+      if(btn){ btn.textContent='Sending... ('+(sent+failed)+'/'+recips.length+')'; }
+      var sess = RF_ADMIN_SESS[rec.session] || RF_ADMIN_SESS['1pm'];
+      emailjs.send(EMAILJS_SERVICE_RESEND, RF_TMPL_DAYOF, { from_name: rec.name, to_email: rec.email, arrival_time: sess.arrival, class_time: sess.time })
+        .then(function(){ sent++; }).catch(function(err){ failed++; failedRecipients.push(rec.email); console.error('[rf day-of] FAILED for '+rec.email, err); })
+        .then(function(){ setTimeout(function(){ sendNext(i+1); }, 600); });
+    }
+    sendNext(0);
+  };
   window.rfSendThankYou = function(which, triggerBtn){
     var all = Object.keys(rfRosterById).map(function(k){ return rfRosterById[k]; });
     var recips = all.filter(function(r){
