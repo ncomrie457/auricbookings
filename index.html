@@ -9636,7 +9636,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var seen = {};
             ((r && r.data) || []).forEach(function(row){
               if (!row || !row.email) return;
-              var key = String(row.email).toLowerCase();
+              var key = String(row.email).trim().toLowerCase();
               // One attendance mark per event, so multiple sessions never double-count.
               var ek = key + '|' + (row.event || '');
               var newAttend = (row.attendance === 'attended') && !seen[ek];
@@ -11718,7 +11718,10 @@ document.addEventListener('DOMContentLoaded', function() {
           var refs = (notes.match(/#referral/gi) || []).length;
           var pts = (/#attended/i.test(notes) ? 1 : 0) + 0.5 * refs;
           if (pts <= 0) return;
-          var key = rec.email.toLowerCase();
+          // Trim as well as lower-case: a booking typed on a phone often carries
+          // a trailing space, and an untrimmed key splits one person into two
+          // Club entries that each look short of the marks they actually have.
+          var key = String(rec.email).trim().toLowerCase();
           if (!marks[key]) marks[key] = { email: rec.email, name: rec.name||'', count: 0, table: table, code: rec.code };
           marks[key].count += pts;
           if (rec.name) marks[key].name = rec.name;
