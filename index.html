@@ -9644,9 +9644,12 @@ document.addEventListener('DOMContentLoaded', function() {
               // Referrals are half a mark each, same as the other events.
               var pts = (newAttend ? 1 : 0) + 0.5 * (Number(row.referrals) || 0);
               if (pts <= 0 && !marks[key]) return;   // nothing to show for them yet
-              if (!marks[key]) marks[key] = { email: row.email, name: row.name || '', count: 0, table: '', code: '', rfId: null };
+              if (!marks[key]) marks[key] = { email: row.email, name: row.name || '', count: 0, table: '', code: '', rfId: null, attendedAt: [], referrals: 0 };
+              if (!marks[key].attendedAt) { marks[key].attendedAt = []; marks[key].referrals = 0; }
               // Keep a reformer row id so "+½ ref" has somewhere to write.
               if (!marks[key].rfId) marks[key].rfId = row.id;
+              if (newAttend) marks[key].attendedAt.push(RF_EVENT_LABELS[row.event] || row.event || 'Reformer event');
+              marks[key].referrals += (Number(row.referrals) || 0);
               marks[key].count += pts;
               if (row.name) marks[key].name = row.name;
             });
@@ -9671,7 +9674,20 @@ document.addEventListener('DOMContentLoaded', function() {
         var refBtn = (m.code && m.table)
           ? '<button onclick="addReferralPoint(\''+m.table+'\',\''+m.code+'\')" style="'+refStyle+'">+½ ref</button>'
           : (m.rfId ? '<button onclick="rfAddReferralPoint('+m.rfId+')" style="'+refStyle+'">+½ ref</button>' : '');
-        html += '<tr style="border-bottom:1px solid #f0e9dc;"><td style="padding:.4rem;">'+escapeHTML(m.name||'—')+'<br><span style="color:var(--text-muted);font-size:.75rem;">'+escapeHTML(m.email)+'</span></td><td style="text-align:center;"><strong>'+fmtMarks(m.count)+'</strong></td><td style="font-size:.78rem;">'+status+'</td><td style="text-align:right;">'+refBtn+'</td></tr>';
+        // Show the working: which events earned a full mark, and how many
+        // referrals made up the halves. Collapsed by default so the list stays
+        // scannable; open one to see where that person's total came from.
+        var evs = (m.attendedAt || []);
+        var refs = Number(m.referrals) || 0;
+        var lines = evs.map(function(lbl){
+          return '<li style="margin:.15rem 0;">&#9989; '+escapeHTML(lbl)+' <span style="color:var(--text-muted);">&mdash; 1 mark</span></li>';
+        });
+        if (refs) lines.push('<li style="margin:.15rem 0;">&#129309; '+refs+' referral'+(refs===1?'':'s')+' <span style="color:var(--text-muted);">&mdash; '+fmtMarks(0.5*refs)+'</span></li>');
+        var breakdown = lines.length
+          ? '<details style="margin:.25rem 0 0;"><summary style="cursor:pointer;font-size:.72rem;color:var(--gold-text);">How they earned this</summary>'
+            + '<ul style="margin:.35rem 0 .2rem;padding-left:1.1rem;font-size:.75rem;color:#4a3f33;list-style:none;">'+lines.join('')+'</ul></details>'
+          : '';
+        html += '<tr style="border-bottom:1px solid #f0e9dc;"><td style="padding:.4rem;">'+escapeHTML(m.name||'—')+'<br><span style="color:var(--text-muted);font-size:.75rem;">'+escapeHTML(m.email)+'</span>'+breakdown+'</td><td style="text-align:center;vertical-align:top;padding-top:.45rem;"><strong>'+fmtMarks(m.count)+'</strong></td><td style="font-size:.78rem;vertical-align:top;padding-top:.45rem;">'+status+'</td><td style="text-align:right;vertical-align:top;padding-top:.4rem;">'+refBtn+'</td></tr>';
       });
       box.innerHTML = html + '</table>';
       }
@@ -9986,20 +10002,30 @@ document.addEventListener('DOMContentLoaded', function() {
       '</select>';
     body.appendChild(adminFilterBar);
 
-    // Upcoming events soonest-first, then past events most-recent-first; Corporate last.
-    body.appendChild(reformerContainer);   // Riddim & Kompa — Valley — Sep 13
-    body.appendChild(reformerBkContainer); // Riddim & Kompa — Brooklyn — Sep 26
-    body.appendChild(halloweenContainer);  // Shhh… Quiet on the Creek — Oct 24
-    body.appendChild(turkeyContainer);     // Pre-Turkey Burn — Nov 21
-    body.appendChild(turkey28Container);   // Post-Turkey Burn — Nov 28
-    body.appendChild(bloomContainer);      // Something's Blooming — Dec 13
-    body.appendChild(riddimContainer);     // Riddim & Kompa — next-date interest list
-    body.appendChild(bagContainer);        // AURIC MVMT bag — reserve list
-    body.appendChild(crContainer);         // Create & Recharge — Aug 15
-    body.appendChild(mcContainer);         // Mat & Chat — Aug 1
-    body.appendChild(sessionsContainer);   // Pilates x Niara — Jun 19
-    body.appendChild(archivedContainer);   // Archived — didn't pay (all events), always shown
-    body.appendChild(corpContainer);       // Partner With Us — no date, always shown
+    // Order is worked out from each section's date rather than written down, so
+    // an event moves itself below the interest lists the day after it happens
+    // and nobody has to come back and re-order this list. Upcoming run
+    // soonest-first, past run most-recent-first.
+    var datedSections = [
+      reformerContainer, reformerBkContainer, halloweenContainer, turkeyContainer,
+      turkey28Container, bloomContainer, crContainer, mcContainer, sessionsContainer
+    ];
+    var upcomingSections = [], pastSections = [];
+    datedSections.forEach(function(el){
+      var ds = el.getAttribute('data-event-date'); if(!ds) return;
+      var d = new Date(ds + 'T00:00:00'); if(isNaN(d.getTime())) return;
+      // Same test the Show-events filter uses, so order and filter always agree.
+      (isEventPast(ds) ? pastSections : upcomingSections).push({ el: el, d: d });
+    });
+    upcomingSections.sort(function(a,b){ return a.d - b.d; });
+    pastSections.sort(function(a,b){ return b.d - a.d; });
+
+    upcomingSections.forEach(function(x){ body.appendChild(x.el); });
+    body.appendChild(riddimContainer);      // Riddim & Kompa — next-date interest list
+    body.appendChild(bagContainer);         // AURIC MVMT bag — reserve list
+    pastSections.forEach(function(x){ body.appendChild(x.el); });
+    body.appendChild(archivedContainer);    // Archived — didn't pay (all events), always shown
+    body.appendChild(corpContainer);        // Partner With Us — no date, always shown
 
     // Apply / persist the event filter (any element tagged with data-event-date —
     // event sections AND their waitlist sub-panels; Corporate has none → never hidden).
@@ -11712,17 +11738,27 @@ document.addEventListener('DOMContentLoaded', function() {
     getData(function(pdata){
       getMCData(function(mdata){
         var marks = {};
+        // Where a mark came from, so the Club list can show its working.
+        var TABLE_EVENT_LABELS = {
+          'pilates_registrations':         'Pilates x Niara · Jun 19',
+          'matchat_registrations':         'Mat & Chat · Aug 1',
+          'create_recharge_registrations': 'Create & Recharge · Aug 15'
+        };
         function tally(rec, table){
           if (!rec || !rec.email) return;
           var notes = rec.adminNotes || '';
           var refs = (notes.match(/#referral/gi) || []).length;
-          var pts = (/#attended/i.test(notes) ? 1 : 0) + 0.5 * refs;
+          var attended = /#attended/i.test(notes);
+          var pts = (attended ? 1 : 0) + 0.5 * refs;
           if (pts <= 0) return;
           // Trim as well as lower-case: a booking typed on a phone often carries
           // a trailing space, and an untrimmed key splits one person into two
           // Club entries that each look short of the marks they actually have.
           var key = String(rec.email).trim().toLowerCase();
-          if (!marks[key]) marks[key] = { email: rec.email, name: rec.name||'', count: 0, table: table, code: rec.code };
+          if (!marks[key]) marks[key] = { email: rec.email, name: rec.name||'', count: 0, table: table, code: rec.code, attendedAt: [], referrals: 0 };
+          if (!marks[key].attendedAt) { marks[key].attendedAt = []; marks[key].referrals = 0; }
+          if (attended) marks[key].attendedAt.push(TABLE_EVENT_LABELS[table] || table);
+          marks[key].referrals += refs;
           marks[key].count += pts;
           if (rec.name) marks[key].name = rec.name;
         }
