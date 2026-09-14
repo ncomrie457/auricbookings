@@ -13007,12 +13007,13 @@ document.addEventListener('DOMContentLoaded', function() {
       var display = rows.filter(function(r){ return r.event !== 'riddim-kompa-brooklyn-2026-09-26' && r.event !== 'turkey-burn-2026-11-21'; }); // Valley section: exclude Brooklyn + Turkey Burn
       display = display.filter(function(r){ return r.type!=='waitlist' && !r.archived; }); // waitlisters + archived (didn't pay) shown separately, never counted as registered
       var paid  = display.filter(function(r){ return r.is_paid; }).length;
+      var att = display.filter(function(r){ return r.attendance==='attended'; }).length;
       var paid1 = display.filter(function(r){ return r.session==='1pm' && r.is_paid; }).length;
       var paid2 = display.filter(function(r){ return r.session==='2pm' && r.is_paid; }).length;
       var paid3 = display.filter(function(r){ return r.session==='3pm' && r.is_paid; }).length;
       block.innerHTML = '<h3 style="color:var(--gold-text);">Riddim &amp; Kompa on the Reformer — Sep 13th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(1 PM '+paid1+'/6 · 2 PM '+paid2+'/6 · 3 PM '+paid3+'/6)</span></h3>';
       block.innerHTML += '<button onclick="rfSendDayOf(this)" style="margin:.1rem .35rem .7rem 0;background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F4E3} Send “The Day Is Here” ('+paid+' paid) — morning of</button>';
-      block.innerHTML += '<button onclick="rfSendThankYou(\'valley\', this)" style="margin:.1rem 0 .7rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F33A} Send Mèsi Anpil thank-you ('+paid+' paid) — after the event</button>';
+      block.innerHTML += '<button onclick="rfSendThankYou(\'valley\', this)" style="margin:.1rem 0 .7rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F33A} Send Mèsi Anpil thank-you ('+att+' attended) — after the event</button>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
@@ -13086,8 +13087,9 @@ document.addEventListener('DOMContentLoaded', function() {
       var CAP = 5, pd = { 'bk12':0,'bk1':0,'bk2':0 };
       display.forEach(function(r){ if(r.is_paid && pd[r.session]!==undefined) pd[r.session]++; });
       var paid = display.filter(function(r){ return r.is_paid; }).length;
+      var att = display.filter(function(r){ return r.attendance==='attended'; }).length;
       block.innerHTML = '<h3 style="color:var(--gold-text);">Riddim &amp; Kompa — Brooklyn · Sep 26th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(12 PM '+pd.bk12+'/'+CAP+' · 1 PM '+pd.bk1+'/'+CAP+' · 2 PM '+pd.bk2+'/'+CAP+')</span></h3>';
-      block.innerHTML += '<button onclick="rfSendThankYou(\'bk\', this)" style="margin:.1rem 0 .7rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F33A} Send Mèsi Anpil thank-you ('+paid+' paid) — after the event</button>';
+      block.innerHTML += '<button onclick="rfSendThankYou(\'bk\', this)" style="margin:.1rem 0 .7rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F33A} Send Mèsi Anpil thank-you ('+att+' attended) — after the event</button>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       var _bkOrd = { 'bk12':0, 'bk1':1, 'bk2':2 };
@@ -13156,6 +13158,7 @@ document.addEventListener('DOMContentLoaded', function() {
       rows.forEach(function(r){ rfRosterById[r.id] = r; });
       var display = rows.filter(function(r){ return r.event === 'turkey-burn-2026-11-28' && r.type!=='waitlist' && !r.archived; });
       var paid = display.filter(function(r){ return r.is_paid; }).length;
+      var att = display.filter(function(r){ return r.attendance==='attended'; }).length;
       block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F983} Post-Turkey Burn · Nov 28th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(12:30 PM)</span></h3>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
@@ -13212,8 +13215,9 @@ document.addEventListener('DOMContentLoaded', function() {
       var CAP = 6, pd = { 'tb1230':0,'tb130':0 };
       display.forEach(function(r){ if(r.is_paid && pd[r.session]!==undefined) pd[r.session]++; });
       var paid = display.filter(function(r){ return r.is_paid; }).length;
+      var att = display.filter(function(r){ return r.attendance==='attended'; }).length;
       block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F983} Turkey Burn! · Nov 21st · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(12:30 PM '+pd.tb1230+'/'+CAP+' · 1:30 PM '+pd.tb130+'/'+CAP+')</span></h3>';
-      block.innerHTML += '<button onclick="rfSendThankYou(\'turkey\', this)" style="margin:.1rem 0 .7rem;background:#fdeeea;border:1px solid #f2b8ab;color:#a8391f;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F983} Send Turkey Burn thank-you ('+paid+' paid) — after the event</button>';
+      block.innerHTML += '<button onclick="rfSendThankYou(\'turkey\', this)" style="margin:.1rem 0 .7rem;background:#fdeeea;border:1px solid #f2b8ab;color:#a8391f;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F983} Send Turkey Burn thank-you ('+att+' attended) — after the event</button>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
@@ -13281,8 +13285,9 @@ document.addEventListener('DOMContentLoaded', function() {
       var CAP = 6, pd = { 'hw1230':0,'hw130':0 };
       display.forEach(function(r){ if(r.is_paid && pd[r.session]!==undefined) pd[r.session]++; });
       var paid = display.filter(function(r){ return r.is_paid; }).length;
+      var att = display.filter(function(r){ return r.attendance==='attended'; }).length;
       block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F383} Shhh… Quiet on the Creek · Oct 24th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(12:30 PM '+pd.hw1230+'/'+CAP+' · 1:30 PM '+pd.hw130+'/'+CAP+')</span></h3>';
-      block.innerHTML += '<button onclick="rfSendThankYou(\'halloween\', this)" style="margin:.1rem 0 .7rem;background:#f3ecff;border:1px solid #cbb6f0;color:#5b3a8a;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F383} Send Halloween thank-you ('+paid+' paid) — after the event</button>';
+      block.innerHTML += '<button onclick="rfSendThankYou(\'halloween\', this)" style="margin:.1rem 0 .7rem;background:#f3ecff;border:1px solid #cbb6f0;color:#5b3a8a;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F383} Send Halloween thank-you ('+att+' attended) — after the event</button>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
@@ -13363,11 +13368,17 @@ document.addEventListener('DOMContentLoaded', function() {
         var item=document.createElement('div'); item.className='admin-sub-item';
         var evLabel = RF_EVENT_LABELS[rec.event] || rec.event || '';
         var evBadge = evLabel ? ' <span class="atype" style="background:#f0efe9;color:#6b6357;">'+escapeHTML(evLabel)+'</span>' : '';
+        // Show WHY they're in here: no-show, attended, or simply never paid.
+        var attBadge = (rec.attendance==='noshow')
+          ? ' <span class="atype" style="background:#fdecea;color:var(--red);">✗ No-show</span>'
+          : (rec.attendance==='attended')
+            ? ' <span class="atype" style="background:#e8f5e9;color:#2e7d32;">✓ Attended</span>'
+            : (rec.is_paid ? '' : ' <span class="atype" style="background:#fef9e7;color:#7a6320;">never paid</span>');
         var sessLabel = rec.session_label || rec.session || '';
         var when = ''; try { when = rec.created_at ? new Date(rec.created_at).toLocaleString() : ''; } catch(e){}
         var unarchiveBtn = btn('rfAdminUnarchive('+id+')','#e8f5e9','#a5d6a7','#2e7d32','\u{21A9}\u{FE0F} Unarchive');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
-        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span>'+evBadge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span></div>'+
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span>'+evBadge+attBadge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span></div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(sessLabel)+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
           '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+unarchiveBtn+removeBtn+'</div></div>';
         block.appendChild(item);
@@ -13770,7 +13781,8 @@ document.addEventListener('DOMContentLoaded', function() {
   window.rfSendThankYou = function(which, triggerBtn){
     var all = Object.keys(rfRosterById).map(function(k){ return rfRosterById[k]; });
     var recips = all.filter(function(r){
-      if(!r || !r.is_paid) return false;
+      // Only people actually marked "✓ Attended" — not everyone who paid.
+      if(!r || r.attendance !== 'attended' || r.archived || r.type === 'waitlist') return false;
       if(!(r.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(r.email))) return false;
       var isBk = r.event === 'riddim-kompa-brooklyn-2026-09-26';
       var isHw = r.event === 'halloween-creek-2026-10-24';
@@ -13786,10 +13798,10 @@ document.addEventListener('DOMContentLoaded', function() {
     var thankVar = isHalloween ? 'RF_HW_TMPL_THANKYOU' : isTurkey ? 'RF_TB_TMPL_THANKYOU' : 'RF_TMPL_THANKYOU';
     var eventLabel = isHalloween ? 'Shhh… Quiet on the Creek' : isTurkey ? 'Turkey Burn!' : 'Riddim & Kompa';
     var where = (isHalloween||isTurkey) ? 'Valley Studio' : (which==='bk') ? 'Brooklyn' : 'West Hempstead';
-    if(!recips.length){ alert('No paid registrants to thank for '+eventLabel+' — '+where+' yet.'); return; }
+    if(!recips.length){ alert('Nobody is marked "✓ Attended" for '+eventLabel+' — '+where+' yet.\n\nTap "✓ Attended" on everyone who showed up first, then send. That way the thank-you only goes to people who actually came.'); return; }
     if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
     if(thankTmpl.indexOf('REPLACE')!==-1){ alert('Set '+thankVar+' to your real EmailJS template id first.'); return; }
-    if(!confirm('Send the '+eventLabel+' thank-you to '+recips.length+' paid registrant(s) — '+where+'?\n\n(Sends through Resend.)')) return;
+    if(!confirm('Send the '+eventLabel+' thank-you to '+recips.length+' attendee(s) — '+where+'?\n\n(Only people marked "✓ Attended". Sends through Resend.)')) return;
     var btn = triggerBtn; var originalText = btn ? btn.textContent : '';
     if(btn){ btn.disabled=true; }
     var sent=0, failed=0, failedRecipients=[];
