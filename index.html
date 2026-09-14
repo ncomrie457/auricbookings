@@ -2737,9 +2737,12 @@
 
 <style>
   /* Hero slideshow — cross-fading past-event photos */
-  .bq-hero-slides{position:absolute;inset:0;z-index:0;background:#ece3d2 url('hero-slide-1.jpg') center/cover no-repeat;}
+  /* The plate behind the slides carries the LAST slide's image, so the only
+     moment both the last and first slide are mid-fade shows that same photo
+     rather than flashing back to slide 1. */
+  .bq-hero-slides{position:absolute;inset:0;z-index:0;background:#ece3d2 url('hero-slide-4.jpg') center 22%/cover no-repeat;}
   .bq-hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;
-    animation:bqHeroFade 56s infinite;will-change:opacity;}
+    animation:bqHeroFade 56s linear infinite;will-change:opacity;}
   .bq-hero-slide:nth-child(1){animation-delay:0s;background-image:url('hero-slide-1.jpg');}
   /* Riddim & Kompa — Sept 13, Valley Studio (largest group first) */
   .bq-hero-slide:nth-child(2){animation-delay:7s;background-image:url('hero-slide-5.jpg');background-position:center 30%;}
@@ -2749,7 +2752,12 @@
   .bq-hero-slide:nth-child(6){animation-delay:35s;background-image:url('recharge-01.jpg');background-position:center 32%;}
   .bq-hero-slide:nth-child(7){animation-delay:42s;background-image:url('hero-slide-3.jpg');background-position:center 30%;}
   .bq-hero-slide:nth-child(8){animation-delay:49s;background-image:url('hero-slide-4.jpg');background-position:center 22%;}
-  @keyframes bqHeroFade{0%{opacity:0}1.5%{opacity:1}11.6%{opacity:1}12.8%{opacity:0}100%{opacity:0}}
+  /* Each slide holds at full opacity until the NEXT one has completely faded
+     in over it, then drops out behind it. Slides are 7s apart in a 56s cycle
+     (12.5%) and fade in over 1.2s (2.2%), so the hold has to run to 14.7%.
+     Fading out any earlier leaves a gap where neither slide is opaque and the
+     plate behind shows through — that was the flash between pictures. */
+  @keyframes bqHeroFade{0%{opacity:0}2.2%{opacity:1}14.7%{opacity:1}14.8%{opacity:0}100%{opacity:0}}
   .bq-hero-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
     background:linear-gradient(180deg, rgba(248,244,236,.9) 0%, rgba(248,244,236,.52) 20%, rgba(248,244,236,.42) 52%, rgba(248,244,236,.78) 100%);}
   .bq-hero-inner{z-index:4 !important;}
