@@ -6294,7 +6294,7 @@ document.addEventListener('DOMContentLoaded', function(){
     var rec={
       name:name, email:email, session:chosen, session_label:chosenLabel,
       referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
-      signature:sign, signature_data:bkSig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:18),
+      signature:sign, signature_data:bkSig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:19),
       refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
       waiver_agreed:true, is_paid:false, created_at:nowIso, event:RKBK_EVENT
     };
@@ -6537,7 +6537,7 @@ document.addEventListener('DOMContentLoaded', function(){
     var rec={
       name:name, email:email, session:chosen, session_label:chosenLabel,
       referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
-      signature:sign, signature_data:tbSig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:18),
+      signature:sign, signature_data:tbSig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:19),
       refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
       waiver_agreed:true, is_paid:false, created_at:nowIso, event:TB_EVENT
     };
@@ -6742,7 +6742,7 @@ document.addEventListener('DOMContentLoaded', function(){
     var rec={
       name:name, email:email, session:TB28_SESSION, session_label:TB28_LABEL,
       referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
-      signature:sign, signature_data:tbSig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:18),
+      signature:sign, signature_data:tbSig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:19),
       refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
       waiver_agreed:true, is_paid:false, created_at:new Date().toISOString(), event:TB28_EVENT
     };
@@ -6976,7 +6976,7 @@ document.addEventListener('DOMContentLoaded', function(){
     var rec={
       name:name, email:email, session:chosen, session_label:chosenLabel,
       referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
-      signature:sign, signature_data:hwSig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:18),
+      signature:sign, signature_data:hwSig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:19),
       refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
       waiver_agreed:true, is_paid:false, created_at:nowIso, event:HW_EVENT
     };
@@ -7040,6 +7040,7 @@ document.addEventListener('DOMContentLoaded', function(){
       "I confirm that I am at least 18 years of age, or that I have obtained parental or guardian consent if I am a minor.",
       "I understand that late arrivals may not be admitted for safety reasons, and that no refunds or credits are issued for late arrivals or no-shows.",
       "I understand that complimentary items — which may include a goodie bag, light snacks, and/or soft drinks — may be provided as a courtesy. I am responsible for disclosing any food allergies in advance and assume full responsibility for any items I receive or consume, releasing the Released Parties from any resulting liability.",
+      "I confirm that I am the person named above, that the information I have provided is true and accurate, and that I am the authorized holder of the payment method used — or that I have the cardholder’s express permission to use it for this booking.",
       "I acknowledge that I have had sufficient opportunity to read this waiver, ask questions, and seek independent legal advice before signing, and I sign it freely and voluntarily."
     ];
     var RF_REFUND_TEXT = 'All sales are final — no refunds or credits. Spot transfers to a friend are welcome up to 24 hours before the event — email auricmovement@outlook.com with both names.';
@@ -9334,7 +9335,7 @@ document.addEventListener('DOMContentLoaded', function() {
       label = m.name;
       row = {
         name: name, email: email, session: m.session, session_label: m.slabel,
-        signature: name, clauses_agreed: (window.__RF_CLAUSES ? window.__RF_CLAUSES.length : 18),
+        signature: name, clauses_agreed: (window.__RF_CLAUSES ? window.__RF_CLAUSES.length : 19),
         refund_ack: true, waiver_agreed: true,
         is_paid: true, paid_at: nowIso, created_at: nowIso,
         event: m.event
@@ -13715,7 +13716,7 @@ document.addEventListener('DOMContentLoaded', function() {
       name: rec.name, email: rec.email, signature: rec.signature, signatureData: rec.signature_data || null,
       sessionLabel: rec.session_label || ('Riddim & Kompa on the Reformer — '+sess.time),
       arrival: sess.arrival, classStart: sess.time, eventDate: 'Sunday, September 13th',
-      time: when, clausesAgreed: rec.clauses_agreed || (window.__RF_CLAUSES ? window.__RF_CLAUSES.length : 18),
+      time: when, clausesAgreed: rec.clauses_agreed || (window.__RF_CLAUSES ? window.__RF_CLAUSES.length : 19),
       clauseList: window.__RF_CLAUSES || clauseTexts
     });
   };
