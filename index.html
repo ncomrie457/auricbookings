@@ -155,7 +155,7 @@
       { "@type": "Question", "name": "Can the class be modified for an injury, pregnancy, or postpartum?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The health disclosure on the booking form lets you share what's going on so modifications can be prepared in advance. For specific situations, email auricmovement@outlook.com beforehand." } },
       { "@type": "Question", "name": "Where are the events held?", "acceptedAnswer": { "@type": "Answer", "text": "Auric Movement events are hosted at carefully sourced venues across New York City — the location varies by event. The specific address and arrival instructions are included in your registration confirmation and reminder emails." } },
       { "@type": "Question", "name": "What if I arrive late?", "acceptedAnswer": { "@type": "Answer", "text": "There is a 5-minute grace period only. Out of respect for the group and the practice, late arrivals cannot be admitted and refunds are not issued." } },
-      { "@type": "Question", "name": "What is the cancellation and transfer policy?", "acceptedAnswer": { "@type": "Answer", "text": "All events held after June 19, 2026 (excluding collaborations & partner events): All sales are final. Cancel at least 48 hours before the event and we'll issue a credit for the full amount you paid, valid toward any future Auric Movement event hosted by Niara (collaborations and partner events excluded) for 6 months. Cancellations within 48 hours or no-shows are not eligible for a credit. Spot transfers to a friend are welcome up to 24 hours before the event — email auricmovement@outlook.com with both names. Email auricmovement@outlook.com to cancel or request a credit." } },
+      { "@type": "Question", "name": "What is the cancellation and transfer policy?", "acceptedAnswer": { "@type": "Answer", "text": "All sales are final — no cash refunds. To receive a credit, cancel at least 48 hours before your session start time — we'll issue a credit for the full amount you paid, valid toward any future Auric Movement event hosted by Niara for 6 months from the date of issue. Cancellations within 48 hours of the session, or no-shows, are not eligible for a credit. Can't make it on short notice? Spot transfers to a friend are welcome up to 24 hours before the event — email auricmovement@outlook.com with both names and emails to arrange. Collaborations and partner events follow their own policy, shown at the time of booking." } },
       { "@type": "Question", "name": "How do I know my spot is confirmed?", "acceptedAnswer": { "@type": "Answer", "text": "You reserve your spot and pay on the booking page. Once your payment is confirmed, you receive a confirmation email — that's how you know your spot is officially secured. A reminder email goes out the day before your session. If you don't see it, check your spam or promotions folder. Still missing? Email auricmovement@outlook.com and we'll resend." } },
       { "@type": "Question", "name": "Is there a waitlist if an event is full?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. If a session is sold out, you can join the waitlist on the booking page. If a spot opens, you'll get an email with a window to claim it before it rolls to the next person." } },
       { "@type": "Question", "name": "Can I bring my child?", "acceptedAnswer": { "@type": "Answer", "text": "For Create & Recharge, children 12 and older are welcome when accompanied by a parent or legal guardian who attends and signs the waiver on their behalf. Children 11 and under are not permitted. Each child needs their own ticket and registered spot at $65 per person, so a parent registers their child separately and signs the child's waiver as the guardian. Our other events are 18+." } },
@@ -2739,13 +2739,17 @@
   /* Hero slideshow — cross-fading past-event photos */
   .bq-hero-slides{position:absolute;inset:0;z-index:0;background:#ece3d2 url('hero-slide-1.jpg') center/cover no-repeat;}
   .bq-hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;
-    animation:bqHeroFade 35s infinite;will-change:opacity;}
+    animation:bqHeroFade 56s infinite;will-change:opacity;}
   .bq-hero-slide:nth-child(1){animation-delay:0s;background-image:url('hero-slide-1.jpg');}
-  .bq-hero-slide:nth-child(2){animation-delay:7s;background-image:url('hero-slide-2.jpg');}
-  .bq-hero-slide:nth-child(3){animation-delay:14s;background-image:url('recharge-01.jpg');background-position:center 32%;}
-  .bq-hero-slide:nth-child(4){animation-delay:21s;background-image:url('hero-slide-3.jpg');background-position:center 30%;}
-  .bq-hero-slide:nth-child(5){animation-delay:28s;background-image:url('hero-slide-4.jpg');background-position:center 22%;}
-  @keyframes bqHeroFade{0%{opacity:0}2.4%{opacity:1}18.5%{opacity:1}20.5%{opacity:0}100%{opacity:0}}
+  /* Riddim & Kompa — Sept 13, Valley Studio (largest group first) */
+  .bq-hero-slide:nth-child(2){animation-delay:7s;background-image:url('hero-slide-5.jpg');background-position:center 30%;}
+  .bq-hero-slide:nth-child(3){animation-delay:14s;background-image:url('hero-slide-6.jpg');background-position:center 18%;}
+  .bq-hero-slide:nth-child(4){animation-delay:21s;background-image:url('hero-slide-7.jpg');background-position:center 18%;}
+  .bq-hero-slide:nth-child(5){animation-delay:28s;background-image:url('hero-slide-2.jpg');}
+  .bq-hero-slide:nth-child(6){animation-delay:35s;background-image:url('recharge-01.jpg');background-position:center 32%;}
+  .bq-hero-slide:nth-child(7){animation-delay:42s;background-image:url('hero-slide-3.jpg');background-position:center 30%;}
+  .bq-hero-slide:nth-child(8){animation-delay:49s;background-image:url('hero-slide-4.jpg');background-position:center 22%;}
+  @keyframes bqHeroFade{0%{opacity:0}1.5%{opacity:1}11.6%{opacity:1}12.8%{opacity:0}100%{opacity:0}}
   .bq-hero-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
     background:linear-gradient(180deg, rgba(248,244,236,.9) 0%, rgba(248,244,236,.52) 20%, rgba(248,244,236,.42) 52%, rgba(248,244,236,.78) 100%);}
   .bq-hero-inner{z-index:4 !important;}
@@ -2757,6 +2761,9 @@
 </style>
 <section class="bq-hero hero" role="banner">
   <div class="bq-hero-slides" aria-hidden="true">
+    <div class="bq-hero-slide"></div>
+    <div class="bq-hero-slide"></div>
+    <div class="bq-hero-slide"></div>
     <div class="bq-hero-slide"></div>
     <div class="bq-hero-slide"></div>
     <div class="bq-hero-slide"></div>
@@ -3832,8 +3839,8 @@
       <details class="bq-faq-item">
         <summary>What's the cancellation and transfer policy?</summary>
         <div class="bq-faq-body">
-          <p><strong>All events held after June 19, 2026 (excluding collaborations &amp; partner events):</strong> All sales are final. Cancel at least 48 hours before the event and we&rsquo;ll issue a credit for the full amount you paid, valid toward any future Auric Movement event hosted by Niara (collaborations and partner events excluded) for 6 months. Cancellations within 48 hours or no-shows are not eligible for a credit. Spot transfers to a friend are welcome up to 24 hours before the event &mdash; email auricmovement@outlook.com with both names.</p>
-          <p>To cancel, email <a href="mailto:auricmovement@outlook.com">auricmovement@outlook.com</a> with your full name and session details.</p>
+          <p>All sales are final &mdash; no cash refunds. To receive a credit, cancel at least 48 hours before your session start time &mdash; we&rsquo;ll issue a credit for the full amount you paid, valid toward any future Auric Movement event hosted by Niara for 6 months from the date of issue. Cancellations within 48 hours of the session, or no-shows, are not eligible for a credit. Can&rsquo;t make it on short notice? Spot transfers to a friend are welcome up to 24 hours before the event &mdash; email auricmovement@outlook.com with both names and emails to arrange. Collaborations and partner events follow their own policy, shown at the time of booking.</p>
+          <p>To request a credit, cancel, or arrange a transfer, email <a href="mailto:auricmovement@outlook.com">auricmovement@outlook.com</a> with your full name and session details.</p>
         </div>
       </details>
 
@@ -5656,15 +5663,18 @@ Can't wait to move and connect with you!</textarea>
       <button class="modal-close" id="close-terms-btn" aria-label="Close terms">&#10005;</button>
     </div>
     <div class="modal-body">
-      <p><em>Effective Date: May 2026</em></p>
+      <p><em>Effective Date: May 2026 &#183; Last updated: September 2026</em></p>
       <h4>1. Refund Policy</h4>
-      <p><strong>All events held after June 19, 2026 (excluding collaborations &amp; partner events):</strong> All sales are final. To receive a credit, cancel at least <strong>48 hours before your session start time</strong> &mdash; we will issue a <strong>credit for the full amount you paid</strong>, valid toward any future Auric Movement event hosted by Niara (collaborations and partner events excluded) for <strong>6 months</strong> from the date of issue. Cancellations within 48 hours of the session, or no-shows, are not eligible for a credit. <em>Collaborations and partner events (such as Create &amp; Recharge) are excluded and follow their own refund policy, shown at the time of booking.</em></p>
+      <p>All sales are final &mdash; <strong>no cash refunds</strong>.</p>
+      <p>To receive a credit, cancel at least <strong>48 hours before your session start time</strong> &mdash; we will issue a <strong>credit for the full amount you paid</strong>, valid toward any future Auric Movement event hosted by Niara for <strong>6 months</strong> from the date of issue. Cancellations within 48 hours of the session, or no-shows, are <strong>not eligible for a credit</strong>.</p>
+      <p>Can&rsquo;t make it on short notice? <strong>Spot transfers to a friend are welcome up to 24 hours before the event.</strong> Email <strong>auricmovement@outlook.com</strong> with both names and emails to arrange.</p>
       <p>To request a credit or to cancel, email <strong>auricmovement@outlook.com</strong> with your name and session details.</p>
+      <p><em>Collaborations and partner events follow their own refund policy, shown at the time of booking. The policy you agreed to at checkout is the one that applies to your booking, and it is stored with your registration.</em></p>
       <p><strong>Chargebacks:</strong> Initiating a chargeback or payment dispute after agreeing to this policy is a breach of these terms. Auric Movement LLC reserves the right to decline registration for any future events from anyone who does so.</p>
       <h4>2. Cancellations</h4>
-      <p><strong>All events held after June 19, 2026 (excluding collaborations &amp; partner events):</strong> See Section 1 above &#8212; cancellations follow the credit policy.</p>
+      <p>See Section 1 above &#8212; cancellations follow the credit policy. Spot transfers are available under Section 3.</p>
       <h4>3. Spot Transfers</h4>
-      <p><strong>All events held after June 19, 2026:</strong> Spot transfers to a friend are allowed up to <strong>24 hours before the event start time</strong>. To transfer your spot, email <strong>auricmovement@outlook.com</strong> with your full name and the full name and email of the person taking your spot. Auric Movement LLC reserves the right to deny a transfer at its discretion. If you cannot find someone to transfer to, please follow the cancellation policy in Section 1 for a credit.</p>
+      <p>Spot transfers to a friend are allowed up to <strong>24 hours before the event start time</strong>. To transfer your spot, email <strong>auricmovement@outlook.com</strong> with your full name and the full name and email of the person taking your spot. Auric Movement LLC reserves the right to deny a transfer at its discretion. If you cannot find someone to transfer to, see the credit policy in Section 1.</p>
       <h4>4. Arrival &amp; Lateness Policy</h4>
       <p>Please arrive at your scheduled session arrival time. The first 5 minutes are reserved for orientation. Class begins promptly 5 minutes after your arrival time.</p>
       <p><strong>There is a 5-minute grace period only.</strong> Late arrivals will not be admitted. This is strictly enforced. <strong>No refunds or transfers will be issued for late arrivals.</strong></p>
@@ -5920,7 +5930,7 @@ Can't wait to move and connect with you!</textarea>
       <div class="rf-field"><label for="rf-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="rf-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:9px;font-family:'Jost',sans-serif;font-size:.92rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
       <div class="rf-ack">
         <input type="checkbox" id="rf-refund">
-        <label for="rf-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">All sales are final &mdash; no refunds or credits. Can&rsquo;t make it? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</span></label>
+        <label for="rf-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">All sales are final &mdash; no cash refunds. To receive a credit, cancel at least 48 hours before your session start time &mdash; we&rsquo;ll issue a credit for the full amount you paid, valid toward any future Auric Movement event hosted by Niara for 6 months from the date of issue. Cancellations within 48 hours of the session, or no-shows, are not eligible for a credit. Can&rsquo;t make it on short notice? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</span></label>
       </div>
       <div class="rf-ack">
         <input type="checkbox" id="rf-waiver" disabled>
@@ -6137,7 +6147,7 @@ Can't wait to move and connect with you!</textarea>
       <div class="rf-field"><label for="rfbk-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="rfbk-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:9px;font-family:'Jost',sans-serif;font-size:.92rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
       <div class="rf-ack">
         <input type="checkbox" id="rfbk-refund">
-        <label for="rfbk-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">All sales are final &mdash; no refunds or credits. Can&rsquo;t make it? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</span></label>
+        <label for="rfbk-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">All sales are final &mdash; no cash refunds. To receive a credit, cancel at least 48 hours before your session start time &mdash; we&rsquo;ll issue a credit for the full amount you paid, valid toward any future Auric Movement event hosted by Niara for 6 months from the date of issue. Cancellations within 48 hours of the session, or no-shows, are not eligible for a credit. Can&rsquo;t make it on short notice? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</span></label>
       </div>
       <div class="rf-ack">
         <input type="checkbox" id="rfbk-waiver" disabled>
@@ -6364,7 +6374,7 @@ document.addEventListener('DOMContentLoaded', function(){
       <div class="rf-field"><label for="tb-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="tb-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:9px;font-family:'Jost',sans-serif;font-size:.92rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
       <div class="rf-ack">
         <input type="checkbox" id="tb-refund">
-        <label for="tb-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">All sales are final &mdash; no refunds or credits. Can&rsquo;t make it? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</span></label>
+        <label for="tb-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">All sales are final &mdash; no cash refunds. To receive a credit, cancel at least 48 hours before your session start time &mdash; we&rsquo;ll issue a credit for the full amount you paid, valid toward any future Auric Movement event hosted by Niara for 6 months from the date of issue. Cancellations within 48 hours of the session, or no-shows, are not eligible for a credit. Can&rsquo;t make it on short notice? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</span></label>
       </div>
       <div class="rf-ack">
         <input type="checkbox" id="tb-waiver" disabled>
@@ -6607,7 +6617,7 @@ document.addEventListener('DOMContentLoaded', function(){
       <div class="rf-field"><label for="tb28-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="tb28-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:9px;font-family:'Jost',sans-serif;font-size:.92rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
       <div class="rf-ack">
         <input type="checkbox" id="tb28-refund">
-        <label for="tb28-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">All sales are final &mdash; no refunds or credits. Can&rsquo;t make it? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</span></label>
+        <label for="tb28-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">All sales are final &mdash; no cash refunds. To receive a credit, cancel at least 48 hours before your session start time &mdash; we&rsquo;ll issue a credit for the full amount you paid, valid toward any future Auric Movement event hosted by Niara for 6 months from the date of issue. Cancellations within 48 hours of the session, or no-shows, are not eligible for a credit. Can&rsquo;t make it on short notice? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</span></label>
       </div>
       <div class="rf-ack">
         <input type="checkbox" id="tb28-waiver" disabled>
@@ -6803,7 +6813,7 @@ document.addEventListener('DOMContentLoaded', function(){
       <div class="rf-field"><label for="hw-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="hw-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:9px;font-family:'Jost',sans-serif;font-size:.92rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
       <div class="rf-ack">
         <input type="checkbox" id="hw-refund">
-        <label for="hw-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">All sales are final &mdash; no refunds or credits. Can&rsquo;t make it? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</span></label>
+        <label for="hw-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">All sales are final &mdash; no cash refunds. To receive a credit, cancel at least 48 hours before your session start time &mdash; we&rsquo;ll issue a credit for the full amount you paid, valid toward any future Auric Movement event hosted by Niara for 6 months from the date of issue. Cancellations within 48 hours of the session, or no-shows, are not eligible for a credit. Can&rsquo;t make it on short notice? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</span></label>
       </div>
       <div class="rf-ack">
         <input type="checkbox" id="hw-waiver" disabled>
@@ -7044,7 +7054,7 @@ document.addEventListener('DOMContentLoaded', function(){
       "I confirm that I am the person named above, that the information I have provided is true and accurate, and that I am the authorized holder of the payment method used — or that I have the cardholder’s express permission to use it for this booking.",
       "I acknowledge that I have had sufficient opportunity to read this waiver, ask questions, and seek independent legal advice before signing, and I sign it freely and voluntarily."
     ];
-    var RF_REFUND_TEXT = 'All sales are final — no refunds or credits. Spot transfers to a friend are welcome up to 24 hours before the event — email auricmovement@outlook.com with both names. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.';
+    var RF_REFUND_TEXT = 'All sales are final — no cash refunds. To receive a credit, cancel at least 48 hours before your session start time — we will issue a credit for the full amount you paid, valid toward any future Auric Movement event hosted by Niara for 6 months from the date of issue. Cancellations within 48 hours of the session, or no-shows, are not eligible for a credit. Spot transfers to a friend are welcome up to 24 hours before the event — email auricmovement@outlook.com with both names. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.';
     try { window.__RF_CLAUSES = RF_CLAUSES; window.__RF_REFUND_TEXT = RF_REFUND_TEXT; } catch(e){}
 
     var chosen = null;         // '1pm' | '2pm'
@@ -7423,6 +7433,33 @@ document.addEventListener('DOMContentLoaded', function() {
       description: 'Our sold-out Juneteenth celebration &mdash; a curated reformer Pilates class featuring jump board work, movement in all planes of motion, and a hand-held fan from Ghana &mdash; a nod to the motherland and a celebration of freedom. Attendees left with a Pilates essentials bag.',
       reflection: 'Through movement and wellness, we reclaim agency over our own bodies &mdash; a true act of freedom.'
     },
+    reformer: {
+      title:  'Riddim &amp; Kompa Recap',
+      date:   'September 13, 2026',
+      soldOut: true,
+      cover:  'riddim-01.jpg',   // the largest group of the day
+      photos: [
+        'riddim-01.jpg',  //  1. Full group with the Haiti/Jamaica flag (COVER)
+        'riddim-02.jpg',  //  2. Session group with the flag
+        'riddim-03.jpg',  //  3. Session group with the flag
+        'riddim-04.jpg',  //  4. Chest press on the reformers, Valley Studio logo behind
+        'riddim-05.jpg',  //  5. Chest press, feet in straps
+        'riddim-06.jpg',  //  6. Over the shoulder mid-set, Auric MVMT tee
+        'riddim-07.jpg',  //  7. Bar and leg work, close
+        'riddim-08.jpg',  //  8. Bar work across the room
+        'riddim-09.jpg',  //  9. Sitting and talking between sets
+        'riddim-10.jpg',  // 10. Stretching it out after class
+        'riddim-11.jpg',  // 11. The prize-drawing winner with her card
+        'riddim-12.jpg',  // 12. By the AURIC MVMT neon
+        'riddim-13.jpg',  // 13. Niara in the studio
+        'riddim-14.jpg',  // 14. Niara between sessions
+        'riddim-15.jpg',  // 15. The Auric goodie bag
+        'riddim-16.jpg',  // 16. Island Fusion juices
+        'riddim-17.jpg'   // 17. The welcome table and feedback QR
+      ],
+      description: 'Our sold-out Riddim &amp; Kompa on the Reformer at Valley Studio in West Hempstead &mdash; three back-to-back sessions of reformer Pilates moving to the riddim, with a complimentary goodie bag and a prize drawing for a 4-class package.',
+      reflection: 'Flags up, music loud, everybody moving &mdash; this is what Auric is all about.'
+    },
     matchat: {
       title:  'Mat & Chat Recap',
       date:   'August 1, 2026',
@@ -7452,6 +7489,14 @@ document.addEventListener('DOMContentLoaded', function() {
       soldOut: true,
       forcePast: true,  // show in Past Events the same day (recap goes up event evening)
       description: 'Our sold-out Mat &amp; Chat &mdash; a morning of mat Pilates, community, and good energy. We moved together, played a custom Auric bingo, and shared food, music, and connection.'
+    },
+    reformer: {
+      title:   'Riddim &amp; Kompa on the Reformer',
+      soldOut: true,
+      // Photos are up (EVENT_PHOTO_GALLERIES.reformer) but the video isn't cut
+      // yet, so show BOTH: a "Recap Coming Soon" video card and the gallery.
+      videoPending: true,
+      description: 'Our sold-out Riddim &amp; Kompa on the Reformer at Valley Studio in West Hempstead &mdash; three back-to-back sessions of reformer Pilates moving to the riddim, with a complimentary goodie bag and a prize drawing for a 4-class package.'
     },
     recharge: {
       forcePast: true,  // show in Past Events the same day; photos go up over the coming days
@@ -7647,7 +7692,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var gallery = EVENT_PHOTO_GALLERIES[p.eventId];
     var card = document.createElement('div');
 
-    if (gallery && gallery.photos && gallery.photos.length) {
+    if (!p.videoOnly && gallery && gallery.photos && gallery.photos.length) {
       card.className = 'bq-video-card bq-photo-gallery-card';
       card.innerHTML =
         '<button type="button" class="bq-photo-gallery-cover" data-gallery="' + p.eventId + '" aria-label="View ' + gallery.photos.length + ' photos from ' + (p.title || gallery.title) + '">' +
@@ -7728,15 +7773,35 @@ document.addEventListener('DOMContentLoaded', function() {
       var fmtDate = eventDate.toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
       pending.push({
         eventId: slug,
-        title:   name,
+        title:   meta.title || name,
         date:    fmtDate,
-        flyer:   flyer,
+        // With a videoPending twin the flyer link lives on that card, so the
+        // gallery card doesn't repeat it.
+        flyer:   (meta.videoPending && EVENT_PHOTO_GALLERIES[slug]) ? '' : flyer,
         soldOut: !!meta.soldOut,
         description: meta.description || '',
         pendingText: meta.pendingText || '',
         pendingSub:  meta.pendingSub || '',
         sortDate: eventDate
       });
+      // When the photos are up but the video isn't cut yet, add a second card
+      // that always renders the "Recap Coming Soon" placeholder (videoOnly
+      // skips the gallery branch) and sits just before the gallery.
+      if (meta.videoPending && EVENT_PHOTO_GALLERIES[slug]) {
+        pending.push({
+          eventId: slug,
+          title:   meta.title || name,
+          date:    fmtDate,
+          flyer:   flyer,
+          soldOut: !!meta.soldOut,
+          description: '',
+          pendingText: meta.pendingText || '',
+          pendingSub:  meta.pendingSub || '',
+          videoOnly: true,
+          orderHint: 0,
+          sortDate: eventDate
+        });
+      }
     });
     // Newest past event first
     pending.sort(function(a,b){ return b.sortDate - a.sortDate; });
@@ -7776,7 +7841,7 @@ document.addEventListener('DOMContentLoaded', function() {
       renderList.push({ kind:'video', data:v, sortDate:d, order:0 });
     });
     pending.forEach(function(p){
-      renderList.push({ kind:'pending', data:p, sortDate:(p.sortDate || new Date(0)), order:1 });
+      renderList.push({ kind:'pending', data:p, sortDate:(p.sortDate || new Date(0)), order:(p.orderHint != null ? p.orderHint : 1) });
     });
     renderList.sort(function(a,b){ return (b.sortDate - a.sortDate) || (a.order - b.order); });
 
@@ -13737,7 +13802,7 @@ document.addEventListener('DOMContentLoaded', function() {
       receipt_signed_as: rec.signature || rec.name,
       receipt_signed_at: when,
       refund_policy_ack_at: when,
-      refund_policy_text: rec.refund_policy_text || window.__RF_REFUND_TEXT || 'All sales are final — no refunds or credits.'
+      refund_policy_text: rec.refund_policy_text || window.__RF_REFUND_TEXT || 'All sales are final — no cash refunds. Cancel at least 48 hours before your session start time for a credit valid 6 months.'
     }).then(function(){ alert('✅ Confirmation sent to '+rec.email); }, function(){ alert('⚠️ Could not send. Check EmailJS dashboard.'); });
     supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: true })
       .then(function(){ rfRefresh(); }, function(){});
@@ -13760,7 +13825,7 @@ document.addEventListener('DOMContentLoaded', function() {
       receipt_signed_as: rec.signature || rec.name,
       receipt_signed_at: when,
       refund_policy_ack_at: when,
-      refund_policy_text: rec.refund_policy_text || window.__RF_REFUND_TEXT || 'All sales are final — no refunds or credits.'
+      refund_policy_text: rec.refund_policy_text || window.__RF_REFUND_TEXT || 'All sales are final — no cash refunds. Cancel at least 48 hours before your session start time for a credit valid 6 months.'
     }).then(function(){ alert('✅ Confirmation sent to '+rec.email); }, function(){ alert('⚠️ Could not send. Check EmailJS dashboard.'); });
     supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: true })
       .then(function(){ rfRefresh(); }, function(){});
@@ -13783,7 +13848,7 @@ document.addEventListener('DOMContentLoaded', function() {
       receipt_signed_as: rec.signature || rec.name,
       receipt_signed_at: when,
       refund_policy_ack_at: when,
-      refund_policy_text: rec.refund_policy_text || window.__RF_REFUND_TEXT || 'All sales are final — no refunds or credits.'
+      refund_policy_text: rec.refund_policy_text || window.__RF_REFUND_TEXT || 'All sales are final — no cash refunds. Cancel at least 48 hours before your session start time for a credit valid 6 months.'
     }).then(function(){ alert('✅ Confirmation sent to '+rec.email); }, function(){ alert('⚠️ Could not send. Check EmailJS dashboard.'); });
     supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: true })
       .then(function(){ rfRefresh(); }, function(){});
@@ -13806,7 +13871,7 @@ document.addEventListener('DOMContentLoaded', function() {
       receipt_signed_as: rec.signature || rec.name,
       receipt_signed_at: when,
       refund_policy_ack_at: when,
-      refund_policy_text: rec.refund_policy_text || window.__RF_REFUND_TEXT || 'All sales are final — no refunds or credits.'
+      refund_policy_text: rec.refund_policy_text || window.__RF_REFUND_TEXT || 'All sales are final — no cash refunds. Cancel at least 48 hours before your session start time for a credit valid 6 months.'
     }).then(function(){ alert('✅ Confirmation sent to '+rec.email); }, function(){ alert('⚠️ Could not send. Check EmailJS dashboard.'); });
     supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: true })
       .then(function(){ rfRefresh(); }, function(){});
