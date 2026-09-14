@@ -9674,6 +9674,15 @@ document.addEventListener('DOMContentLoaded', function() {
         var refBtn = (m.code && m.table)
           ? '<button onclick="addReferralPoint(\''+m.table+'\',\''+m.code+'\')" style="'+refStyle+'">+½ ref</button>'
           : (m.rfId ? '<button onclick="rfAddReferralPoint('+m.rfId+')" style="'+refStyle+'">+½ ref</button>' : '');
+        var mergeStyle = 'background:#eef4fb;border:1px solid #cfe0f5;color:#185fa5;border-radius:6px;padding:.2rem .45rem;font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;white-space:nowrap;margin-left:.25rem;';
+        var mergeBtn = (m.code && m.table) || m.rfId
+          ? '<button title="Same person, different email? Move these marks onto their usual address." onclick="clubMergeInto('
+              + (m.table ? '\''+m.table+'\'' : 'null') + ','
+              + (m.code ? '\''+String(m.code).replace(/'/g,"\\'")+'\'' : 'null') + ','
+              + (m.rfId || 'null') + ','
+              + '\''+String(m.email).replace(/'/g,"\\'")+'\','
+              + '\''+String(m.name||'').replace(/'/g,"\\'")+'\')" style="'+mergeStyle+'">&#8682; Merge</button>'
+          : '';
         // Show the working: which events earned a full mark, and how many
         // referrals made up the halves. Collapsed by default so the list stays
         // scannable; open one to see where that person's total came from.
@@ -9687,7 +9696,7 @@ document.addEventListener('DOMContentLoaded', function() {
           ? '<details style="margin:.25rem 0 0;"><summary style="cursor:pointer;font-size:.72rem;color:var(--gold-text);">How they earned this</summary>'
             + '<ul style="margin:.35rem 0 .2rem;padding-left:1.1rem;font-size:.75rem;color:#4a3f33;list-style:none;">'+lines.join('')+'</ul></details>'
           : '';
-        html += '<tr style="border-bottom:1px solid #f0e9dc;"><td style="padding:.4rem;">'+escapeHTML(m.name||'—')+'<br><span style="color:var(--text-muted);font-size:.75rem;">'+escapeHTML(m.email)+'</span>'+breakdown+'</td><td style="text-align:center;vertical-align:top;padding-top:.45rem;"><strong>'+fmtMarks(m.count)+'</strong></td><td style="font-size:.78rem;vertical-align:top;padding-top:.45rem;">'+status+'</td><td style="text-align:right;vertical-align:top;padding-top:.4rem;">'+refBtn+'</td></tr>';
+        html += '<tr style="border-bottom:1px solid #f0e9dc;"><td style="padding:.4rem;">'+escapeHTML(m.name||'—')+'<br><span style="color:var(--text-muted);font-size:.75rem;">'+escapeHTML(m.email)+'</span>'+breakdown+'</td><td style="text-align:center;vertical-align:top;padding-top:.45rem;"><strong>'+fmtMarks(m.count)+'</strong></td><td style="font-size:.78rem;vertical-align:top;padding-top:.45rem;">'+status+'</td><td style="text-align:right;vertical-align:top;padding-top:.4rem;white-space:nowrap;">'+refBtn+mergeBtn+'</td></tr>';
       });
       box.innerHTML = html + '</table>';
       }
@@ -11734,6 +11743,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ===== Auric Club — attendance loyalty tracker =====
   // Aggregate "#attended" marks per email across Pilates + Mat & Chat.
+  // "#alias:someone@else.com" on a booking means it belongs to that person.
+  // Used when one guest books an event under a second email address.
+  var ALIAS_RE = /#alias:([^\s#]+)/i;
+  function clubKeyFor(email, notes){
+    var m = ALIAS_RE.exec(notes || '');
+    var target = m ? m[1] : email;
+    return String(target || '').trim().toLowerCase();
+  }
+
   function getClubData(callback){
     getData(function(pdata){
       getMCData(function(mdata){
@@ -11754,13 +11772,19 @@ document.addEventListener('DOMContentLoaded', function() {
           // Trim as well as lower-case: a booking typed on a phone often carries
           // a trailing space, and an untrimmed key splits one person into two
           // Club entries that each look short of the marks they actually have.
-          var key = String(rec.email).trim().toLowerCase();
+          // An "#alias:other@email" tag says this booking belongs to the person
+          // at that address, for when someone books one event under a second
+          // email. Read one hop only, so a pair of rows pointing at each other
+          // cannot loop.
+          var key = clubKeyFor(rec.email, notes);
           if (!marks[key]) marks[key] = { email: rec.email, name: rec.name||'', count: 0, table: table, code: rec.code, attendedAt: [], referrals: 0 };
           if (!marks[key].attendedAt) { marks[key].attendedAt = []; marks[key].referrals = 0; }
           if (attended) marks[key].attendedAt.push(TABLE_EVENT_LABELS[table] || table);
           marks[key].referrals += refs;
           marks[key].count += pts;
-          if (rec.name) marks[key].name = rec.name;
+          // A merged-in booking keeps the name of whoever it was merged into,
+          // so the Club shows one person rather than whichever row ran last.
+          if (rec.name && (!ALIAS_RE.test(notes) || !marks[key].name)) marks[key].name = rec.name;
         }
         ['s1','s2'].forEach(function(s){ (pdata[s]||[]).forEach(function(r){ tally(r, 'pilates_registrations'); }); });
         (mdata.mc1||[]).forEach(function(r){ tally(r, 'matchat_registrations'); });
@@ -11787,6 +11811,43 @@ document.addEventListener('DOMContentLoaded', function() {
         var btn = document.getElementById('admin-club-btn'); if (btn) btn.click();
       }, function(err){ alert('Could not add referral point.'); console.error(err); });
     }, function(err){ alert('Could not read record.'); console.error(err); });
+  };
+  // Merge a Club entry into another person, for when one guest booked an event
+  // under a second email. Tag-based bookings get an "#alias:" note; reformer
+  // bookings have their email rewritten, since those rows are keyed by id and
+  // carry no notes field.
+  window.clubMergeInto = function(table, code, rfId, fromEmail, name){
+    var target = prompt(
+      'Merge ' + (name || fromEmail) + '’s marks into which email?\n\n' +
+      'Enter the address they normally book under — these ' +
+      'marks will move onto that person.',
+      '');
+    if (target === null) return;
+    target = target.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(target)){ alert('Please enter a valid email.'); return; }
+    if (target === String(fromEmail || '').trim().toLowerCase()){ alert('That is the same address — nothing to merge.'); return; }
+    function done(){ var b = document.getElementById('admin-club-btn'); if (b) b.click(); }
+
+    if (table && code){
+      supabase.from(table).select('admin_notes').eq('code', code).single().then(function(res){
+        var notes = (res.data && res.data.admin_notes) || '';
+        // Replace any previous alias rather than stacking a second one.
+        var cleaned = notes.replace(/#alias:[^\s#]+/ig, '').replace(/\s+/g,' ').trim();
+        var newNotes = (cleaned ? cleaned + ' ' : '') + '#alias:' + target;
+        supabase.from(table).update({ admin_notes: newNotes }).eq('code', code)
+          .then(done, function(err){ alert('Could not merge.'); console.error(err); });
+      }, function(err){ alert('Could not read that booking.'); console.error(err); });
+      return;
+    }
+    if (rfId){
+      supabase.rpc('reformer_edit', { pass: ADMIN_PASSWORD, rid: rfId, new_name: name || '', new_email: target })
+        .then(function(res){
+          if (res && res.error){ alert('Could not merge.'); console.error(res.error); return; }
+          done();
+        }, function(err){ alert('Could not merge.'); console.error(err); });
+      return;
+    }
+    alert('No booking on this entry to merge.');
   };
   window.toggleAttended = function(table, code){
     supabase.from(table).select('admin_notes').eq('code', code).single().then(function(res){
