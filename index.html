@@ -7453,7 +7453,7 @@ document.addEventListener('DOMContentLoaded', function() {
       reflection: 'Through movement and wellness, we reclaim agency over our own bodies &mdash; a true act of freedom.'
     },
     reformer: {
-      title:  'Riddim &amp; Kompa Recap',
+      title:  'Riddim & Kompa Recap',
       date:   'September 13, 2026',
       soldOut: true,
       cover:  'riddim-01.jpg',   // the largest group of the day
@@ -15336,6 +15336,16 @@ document.addEventListener('DOMContentLoaded', function() {
   // ──────────────────────────────────────────────────────
   var _photoLightboxState = { gallery: null, index: 0, previouslyFocused: null };
 
+  // Turn HTML entities into the characters they stand for, for the places we
+  // assign plain text. Parsed as text, never as markup, so no tag in a title
+  // could become an element.
+  function decodeEntities(s){
+    if (!s) return '';
+    var el = document.createElement('textarea');
+    el.innerHTML = String(s);
+    return el.value;
+  }
+
   function openPhotoLightbox(galleryKey, startIndex){
     var gallery = EVENT_PHOTO_GALLERIES[galleryKey];
     if (!gallery || !gallery.photos || !gallery.photos.length) return;
@@ -15380,12 +15390,15 @@ document.addEventListener('DOMContentLoaded', function() {
     var img = document.querySelector('#photo-lightbox .lightbox-image');
     var counter = document.querySelector('#photo-lightbox .lightbox-counter');
     var title = document.querySelector('#photo-lightbox .lightbox-title');
+    // Gallery titles are written for HTML (Mat &amp; Chat), but the caption and
+    // alt text are set as plain text, where an entity would show as typed.
+    var gTitle = decodeEntities(g.title || '');
     if (img) {
       img.src = g.photos[_photoLightboxState.index];
-      img.alt = (g.title || 'Photo') + ' — image ' + (_photoLightboxState.index + 1) + ' of ' + g.photos.length;
+      img.alt = (gTitle || 'Photo') + ' — image ' + (_photoLightboxState.index + 1) + ' of ' + g.photos.length;
     }
     if (counter) counter.textContent = (_photoLightboxState.index + 1) + ' / ' + g.photos.length;
-    if (title) title.textContent = g.title || '';
+    if (title) title.textContent = gTitle;
   }
 
   // Wire up controls + keyboard support after DOM ready
