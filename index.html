@@ -2866,6 +2866,32 @@
           });
           // The Two Islands facts + playlist belong to the Riddim × Kompa view only.
           if(rkExtra) rkExtra.style.display = (loc==='riddim') ? 'block' : 'none';
+          revealFilteredPhotos();
+        }
+        // Card flyers are revealed by a GSAP clip-path animation driven by
+        // ScrollTrigger, so each photo starts fully clipped — invisible. Filtering
+        // moves cards to new positions that ScrollTrigger measured while they were
+        // hidden, so the reveal never fires and the flyer stays clipped: the box
+        // keeps its space and paints nothing. Re-measure, then clear the clip on
+        // anything already on screen so it cannot be stranded invisible.
+        function revealFilteredPhotos(){
+          try {
+            if (window.ScrollTrigger && typeof window.ScrollTrigger.refresh === 'function') window.ScrollTrigger.refresh();
+          } catch(e){}
+          requestAnimationFrame(function(){
+            cards.forEach(function(c){
+              if (c.style.display === 'none') return;
+              var photo = c.querySelector('.bq-event-photo'); if(!photo) return;
+              var r = photo.getBoundingClientRect();
+              var onScreen = r.top < (window.innerHeight || 0) && r.bottom > 0;
+              if (!onScreen) return;
+              var cp = photo.style.clipPath || photo.style.webkitClipPath || '';
+              if (/inset\(\s*0%\s+0%\s+(?!0%)/.test(cp)) {
+                photo.style.clipPath = 'inset(0% 0% 0% 0%)';
+                photo.style.webkitClipPath = 'inset(0% 0% 0% 0%)';
+              }
+            });
+          });
         }
         applyFilter('all');
         bar.addEventListener('click', function(e){
