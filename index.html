@@ -9603,12 +9603,19 @@ document.addEventListener('DOMContentLoaded', function() {
           if (r && !r.error){
             var seen = {};
             ((r && r.data) || []).forEach(function(row){
-              if (!row || row.attendance !== 'attended' || !row.email) return;
+              if (!row || !row.email) return;
               var key = String(row.email).toLowerCase();
+              // One attendance mark per event, so multiple sessions never double-count.
               var ek = key + '|' + (row.event || '');
-              if (seen[ek]) return; seen[ek] = true;
-              if (!marks[key]) marks[key] = { email: row.email, name: row.name || '', count: 0, table: '', code: '' };
-              marks[key].count += 1;
+              var newAttend = (row.attendance === 'attended') && !seen[ek];
+              if (newAttend) seen[ek] = true;
+              // Referrals are half a mark each, same as the other events.
+              var pts = (newAttend ? 1 : 0) + 0.5 * (Number(row.referrals) || 0);
+              if (pts <= 0 && !marks[key]) return;   // nothing to show for them yet
+              if (!marks[key]) marks[key] = { email: row.email, name: row.name || '', count: 0, table: '', code: '', rfId: null };
+              // Keep a reformer row id so "+½ ref" has somewhere to write.
+              if (!marks[key].rfId) marks[key].rfId = row.id;
+              marks[key].count += pts;
               if (row.name) marks[key].name = row.name;
             });
           }
@@ -9625,7 +9632,13 @@ document.addEventListener('DOMContentLoaded', function() {
         var earned = Math.floor(m.count/10);
         var prog = m.count % 10;
         var status = earned>0 ? ('&#127873; '+earned+' free earned') : (prog>=8 ? '&#9889; '+fmtMarks(10-prog)+' to go!' : fmtMarks(10-prog)+' to go');
-        var refBtn = (m.code && m.table) ? '<button onclick="addReferralPoint(\''+m.table+'\',\''+m.code+'\')" style="background:#fef9e7;border:1px solid #f0dca0;color:#7a6320;border-radius:6px;padding:.2rem .45rem;font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;white-space:nowrap;">+½ ref</button>' : '';
+        var refStyle = 'background:#fef9e7;border:1px solid #f0dca0;color:#7a6320;border-radius:6px;padding:.2rem .45rem;font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;white-space:nowrap;';
+        // Mat & Chat / Pilates / Create & Recharge rows carry a code and get
+        // tagged in admin_notes; reformer rows are keyed by id and go through
+        // the owner-only RPC instead. Either way the button reads "+½ ref".
+        var refBtn = (m.code && m.table)
+          ? '<button onclick="addReferralPoint(\''+m.table+'\',\''+m.code+'\')" style="'+refStyle+'">+½ ref</button>'
+          : (m.rfId ? '<button onclick="rfAddReferralPoint('+m.rfId+')" style="'+refStyle+'">+½ ref</button>' : '');
         html += '<tr style="border-bottom:1px solid #f0e9dc;"><td style="padding:.4rem;">'+escapeHTML(m.name||'—')+'<br><span style="color:var(--text-muted);font-size:.75rem;">'+escapeHTML(m.email)+'</span></td><td style="text-align:center;"><strong>'+fmtMarks(m.count)+'</strong></td><td style="font-size:.78rem;">'+status+'</td><td style="text-align:right;">'+refBtn+'</td></tr>';
       });
       box.innerHTML = html + '</table>';
@@ -13686,6 +13699,18 @@ document.addEventListener('DOMContentLoaded', function() {
     supabase.rpc('reformer_set_attendance', { pass: ADMIN_PASSWORD, rid: id, val: val || '' })
       .then(function(res){ if(res&&res.error){ alert('Could not save attendance — run REFORMER_ATTENDANCE.sql in Supabase first.'); return; } rfRefresh(); },
             function(){ alert('Could not save attendance. Try again.'); });
+  };
+  // Auric Club — give a reformer attendee half a mark for referring a friend.
+  // The other events tag admin_notes by code; reformer rows are keyed by id,
+  // so they go through the owner-only RPC and keep a count instead.
+  window.rfAddReferralPoint = function(id){
+    if (!id){ alert('No record to credit.'); return; }
+    if (!confirm('Add a half-point referral credit to this member?')) return;
+    supabase.rpc('reformer_set_referral', { pass: ADMIN_PASSWORD, rid: id, delta: 1 })
+      .then(function(res){
+        if (res && res.error){ alert('Could not add referral point — run REFORMER_REFERRAL.sql in Supabase first.'); console.error(res.error); return; }
+        var btn = document.getElementById('admin-club-btn'); if (btn) btn.click();
+      }, function(err){ alert('Could not add referral point. Try again.'); console.error(err); });
   };
   // Prize drawing — mark/unmark the 4-class package winner.
   window.rfAdminSetWinner = function(id, val){
