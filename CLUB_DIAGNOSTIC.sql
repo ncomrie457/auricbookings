@@ -66,3 +66,41 @@ select event, count(*) as attended
 select count(*) as attended
   from public.matchat_registrations
  where admin_notes ilike '%#attended%';
+
+-- 7) Create & Recharge. Same tag-based system as Mat & Chat: the Club counts
+--    anyone whose admin_notes contains "#attended". If this comes back empty
+--    but you have been ticking ✓ Attended on that roster, the tag is not
+--    saving — the button writes straight to the table, so a row-level
+--    security rule blocking the update would fail quietly.
+select count(*) as attended
+  from public.create_recharge_registrations
+ where admin_notes ilike '%#attended%';
+
+-- 8) One named person across every event at once — the fastest way to see
+--    which side of the Club is missing them. Change 'angelina' below.
+--    Each row shows the event and whether it is earning a mark.
+with who as (select '%angelina%'::text as q)
+select 'Create & Recharge' as event, name, email,
+       case when admin_notes ilike '%#attended%' then 'attended' else '— not marked —' end as status
+  from public.create_recharge_registrations, who
+ where name ilike q or email ilike q
+union all
+select 'Mat & Chat', name, email,
+       case when admin_notes ilike '%#attended%' then 'attended' else '— not marked —' end
+  from public.matchat_registrations, who
+ where name ilike q or email ilike q
+union all
+select 'Pilates x Niara', name, email,
+       case when admin_notes ilike '%#attended%' then 'attended' else '— not marked —' end
+  from public.pilates_registrations, who
+ where name ilike q or email ilike q
+union all
+select coalesce(event,'Reformer'), name, email,
+       coalesce(attendance, '— not marked —')
+  from public.reformer_registrations, who
+ where name ilike q or email ilike q
+ order by 1;
+--    No rows at all → that person is not booked under that name anywhere;
+--    check whether someone else booked for them.
+--    Rows showing "— not marked —" → that is the mark that never saved.
+--    Two rows with emails that differ → the Club sees two separate people.
