@@ -75,7 +75,36 @@ $$;
 
 grant execute on function public.reformer_club_marks(text) to anon, authenticated;
 
--- 4) NOTE: the admin roster reads through reformer_roster(). If that function
+-- 4) Prize-drawing winner flag + owner-only setter, used by the "🎟 Winner"
+--    button on the roster and the "Send winner email" button.
+alter table public.reformer_registrations
+  add column if not exists winner boolean not null default false;
+
+create or replace function public.reformer_set_winner(
+  pass text,
+  rid  bigint,
+  val  boolean
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not public.is_owner() then
+    raise exception 'not authorized';
+  end if;
+
+  update public.reformer_registrations
+     set winner = coalesce(val, false)
+   where id = rid;
+end;
+$$;
+
+revoke all on function public.reformer_set_winner(text, bigint, boolean) from public, anon;
+grant execute on function public.reformer_set_winner(text, bigint, boolean) to authenticated;
+
+-- 5) NOTE: the admin roster reads through reformer_roster(). If that function
 --    uses SELECT * this already works. If it lists columns explicitly, add
 --    `attendance` to its SELECT (and to its RETURNS TABLE(...) if it has one),
 --    otherwise the buttons won't show the current state.
