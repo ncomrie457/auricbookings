@@ -9128,6 +9128,32 @@ document.addEventListener('DOMContentLoaded', function() {
       doc.text(lines,margin+22,y+5); y+=blockH;
       doc.setDrawColor(232,224,213); doc.setLineWidth(0.3); doc.line(margin+22,y-4,pageW-margin,y-4);
     });
+    // Refund policy acknowledgment — the exact wording this person was shown
+    // and ticked at checkout, reproduced verbatim so the signed document is
+    // self-contained evidence rather than a pointer at whatever the site says
+    // today. Records store the text they agreed to, so an older booking keeps
+    // the older policy.
+    var refundText = rec.refundPolicyText || rec.refund_policy_text || '';
+    var refundAckAt = rec.refundPolicyAck || rec.refund_policy_ack_at || '';
+    if (refundText) {
+      var rLines = doc.setFontSize(8.5).splitTextToSize(String(refundText), contentW-28);
+      var rBoxH = rLines.length*11 + 44;
+      checkPage(rBoxH+20); y += 10;
+      doc.setFillColor(250,245,238); doc.setDrawColor(176,120,64); doc.setLineWidth(3);
+      doc.line(margin,y,margin,y+rBoxH); doc.setLineWidth(0.3);
+      doc.roundedRect(margin+5,y,contentW-5,rBoxH,4,4,'F');
+      doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(122,80,30);
+      doc.text('REFUND & CANCELLATION POLICY — ACKNOWLEDGED AT CHECKOUT', margin+14, y+16);
+      doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(61,50,42);
+      doc.text(rLines, margin+14, y+30);
+      var ackWhen = '';
+      try { if (refundAckAt) ackWhen = new Date(refundAckAt).toLocaleString(); } catch(e){ ackWhen = String(refundAckAt); }
+      if (!ackWhen) ackWhen = rec.time || '';
+      doc.setFont('helvetica','bold'); doc.setFontSize(7.5); doc.setTextColor(90,58,26);
+      doc.text('✓ Ticked to agree by ' + (rec.name||'') + (ackWhen ? ' on ' + ackWhen : ''), margin+14, y+rBoxH-12);
+      y += rBoxH + 6;
+    }
+
     checkPage(80); y+=8;
     doc.setFillColor(250,245,238); doc.setDrawColor(176,120,64); doc.setLineWidth(3);
     doc.line(margin,y,margin,y+64); doc.setLineWidth(0.3);
@@ -13944,7 +13970,11 @@ document.addEventListener('DOMContentLoaded', function() {
       sessionLabel: rec.session_label || ('Riddim & Kompa on the Reformer — '+sess.time),
       arrival: sess.arrival, classStart: sess.time, eventDate: 'Sunday, September 13th',
       time: when, clausesAgreed: rec.clauses_agreed || (window.__RF_CLAUSES ? window.__RF_CLAUSES.length : 19),
-      clauseList: window.__RF_CLAUSES || clauseTexts
+      clauseList: window.__RF_CLAUSES || clauseTexts,
+      // The policy wording this booker actually ticked, kept on their row, so
+      // the PDF shows what they agreed to rather than today's wording.
+      refundPolicyText: rec.refund_policy_text || (rec.refund_ack ? (window.__RF_REFUND_TEXT || '') : ''),
+      refundPolicyAck: rec.refund_policy_ack_at || rec.created_at || ''
     });
   };
   window.rfAdminConfirm = function(id){
