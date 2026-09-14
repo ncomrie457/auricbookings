@@ -3320,9 +3320,20 @@
           {id:'event-card-turkey', tag:'Now booking', cls:'ok'},
           {id:'event-card-turkey28', tag:'Now booking', cls:'ok'}
         ];
+        // This grid is headed "Upcoming", so drop events whose date has passed.
+        // Same test the Events tab uses, so the two stay in step and each event
+        // falls off by itself the day after it runs.
+        var today=new Date(); today.setHours(0,0,0,0);
+        function isPastCard(c){
+          if(c.getAttribute('data-past')==='true') return true;
+          var ds=c.getAttribute('data-event-date'); if(!ds) return false;
+          var dt=new Date(ds+'T00:00:00'); if(isNaN(dt.getTime())) return false;
+          return dt<today;
+        }
         var out='';
         items.forEach(function(it){
           var c=document.getElementById(it.id); if(!c) return;
+          if(isPastCard(c)) return;   // already happened — it belongs in Past Events
           var img=c.querySelector('.bq-event-photo img'); var src=img?img.getAttribute('src'):'';
           var name=c.querySelector('.bq-event-name'); var sub=c.querySelector('.bq-event-sub');
           out+='<article class="bq-ae-card">'
