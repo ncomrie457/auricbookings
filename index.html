@@ -6099,13 +6099,26 @@ Can't wait to move and connect with you!</textarea>
   };
   window.rfSafeInsert = function(client, rec){
     if(!client) return;
-    function stripped(){ var r2={}; for(var k in rec){ if(k!=='signature_data') r2[k]=rec[k]; } return r2; }
+    // Newer fields live in columns that may not exist yet on a database where
+    // the matching SQL has not been run. Drop them one at a time and retry, so
+    // a booking is never lost just because a column is missing — losing the
+    // shirt size costs nothing, losing the booking costs a customer.
+    var OPTIONAL = ['signature_data', 'shirt_size'];
+    function without(drop){
+      var r2 = {}; for (var k in rec){ if (drop.indexOf(k) < 0) r2[k] = rec[k]; } return r2;
+    }
+    function attempt(i){
+      var dropped = OPTIONAL.slice(0, i);
+      var payload = dropped.length ? without(dropped) : rec;
+      function retry(){ if (i < OPTIONAL.length) attempt(i + 1); }
+      try {
+        client.from('reformer_registrations').insert([payload]).then(function(res){
+          if (res && res.error) retry();
+        }, retry);
+      } catch(e){ retry(); }
+    }
     try {
-      client.from('reformer_registrations').insert([rec]).then(function(res){
-        if(res && res.error && rec.signature_data){ try{ client.from('reformer_registrations').insert([stripped()]).then(function(){},function(){}); }catch(e){} }
-      }, function(){
-        if(rec.signature_data){ try{ client.from('reformer_registrations').insert([stripped()]).then(function(){},function(){}); }catch(e){} }
-      });
+      attempt(0);
     } catch(e){}
   };
 
@@ -6871,6 +6884,7 @@ document.addEventListener('DOMContentLoaded', function(){
       <div class="rf-chosen">Booking: <strong id="hw-chosen-label"></strong> &middot; <a id="hw-change-time" role="button" tabindex="0">change time</a></div>
       <div class="rf-field"><label for="hw-name">Full name</label><input type="text" id="hw-name" autocomplete="name" placeholder="Your name"></div>
       <div class="rf-field"><label for="hw-email">Email</label><input type="email" id="hw-email" autocomplete="email" placeholder="you@email.com"></div>
+      <div class="rf-field"><label for="hw-shirt">What size shirt are you in a long sleeve?</label><select id="hw-shirt" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:9px;font-family:'Jost',sans-serif;font-size:.92rem;background:#fff;color:#2c1a0e;"><option value="">Select a size&hellip;</option><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>2XL</option><option>3XL</option></select></div>
       <div class="rf-field"><label for="hw-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="hw-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
       <div class="rf-field"><label for="hw-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="hw-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:9px;font-family:'Jost',sans-serif;font-size:.92rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
       <div class="rf-ack">
@@ -6973,6 +6987,7 @@ document.addEventListener('DOMContentLoaded', function(){
       chosenLabelEl=document.getElementById('hw-chosen-label'),
       nameEl=document.getElementById('hw-name'), emailEl=document.getElementById('hw-email'),
       refEl=document.getElementById('hw-referral'), healthEl=document.getElementById('hw-health'),
+      shirtEl=document.getElementById('hw-shirt'),
       refundEl=document.getElementById('hw-refund'), waiverEl=document.getElementById('hw-waiver'),
       signEl=document.getElementById('hw-sign'), formErr=document.getElementById('hw-form-err'),
       continueBtn=document.getElementById('hw-continue'),
@@ -7043,6 +7058,7 @@ document.addEventListener('DOMContentLoaded', function(){
     if(!refundEl.checked){ formErr.textContent='Please confirm you understand the refund policy.'; return; }
     if(!waiverEl.checked){ formErr.textContent='Please open and agree to the liability waiver.'; return; }
     if(sign.length<2){ formErr.textContent='Please type your full name to sign.'; signEl.focus(); return; }
+    if(shirtEl && !shirtEl.value){ formErr.textContent='Please choose your long sleeve shirt size.'; shirtEl.focus(); return; }
     if(hwSig.isEmpty()){ formErr.textContent='Please draw your signature in the box.'; return; }
     formErr.textContent='';
     var nowIso=new Date().toISOString();
@@ -7050,6 +7066,7 @@ document.addEventListener('DOMContentLoaded', function(){
       name:name, email:email, session:chosen, session_label:chosenLabel,
       referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
       signature:sign, signature_data:hwSig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:19),
+      shirt_size:(shirtEl && shirtEl.value)||null,
       refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
       waiver_agreed:true, is_paid:false, created_at:nowIso, event:HW_EVENT
     };
@@ -13608,6 +13625,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var item=document.createElement('div'); item.className='admin-sub-item';
         var badge = rec.is_paid ? '<span class="atype" style="background:#e8f5e9;color:#2e7d32;">paid</span>' : '<span class="atype" style="background:#fef9e7;color:#7a6320;">pending</span>';
         var ref = rec.referred_by ? '<br><span style="font-size:.75rem;color:#8a5a2a;">\u{1F91D} Referred by '+escapeHTML(rec.referred_by)+'</span>' : '';
+        var shirt = rec.shirt_size ? '<br><span style="font-size:.75rem;color:#5b3a8a;font-weight:600;">\u{1F455} Long sleeve: '+escapeHTML(rec.shirt_size)+'</span>' : '';
         var health = rec.health ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.78rem;color:#3d322a;white-space:pre-line;"><strong style="color:var(--gold-text);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;">\u{1FA79} Health disclosure:</strong><br>'+escapeHTML(rec.health)+'</div>' : '';
         var sig = rec.signature ? '<br><span style="font-size:.72rem;color:var(--text-muted);">\u{270D}\u{FE0F} Signed: '+escapeHTML(rec.signature)+'</span>' : '';
         var when = ''; try { when = rec.created_at ? new Date(rec.created_at).toLocaleString() : ''; } catch(e){}
@@ -13636,7 +13654,7 @@ document.addEventListener('DOMContentLoaded', function() {
           ? btn("rfAdminSetAttendance("+id+",'')",'#fdecea','#f5c6c2','var(--red)','✗ No-show')
           : btn("rfAdminSetAttendance("+id+",'noshow')",'#fff','#e0d6c4','#8a7d6b','○ No-show');
         var moveBtn = btn('rfAdminMove('+id+')','#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Move event');
-        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+shirt+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
           '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+paidBtn+timeBtn+confirmBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+winnerBtn+archiveBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
