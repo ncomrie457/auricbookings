@@ -3584,13 +3584,30 @@
             url:'https://instagram.com/nuunhydration' },
           { name:'Topicals', img:'partners/topicals.jpg?v=2',
             event:'Create & Recharge', handle:'@topicals',
-            url:'https://instagram.com/topicals' }
+            url:'https://instagram.com/topicals' },
+          // A partner can carry several photos with `imgs` instead of `img`;
+          // each becomes its own slide under that brand's name.
+          { name:"Beekeeper's Naturals",
+            imgs:[ 'partners/beekeepers-1.jpg?v=1', 'partners/beekeepers-2.jpg?v=1',
+                   'partners/beekeepers-3.jpg?v=1', 'partners/beekeepers-4.jpg?v=1' ],
+            event:'Riddim × Kompa', handle:'@beekeepers_naturals',
+            url:'https://instagram.com/beekeepers_naturals' }
         ];
+
+        // One slide per photo. A partner listing several photos appears several
+        // times, each slide carrying that brand's name, event and handle.
+        var SLIDES = [];
+        PARTNERS.forEach(function(p){
+          var imgs = (p.imgs && p.imgs.length) ? p.imgs : (p.img ? [p.img] : []);
+          imgs.forEach(function(src){
+            SLIDES.push({ name:p.name, img:src, event:p.event, handle:p.handle, url:p.url });
+          });
+        });
 
         function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
 
         function initPartners(section){
-          if(!section || !PARTNERS.length || section._partnersInit) return; // stays hidden while empty
+          if(!section || !SLIDES.length || section._partnersInit) return; // stays hidden while empty
           section._partnersInit = true;
           section.hidden = false;
 
@@ -3598,7 +3615,7 @@
           var dotsWrap = section.querySelector('.bq-partners-dots');
           if(!track || !dotsWrap) return;
 
-          track.innerHTML = PARTNERS.map(function(p){
+          track.innerHTML = SLIDES.map(function(p){
             var handle = p.handle ? (p.url
               ? '<a class="bq-partners-handle" href="'+esc(p.url)+'" target="_blank" rel="noopener">'+esc(p.handle)+'</a>'
               : '<span class="bq-partners-handle">'+esc(p.handle)+'</span>') : '';
@@ -3610,8 +3627,8 @@
               + '</div></div>';
           }).join('');
 
-          var idx = 0, n = PARTNERS.length;
-          dotsWrap.innerHTML = PARTNERS.map(function(_,i){
+          var idx = 0, n = SLIDES.length;
+          dotsWrap.innerHTML = SLIDES.map(function(_,i){
             return '<button type="button" class="bq-partners-dot" role="tab" aria-label="Partner '+(i+1)+'"'+(i===0?' aria-selected="true"':'')+' data-i="'+i+'"></button>';
           }).join('');
           var dots = [].slice.call(dotsWrap.querySelectorAll('.bq-partners-dot'));
