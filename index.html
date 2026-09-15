@@ -5554,21 +5554,54 @@
         <div>
           <label for="admin-flex-reminder-event" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Event</label>
           <select id="admin-flex-reminder-event" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;box-sizing:border-box;background:#fff;color:#3d322a;">
-            <optgroup label="Upcoming events">
-              <option value="reformer">Riddim &amp; Kompa &mdash; West Hempstead (Sep 13)</option>
-              <option value="reformer-bk">Riddim &amp; Kompa &mdash; Brooklyn (Sep 26)</option>
-              <option value="halloween">Shhh&hellip; Quiet on the Creek (Oct 24)</option>
-              <option value="turkey">Turkey Burn! (Nov 21)</option>
+            <optgroup label="Upcoming events" data-when="upcoming">
+              <option value="reformer" data-event-date="2026-09-13">Riddim &amp; Kompa &mdash; West Hempstead (Sep 13)</option>
+              <option value="reformer-bk" data-event-date="2026-09-26">Riddim &amp; Kompa &mdash; Brooklyn (Sep 26)</option>
+              <option value="halloween" data-event-date="2026-10-24">Shhh&hellip; Quiet on the Creek (Oct 24)</option>
+              <option value="turkey" data-event-date="2026-11-21">Pre-Turkey Burn (Nov 21)</option>
+              <option value="turkey28" data-event-date="2026-11-28">Post-Turkey Burn (Nov 28)</option>
             </optgroup>
             <optgroup label="Interest lists">
               <option value="blooming">Something&rsquo;s Blooming (interest list)</option>
             </optgroup>
-            <optgroup label="Past events &middot; archive">
-              <option value="pilates">Pilates x Niara (Jun 19)</option>
-              <option value="matchat">Mat &amp; Chat (Aug 1)</option>
-              <option value="recharge">Create &amp; Recharge (Aug 15)</option>
+            <optgroup label="Past events &middot; archive" data-when="past">
+              <option value="pilates" data-event-date="2026-06-19">Pilates x Niara (Jun 19)</option>
+              <option value="matchat" data-event-date="2026-08-01">Mat &amp; Chat (Aug 1)</option>
+              <option value="recharge" data-event-date="2026-08-15">Create &amp; Recharge (Aug 15)</option>
             </optgroup>
           </select>
+          <script>
+          /* Move each dated event into Upcoming or Past by its own date, so an
+             event drops into the archive the day after it runs and nobody has to
+             re-file it here. Upcoming reads soonest first, past most-recent first.
+             Undated entries (interest lists) are left where they are. */
+          (function(){
+            function sortReminderEvents(){
+              var sel = document.getElementById('admin-flex-reminder-event');
+              if (!sel) return;
+              var up = sel.querySelector('optgroup[data-when="upcoming"]');
+              var past = sel.querySelector('optgroup[data-when="past"]');
+              if (!up || !past) return;
+              var today = new Date(); today.setHours(0,0,0,0);
+              var dated = [];
+              [up, past].forEach(function(g){
+                [].slice.call(g.querySelectorAll('option[data-event-date]')).forEach(function(o){
+                  var d = new Date(o.getAttribute('data-event-date') + 'T00:00:00');
+                  if (!isNaN(d.getTime())) dated.push({ el:o, d:d });
+                });
+              });
+              var upcoming = dated.filter(function(x){ return x.d >= today; }).sort(function(a,b){ return a.d - b.d; });
+              var gone     = dated.filter(function(x){ return x.d <  today; }).sort(function(a,b){ return b.d - a.d; });
+              upcoming.forEach(function(x){ up.appendChild(x.el); });
+              gone.forEach(function(x){ past.appendChild(x.el); });
+              up.hidden = upcoming.length === 0;
+              // Default to the soonest upcoming event rather than whatever is first.
+              if (upcoming.length) sel.value = upcoming[0].el.value;
+            }
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sortReminderEvents);
+            else sortReminderEvents();
+          })();
+          </script>
         </div>
         <div>
           <label for="admin-flex-reminder-days" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Days until event</label>
