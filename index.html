@@ -7459,7 +7459,8 @@ document.addEventListener('DOMContentLoaded', function() {
       title:    'Create + Recharge Recap',
       date:     'August 15, 2026',
       subtitle: 'Auric × Georgina Arroyo · New York',
-      flyer:    'recharge-flyer.png?v=3',   // adds the "View The Flyer" link
+      // No flyer here on purpose: the Create & Recharge photo-gallery card
+      // carries the "View The Flyer" link, so the row doesn't show two.
       sortDate: '2026-08-15'
       // eventId omitted on purpose so this shows as its own card AND the
       // Create & Recharge photo gallery still appears separately (same as Juneteenth).
@@ -7909,9 +7910,10 @@ document.addEventListener('DOMContentLoaded', function() {
         eventId: slug,
         title:   meta.title || name,
         date:    fmtDate,
-        // With a videoPending twin the flyer link lives on that card, so the
-        // gallery card doesn't repeat it.
-        flyer:   (meta.videoPending && EVENT_PHOTO_GALLERIES[slug]) ? '' : flyer,
+        // The "View The Flyer" link always belongs to the photo-gallery card,
+        // never the video or "Recap Coming Soon" card beside it, so every past
+        // event shows it in the same place — under the photos.
+        flyer:   flyer,
         soldOut: !!meta.soldOut,
         description: meta.description || '',
         pendingText: meta.pendingText || '',
@@ -7926,7 +7928,7 @@ document.addEventListener('DOMContentLoaded', function() {
           eventId: slug,
           title:   meta.title || name,
           date:    fmtDate,
-          flyer:   flyer,
+          flyer:   '',   // the gallery card carries the flyer link, not this one
           soldOut: !!meta.soldOut,
           description: '',
           pendingText: meta.pendingText || '',
