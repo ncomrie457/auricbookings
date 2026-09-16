@@ -12482,6 +12482,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var RF_TMPL_WL_OPEN    = 'template_2oft3ms';  // Riddim & Kompa — waitlist "3 PM just opened" (RIDDIM_KOMPA_3PM_WAITLIST_TEMPLATE) — sent via Resend
   var RF_BK_TMPL_CONFIRM = 'template_pq0dq1h';  // Riddim & Kompa — Brooklyn confirmation (RIDDIM_KOMPA_BROOKLYN_CONFIRMATION_TEMPLATE.html) — sent via Resend
   var RF_TMPL_THANKYOU = 'template_xu6b9xo';   // Riddim & Kompa post-event thank-you (RIDDIM_KOMPA_MESI_ANPIL_TEMPLATE.html) — sent via Resend
+  var RF_TMPL_FOLLOWUP = 'template_iqc9e68';   // Riddim & Kompa Sep 13 FOLLOW-UP — the reminders send (Google review, Wellhub at Valley Studio, prize winners must redeem). Goes out days after the thank-you, to the same attended list. — sent via Resend
   var RF_TMPL_DAYOF    = 'template_pdfnmgu';   // "The Day Is Here" day-of email for Sep 13 (EMAIL_DAY_IS_HERE_RIDDIM.html). NOTE: currently shares the confirmation template id.
   var RF_TMPL_WINNER   = 'template_hajk0et';   // 4-class prize winner (EMAIL_PRIZE_WINNER_4CLASS.html) — sent via Resend
   var RF_HW_TMPL_CONFIRM  = 'template_hhjwepr';   // Halloween "Shhh… Quiet on the Creek" payment confirmation (HALLOWEEN_CREEK_CONFIRMATION_TEMPLATE.html) — sent via Resend
@@ -13358,7 +13359,8 @@ document.addEventListener('DOMContentLoaded', function() {
       block.innerHTML = '<h3 style="color:var(--gold-text);">Riddim &amp; Kompa on the Reformer — Sep 13th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(1 PM '+paid1+'/6 · 2 PM '+paid2+'/6 · 3 PM '+paid3+'/6)</span></h3>';
       block.innerHTML += '<button onclick="rfSendDayOf(this)" style="margin:.1rem .35rem .7rem 0;background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F4E3} Send “The Day Is Here” ('+paid+' paid) — morning of</button>';
       block.innerHTML += '<button onclick="rfSendWinnerEmail(\'valley\', this)" style="margin:.1rem .35rem .7rem 0;background:#fbf3e2;border:1px solid #e6d3a8;color:#9a6535;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F39F}\u{FE0F} Send 4-class winner email ('+win+')</button>';
-      block.innerHTML += '<button onclick="rfSendThankYou(\'valley\', this)" style="margin:.1rem 0 .7rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F33A} Send Mèsi Anpil thank-you ('+att+' attended) — after the event</button>';
+      block.innerHTML += '<button onclick="rfSendThankYou(\'valley\', this)" style="margin:.1rem .35rem .7rem 0;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F33A} Send Mèsi Anpil thank-you ('+att+' attended) — after the event</button>';
+      block.innerHTML += '<button onclick="rfSendFollowUp(this)" style="margin:.1rem 0 .7rem;background:#eaf6f0;border:1px solid #a9d9c2;color:#1f6b4c;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F4EC} Send follow-up reminders ('+att+' attended) — review, Wellhub, winners</button>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
@@ -14205,7 +14207,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     sendNext(0);
   };
-  window.rfSendThankYou = function(which, triggerBtn){
+  // mode 'followup' sends the Sep 13 reminders email instead of the thank-you.
+  // Same recipients either way: only people marked "✓ Attended".
+  window.rfSendThankYou = function(which, triggerBtn, mode){
     var all = Object.keys(rfRosterById).map(function(k){ return rfRosterById[k]; });
     var recips = all.filter(function(r){
       // Only people actually marked "✓ Attended" — not everyone who paid.
@@ -14221,32 +14225,37 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     var isHalloween = (which==='halloween');
     var isTurkey = (which==='turkey');
-    var thankTmpl = isHalloween ? RF_HW_TMPL_THANKYOU : isTurkey ? RF_TB_TMPL_THANKYOU : RF_TMPL_THANKYOU;
-    var thankVar = isHalloween ? 'RF_HW_TMPL_THANKYOU' : isTurkey ? 'RF_TB_TMPL_THANKYOU' : 'RF_TMPL_THANKYOU';
+    var isFollowUp = (mode==='followup');
+    var kind = isFollowUp ? 'follow-up' : 'thank-you';
+    var thankTmpl = isFollowUp ? RF_TMPL_FOLLOWUP : isHalloween ? RF_HW_TMPL_THANKYOU : isTurkey ? RF_TB_TMPL_THANKYOU : RF_TMPL_THANKYOU;
+    var thankVar = isFollowUp ? 'RF_TMPL_FOLLOWUP' : isHalloween ? 'RF_HW_TMPL_THANKYOU' : isTurkey ? 'RF_TB_TMPL_THANKYOU' : 'RF_TMPL_THANKYOU';
     var eventLabel = isHalloween ? 'Shhh… Quiet on the Creek' : isTurkey ? 'Turkey Burn!' : 'Riddim & Kompa';
     var where = (isHalloween||isTurkey) ? 'Valley Studio' : (which==='bk') ? 'Brooklyn' : 'West Hempstead';
-    if(!recips.length){ alert('Nobody is marked "✓ Attended" for '+eventLabel+' — '+where+' yet.\n\nTap "✓ Attended" on everyone who showed up first, then send. That way the thank-you only goes to people who actually came.'); return; }
+    if(!recips.length){ alert('Nobody is marked "✓ Attended" for '+eventLabel+' — '+where+' yet.\n\nTap "✓ Attended" on everyone who showed up first, then send. That way the '+kind+' only goes to people who actually came.'); return; }
     if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
     if(thankTmpl.indexOf('REPLACE')!==-1){ alert('Set '+thankVar+' to your real EmailJS template id first.'); return; }
-    if(!confirm('Send the '+eventLabel+' thank-you to '+recips.length+' attendee(s) — '+where+'?\n\n(Only people marked "✓ Attended". Sends through Resend.)')) return;
+    if(!confirm('Send the '+eventLabel+' '+kind+' to '+recips.length+' attendee(s) — '+where+'?\n\n(Only people marked "✓ Attended". Sends through Resend.)')) return;
     var btn = triggerBtn; var originalText = btn ? btn.textContent : '';
     if(btn){ btn.disabled=true; }
     var sent=0, failed=0, failedRecipients=[];
     function sendNext(i){
       if(i>=recips.length){
         if(btn){ btn.disabled=false; btn.textContent=originalText; }
-        var msg='✅ Sent '+sent+' '+eventLabel+' thank-you email(s).';
+        var msg='✅ Sent '+sent+' '+eventLabel+' '+kind+' email(s).';
         if(failed>0){ msg+='\n\n⚠️ '+failed+' failed: '+failedRecipients.join(', ')+'\n\nCheck EmailJS Dashboard → History.'; }
         alert(msg); return;
       }
       var rec=recips[i];
       if(btn){ btn.textContent='Sending... ('+(sent+failed)+'/'+recips.length+')'; }
       emailjs.send(EMAILJS_SERVICE_RESEND, thankTmpl, { from_name: rec.name, to_email: rec.email })
-        .then(function(){ sent++; }).catch(function(err){ failed++; failedRecipients.push(rec.email); console.error('[rf thank-you] FAILED for '+rec.email, err); })
+        .then(function(){ sent++; }).catch(function(err){ failed++; failedRecipients.push(rec.email); console.error('[rf '+kind+'] FAILED for '+rec.email, err); })
         .then(function(){ setTimeout(function(){ sendNext(i+1); }, 600); });
     }
     sendNext(0);
   };
+  // Sep 13 follow-up: the reminders email (Google review, Wellhub, prize
+  // winners). Same attended list as the thank-you, different template.
+  window.rfSendFollowUp = function(triggerBtn){ window.rfSendThankYou('valley', triggerBtn, 'followup'); };
   window.crAdminWaiverPDF = function(code){
     getCRData(function(data){
       var p = (data.cr1||[]).find(function(r){ return r.code===code; });
