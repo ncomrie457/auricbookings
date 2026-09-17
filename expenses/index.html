@@ -126,6 +126,11 @@
           <input type="checkbox" id="f-deductible" checked>
           <label for="f-deductible">Tax-deductible business expense</label>
         </div>
+        <div class="row-check" id="f-repeat-row" style="flex-wrap:wrap;">
+          <input type="checkbox" id="f-repeat">
+          <label for="f-repeat">Recurring monthly (subscription) &mdash; also add it for every month through</label>
+          <input type="month" id="f-repeat-until" style="width:auto;" disabled>
+        </div>
         <div class="actions">
           <button type="submit" class="btn" id="f-submit">Add expense</button>
           <button type="button" class="btn ghost" id="f-cancel" style="display:none;">Cancel edit</button>
@@ -143,6 +148,7 @@
     <!-- Filters + list -->
     <div class="filters">
       <div class="f"><label>Year</label><select id="flt-year"></select></div>
+      <div class="f"><label>Month</label><select id="flt-month"></select></div>
       <div class="f"><label>Category</label><select id="flt-cat"></select></div>
       <div class="spacer"></div>
       <button class="btn secondary" id="btn-csv">&#8681; Export CSV</button>
@@ -175,9 +181,11 @@
       'Software & Fees','Marketing / Ads','Merch & Supplies','Legal & Registration',
       'Travel / Mileage','Contractors / Instructors','Meals','Other'];
     var METHODS = ['Card','Bank / ACH','Cash','PayPal / Venmo','Zelle','Other'];
+    var MONTHS  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
     var gate=document.getElementById('gate'), app=document.getElementById('app');
     var rows=[];            // all expenses (owner sees all)
+    var statusBase='';      // "N expenses · updated <time>", before the in-view tally
     var editingId=null;     // when editing an existing row
 
     // ---- auth ----
@@ -211,6 +219,8 @@
     fillSelect(document.getElementById('f-category'), CATEGORIES, false);
     fillSelect(document.getElementById('f-method'), METHODS, false);
     fillSelect(document.getElementById('flt-cat'), CATEGORIES, true);
+    document.getElementById('flt-month').innerHTML='<option value="">All months</option>'+
+      MONTHS.map(function(name,i){ return '<option value="'+String(i+1).padStart(2,'0')+'">'+name+'</option>'; }).join('');
 
     // ---- load ----
     function init(){
@@ -225,8 +235,8 @@
           if(res && res.error){ st.textContent='Could not load expenses. Make sure the setup SQL has been run.'; return; }
           rows = res.data || [];
           buildYearFilter();
+          statusBase = rows.length + (rows.length===1?' expense':' expenses') + ' · updated '+new Date().toLocaleTimeString();
           render();
-          st.textContent = rows.length + (rows.length===1?' expense':' expenses') + ' · updated '+new Date().toLocaleTimeString();
         }, function(){ st.textContent='Could not load expenses.'; });
     }
 
@@ -239,19 +249,32 @@
     }
 
     function currentFilter(){
-      return { year:document.getElementById('flt-year').value, cat:document.getElementById('flt-cat').value };
+      return { year:document.getElementById('flt-year').value,
+               month:document.getElementById('flt-month').value,
+               cat:document.getElementById('flt-cat').value };
     }
     function filtered(){
       var f=currentFilter();
       return rows.filter(function(r){
         if(f.year && (!r.spent_on || r.spent_on.slice(0,4)!==f.year)) return false;
+        if(f.month && (!r.spent_on || r.spent_on.slice(5,7)!==f.month)) return false;
         if(f.cat && r.category!==f.cat) return false;
         return true;
       });
     }
 
     function render(){
-      renderStats(); renderBreakdown(); renderTable();
+      renderStats(); renderBreakdown(); renderTable(); renderStatus();
+    }
+
+    // "12 expenses · updated 3:42 PM · in view: 2 · $130.54"
+    function renderStatus(){
+      var f=currentFilter(), txt=statusBase;
+      if(statusBase && (f.year||f.month||f.cat)){
+        var v=filtered(), t=v.reduce(function(s,r){ return s+(Number(r.amount)||0); },0);
+        txt += ' · in view: '+v.length+' · '+money(t);
+      }
+      document.getElementById('status').textContent=txt;
     }
 
     function renderStats(){
@@ -301,8 +324,45 @@
     }
 
     document.getElementById('flt-year').addEventListener('change', render);
+    document.getElementById('flt-month').addEventListener('change', render);
     document.getElementById('flt-cat').addEventListener('change', render);
     document.getElementById('btn-refresh').addEventListener('click', load);
+
+    // ---- recurring monthly (subscriptions) ----
+    // Every month from the first charge through the chosen month, keeping the
+    // same day of the month (clamped for short months). [] if the range is empty.
+    function monthlySpan(startDate, untilYM){
+      if(!startDate || !untilYM) return [];
+      var a=startDate.split('-'), b=untilYM.split('-');
+      var y=+a[0], m=+a[1], day=+a[2], uy=+b[0], um=+b[1];
+      if(!y||!m||!day||!uy||!um) return [];
+      var out=[];
+      while((y<uy || (y===uy && m<=um)) && out.length<60){
+        var last=new Date(y, m, 0).getDate();
+        out.push({ date:y+'-'+String(m).padStart(2,'0')+'-'+String(Math.min(day,last)).padStart(2,'0'),
+                   label:MONTHS[m-1]+' '+y });
+        m++; if(m>12){ m=1; y++; }
+      }
+      return out;
+    }
+
+    function syncRepeat(){
+      var on=document.getElementById('f-repeat').checked, until=document.getElementById('f-repeat-until');
+      until.disabled=!on;
+      if(on && !until.value){
+        var d=document.getElementById('f-date').value;
+        until.value=(d?d.slice(0,4):String(new Date().getFullYear()))+'-12';  // through the end of that year
+      }
+    }
+    document.getElementById('f-repeat').addEventListener('change', syncRepeat);
+
+    // Keep the through-month sensible when the first-charge date moves.
+    document.getElementById('f-date').addEventListener('change', function(){
+      var until=document.getElementById('f-repeat-until');
+      if(!document.getElementById('f-repeat').checked) return;
+      var d=this.value;
+      if(d && (!until.value || until.value < d.slice(0,7))) until.value=d.slice(0,4)+'-12';
+    });
 
     // ---- add / edit ----
     function resetForm(){
@@ -312,6 +372,10 @@
       document.getElementById('f-cancel').style.display='none';
       document.getElementById('exp-form').reset();
       document.getElementById('f-deductible').checked=true;
+      document.getElementById('f-repeat-row').style.display='';
+      document.getElementById('f-repeat').checked=false;
+      document.getElementById('f-repeat-until').value='';
+      syncRepeat();
       document.getElementById('f-msg').textContent=''; document.getElementById('f-msg').className='formmsg';
     }
     document.getElementById('f-cancel').addEventListener('click', resetForm);
@@ -330,6 +394,8 @@
       document.getElementById('f-purpose').value=r.purpose||'';
       document.getElementById('f-notes').value=r.notes||'';
       document.getElementById('f-deductible').checked=!!r.deductible;
+      document.getElementById('f-repeat').checked=false; syncRepeat();
+      document.getElementById('f-repeat-row').style.display='none';
       document.getElementById('f-receipt').value='';
       document.getElementById('f-msg').textContent = r.receipt_path ? 'A receipt is attached. Choose a new file only if you want to replace it.' : '';
       document.getElementById('f-msg').className='formmsg';
@@ -351,20 +417,41 @@
         notes: document.getElementById('f-notes').value.trim() || null,
         deductible: document.getElementById('f-deductible').checked
       };
+
+      // A recurring subscription becomes one row per month, same amount and
+      // vendor, with the month written into the purpose so each row is easy
+      // to match to its receipt later.
+      var recs=[rec], span='';
+      if(!editingId && document.getElementById('f-repeat').checked){
+        if(!rec.spent_on){ msg.className='formmsg err'; msg.textContent='Pick the date of the first charge to repeat it monthly.'; return; }
+        var span_months=monthlySpan(rec.spent_on, document.getElementById('f-repeat-until').value);
+        if(!span_months.length){ msg.className='formmsg err'; msg.textContent='Choose a repeat-through month on or after the first charge.'; return; }
+        recs=span_months.map(function(mo){
+          var c={}; for(var k in rec) c[k]=rec[k];
+          c.spent_on=mo.date;
+          c.purpose=(rec.purpose ? rec.purpose+' — ' : '')+mo.label;
+          return c;
+        });
+        span=' ('+span_months[0].label+' – '+span_months[span_months.length-1].label+')';
+      }
+
       var file=document.getElementById('f-receipt').files[0];
       var submit=document.getElementById('f-submit'); submit.disabled=true; submit.textContent='Saving…';
 
       function afterReceipt(receiptPath){
-        if(receiptPath!==undefined) rec.receipt_path=receiptPath;
+        if(receiptPath!==undefined) recs[0].receipt_path=receiptPath;  // first month only
         var op = editingId
-          ? sb.from('business_expenses').update(rec).eq('id', editingId)
-          : sb.from('business_expenses').insert([rec]);
+          ? sb.from('business_expenses').update(recs[0]).eq('id', editingId)
+          : sb.from('business_expenses').insert(recs);
         op.then(function(res){
           submit.disabled=false; submit.textContent = editingId ? 'Save changes' : 'Add expense';
           if(res && res.error){ msg.className='formmsg err'; msg.textContent='Could not save: '+res.error.message; return; }
-          var wasEdit=!!editingId;
+          var wasEdit=!!editingId, added=recs.length;
           resetForm();
-          msg.className='formmsg ok'; msg.textContent = wasEdit ? 'Saved.' : 'Expense added.';
+          msg.className='formmsg ok';
+          msg.textContent = wasEdit ? 'Saved.'
+            : (added>1 ? 'Added '+added+' monthly expenses'+span+'. Use Edit on a month to attach its receipt.'
+                       : 'Expense added.');
           load();
         }, function(){ submit.disabled=false; submit.textContent=editingId?'Save changes':'Add expense'; msg.className='formmsg err'; msg.textContent='Could not save. Try again.'; });
       }
