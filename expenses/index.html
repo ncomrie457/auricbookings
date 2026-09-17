@@ -148,6 +148,7 @@
     <!-- Filters + list -->
     <div class="filters">
       <div class="f"><label>Year</label><select id="flt-year"></select></div>
+      <div class="f"><label>Month</label><select id="flt-month"></select></div>
       <div class="f"><label>Category</label><select id="flt-cat"></select></div>
       <div class="spacer"></div>
       <button class="btn secondary" id="btn-csv">&#8681; Export CSV</button>
@@ -180,9 +181,11 @@
       'Software & Fees','Marketing / Ads','Merch & Supplies','Legal & Registration',
       'Travel / Mileage','Contractors / Instructors','Meals','Other'];
     var METHODS = ['Card','Bank / ACH','Cash','PayPal / Venmo','Zelle','Other'];
+    var MONTHS  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
     var gate=document.getElementById('gate'), app=document.getElementById('app');
     var rows=[];            // all expenses (owner sees all)
+    var statusBase='';      // "N expenses · updated <time>", before the in-view tally
     var editingId=null;     // when editing an existing row
 
     // ---- auth ----
@@ -216,6 +219,8 @@
     fillSelect(document.getElementById('f-category'), CATEGORIES, false);
     fillSelect(document.getElementById('f-method'), METHODS, false);
     fillSelect(document.getElementById('flt-cat'), CATEGORIES, true);
+    document.getElementById('flt-month').innerHTML='<option value="">All months</option>'+
+      MONTHS.map(function(name,i){ return '<option value="'+String(i+1).padStart(2,'0')+'">'+name+'</option>'; }).join('');
 
     // ---- load ----
     function init(){
@@ -230,8 +235,8 @@
           if(res && res.error){ st.textContent='Could not load expenses. Make sure the setup SQL has been run.'; return; }
           rows = res.data || [];
           buildYearFilter();
+          statusBase = rows.length + (rows.length===1?' expense':' expenses') + ' · updated '+new Date().toLocaleTimeString();
           render();
-          st.textContent = rows.length + (rows.length===1?' expense':' expenses') + ' · updated '+new Date().toLocaleTimeString();
         }, function(){ st.textContent='Could not load expenses.'; });
     }
 
@@ -244,19 +249,32 @@
     }
 
     function currentFilter(){
-      return { year:document.getElementById('flt-year').value, cat:document.getElementById('flt-cat').value };
+      return { year:document.getElementById('flt-year').value,
+               month:document.getElementById('flt-month').value,
+               cat:document.getElementById('flt-cat').value };
     }
     function filtered(){
       var f=currentFilter();
       return rows.filter(function(r){
         if(f.year && (!r.spent_on || r.spent_on.slice(0,4)!==f.year)) return false;
+        if(f.month && (!r.spent_on || r.spent_on.slice(5,7)!==f.month)) return false;
         if(f.cat && r.category!==f.cat) return false;
         return true;
       });
     }
 
     function render(){
-      renderStats(); renderBreakdown(); renderTable();
+      renderStats(); renderBreakdown(); renderTable(); renderStatus();
+    }
+
+    // "12 expenses · updated 3:42 PM · in view: 2 · $130.54"
+    function renderStatus(){
+      var f=currentFilter(), txt=statusBase;
+      if(statusBase && (f.year||f.month||f.cat)){
+        var v=filtered(), t=v.reduce(function(s,r){ return s+(Number(r.amount)||0); },0);
+        txt += ' · in view: '+v.length+' · '+money(t);
+      }
+      document.getElementById('status').textContent=txt;
     }
 
     function renderStats(){
@@ -306,12 +324,11 @@
     }
 
     document.getElementById('flt-year').addEventListener('change', render);
+    document.getElementById('flt-month').addEventListener('change', render);
     document.getElementById('flt-cat').addEventListener('change', render);
     document.getElementById('btn-refresh').addEventListener('click', load);
 
     // ---- recurring monthly (subscriptions) ----
-    var MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
     // Every month from the first charge through the chosen month, keeping the
     // same day of the month (clamped for short months). [] if the range is empty.
     function monthlySpan(startDate, untilYM){
