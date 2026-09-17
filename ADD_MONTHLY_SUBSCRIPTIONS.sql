@@ -5,13 +5,12 @@
 --  charge already has a line waiting for its receipt. Attach the receipt
 --  in the tracker (Edit → Receipt) as each month's charge posts.
 --
---  BEFORE YOU RUN, edit the five values in the "params" block below:
---    · first_month / last_month — the months to create (default: Sep–Dec 2026)
---    · bill_day                 — the day of the month the card is charged
---    · emailjs_monthly          — your EmailJS monthly charge
---    · claude_monthly           — your Claude subscription monthly charge
---  Leave an amount at 0.00 if you'd rather type it in the tracker when the
---  receipt arrives — the row is still created, just with a $0 placeholder.
+--  As set up below it creates, for Sep–Dec 2026:
+--    · EmailJS            $20.66 / month
+--    · Anthropic (Claude) $109.88 / month
+--  Both dated the 1st. Change any of the five values in the "params" block
+--  if the amounts, the billing day, or the months are different — e.g. set
+--  first_month back to an earlier month if those months are missing too.
 --
 --  Safe to re-run: a vendor that already has a row in a given month is
 --  skipped, so nothing gets doubled up.
@@ -24,8 +23,8 @@ with params as (
     date '2026-09-01' as first_month,      -- ← first month to create
     date '2026-12-01' as last_month,       -- ← last month to create
     1                 as bill_day,         -- ← day of month you're charged
-    0.00::numeric     as emailjs_monthly,  -- ← EmailJS per month
-    0.00::numeric     as claude_monthly    -- ← Claude subscription per month
+    20.66::numeric    as emailjs_monthly,  -- ← EmailJS per month
+    109.88::numeric   as claude_monthly    -- ← Claude subscription per month
 ),
 months as (
   select generate_series(p.first_month, p.last_month, interval '1 month')::date as m, p.*
