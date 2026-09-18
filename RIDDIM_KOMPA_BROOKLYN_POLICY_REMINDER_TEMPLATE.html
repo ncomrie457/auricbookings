@@ -13,8 +13,13 @@
      A quick note before Saturday — plans changed? ✦ Auric Movement
 
    EmailJS variables:
-     {{from_name}}   — first name  (the only one, so this can go out
-                       through the same send code as the thank-you)
+     {{from_name}}     — first name
+     {{arrival_time}}  — e.g. 11:55 AM   (per session: 11:55 / 12:55 / 1:55)
+     {{class_time}}    — e.g. 12:00 PM   (per session: 12:00 / 1:00 / 2:00)
+
+   NOTE: because this one is personalised per session, whatever sends it
+   has to pass arrival_time and class_time — the thank-you send path only
+   passes from_name.
   ════════════════════════════════════════════════════════════
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -62,11 +67,31 @@
           <td style="padding:34px 42px 6px;">
             <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:24px;color:#5A3A1A;margin:0 0 14px 0;">Hi {{from_name}} &mdash;</p>
             <p style="font-family:Georgia,serif;font-size:16px;line-height:1.75;color:#3a2c1e;margin:0 0 14px 0;">
-              Saturday is nearly here, and I can&rsquo;t wait to move with you at <strong>Maison Luxe Wellness Pilates</strong> in Brooklyn. Your session time and arrival time are in your confirmation email &mdash; it&rsquo;s worth a quick look before the day.
+              Saturday is nearly here, and I can&rsquo;t wait to move with you at <strong>Maison Luxe Wellness Pilates</strong> in Brooklyn. Here are your times, so they&rsquo;re in front of you:
             </p>
             <p style="font-family:Georgia,serif;font-size:16px;line-height:1.75;color:#3a2c1e;margin:0;">
               One thing I want to say plainly, because it matters more here than at a big studio: <strong>if something comes up and you can&rsquo;t make it, please tell me at least 48 hours before your session.</strong>
             </p>
+          </td>
+        </tr>
+
+        <!-- Your session -->
+        <tr>
+          <td style="padding:20px 42px 6px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border-left:3px solid #c79a54;border-radius:0 8px 8px 0;">
+              <tr>
+                <td style="padding:20px 24px;">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:12px;">Your Session</div>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;width:120px;"><strong>Date:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">Saturday, September 26th</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Arrival:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{arrival_time}}</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Class starts:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{class_time}}</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;vertical-align:top;"><strong>Location:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.55;">Maison Luxe Wellness Pilates<br>958 Lafayette Ave<br>Brooklyn, NY 11221</td></tr>
+                  </table>
+                  <p style="font-family:Georgia,serif;font-size:13px;color:#7a6650;line-height:1.65;margin:14px 0 0 0;font-style:italic;">&#9200; Please arrive at {{arrival_time}}. Class starts at {{class_time}} with a 5-minute grace period only &mdash; late arrivals can&rsquo;t be admitted.</p>
+                </td>
+              </tr>
+            </table>
           </td>
         </tr>
 
@@ -110,7 +135,7 @@
 
                   <p style="font-family:Georgia,serif;font-size:15px;line-height:1.7;color:#3d322a;margin:0;">
                     <strong>Inside 48 hours, or a no-show.</strong><br>
-                    Those aren&rsquo;t eligible for a credit &mdash; by then the spot can&rsquo;t realistically be filled. All sales are final and there are no cash refunds either way.
+                    These aren&rsquo;t eligible for a credit &mdash; by then the spot can&rsquo;t realistically be filled. I do hold to this, and it&rsquo;s the policy you agreed to at booking. All sales are final; there are no cash refunds either way.
                   </p>
                 </td>
               </tr>
@@ -136,7 +161,7 @@
         <tr>
           <td style="padding:0 42px 30px;">
             <p style="font-family:Georgia,serif;font-size:15px;color:#3a2c1e;line-height:1.75;margin:0 0 10px 0;">
-              None of this is me being rigid &mdash; it&rsquo;s a small room, and I&rsquo;d rather someone else get to dance than have a reformer sit empty. If you&rsquo;re coming: bring grip socks, comfy clothes you can move in, and your good vibes. Everything else is provided.
+              None of this is me being difficult &mdash; it&rsquo;s a small room, and I&rsquo;d rather someone else get the opportunity to attend than have a reformer sit empty. So if your plans shift, just tell me early and I&rsquo;ll take care of you.
             </p>
             <p style="font-family:Georgia,serif;font-size:15px;color:#3a2c1e;line-height:1.75;margin:0 0 10px 0;">See you Saturday. &#127470;&#127474;&#127469;&#127481;</p>
             <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:20px;color:#5A3A1A;margin:0;">&mdash; Niara</p>
