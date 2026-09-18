@@ -12476,6 +12476,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var RF_TMPL_CONFIRM    = 'template_pdfnmgu';
   var RF_TMPL_WL_OPEN    = 'template_2oft3ms';  // Riddim & Kompa — waitlist "3 PM just opened" (RIDDIM_KOMPA_3PM_WAITLIST_TEMPLATE) — sent via Resend
   var RF_BK_TMPL_CONFIRM = 'template_pq0dq1h';  // Riddim & Kompa — Brooklyn confirmation (RIDDIM_KOMPA_BROOKLYN_CONFIRMATION_TEMPLATE.html) — sent via Resend
+  var RF_BK_TMPL_POLICY  = 'REPLACE_WITH_TEMPLATE_ID';  // Riddim & Kompa — Brooklyn pre-event cancellation/credit/transfer reminder (RIDDIM_KOMPA_BROOKLYN_POLICY_REMINDER_TEMPLATE.html). Create it in EmailJS, paste the id here to enable the button. — sent via Resend
   var RF_TMPL_THANKYOU = 'template_xu6b9xo';   // Riddim & Kompa post-event thank-you (RIDDIM_KOMPA_MESI_ANPIL_TEMPLATE.html) — sent via Resend
   var RF_TMPL_FOLLOWUP = 'template_iqc9e68';   // Riddim & Kompa Sep 13 FOLLOW-UP — the reminders send (Google review, Wellhub at Valley Studio, prize winners must redeem). Goes out days after the thank-you, to the same attended list. — sent via Resend
   var RF_TMPL_DAYOF    = 'template_pdfnmgu';   // "The Day Is Here" day-of email for Sep 13 (EMAIL_DAY_IS_HERE_RIDDIM.html). NOTE: currently shares the confirmation template id.
@@ -13436,6 +13437,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var paid = display.filter(function(r){ return r.is_paid; }).length;
       var att = display.filter(function(r){ return r.attendance==='attended'; }).length;
       block.innerHTML = '<h3 style="color:var(--gold-text);">Riddim &amp; Kompa — Brooklyn · Sep 26th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(12 PM '+pd.bk12+'/'+CAP+' · 1 PM '+pd.bk1+'/'+CAP+' · 2 PM '+pd.bk2+'/'+CAP+')</span></h3>';
+      block.innerHTML += '<button onclick="rfSendBkPolicy(this)" style="margin:.1rem .35rem .7rem 0;background:#fbf3e2;border:1px solid #e6d3a8;color:#9a6535;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F4CB} Send policy reminder ('+paid+' paid) — before the event</button>';
       block.innerHTML += '<button onclick="rfSendThankYou(\'bk\', this)" style="margin:.1rem 0 .7rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.4rem .85rem;font-size:.78rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F33A} Send Mèsi Anpil thank-you ('+att+' attended) — after the event</button>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
@@ -14195,6 +14197,39 @@ document.addEventListener('DOMContentLoaded', function() {
       var sess = RF_ADMIN_SESS[rec.session] || RF_ADMIN_SESS['1pm'];
       emailjs.send(EMAILJS_SERVICE_RESEND, RF_TMPL_DAYOF, { from_name: rec.name, to_email: rec.email, arrival_time: sess.arrival, class_time: sess.time })
         .then(function(){ sent++; }).catch(function(err){ failed++; failedRecipients.push(rec.email); console.error('[rf day-of] FAILED for '+rec.email, err); })
+        .then(function(){ setTimeout(function(){ sendNext(i+1); }, 600); });
+    }
+    sendNext(0);
+  };
+  // Brooklyn pre-event reminder: the 48-hour cancellation window, the 6-month
+  // credit and friend transfers. Each person gets their own arrival + class
+  // time, so it has to go per-session — send it before the 48-hour mark.
+  window.rfSendBkPolicy = function(triggerBtn){
+    var all = Object.keys(rfRosterById).map(function(k){ return rfRosterById[k]; });
+    var recips = all.filter(function(r){
+      return r && r.is_paid && r.event === 'riddim-kompa-brooklyn-2026-09-26'
+        && r.type !== 'waitlist' && !r.archived
+        && r.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(r.email);
+    });
+    if(!recips.length){ alert('No paid Brooklyn registrants to email yet.'); return; }
+    if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
+    if(RF_BK_TMPL_POLICY.indexOf('REPLACE')!==-1){ alert('Set RF_BK_TMPL_POLICY to your EmailJS template id first (create it from RIDDIM_KOMPA_BROOKLYN_POLICY_REMINDER_TEMPLATE.html).'); return; }
+    if(!confirm('Send the cancellation & transfer reminder to '+recips.length+' paid Brooklyn registrant(s)?\n\nEach one gets their own arrival + class time.\n\n(Sends through Resend — best about a week out, while there is still time to cancel inside the 48-hour window.)')) return;
+    var btn = triggerBtn, originalText = btn ? btn.textContent : '';
+    if(btn){ btn.disabled=true; }
+    var sent=0, failed=0, failedRecipients=[];
+    function sendNext(i){
+      if(i>=recips.length){
+        if(btn){ btn.disabled=false; btn.textContent=originalText; }
+        var msg='✅ Sent '+sent+' policy reminder(s).';
+        if(failed>0){ msg+='\n\n⚠️ '+failed+' failed: '+failedRecipients.join(', ')+'\n\nCheck EmailJS Dashboard → History.'; }
+        alert(msg); return;
+      }
+      var rec=recips[i];
+      if(btn){ btn.textContent='Sending... ('+(sent+failed)+'/'+recips.length+')'; }
+      var sess = RF_ADMIN_SESS[rec.session] || RF_ADMIN_SESS['bk12'];
+      emailjs.send(EMAILJS_SERVICE_RESEND, RF_BK_TMPL_POLICY, { from_name: rec.name, to_email: rec.email, arrival_time: sess.arrival, class_time: sess.time })
+        .then(function(){ sent++; }).catch(function(err){ failed++; failedRecipients.push(rec.email); console.error('[rf bk policy] FAILED for '+rec.email, err); })
         .then(function(){ setTimeout(function(){ sendNext(i+1); }, 600); });
     }
     sendNext(0);
