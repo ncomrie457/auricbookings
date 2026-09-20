@@ -12484,11 +12484,10 @@ document.addEventListener('DOMContentLoaded', function() {
   var RF_BK_TMPL_CONFIRM = 'template_pq0dq1h';  // Riddim & Kompa — Brooklyn confirmation (RIDDIM_KOMPA_BROOKLYN_CONFIRMATION_TEMPLATE.html) — sent via Resend
   var RF_BK_TMPL_POLICY  = 'template_7mtoiwi';  // Riddim x Kompa — Brooklyn pre-event cancellation/credit/transfer reminder (RIDDIM_KOMPA_BROOKLYN_POLICY_REMINDER_TEMPLATE.html) — sent via Resend
   var RF_TMPL_THANKYOU = 'template_xu6b9xo';   // Riddim & Kompa post-event thank-you (RIDDIM_KOMPA_MESI_ANPIL_TEMPLATE.html) — sent via Resend
-  var RF_TMPL_FOLLOWUP = 'template_iqc9e68';
-  // Brooklyn gets its own thank-you. Until Niara creates it this points at
-  // the shared Mesi Anpil template, so Brooklyn sends keep working; swap in
-  // the new EmailJS id here and nothing else needs touching.
-  var RF_BK_TMPL_THANKYOU = RF_TMPL_THANKYOU;   // Riddim & Kompa Sep 13 FOLLOW-UP — the reminders send (Google review, Wellhub at Valley Studio, prize winners must redeem). Goes out days after the thank-you, to the same attended list. — sent via Resend
+  var RF_TMPL_FOLLOWUP = 'template_iqc9e68';   // Riddim & Kompa Sep 13 FOLLOW-UP — the reminders send (Google review, Wellhub at Valley Studio, prize winners must redeem). Goes out days after the thank-you, to the same attended list. — sent via Resend
+  // Brooklyn has its own thank-you rather than sharing the Mesi Anpil one:
+  // different studio, different tag, and it leads with the next Brooklyn date.
+  var RF_BK_TMPL_THANKYOU = 'template_p5n3p19';   // RIDDIM_KOMPA_BROOKLYN_THANKYOU_TEMPLATE.html — sent via Resend
   var RF_TMPL_DAYOF    = 'template_pdfnmgu';   // "The Day Is Here" day-of email for Sep 13 (EMAIL_DAY_IS_HERE_RIDDIM.html). NOTE: currently shares the confirmation template id.
   var RF_TMPL_WINNER   = 'template_hajk0et';   // 4-class prize winner (EMAIL_PRIZE_WINNER_4CLASS.html) — sent via Resend
   var RF_HW_TMPL_CONFIRM  = 'template_hhjwepr';   // Halloween "Shhh… Quiet on the Creek" payment confirmation (HALLOWEEN_CREEK_CONFIRMATION_TEMPLATE.html) — sent via Resend
