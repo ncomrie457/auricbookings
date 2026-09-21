@@ -5066,6 +5066,36 @@
       <div id="admin-waitlist-body"><div style="color:var(--text-muted);font-size:.85rem;">Loading&hellip;</div></div>
     </div>
 
+
+    <!-- Waitlist — Custom Notify: pick the event and session, write the message. -->
+    <div id="admin-wlcustom-section" style="margin-top:1.5rem;padding:1.25rem;background:#fbf3e2;border:1px solid #e6d3a8;border-radius:12px;">
+      <h3 style="font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#9a6535;margin-bottom:.4rem;">&#9997;&#65039; Waitlist &mdash; Custom Notify</h3>
+      <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:.85rem;line-height:1.5;">Tell one event&rsquo;s waitlist that a spot opened, in your own words. Pick the session so only the right people hear about it.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
+        <div>
+          <label for="wlc-event" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Event</label>
+          <select id="wlc-event" onchange="wlcOnEventChange()" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;">
+            <option value="riddim-kompa-brooklyn-2026-09-26">Riddim &amp; Kompa &mdash; Brooklyn (Sep 26)</option>
+            <option value="halloween-creek-2026-10-24">Shhh&hellip; Quiet on the Creek (Oct 24)</option>
+            <option value="turkey-burn-2026-11-21">Pre-Turkey Burn (Nov 21)</option>
+            <option value="turkey-burn-2026-11-28">Post-Turkey Burn (Nov 28)</option>
+            <option value="riddim-kompa-reformer-2026-09-13">Riddim &amp; Kompa &mdash; West Hempstead (Sep 13)</option>
+          </select>
+        </div>
+        <div>
+          <label for="wlc-session" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Session</label>
+          <select id="wlc-session" onchange="wlcRefreshCount()" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;"></select>
+        </div>
+      </div>
+      <label for="wlc-msg" style="display:block;font-size:.78rem;color:var(--brown);font-weight:600;margin-bottom:.3rem;">Message</label>
+      <textarea id="wlc-msg" rows="7" style="width:100%;padding:.6rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'Jost',sans-serif;font-size:.85rem;line-height:1.6;resize:vertical;"></textarea>
+      <p style="font-size:.72rem;color:var(--text-muted);margin:.4rem 0 .8rem;line-height:1.5;">Their first name, the event date and the session time are added automatically &mdash; just write the body.</p>
+      <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;">
+        <button type="button" id="wlc-send" onclick="wlcSend(this)" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:8px;padding:.5rem 1rem;font-size:.85rem;cursor:pointer;font-family:'Jost',sans-serif;font-weight:600;">&#128233; Send to waitlist</button>
+        <span id="wlc-count" style="font-size:.8rem;color:var(--text-muted);"></span>
+      </div>
+    </div>
+
     <div id="admin-club-section" style="display:none;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);">
       <h3 style="color:var(--gold-text);margin:0 0 .75rem;">&#10022; Auric Club Members</h3>
       <div id="admin-club-body"></div>
@@ -12509,10 +12539,10 @@ document.addEventListener('DOMContentLoaded', function() {
       slab:{ 'bk12':'12:00 PM session','bk1':'1:00 PM session','bk2':'2:00 PM session' },
       links:{ 'bk12':'https://buy.stripe.com/6oU14m20W5mxbkwdMS9sk0a','bk1':'https://buy.stripe.com/9B6cN44949CN60c9wC9sk08','bk2':'https://buy.stripe.com/5kQ8wO350g1b2O0eQW9sk0b' } },
     'halloween-creek-2026-10-24': { name:'Shhh… Quiet on the Creek — Halloween Reformer', date:'Saturday, October 24', loc:'Valley Studio, West Hempstead NY', amount:'$45.00',
-      slab:{ 'hw1230':'12:30 PM session','hw130':'1:30 PM session' },
+      slab:{ 'hw1230':'12:30 PM session','hw130':'1:35 PM session' },
       links:{ 'hw1230':'https://buy.stripe.com/5kQdR835016h1JWdMS9sk0e','hw130':'https://buy.stripe.com/fZu5kCeNI8yJbkw24a9sk0f' } },
     'turkey-burn-2026-11-21': { name:'Turkey Burn! on the Reformer', date:'Saturday, November 21', loc:'Valley Studio, West Hempstead NY', amount:'$45.00',
-      slab:{ 'tb1230':'12:30 PM session','tb130':'1:30 PM session' },
+      slab:{ 'tb1230':'12:30 PM session','tb130':'1:35 PM session' },
       links:{ 'tb1230':'https://buy.stripe.com/eVq5kC20Wg1b0FS38e9sk0d','tb130':'https://buy.stripe.com/6oU9ASfRM8yJcoA4ci9sk0c' } }
   };
   // Send the generic payment-pending reminder to one reformer registrant, auto-filling their event's Stripe link.
@@ -13236,7 +13266,7 @@ document.addEventListener('DOMContentLoaded', function() {
     return '';
   }
   window.markFoundingSent = function(email,ev,sess){ _foundingSent[foundingKey(email,ev,sess)] = true; try { localStorage.setItem('auric_founding_sent', JSON.stringify(_foundingSent)); } catch(e){} if(typeof rfRefresh==='function') rfRefresh(); };
-  function rfRefresh(){ if(rfAdminContainer) renderReformerSection(rfAdminContainer); if(rfBkAdminContainer) renderReformerBkSection(rfBkAdminContainer); if(rfTbAdminContainer) renderReformerTbSection(rfTbAdminContainer); if(rfTb28AdminContainer) renderReformerTb28Section(rfTb28AdminContainer); if(rfHwAdminContainer) renderReformerHwSection(rfHwAdminContainer); if(rfArchivedContainer) renderReformerArchivedSection(rfArchivedContainer); populateReturningGuests(); }
+  function rfRefresh(){ if(rfAdminContainer) renderReformerSection(rfAdminContainer); if(rfBkAdminContainer) renderReformerBkSection(rfBkAdminContainer); if(rfTbAdminContainer) renderReformerTbSection(rfTbAdminContainer); if(rfTb28AdminContainer) renderReformerTb28Section(rfTb28AdminContainer); if(rfHwAdminContainer) renderReformerHwSection(rfHwAdminContainer); if(rfArchivedContainer) renderReformerArchivedSection(rfArchivedContainer); populateReturningGuests();  wlcInit(); }
 
   // Fill the "Returning guest" picker in Manual Add with everyone who has
   // attended a reformer class (deduped by email). Picking one auto-fills the
@@ -13319,6 +13349,112 @@ document.addEventListener('DOMContentLoaded', function() {
     return wrap;
   }
 
+  // ── Waitlist — Custom Notify ─────────────────────────────────────────
+  // The older rfNotifyWaitlist is hardcoded to Sept 13's 3 PM session and
+  // sends that event's template, so it cannot be used for anything else.
+  // This lets Niara pick the event and session and write the message, and
+  // reuses the custom-reminder template, which already carries a free-text body.
+  function wlcSessions(dbEvent){
+    var ev = RF_PAY[dbEvent] || {};
+    return ev.slab || {};
+  }
+  function wlcEventLabel(dbEvent){
+    var ev = RF_PAY[dbEvent] || {};
+    return ev.name || dbEvent;
+  }
+  // Everyone waiting on this event, optionally narrowed to one session.
+  function wlcRecipients(){
+    var dbEvent = (document.getElementById('wlc-event') || {}).value;
+    var sess    = (document.getElementById('wlc-session') || {}).value;
+    var seen = {}, out = [];
+    Object.keys(rfRosterById).forEach(function(k){
+      var r = rfRosterById[k];
+      if (!r || r.type !== 'waitlist' || r.event !== dbEvent) return;
+      if (sess && sess !== '*' && r.session !== sess) return;
+      if (!(r.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(r.email))) return;
+      var e = r.email.toLowerCase(); if (seen[e]) return; seen[e] = 1;
+      out.push(r);
+    });
+    return out;
+  }
+  window.wlcOnEventChange = function(){
+    var dbEvent = document.getElementById('wlc-event').value;
+    var slab = wlcSessions(dbEvent);
+    var sel = document.getElementById('wlc-session');
+    var opts = ['<option value="*">Every session</option>'];
+    Object.keys(slab).forEach(function(k){
+      opts.push('<option value="' + k + '">' + escapeHTML(slab[k]) + '</option>');
+    });
+    sel.innerHTML = opts.join('');
+    wlcRefreshCount();
+  };
+  window.wlcRefreshCount = function(){
+    var n = wlcRecipients().length;
+    var sel = document.getElementById('wlc-session');
+    var label = sel && sel.value !== '*' ? sel.options[sel.selectedIndex].text : 'this event';
+    var el = document.getElementById('wlc-count');
+    if (el) el.textContent = n
+      ? (n + ' waiting on ' + label)
+      : ('Nobody is waiting on ' + label + ' yet.');
+    // Prefill a sensible message the first time, so there is something to edit.
+    var ta = document.getElementById('wlc-msg');
+    if (ta && !ta.value.trim() && !ta.dataset.touched){
+      var dbEvent = document.getElementById('wlc-event').value;
+      ta.value =
+        'A spot just opened in the ' + (sel && sel.value !== '*' ? sel.options[sel.selectedIndex].text : 'class') +
+        ' for ' + wlcEventLabel(dbEvent) + '.\n\n' +
+        "You're on the waitlist, so you're hearing before it goes back out publicly.\n\n" +
+        "If you want it, reply to this email and I'll send you the payment link. " +
+        "It's one spot, so it goes to whoever replies first.\n\n" +
+        "If someone beats you to it, stay on the list — there's always a next one.";
+    }
+    if (ta && !ta.dataset.bound){
+      ta.dataset.bound = '1';
+      ta.addEventListener('input', function(){ ta.dataset.touched = '1'; });
+    }
+  };
+  window.wlcSend = function(btn){
+    var list = wlcRecipients();
+    var msg  = (document.getElementById('wlc-msg').value || '').trim();
+    var sel  = document.getElementById('wlc-session');
+    var dbEvent = document.getElementById('wlc-event').value;
+    var sessLabel = (sel && sel.value !== '*') ? sel.options[sel.selectedIndex].text : '';
+    var ev = RF_PAY[dbEvent] || {};
+
+    if (!list.length){ alert('Nobody is on that waitlist with a valid email yet.'); return; }
+    if (!msg){ alert('Write the message first.'); return; }
+    if (typeof emailjs === 'undefined'){ alert('EmailJS not loaded.'); return; }
+    if (!confirm('Send this to ' + list.length + ' person/people waiting on ' +
+                 wlcEventLabel(dbEvent) + (sessLabel ? ' · ' + sessLabel : '') + '?')) return;
+
+    var original = btn.textContent; btn.disabled = true;
+    var sent = 0, failed = 0, failedList = [];
+    (function next(i){
+      if (i >= list.length){
+        btn.disabled = false; btn.textContent = original;
+        alert('✅ Sent ' + sent + ' waitlist email(s).' +
+              (failed ? ('\n\n⚠️ ' + failed + ' failed: ' + failedList.join(', ')) : ''));
+        return;
+      }
+      var r = list[i];
+      btn.textContent = 'Sending... (' + (sent + failed) + '/' + list.length + ')';
+      emailjs.send(EMAILJS_SERVICE_RESEND, TMPL_REMINDER_WEEK, {
+        from_name:      r.name || 'there',
+        to_email:       r.email,
+        session_label:  sessLabel || (r.session_label || ''),
+        event_date:     ev.date || '',
+        arrival_time:   '',
+        class_time:     '',
+        question_block: '',
+        greeting:       'Hi ' + (((r.name || '').trim().split(/\s+/)[0]) || 'there') + ',',
+        days_text:      '',
+        custom_message: msg
+      }).then(function(){ sent++; }, function(err){
+        failed++; failedList.push(r.email); console.error('[waitlist custom] failed for ' + r.email, err);
+      }).then(function(){ setTimeout(function(){ next(i + 1); }, 700); });
+    })(0);
+  };
+
   // Email everyone on a reformer waitlist that a spot opened (sequential — 1s
   // apart to respect send limits). Uses RF_TMPL_WL_OPEN (template_2oft3ms).
   window.rfNotifyWaitlist = function(eventId){
@@ -13347,6 +13483,11 @@ document.addEventListener('DOMContentLoaded', function() {
     })(0);
   };
 
+  // Once the roster is loaded, fill the custom-waitlist dropdowns and count.
+  function wlcInit(){
+    try { if (document.getElementById('wlc-event') && window.wlcOnEventChange) window.wlcOnEventChange(); } catch(e){}
+  }
+  try { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(wlcInit, 1200); }); else setTimeout(wlcInit, 1200); } catch(e){}
   function renderReformerSection(container){
     if(!container) return;
     rfAdminContainer = container;
@@ -13595,7 +13736,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
       block.appendChild(rfWaitlistBlock(rows, 'turkey-burn-2026-11-21'));
-      var SLAB = { 'tb1230':'12:30 PM','tb130':'1:30 PM' }; var _curSess=null, _curSessBlock=null;
+      var SLAB = { 'tb1230':'12:30 PM','tb130':'1:35 PM' }; var _curSess=null, _curSessBlock=null;
       _rfMarkFirst(display);
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
@@ -13616,7 +13757,7 @@ document.addEventListener('DOMContentLoaded', function() {
           if(rec.session===sess){ return '<span style="display:inline-block;background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;font-family:\'Jost\',sans-serif;">'+label+' ✓</span>'; }
           return btn("rfAdminSetSession("+id+",'"+sess+"')",'#f4ecdd','#e0cfae','#7a5a2a','→ '+label);
         }
-        var timeBtn = timeOpt('tb1230','12:30 PM') + timeOpt('tb130','1:30 PM');
+        var timeBtn = timeOpt('tb1230','12:30 PM') + timeOpt('tb130','1:35 PM');
         var confirmBtn = btn('rfTbAdminConfirm('+id+')','#fdeeea','#f2b8ab','#a8391f','\u{1F4E7} Confirm + email');
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
@@ -13672,7 +13813,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
       block.appendChild(rfWaitlistBlock(rows, 'halloween-creek-2026-10-24'));
-      var SLAB = { 'hw1230':'12:30 PM','hw130':'1:30 PM' }; var _curSess=null, _curSessBlock=null;
+      var SLAB = { 'hw1230':'12:30 PM','hw130':'1:35 PM' }; var _curSess=null, _curSessBlock=null;
       _rfMarkFirst(display);
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
@@ -13694,7 +13835,7 @@ document.addEventListener('DOMContentLoaded', function() {
           if(rec.session===sess){ return '<span style="display:inline-block;background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;font-family:\'Jost\',sans-serif;">'+label+' ✓</span>'; }
           return btn("rfAdminSetSession("+id+",'"+sess+"')",'#f4ecdd','#e0cfae','#7a5a2a','→ '+label);
         }
-        var timeBtn = timeOpt('hw1230','12:30 PM') + timeOpt('hw130','1:30 PM');
+        var timeBtn = timeOpt('hw1230','12:30 PM') + timeOpt('hw130','1:35 PM');
         var confirmBtn = btn('rfHwAdminConfirm('+id+')','#f3ecff','#cbb6f0','#5b3a8a','\u{1F383} Confirm + email');
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
