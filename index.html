@@ -13405,6 +13405,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
         var archiveBtn = btn('rfAdminArchive('+id+')','#eceae4','#d3ccbd','#6b6357','\u{1F5C4}\u{FE0F} Archive');
+        var creditBtn = rec.is_paid ? btn('rfCreditAndRelease('+id+')','#fbf3e2','#e6d3a8','#9a6535','\u{1F3AB} Credit &amp; release') : '';
         var _att = rec.attendance || '';
         var attendBtn = (_att==='attended')
           ? btn("rfAdminSetAttendance("+id+",'')",'#e8f5e9','#a5d6a7','#2e7d32','✓ Attended')
@@ -13418,7 +13419,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var moveBtn = btn('rfAdminMove('+id+')','#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Move event');
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
-          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+winnerBtn+archiveBtn+removeBtn+'</div></div>';
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+winnerBtn+creditBtn+archiveBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
       });
     }
@@ -13485,6 +13486,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
         var archiveBtn = btn('rfAdminArchive('+id+')','#eceae4','#d3ccbd','#6b6357','\u{1F5C4}\u{FE0F} Archive');
+        var creditBtn = rec.is_paid ? btn('rfCreditAndRelease('+id+')','#fbf3e2','#e6d3a8','#9a6535','\u{1F3AB} Credit &amp; release') : '';
         var _att = rec.attendance || '';
         var attendBtn = (_att==='attended')
           ? btn("rfAdminSetAttendance("+id+",'')",'#e8f5e9','#a5d6a7','#2e7d32','✓ Attended')
@@ -13495,7 +13497,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var moveBtn = btn('rfAdminMove('+id+')','#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Move event');
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
-          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+archiveBtn+removeBtn+'</div></div>';
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+creditBtn+archiveBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
       });
     }
@@ -13544,6 +13546,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var clearHealthBtn = rec.health ? btn('rfAdminClearHealth('+id+')','#fef4e5','#f0c890','#a86617','\u{1FA79} Clear health') : '';
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
         var archiveBtn = btn('rfAdminArchive('+id+')','#eceae4','#d3ccbd','#6b6357','\u{1F5C4}\u{FE0F} Archive');
+        var creditBtn = rec.is_paid ? btn('rfCreditAndRelease('+id+')','#fbf3e2','#e6d3a8','#9a6535','\u{1F3AB} Credit &amp; release') : '';
         var _att = rec.attendance || '';
         var attendBtn = (_att==='attended')
           ? btn("rfAdminSetAttendance("+id+",'')",'#e8f5e9','#a5d6a7','#2e7d32','✓ Attended')
@@ -13556,7 +13559,7 @@ document.addEventListener('DOMContentLoaded', function() {
           : btn("rfAdminSetAttendance("+id+",'noshow')",'#fff','#e0d6c4','#8a7d6b','○ No-show');
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">12:30 PM</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
-          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+paidBtn+waiverBtn+clearHealthBtn+attendBtn+noShowBtn+winnerBtn+archiveBtn+removeBtn+'</div></div>';
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+paidBtn+waiverBtn+clearHealthBtn+attendBtn+noShowBtn+winnerBtn+creditBtn+archiveBtn+removeBtn+'</div></div>';
         block.appendChild(item);
       });
     }
@@ -13618,6 +13621,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
         var archiveBtn = btn('rfAdminArchive('+id+')','#eceae4','#d3ccbd','#6b6357','\u{1F5C4}\u{FE0F} Archive');
+        var creditBtn = rec.is_paid ? btn('rfCreditAndRelease('+id+')','#fbf3e2','#e6d3a8','#9a6535','\u{1F3AB} Credit &amp; release') : '';
         var _att = rec.attendance || '';
         var attendBtn = (_att==='attended')
           ? btn("rfAdminSetAttendance("+id+",'')",'#e8f5e9','#a5d6a7','#2e7d32','✓ Attended')
@@ -13631,7 +13635,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var moveBtn = btn('rfAdminMove('+id+')','#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Move event');
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
-          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+winnerBtn+archiveBtn+removeBtn+'</div></div>';
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+winnerBtn+creditBtn+archiveBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
       });
     }
@@ -13695,6 +13699,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
         var archiveBtn = btn('rfAdminArchive('+id+')','#eceae4','#d3ccbd','#6b6357','\u{1F5C4}\u{FE0F} Archive');
+        var creditBtn = rec.is_paid ? btn('rfCreditAndRelease('+id+')','#fbf3e2','#e6d3a8','#9a6535','\u{1F3AB} Credit &amp; release') : '';
         var _att = rec.attendance || '';
         var attendBtn = (_att==='attended')
           ? btn("rfAdminSetAttendance("+id+",'')",'#e8f5e9','#a5d6a7','#2e7d32','✓ Attended')
@@ -13708,7 +13713,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var moveBtn = btn('rfAdminMove('+id+')','#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Move event');
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+shirt+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
-          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+paidBtn+timeBtn+confirmBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+winnerBtn+archiveBtn+removeBtn+'</div></div>';
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+paidBtn+timeBtn+confirmBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+winnerBtn+creditBtn+archiveBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
       });
     }
@@ -13962,6 +13967,50 @@ document.addEventListener('DOMContentLoaded', function() {
     supabase.rpc('reformer_archive', { pass: ADMIN_PASSWORD, rid: id, val: false })
       .then(function(res){ if(res&&res.error){ alert('Could not unarchive — run the reformer_archive SQL (REFORMER_ARCHIVE.sql) first.'); return; } rfRefresh(); },
             function(){ alert('Could not unarchive. Try again.'); });
+  };
+  // Someone cancelled in time: turn their paid booking into a credit and
+  // free the seat, in one step.
+  //
+  // The credit is written FIRST and the seat is only released if that
+  // succeeded. Releasing first would risk freeing the spot while the record
+  // of what she owes them silently failed to save.
+  window.rfCreditAndRelease = function(id){
+    var rec = rfRosterById[id];
+    if (!rec){ alert('Could not find that booking.'); return; }
+    var ev = RF_PAY[rec.event] || {};
+    var amount = null;
+    if (ev.amount){ var n = Number(String(ev.amount).replace(/[^0-9.]/g, '')); if (!isNaN(n)) amount = n; }
+    var label = ev.name || rec.event || 'a previous event';
+
+    if (!confirm(
+      'Give ' + rec.name + ' a credit and free their spot?\n\n' +
+      'Credit: ' + (amount ? ('$' + amount.toFixed(2)) : 'one class') + '\n' +
+      'From: ' + label + '\n\n' +
+      'They will be marked unpaid and archived, which reopens the session for the next person.'
+    )) return;
+
+    supabase.rpc('auric_credit_add', {
+      pass: ADMIN_PASSWORD, p_name: rec.name, p_email: rec.email,
+      p_amount: amount, p_from: label, p_note: 'Cancelled in time', p_expires: null
+    }).then(function(res){
+      if (res && res.error){
+        alert('The credit could not be saved, so nothing was changed.\n\nRun AURIC_CREDITS.sql in Supabase first, then try again.');
+        return;
+      }
+      // Credit is safely recorded — now release the seat.
+      supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: false }).then(function(r2){
+        var freed = !(r2 && r2.error);
+        supabase.rpc('reformer_archive', { pass: ADMIN_PASSWORD, rid: id, val: true }).then(function(){
+          alert(freed
+            ? ('\u2705 Credit saved for ' + rec.name + ' and their spot is free.\n\nCheck the booking page shows the session open, then notify the waitlist.')
+            : ('\u2705 Credit saved for ' + rec.name + '.\n\n\u26A0\uFE0F Could not mark them unpaid, so the seat may still show as taken. Use "Mark unpaid" on their row.'));
+          rfRefresh();
+        }, function(){ rfRefresh(); });
+      }, function(){
+        alert('Credit saved, but the spot could not be freed. Use "Mark unpaid" on their row.');
+        rfRefresh();
+      });
+    }, function(){ alert('Could not save the credit. Nothing was changed.'); });
   };
   // Attendance — "✓ Attended" / "○ No-show" on the reformer rosters.
   // 'attended' marks feed the Auric Club (see reformer_club_marks in
