@@ -13354,6 +13354,19 @@ document.addEventListener('DOMContentLoaded', function() {
   // sends that event's template, so it cannot be used for anything else.
   // This lets Niara pick the event and session and write the message, and
   // reuses the custom-reminder template, which already carries a free-text body.
+  // Waitlist "a spot opened" email (WAITLIST_SPOT_OPEN_TEMPLATE.html).
+  var WL_OPEN_TMPL = 'template_ev8fobc';   // sent via Resend
+  // Where "Claim the spot" points. Deliberately the booking form, NOT the
+  // Stripe link: the form captures the waiver, signature, health disclosure
+  // and refund acknowledgment BEFORE payment. A raw Stripe link takes their
+  // money and leaves no record and no signed waiver.
+  var WL_BOOK_URL = {
+    'riddim-kompa-reformer-2026-09-13': 'https://book.auricmovement.com/?book=reformer',
+    'riddim-kompa-brooklyn-2026-09-26': 'https://book.auricmovement.com/?book=reformer-bk',
+    'halloween-creek-2026-10-24':       'https://book.auricmovement.com/?book=halloween',
+    'turkey-burn-2026-11-21':           'https://book.auricmovement.com/?book=turkey',
+    'turkey-burn-2026-11-28':           'https://book.auricmovement.com/?book=turkey28'
+  };
   function wlcSessions(dbEvent){
     var ev = RF_PAY[dbEvent] || {};
     return ev.slab || {};
@@ -13438,16 +13451,20 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       var r = list[i];
       btn.textContent = 'Sending... (' + (sent + failed) + '/' + list.length + ')';
-      emailjs.send(EMAILJS_SERVICE_RESEND, TMPL_REMINDER_WEEK, {
-        from_name:      r.name || 'there',
+      // Arrival comes from the session they are waiting on, or the one being
+      // offered when a single session is selected.
+      var sKey = (sel && sel.value !== '*') ? sel.value : r.session;
+      var sInfo = RF_ADMIN_SESS[sKey] || {};
+      emailjs.send(EMAILJS_SERVICE_RESEND, WL_OPEN_TMPL, {
+        from_name:      (((r.name || '').trim().split(/\s+/)[0]) || 'there'),
         to_email:       r.email,
-        session_label:  sessLabel || (r.session_label || ''),
+        event_name:     ev.name || '',
         event_date:     ev.date || '',
-        arrival_time:   '',
-        class_time:     '',
-        question_block: '',
-        greeting:       'Hi ' + (((r.name || '').trim().split(/\s+/)[0]) || 'there') + ',',
-        days_text:      '',
+        session_label:  sessLabel || (r.session_label || (ev.slab && ev.slab[sKey]) || ''),
+        location:       ev.loc || '',
+        arrival_time:   sInfo.arrival || '',
+        price:          ev.amount || '',
+        book_url:       WL_BOOK_URL[dbEvent] || 'https://book.auricmovement.com',
         custom_message: msg
       }).then(function(){ sent++; }, function(err){
         failed++; failedList.push(r.email); console.error('[waitlist custom] failed for ' + r.email, err);
