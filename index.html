@@ -13940,6 +13940,23 @@ document.addEventListener('DOMContentLoaded', function() {
     'turkey-burn-2026-11-21':'Turkey Burn! · Nov 21',
     'turkey-burn-2026-11-28':'Post-Turkey Burn · Nov 28'
   };
+  // Credits found for archived people, keyed by lowercased email. Giving
+  // someone a credit marks them unpaid (that's how the seat is freed), so
+  // without this the archive would call a paying customer a non-payer.
+  var _rfArchiveCredits = {};
+  function rfArchiveCreditFor(rec){
+    if(!rec || !rec.email) return null;
+    var hits = _rfArchiveCredits[String(rec.email).trim().toLowerCase()];
+    if(!hits || !hits.length) return null;
+    // The credit button stores the event's display name in from_event, so
+    // prefer a credit that came from THIS event over one from another.
+    var evName = (RF_PAY[rec.event] && RF_PAY[rec.event].name) || '';
+    var exact = hits.filter(function(c){
+      if(!c.from_event) return false;
+      return (evName && c.from_event === evName) || c.from_event === rec.event;
+    });
+    return exact[0] || null;
+  }
   function renderReformerArchivedSection(container){
     if(!container) return;
     rfArchivedContainer = container;
@@ -13949,7 +13966,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function render(rows, err){
       rows.forEach(function(r){ rfRosterById[r.id] = r; }); // keep addressable for unarchive/remove
       var display = rows.filter(function(r){ return r.archived; });
-      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F5C4}\u{FE0F} Archived — didn’t pay · '+display.length+'</h3>';
+      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F5C4}\u{FE0F} Archived · '+display.length+'</h3>';
       if(err){ block.innerHTML += '<div class="empty-state">Archive unavailable — run REFORMER_ARCHIVE.sql in Supabase to enable it. (Everything else still works.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">Nothing archived. Use the \u{1F5C4}\u{FE0F} Archive button on any registration to move it here (kept off the roster + counts, never deleted).</div>'; return; }
       display.sort(function(a,b){ return (a.event||'').localeCompare(b.event||'') || (a.created_at||'').localeCompare(b.created_at||''); });
@@ -13958,29 +13975,62 @@ document.addEventListener('DOMContentLoaded', function() {
         var item=document.createElement('div'); item.className='admin-sub-item';
         var evLabel = RF_EVENT_LABELS[rec.event] || rec.event || '';
         var evBadge = evLabel ? ' <span class="atype" style="background:#f0efe9;color:#6b6357;">'+escapeHTML(evLabel)+'</span>' : '';
-        // Show WHY they're in here: no-show, attended, or simply never paid.
-        var attBadge = (rec.attendance==='noshow')
-          ? ' <span class="atype" style="background:#fdecea;color:var(--red);">✗ No-show</span>'
-          : (rec.attendance==='attended')
-            ? ' <span class="atype" style="background:#e8f5e9;color:#2e7d32;">✓ Attended</span>'
-            : (rec.is_paid ? '' : ' <span class="atype" style="background:#fef9e7;color:#7a6320;">never paid</span>');
+        // Say WHY they're in here. "never paid" is the LAST resort — only when
+        // nothing else explains it — because a credit or a reschedule also
+        // leaves the row unpaid, and calling those people non-payers is wrong.
+        var credit = rfArchiveCreditFor(rec);
+        var attBadge;
+        if (rec.attendance==='noshow')            attBadge = ' <span class="atype" style="background:#fdecea;color:var(--red);">✗ No-show</span>';
+        else if (rec.attendance==='attended')     attBadge = ' <span class="atype" style="background:#e8f5e9;color:#2e7d32;">✓ Attended</span>';
+        else if (rec.attendance==='credited' || credit){
+          var amt = credit ? creditMoney(credit.amount) : '';
+          attBadge = ' <span class="atype" style="background:#fbf3e2;color:#9a6535;">\u{1F3AB} Credit'+(amt?' · '+escapeHTML(amt):'')+'</span>';
+        }
+        else if (rec.attendance==='rescheduled') attBadge = ' <span class="atype" style="background:#f0ecf9;color:#5b3a8a;">\u{21C4} Rescheduled</span>';
+        else if (rec.is_paid)                    attBadge = ' <span class="atype" style="background:#e8f5e9;color:#2e7d32;">\u{1F4B5} Paid</span>';
+        else                                     attBadge = ' <span class="atype" style="background:#fef9e7;color:#7a6320;">never paid</span>';
         var sessLabel = rec.session_label || rec.session || '';
         var when = ''; try { when = rec.created_at ? new Date(rec.created_at).toLocaleString() : ''; } catch(e){}
+        // Let her correct a wrong label herself — the site can't know a
+        // reschedule happened, and only she does.
+        var creditTag = (rec.attendance==='credited')
+          ? btn("rfAdminSetReason("+id+",'')",'#fbf3e2','#e6d3a8','#9a6535','\u{1F3AB} Credit')
+          : btn("rfAdminSetReason("+id+",'credited')",'#fff','#e0d6c4','#8a7d6b','\u{1F3AB} Mark credit');
+        var reschedTag = (rec.attendance==='rescheduled')
+          ? btn("rfAdminSetReason("+id+",'')",'#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Rescheduled')
+          : btn("rfAdminSetReason("+id+",'rescheduled')",'#fff','#e0d6c4','#8a7d6b','\u{21C4} Mark rescheduled');
         var unarchiveBtn = btn('rfAdminUnarchive('+id+')','#e8f5e9','#a5d6a7','#2e7d32','\u{21A9}\u{FE0F} Unarchive');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span>'+evBadge+attBadge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span></div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(sessLabel)+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
-          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+unarchiveBtn+removeBtn+'</div></div>';
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+creditTag+reschedTag+unarchiveBtn+removeBtn+'</div></div>';
         block.appendChild(item);
       });
     }
     container.innerHTML=''; container.appendChild(block);
+    // Load the credits first so a credited person is never labelled a
+    // non-payer. If credits aren't reachable, the roster still renders.
+    function loadRoster(){
+      try {
+        supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(res){
+          if(res && res.error){ render([], true); return; }
+          render((res && res.data) || [], false);
+        }, function(){ render([], true); });
+      } catch(e){ render([], true); }
+    }
     try {
-      supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(res){
-        if(res && res.error){ render([], true); return; }
-        render((res && res.data) || [], false);
-      }, function(){ render([], true); });
-    } catch(e){ render([], true); }
+      supabase.rpc('auric_credits_list', { pass: ADMIN_PASSWORD }).then(function(res){
+        _rfArchiveCredits = {};
+        if(res && !res.error && res.data){
+          res.data.forEach(function(c){
+            if(!c || !c.email) return;
+            var k = String(c.email).trim().toLowerCase();
+            (_rfArchiveCredits[k] = _rfArchiveCredits[k] || []).push(c);
+          });
+        }
+        loadRoster();
+      }, function(){ _rfArchiveCredits = {}; loadRoster(); });
+    } catch(e){ _rfArchiveCredits = {}; loadRoster(); }
   }
   // ─── Something's Blooming — interest list roster ───────────────────────
   var bloomRows = [];
@@ -14241,6 +14291,12 @@ document.addEventListener('DOMContentLoaded', function() {
       // Credit is safely recorded — now release the seat.
       supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: false }).then(function(r2){
         var freed = !(r2 && r2.error);
+        // Stamp WHY, so the archive shows "Credit" instead of calling someone
+        // who paid a non-payer. Best-effort: if the older SQL rejects the
+        // value, the archive still matches them to their credit by email.
+        if(!rec.attendance){
+          try { supabase.rpc('reformer_set_attendance', { pass: ADMIN_PASSWORD, rid: id, val: 'credited' }).then(function(){}, function(){}); } catch(e){}
+        }
         supabase.rpc('reformer_archive', { pass: ADMIN_PASSWORD, rid: id, val: true }).then(function(){
           alert(freed
             ? ('\u2705 Credit saved for ' + rec.name + ' and their spot is free.\n\nCheck the booking page shows the session open, then notify the waitlist.')
@@ -14260,6 +14316,21 @@ document.addEventListener('DOMContentLoaded', function() {
     supabase.rpc('reformer_set_attendance', { pass: ADMIN_PASSWORD, rid: id, val: val || '' })
       .then(function(res){ if(res&&res.error){ alert('Could not save attendance — run REFORMER_ATTENDANCE.sql in Supabase first.'); return; } rfRefresh(); },
             function(){ alert('Could not save attendance. Try again.'); });
+  };
+  // Why an archived person is archived — 'credited', 'rescheduled', or '' to
+  // clear. Stored in the same column as the attendance mark (they're mutually
+  // exclusive: someone who cancelled didn't attend), so it survives a reload
+  // and a new phone. Needs REFORMER_ARCHIVE_REASON.sql, which widens the
+  // setter to accept these two values.
+  window.rfAdminSetReason = function(id, val){
+    supabase.rpc('reformer_set_attendance', { pass: ADMIN_PASSWORD, rid: id, val: val || '' })
+      .then(function(res){
+        if(res && res.error){
+          alert('Could not save that label.\n\nRun REFORMER_ARCHIVE_REASON.sql in Supabase once, then try again.');
+          return;
+        }
+        rfRefresh();
+      }, function(){ alert('Could not save that label. Try again.'); });
   };
   // Auric Club — give a reformer attendee half a mark for referring a friend.
   // The other events tag admin_notes by code; reformer rows are keyed by id,
