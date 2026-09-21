@@ -14388,6 +14388,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // phone and still tell you months later what you promised.
   var CREDIT_TMPL = 'REPLACE_CREDIT_TMPL';   // AURIC_CREDIT_TEMPLATE.html — paste the EmailJS id here
   var _creditRows = [];
+  var _creditPeople = [];   // roster, so a credit can be picked instead of typed
 
   function creditEsc(s){ return escapeHTML(String(s == null ? '' : s)); }
   function creditMoney(a){
@@ -14419,7 +14420,14 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
       _creditRows = (res && res.data) || [];
-      creditsPaint(el);
+      // Pull the roster so the form can offer a dropdown. If this fails the
+      // tab still works — the name and email fields are always typable.
+      sb.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(r2){
+        _creditPeople = (r2 && !r2.error && r2.data) ? r2.data.filter(function(r){
+          return r && r.type !== 'waitlist' && r.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(r.email);
+        }) : [];
+        creditsPaint(el);
+      }, function(){ _creditPeople = []; creditsPaint(el); });
     }, function(){
       el.innerHTML = '<div class="empty-state">Could not load credits. Check your connection.</div>';
     });
@@ -14433,6 +14441,20 @@ document.addEventListener('DOMContentLoaded', function() {
     var form =
       '<div style="background:#fbf3e2;border:1px solid #e6d3a8;border-radius:10px;padding:1rem;margin-bottom:1.25rem;">' +
         '<h3 style="color:#9a6535;margin:0 0 .6rem;font-size:.82rem;letter-spacing:1px;text-transform:uppercase;">Issue a credit</h3>' +
+        (_creditPeople.length
+          ? '<div style="margin-bottom:.7rem;">' +
+              '<label style="font-size:.72rem;color:var(--text-muted);">Pick from a roster<br>' +
+                '<select id="cr-pick" onchange="creditPickPerson()" style="padding:.4rem .5rem;border:1px solid #e0cfae;border-radius:6px;font-size:.82rem;max-width:100%;min-width:320px;font-family:\'Jost\',sans-serif;">' +
+                  '<option value="">&mdash; type it in below instead &mdash;</option>' +
+                  _creditPeople.map(function(r, i){
+                    var ev = (RF_PAY[r.event] && RF_PAY[r.event].name) || r.event || '';
+                    var sess = r.session_label || r.session || '';
+                    return '<option value="' + i + '">' + creditEsc(r.name) + ' \u00b7 ' + creditEsc(ev) + (sess ? ' (' + creditEsc(sess) + ')' : '') + (r.archived ? ' \u2014 archived' : '') + '</option>';
+                  }).join('') +
+                '</select>' +
+              '</label>' +
+            '</div>'
+          : '') +
         '<div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end;">' +
           '<label style="font-size:.72rem;color:var(--text-muted);">Name<br><input id="cr-new-name" type="text" style="padding:.4rem .5rem;border:1px solid #e0cfae;border-radius:6px;font-size:.82rem;width:150px;"></label>' +
           '<label style="font-size:.72rem;color:var(--text-muted);">Email<br><input id="cr-new-email" type="email" style="padding:.4rem .5rem;border:1px solid #e0cfae;border-radius:6px;font-size:.82rem;width:200px;"></label>' +
@@ -14486,6 +14508,20 @@ document.addEventListener('DOMContentLoaded', function() {
     '</div>';
   }
 
+  // Picking someone fills the form from their booking. Everything stays
+  // editable afterwards — this is a shortcut, not a lock.
+  window.creditPickPerson = function(){
+    var sel = document.getElementById('cr-pick'); if (!sel) return;
+    var r = _creditPeople[Number(sel.value)];
+    if (!r) return;
+    var ev = RF_PAY[r.event] || {};
+    var amt = '';
+    if (ev.amount){ var n = Number(String(ev.amount).replace(/[^0-9.]/g, '')); if (!isNaN(n)) amt = String(n); }
+    document.getElementById('cr-new-name').value   = r.name || '';
+    document.getElementById('cr-new-email').value  = r.email || '';
+    document.getElementById('cr-new-amount').value = amt;
+    document.getElementById('cr-new-from').value   = ev.name || r.event || '';
+  };
   window.creditAdd = function(){
     var name  = (document.getElementById('cr-new-name').value || '').trim();
     var email = (document.getElementById('cr-new-email').value || '').trim();
@@ -14500,7 +14536,7 @@ document.addEventListener('DOMContentLoaded', function() {
       p_from: from || null, p_note: null, p_expires: exp || null
     }).then(function(res){
       if (res && res.error){ alert('Could not add the credit — run AURIC_CREDITS.sql in Supabase first.'); return; }
-      window.renderCreditsAdmin();
+      window.renderCreditsAdmin();   // repaints, which clears the form and the picker
     }, function(){ alert('Could not add the credit. Try again.'); });
   };
 
