@@ -4988,6 +4988,7 @@
       <button type="button" class="admin-tab" data-tab="addevent">&#128197; Add Event</button>
       <button type="button" class="admin-tab" data-tab="lists">&#128279; Lists &amp; Agreements</button>
       <button type="button" class="admin-tab" data-tab="recog">&#127991;&#65039; Recognition</button>
+      <button type="button" class="admin-tab" data-tab="credits">&#127915; Credits</button>
     </nav>
     <div id="admin-tab-rosters" class="admin-tabpanel"></div>
     <div id="admin-tab-reminders" class="admin-tabpanel" hidden></div>
@@ -4995,6 +4996,7 @@
     <div id="admin-tab-addevent" class="admin-tabpanel" hidden></div>
     <div id="admin-tab-lists" class="admin-tabpanel" hidden></div>
     <div id="admin-tab-recog" class="admin-tabpanel" hidden></div>
+    <div id="admin-tab-credits" class="admin-tabpanel" hidden></div>
     <script>
     (function(){
       function setup(){
@@ -5044,10 +5046,11 @@
           btn.addEventListener('click', function(){
             Array.prototype.forEach.call(nav.querySelectorAll('.admin-tab'), function(b){ b.classList.remove('active'); });
             btn.classList.add('active');
-            ['rosters','reminders','add','addevent','lists','recog'].forEach(function(t){
+            ['rosters','reminders','add','addevent','lists','recog','credits'].forEach(function(t){
               var p=document.getElementById('admin-tab-'+t); if(p) p.hidden = (t!==btn.getAttribute('data-tab'));
             });
             if(btn.getAttribute('data-tab')==='addevent' && window.renderAddEventAdmin) window.renderAddEventAdmin();
+            if(btn.getAttribute('data-tab')==='credits' && window.renderCreditsAdmin) window.renderCreditsAdmin();
           });
         });
       }
@@ -14329,6 +14332,171 @@ document.addEventListener('DOMContentLoaded', function() {
   // Sep 13 follow-up: the reminders email (Google review, Wellhub, prize
   // winners). Same attended list as the thank-you, different template.
   window.rfSendFollowUp = function(triggerBtn){ window.rfSendThankYou('valley', triggerBtn, 'followup'); };
+  // ── Credits ──────────────────────────────────────────────────────────
+  // Someone who cancels inside the 48-hour policy is owed a credit toward a
+  // future event. That is money you owe, so it is stored in Supabase
+  // (AURIC_CREDITS.sql) rather than in a note — it has to survive a lost
+  // phone and still tell you months later what you promised.
+  var CREDIT_TMPL = 'REPLACE_CREDIT_TMPL';   // AURIC_CREDIT_TEMPLATE.html — paste the EmailJS id here
+  var _creditRows = [];
+
+  function creditEsc(s){ return escapeHTML(String(s == null ? '' : s)); }
+  function creditMoney(a){
+    if (a == null || a === '') return 'One class';
+    var n = Number(a); return isNaN(n) ? String(a) : ('$' + n.toFixed(2));
+  }
+  function creditDate(d){
+    if (!d) return '';
+    try { return new Date(d).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }); }
+    catch(e){ return String(d).slice(0,10); }
+  }
+  // A credit is "expiring" when it runs out in the next 30 days.
+  function creditExpiryNote(r){
+    if (r.redeemed_at || !r.expires_at) return '';
+    var days = Math.ceil((new Date(r.expires_at + 'T23:59:59') - new Date()) / 86400000);
+    if (days < 0)  return '<span style="color:#b03636;font-weight:600;"> · EXPIRED ' + creditDate(r.expires_at) + '</span>';
+    if (days <= 30) return '<span style="color:#a86617;font-weight:600;"> · expires in ' + days + ' day' + (days===1?'':'s') + '</span>';
+    return '<span style="color:var(--text-muted);"> · expires ' + creditDate(r.expires_at) + '</span>';
+  }
+
+  window.renderCreditsAdmin = function(){
+    var el = document.getElementById('admin-tab-credits'); if (!el) return;
+    el.innerHTML = '<div style="color:var(--text-muted);font-size:.85rem;">Loading&hellip;</div>';
+    var sb = (typeof supabase !== 'undefined') ? supabase : null;
+    if (!sb){ el.innerHTML = '<div class="empty-state">Not connected.</div>'; return; }
+    sb.rpc('auric_credits_list', { pass: ADMIN_PASSWORD }).then(function(res){
+      if (res && res.error){
+        el.innerHTML = '<div class="empty-state">Credits aren\'t set up yet &mdash; run <strong>AURIC_CREDITS.sql</strong> in Supabase, then reopen this tab.</div>';
+        return;
+      }
+      _creditRows = (res && res.data) || [];
+      creditsPaint(el);
+    }, function(){
+      el.innerHTML = '<div class="empty-state">Could not load credits. Check your connection.</div>';
+    });
+  };
+
+  function creditsPaint(el){
+    var owed = _creditRows.filter(function(r){ return !r.redeemed_at; });
+    var used = _creditRows.filter(function(r){ return  r.redeemed_at; });
+    var owedTotal = owed.reduce(function(s,r){ var n=Number(r.amount); return s + (isNaN(n)?0:n); }, 0);
+
+    var form =
+      '<div style="background:#fbf3e2;border:1px solid #e6d3a8;border-radius:10px;padding:1rem;margin-bottom:1.25rem;">' +
+        '<h3 style="color:#9a6535;margin:0 0 .6rem;font-size:.82rem;letter-spacing:1px;text-transform:uppercase;">Issue a credit</h3>' +
+        '<div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end;">' +
+          '<label style="font-size:.72rem;color:var(--text-muted);">Name<br><input id="cr-new-name" type="text" style="padding:.4rem .5rem;border:1px solid #e0cfae;border-radius:6px;font-size:.82rem;width:150px;"></label>' +
+          '<label style="font-size:.72rem;color:var(--text-muted);">Email<br><input id="cr-new-email" type="email" style="padding:.4rem .5rem;border:1px solid #e0cfae;border-radius:6px;font-size:.82rem;width:200px;"></label>' +
+          '<label style="font-size:.72rem;color:var(--text-muted);">Amount<br><input id="cr-new-amount" type="number" step="0.01" placeholder="45.00" style="padding:.4rem .5rem;border:1px solid #e0cfae;border-radius:6px;font-size:.82rem;width:90px;"></label>' +
+          '<label style="font-size:.72rem;color:var(--text-muted);">From event<br><input id="cr-new-from" type="text" placeholder="Riddim &amp; Kompa Brooklyn" style="padding:.4rem .5rem;border:1px solid #e0cfae;border-radius:6px;font-size:.82rem;width:190px;"></label>' +
+          '<label style="font-size:.72rem;color:var(--text-muted);">Expires<br><input id="cr-new-expires" type="date" style="padding:.4rem .5rem;border:1px solid #e0cfae;border-radius:6px;font-size:.82rem;"></label>' +
+          '<button type="button" onclick="creditAdd()" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.45rem .9rem;font-size:.8rem;cursor:pointer;font-family:\'Jost\',sans-serif;font-weight:600;">Add credit</button>' +
+        '</div>' +
+        '<p style="font-size:.72rem;color:var(--text-muted);margin:.6rem 0 0;line-height:1.5;">Leave Amount blank for a plain &ldquo;one class&rdquo; credit. Leave Expires blank if it never expires.</p>' +
+      '</div>';
+
+    var head =
+      '<h3 style="color:var(--gold-text);margin:0 0 .3rem;">&#127915; Credits owed &middot; ' + owed.length +
+      (owedTotal > 0 ? ' <span style="font-weight:400;text-transform:none;letter-spacing:0;">($' + owedTotal.toFixed(2) + ' outstanding)</span>' : '') +
+      '</h3>' +
+      '<p style="font-size:.76rem;color:var(--text-muted);margin:0 0 .8rem;line-height:1.5;">People who cancelled in time and are owed a spot. Mark one used once they book with it.</p>';
+
+    var owedHtml = owed.length ? owed.map(creditRow).join('') :
+      '<div class="empty-state">Nobody is owed a credit right now.</div>';
+
+    var usedHtml = used.length ?
+      '<h3 style="color:var(--text-muted);margin:1.5rem 0 .5rem;font-size:.8rem;letter-spacing:1px;text-transform:uppercase;">Already used &middot; ' + used.length + '</h3>' +
+      used.map(creditRow).join('') : '';
+
+    el.innerHTML = form + head + owedHtml + usedHtml;
+  }
+
+  function creditRow(r){
+    var done = !!r.redeemed_at;
+    var bg = done ? '#f6f4ef' : '#fff';
+    var btn = function(onclick, bgc, bd, fg, label){
+      return '<button type="button" onclick="' + onclick + '" style="background:' + bgc + ';border:1px solid ' + bd + ';color:' + fg + ';border-radius:6px;padding:.25rem .6rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;margin-left:.3rem;">' + label + '</button>';
+    };
+    return '<div style="display:flex;gap:.6rem;align-items:flex-start;background:' + bg + ';border:1px solid var(--border);border-radius:8px;padding:.7rem .85rem;margin-bottom:.5rem;' + (done ? 'opacity:.72;' : '') + '">' +
+      '<div style="flex:1;min-width:0;">' +
+        '<span style="font-weight:600;color:var(--brown);">' + creditEsc(r.name) + '</span> ' +
+        '<span style="font-size:.78rem;color:#9a6535;font-weight:600;">' + creditMoney(r.amount) + '</span>' +
+        creditExpiryNote(r) +
+        '<br><span style="font-size:.78rem;color:var(--text-muted);">' + creditEsc(r.email) + '</span>' +
+        (r.from_event ? '<br><span style="font-size:.75rem;color:var(--text-muted);">from ' + creditEsc(r.from_event) + ' &middot; issued ' + creditDate(r.issued_at) + '</span>' : '<br><span style="font-size:.75rem;color:var(--text-muted);">issued ' + creditDate(r.issued_at) + '</span>') +
+        (r.note ? '<br><span style="font-size:.75rem;color:#5a4a3a;">' + creditEsc(r.note) + '</span>' : '') +
+        (done ? '<br><span style="font-size:.75rem;color:#2e7d32;font-weight:600;">&#10003; Used ' + creditDate(r.redeemed_at) + (r.redeemed_for ? ' &middot; ' + creditEsc(r.redeemed_for) : '') + '</span>' : '') +
+      '</div>' +
+      '<div style="text-align:right;white-space:nowrap;">' +
+        (done
+          ? btn('creditRedeem(' + r.id + ',false)', '#fff', '#e0d6c4', '#8a7d6b', '&#8630; Not used')
+          : btn('creditEmail(' + r.id + ')', '#eef4fb', '#b5d4f4', '#185fa5', '&#9993;&#65039; Email them') +
+            btn('creditRedeem(' + r.id + ',true)',  '#e8f5e9', '#a5d6a7', '#2e7d32', '&#10003; Mark used')) +
+        btn('creditDelete(' + r.id + ')', '#fdecea', '#f5c6c2', 'var(--red)', '&#128465;') +
+      '</div>' +
+    '</div>';
+  }
+
+  window.creditAdd = function(){
+    var name  = (document.getElementById('cr-new-name').value || '').trim();
+    var email = (document.getElementById('cr-new-email').value || '').trim();
+    var amt   = (document.getElementById('cr-new-amount').value || '').trim();
+    var from  = (document.getElementById('cr-new-from').value || '').trim();
+    var exp   = (document.getElementById('cr-new-expires').value || '').trim();
+    if (!name || !email){ alert('Name and email are both needed.'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ alert('That email doesn\'t look right.'); return; }
+    supabase.rpc('auric_credit_add', {
+      pass: ADMIN_PASSWORD, p_name: name, p_email: email,
+      p_amount: amt === '' ? null : Number(amt),
+      p_from: from || null, p_note: null, p_expires: exp || null
+    }).then(function(res){
+      if (res && res.error){ alert('Could not add the credit — run AURIC_CREDITS.sql in Supabase first.'); return; }
+      window.renderCreditsAdmin();
+    }, function(){ alert('Could not add the credit. Try again.'); });
+  };
+
+  window.creditRedeem = function(id, used){
+    var forEvent = null;
+    if (used){
+      forEvent = prompt('Which event are they using it on? (optional)') || null;
+    }
+    supabase.rpc('auric_credit_redeem', { pass: ADMIN_PASSWORD, cid: id, used: !!used, p_for: forEvent })
+      .then(function(res){
+        if (res && res.error){ alert('Could not update that credit.'); return; }
+        window.renderCreditsAdmin();
+      }, function(){ alert('Could not update that credit. Try again.'); });
+  };
+
+  window.creditDelete = function(id){
+    var r = _creditRows.filter(function(x){ return x.id === id; })[0];
+    if (!confirm('Delete the credit for ' + (r ? r.name : 'this person') + '?\n\nThis is for one added by mistake. If they used it, mark it used instead so you keep the record.')) return;
+    supabase.rpc('auric_credit_delete', { pass: ADMIN_PASSWORD, cid: id })
+      .then(function(res){
+        if (res && res.error){ alert('Could not delete that credit.'); return; }
+        window.renderCreditsAdmin();
+      }, function(){ alert('Could not delete that credit. Try again.'); });
+  };
+
+  // Email one person their credit. Uses AURIC_CREDIT_TEMPLATE.html.
+  window.creditEmail = function(id){
+    var r = _creditRows.filter(function(x){ return x.id === id; })[0];
+    if (!r){ alert('Could not find that credit.'); return; }
+    if (typeof emailjs === 'undefined'){ alert('EmailJS not loaded.'); return; }
+    if (CREDIT_TMPL.indexOf('REPLACE') !== -1){
+      alert('Set CREDIT_TMPL to your EmailJS template id first (create it from AURIC_CREDIT_TEMPLATE.html).');
+      return;
+    }
+    if (!confirm('Email ' + r.name + ' (' + r.email + ') about their credit?')) return;
+    emailjs.send(EMAILJS_SERVICE_RESEND, CREDIT_TMPL, {
+      from_name:    r.name,
+      to_email:     r.email,
+      credit_value: creditMoney(r.amount),
+      from_event:   r.from_event || 'a previous event',
+      expires_text: r.expires_at ? ('Please use it by ' + creditDate(r.expires_at) + '.') : 'It doesn’t expire.'
+    }).then(function(){ alert('✉️ Sent to ' + r.email); },
+            function(){ alert('⚠️ Could not send. Check your EmailJS dashboard.'); });
+  };
+
   window.crAdminWaiverPDF = function(code){
     getCRData(function(data){
       var p = (data.cr1||[]).find(function(r){ return r.code===code; });

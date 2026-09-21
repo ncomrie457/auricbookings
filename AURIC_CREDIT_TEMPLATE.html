@@ -1,0 +1,126 @@
+<!--
+  ════════════════════════════════════════════════════════════
+   Auric Movement — "You have a credit" Email
+
+   Sent from the admin panel: Credits tab → "✉️ Email them".
+   ────────────────────────────────────────────────────────────
+   COPY THIS ENTIRE FILE (Cmd+A → Cmd+C) and paste into:
+     EmailJS → Email Templates → New Template →
+     switch to the "Code"/HTML view → paste over everything → Save.
+
+   Then send me the template id and I'll set CREDIT_TMPL in index.html.
+
+   Suggested EmailJS Subject:
+     You have a credit with Auric Movement ✦ {{credit_value}}
+
+   EmailJS variables used:
+     {{from_name}}     — their name
+     {{to_email}}      — their address
+     {{credit_value}}  — "$45.00", or "One class"
+     {{from_event}}    — the event they cancelled
+     {{expires_text}}  — a full sentence, either "Please use it by
+                         March 1, 2027." or "It doesn't expire."
+  ════════════════════════════════════════════════════════════
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You have a credit &mdash; Auric Movement</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,400&family=Jost:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body style="margin:0;padding:0;background-color:#f5f0e8;font-family:Georgia,'Times New Roman',serif;color:#2c2420;">
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f0e8;padding:28px 14px;">
+  <tr>
+    <td align="center">
+
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#fdfbf7;border-radius:10px;overflow:hidden;box-shadow:0 6px 30px rgba(90,58,26,0.12);max-width:600px;width:100%;">
+
+        <!-- Header -->
+        <tr>
+          <td style="padding:32px 40px 0;">
+            <div style="font-family:'Jost',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#9a6535;">Auric Movement</div>
+            <div style="border-bottom:1px solid #e8e0d5;margin-top:14px;"></div>
+          </td>
+        </tr>
+
+        <!-- Title -->
+        <tr>
+          <td style="padding:28px 40px 0;">
+            <div style="font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:40px;line-height:1.1;color:#5A3A1A;">You have a credit.</div>
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="padding:20px 40px 0;">
+            <p style="font-family:'Jost',Arial,sans-serif;font-size:16px;line-height:1.7;color:#2c2420;margin:0 0 16px 0;">
+              Hi {{from_name}},
+            </p>
+            <p style="font-family:'Jost',Arial,sans-serif;font-size:16px;line-height:1.7;color:#2c2420;margin:0 0 20px 0;">
+              This is just so you have it in writing: you have a credit with us from <strong>{{from_event}}</strong>, and it&rsquo;s waiting whenever you&rsquo;re ready.
+            </p>
+          </td>
+        </tr>
+
+        <!-- The credit -->
+        <tr>
+          <td style="padding:0 40px;">
+            <div style="background-color:#fbf3e2;border:1px solid #e6d3a8;border-radius:10px;padding:22px 24px;text-align:center;">
+              <div style="font-family:'Jost',Arial,sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#9a6535;margin-bottom:8px;">Your credit</div>
+              <div style="font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:38px;line-height:1;color:#5A3A1A;">{{credit_value}}</div>
+              <div style="font-family:'Jost',Arial,sans-serif;font-size:13px;line-height:1.6;color:#7a6e63;margin-top:10px;">Good toward any Auric Movement event. {{expires_text}}</div>
+            </div>
+          </td>
+        </tr>
+
+        <!-- How to use it -->
+        <tr>
+          <td style="padding:24px 40px 0;">
+            <p style="font-family:'Jost',Arial,sans-serif;font-size:16px;line-height:1.7;color:#2c2420;margin:0 0 8px 0;">
+              <strong>To use it:</strong> pick whichever event you want, then reply to this email and let me know which one. I&rsquo;ll hold your spot and apply the credit &mdash; you won&rsquo;t need to pay again.
+            </p>
+            <p style="margin:18px 0 0;"><a href="https://book.auricmovement.com" style="display:inline-block;background-color:#5A3A1A;color:#ffffff;font-family:'Jost',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;padding:13px 26px;border-radius:999px;">See upcoming events &rarr;</a></p>
+          </td>
+        </tr>
+
+        <!-- Sign-off -->
+        <tr>
+          <td style="padding:26px 40px 34px;">
+            <p style="font-family:'Jost',Arial,sans-serif;font-size:16px;line-height:1.7;color:#2c2420;margin:0;">
+              Thank you for letting me know in time &mdash; it meant someone on the waitlist got your spot.
+            </p>
+            <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:22px;color:#9a6535;margin:16px 0 0;">See you soon. &#10084;</p>
+            <p style="font-family:'Jost',Arial,sans-serif;font-size:15px;line-height:1.6;color:#2c2420;margin:14px 0 0;">
+              <strong style="color:#5A3A1A;">Niara</strong><br>
+              <span style="font-size:13px;color:#7a6e63;">Auric Movement LLC</span>
+            </p>
+          </td>
+        </tr>
+
+        <!-- Footer bar -->
+        <tr>
+          <td align="center" style="background-color:#5A3A1A;padding:16px 20px;">
+            <a href="https://book.auricmovement.com" style="font-family:'Jost',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#ffffff;text-decoration:none;">book.auricmovement.com</a>
+          </td>
+        </tr>
+
+      </table>
+
+    </td>
+  </tr>
+</table>
+
+<!-- This is a transactional message about a credit the recipient holds. -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#efe9dc;">
+  <tr><td align="center" style="padding:16px 24px;font-family:Georgia,'Times New Roman',serif;font-size:11px;line-height:1.7;color:#8a8172;">
+    You&rsquo;re receiving this because you hold a credit with Auric Movement.<br>
+    Questions? Just reply to this email.<br>
+    Auric Movement LLC &middot; New York, NY
+  </td></tr>
+</table>
+</body>
+</html>
