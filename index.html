@@ -14115,6 +14115,32 @@ document.addEventListener('DOMContentLoaded', function() {
   // The credit is written FIRST and the seat is only released if that
   // succeeded. Releasing first would risk freeing the spot while the record
   // of what she owes them silently failed to save.
+  // Every reformer event key carries its date, e.g.
+  // "riddim-kompa-brooklyn-2026-09-26" — so the session date needs no lookup.
+  function rfEventDateISO(eventKey){
+    var m = /(\d{4}-\d{2}-\d{2})/.exec(String(eventKey || ""));
+    return m ? m[1] : null;
+  }
+  // Add months to a YYYY-MM-DD string using plain arithmetic, never Date(),
+  // so no timezone can shift the day. Clamps to the end of the target month
+  // so 31 Aug + 6 gives 28/29 Feb rather than rolling into March.
+  function addMonthsISO(iso, months){
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
+    if (!m) return null;
+    var y = +m[1], mo = +m[2] - 1, d = +m[3];
+    var total = mo + months;
+    var ny = y + Math.floor(total / 12);
+    var nm = ((total % 12) + 12) % 12;
+    var lastDay = new Date(Date.UTC(ny, nm + 1, 0)).getUTCDate();
+    var nd = Math.min(d, lastDay);
+    var pad = function(n){ return (n < 10 ? "0" : "") + n; };
+    return ny + "-" + pad(nm + 1) + "-" + pad(nd);
+  }
+  // House rule: a credit lasts six months from the session that was missed.
+  function rfCreditExpiry(eventKey){
+    var d = rfEventDateISO(eventKey);
+    return d ? addMonthsISO(d, 6) : null;
+  }
   window.rfCreditAndRelease = function(id){
     var rec = rfRosterById[id];
     if (!rec){ alert('Could not find that booking.'); return; }
@@ -14122,17 +14148,19 @@ document.addEventListener('DOMContentLoaded', function() {
     var amount = null;
     if (ev.amount){ var n = Number(String(ev.amount).replace(/[^0-9.]/g, '')); if (!isNaN(n)) amount = n; }
     var label = ev.name || rec.event || 'a previous event';
+    var expires = rfCreditExpiry(rec.event);   // six months from the session
 
     if (!confirm(
       'Give ' + rec.name + ' a credit and free their spot?\n\n' +
       'Credit: ' + (amount ? ('$' + amount.toFixed(2)) : 'one class') + '\n' +
-      'From: ' + label + '\n\n' +
+      'From: ' + label + '\n' +
+      'Expires: ' + (expires ? creditDate(expires) + ' (6 months from the session)' : 'no expiry') + '\n\n' +
       'They will be marked unpaid and archived, which reopens the session for the next person.'
     )) return;
 
     supabase.rpc('auric_credit_add', {
       pass: ADMIN_PASSWORD, p_name: rec.name, p_email: rec.email,
-      p_amount: amount, p_from: label, p_note: 'Cancelled in time', p_expires: null
+      p_amount: amount, p_from: label, p_note: 'Cancelled in time', p_expires: expires
     }).then(function(res){
       if (res && res.error){
         alert('The credit could not be saved, so nothing was changed.\n\nRun AURIC_CREDITS.sql in Supabase first, then try again.');
@@ -14670,6 +14698,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cr-new-email').value  = r.email || '';
     document.getElementById('cr-new-amount').value = amt;
     document.getElementById('cr-new-from').value   = ev.name || r.event || '';
+    var exp = rfCreditExpiry(r.event);
+    if (exp) document.getElementById('cr-new-expires').value = exp;   // six months from the session
   };
   window.creditAdd = function(){
     var name  = (document.getElementById('cr-new-name').value || '').trim();
