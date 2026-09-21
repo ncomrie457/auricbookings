@@ -3202,6 +3202,13 @@
           var paid={}; res.data.forEach(function(r){ paid[r.session]=Number(r.paid)||0; });
           Object.keys(CFG).forEach(function(id){
             var cfg=CFG[id], rem=0;
+            // A finished event stays Sold out. Its seat counts keep moving after
+            // the fact (moving an attendee to a credit frees their seat), which
+            // would otherwise flip the pill back to "Now booking".
+            var cardEl=document.getElementById(id);
+            if(cardEl && window.auricEventOver && window.auricEventOver(cardEl.getAttribute('data-event-date'))){
+              set(id,'Sold out','sold'); return;
+            }
             cfg.sessions.forEach(function(s){ var r=cfg.cap-(paid[s]||0); rem+=(r>0?r:0); });
             if(rem<=0) set(id,'Sold out','sold');
             else if(rem<=3) set(id,'Almost sold out','warn');
@@ -6216,6 +6223,33 @@ Can't wait to move and connect with you!</textarea>
   };
   function acIso(z){ return z.replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/,'$1-$2-$3T$4:$5:$6Z'); }
   function acKeyFrom(cal){ var m=(cal||'').split('e='); return m.length>1?m[1]:cal; }
+  // Has an event's day already gone by? (Eastern/local midnight, not UTC — a
+  // date-only string parsed bare lands on UTC midnight and reads a day early.)
+  // Used to keep a finished event's booking overlay closed: seat counts keep
+  // moving after the fact (a credit releases a seat), and without this the
+  // overlay would quietly re-open a past session as "a spot left".
+  window.auricEventOver = function(dateISO){
+    if(!dateISO) return false;
+    var d = new Date(dateISO + 'T00:00:00');
+    if(isNaN(d.getTime())) return false;
+    var today = new Date(); today.setHours(0,0,0,0);
+    return d < today;
+  };
+  // If the event day has passed, stamp every time button Sold out and disable it,
+  // and drop any waitlist link — nobody books, or waits for, a class that's over.
+  // Returns true when it locked, so applyCap can skip the live count entirely.
+  window.auricLockIfPast = function(dateISO, stepTimeEl){
+    if(!stepTimeEl || !window.auricEventOver(dateISO)) return false;
+    Array.prototype.forEach.call(stepTimeEl.querySelectorAll('.rf-time'), function(btn){
+      var left=btn.querySelector('.rf-left-tag'); if(left) left.remove();
+      if(window.auricWaitlistClear) window.auricWaitlistClear(btn);
+      btn.disabled=true; btn.classList.add('rf-soldout');
+      if(!btn.querySelector('.rf-soldout-tag')){
+        var t=document.createElement('small'); t.className='rf-soldout-tag'; t.textContent='Sold out'; btn.appendChild(t);
+      }
+    });
+    return true;
+  };
   window.auricCalButtons = function(keyOrUrl){
     var key=acKeyFrom(keyOrUrl); var ev=AC_TABLE[key]; if(!ev) return '';
     var g='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(ev.t)+'&dates='+ev.s+'/'+ev.e+'&details='+encodeURIComponent(AC_DET)+'&location='+encodeURIComponent(ev.l);
@@ -6417,6 +6451,9 @@ document.addEventListener('DOMContentLoaded', function(){
   waiverEl.addEventListener('change', syncContinue);
 
   function applyCap(){
+    // Once the day has passed, stay sold out — post-event seat releases (credits)
+    // must not re-open a class that already happened.
+    if(window.auricLockIfPast && window.auricLockIfPast('2026-09-26', stepTime)) return;
     var c=sb(); if(!c) return;
     try {
       c.rpc('reformer_spot_counts').then(function(res){
@@ -6660,6 +6697,9 @@ document.addEventListener('DOMContentLoaded', function(){
   waiverEl.addEventListener('change', syncContinue);
 
   function applyCap(){
+    // Once the day has passed, stay sold out — post-event seat releases (credits)
+    // must not re-open a class that already happened.
+    if(window.auricLockIfPast && window.auricLockIfPast('2026-11-21', stepTime)) return;
     var c=sb(); if(!c) return;
     try {
       c.rpc('reformer_spot_counts').then(function(res){
@@ -7102,6 +7142,9 @@ document.addEventListener('DOMContentLoaded', function(){
   waiverEl.addEventListener('change', syncContinue);
 
   function applyCap(){
+    // Once the day has passed, stay sold out — post-event seat releases (credits)
+    // must not re-open a class that already happened.
+    if(window.auricLockIfPast && window.auricLockIfPast('2026-10-24', stepTime)) return;
     var c=sb(); if(!c) return;
     try {
       c.rpc('reformer_spot_counts').then(function(res){
@@ -7396,6 +7439,10 @@ document.addEventListener('DOMContentLoaded', function(){
 
     // ── Sold-out cap: hide a session once 6 paid bookings exist (fails OPEN) ──
     function applyCap(){
+      // Sept 13 is over. Seats keep moving after the fact — moving someone to a
+      // credit releases their seat — so without this the overlay would quietly
+      // re-open a finished session as "only 1 spot left". Leave it sold out.
+      if(window.auricLockIfPast && window.auricLockIfPast('2026-09-13', document.getElementById('rf-step-time'))) return;
       var sb=getSb(); if(!sb) return;
       try {
         // Aggregate counts only (no PII leaves the DB) via a security-definer function.
