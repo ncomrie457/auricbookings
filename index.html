@@ -14702,6 +14702,9 @@ document.addEventListener('DOMContentLoaded', function() {
         (done ? '<br><span style="font-size:.75rem;color:#2e7d32;font-weight:600;">&#10003; Used ' + creditDate(r.redeemed_at) + (r.redeemed_for ? ' &middot; ' + creditEsc(r.redeemed_for) : '') + '</span>' : '') +
       '</div>' +
       '<div style="text-align:right;white-space:nowrap;">' +
+        (!done && !r.expires_at
+          ? btn('creditSetExpiry(' + r.id + ')', '#fff4e5', '#f0c890', '#a86617', '\u{1F4C5} Set expiry')
+          : '') +
         (done
           ? btn('creditRedeem(' + r.id + ',false)', '#fff', '#e0d6c4', '#8a7d6b', '&#8630; Not used')
           : btn('creditEmail(' + r.id + ')', '#eef4fb', '#b5d4f4', '#185fa5', '&#9993;&#65039; Email them') +
@@ -14757,6 +14760,32 @@ document.addEventListener('DOMContentLoaded', function() {
         if (res && res.error){ alert('Could not update that credit.'); return; }
         window.renderCreditsAdmin();
       }, function(){ alert('Could not update that credit. Try again.'); });
+  };
+
+  // Credits issued before the six-month rule have no expiry. This sets one
+  // in place rather than re-creating the row, so the original issued date —
+  // part of the record of what was promised and when — is preserved.
+  window.creditSetExpiry = function(id){
+    var r = _creditRows.filter(function(x){ return x.id === id; })[0];
+    if (!r){ alert('Could not find that credit.'); return; }
+    var issued = String(r.issued_at || '').slice(0, 10);
+    var suggested = addMonthsISO(issued, 6) || addMonthsISO(rfTodayISO(), 6);
+    var input = prompt(
+      'Expiry date for ' + r.name + "'s credit?\n\n" +
+      'Six months from when it was issued is ' + creditDate(suggested) + '.\n' +
+      'Change it if the session was on a different date. Format: YYYY-MM-DD',
+      suggested);
+    if (!input) return;
+    input = input.trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(input)){ alert('That date needs to look like 2027-03-26.'); return; }
+    supabase.rpc('auric_credit_set_expiry', { pass: ADMIN_PASSWORD, cid: id, p_expires: input })
+      .then(function(res){
+        if (res && res.error){
+          alert('Could not set the expiry — run AURIC_CREDIT_SET_EXPIRY.sql in Supabase first.');
+          return;
+        }
+        window.renderCreditsAdmin();
+      }, function(){ alert('Could not set the expiry. Try again.'); });
   };
 
   window.creditDelete = function(id){
