@@ -3202,6 +3202,13 @@
           var paid={}; res.data.forEach(function(r){ paid[r.session]=Number(r.paid)||0; });
           Object.keys(CFG).forEach(function(id){
             var cfg=CFG[id], rem=0;
+            // A finished event stays Sold out. Its seat counts keep moving after
+            // the fact (moving an attendee to a credit frees their seat), which
+            // would otherwise flip the pill back to "Now booking".
+            var cardEl=document.getElementById(id);
+            if(cardEl && window.auricEventOver && window.auricEventOver(cardEl.getAttribute('data-event-date'))){
+              set(id,'Sold out','sold'); return;
+            }
             cfg.sessions.forEach(function(s){ var r=cfg.cap-(paid[s]||0); rem+=(r>0?r:0); });
             if(rem<=0) set(id,'Sold out','sold');
             else if(rem<=3) set(id,'Almost sold out','warn');
@@ -3490,7 +3497,8 @@
           <div>
             <div class="bq-section-eyebrow" style="margin-bottom:.5rem;">Meet the Founder</div>
             <h2 class="bq-section-title" id="bq-about-teaser-title" style="margin:0 0 1rem;">About <em>Niara</em></h2>
-            <p style="font-family:Georgia, 'Times New Roman', serif;font-size:1rem;line-height:1.8;color:#2c2420;margin:0 0 1.25rem;">I created <strong>Auric Movement</strong> to build a community where we move with intention and show up for ourselves. I started it because Pilates gave me something I wanted to share &mdash; a space where you can be fully yourself, move joyfully, and leave class thinking: <em>I was challenged. I laughed. I got the Pilates shakes. I felt welcomed and made some friends along the way.</em></p>
+            <p style="font-family:Georgia, 'Times New Roman', serif;font-size:1rem;line-height:1.8;color:#2c2420;margin:0 0 1rem;">Honestly? I&rsquo;ve always had a lot of love to give. More than I knew what to do with sometimes. Pilates gave it somewhere to go.</p>
+            <p style="font-family:Georgia, 'Times New Roman', serif;font-size:1rem;line-height:1.8;color:#2c2420;margin:0 0 1.25rem;">So I started <strong>Auric Movement</strong>. It&rsquo;s my way of pouring all that love back out: good music, a little challenge, a lot of joy, and a goodie bag because I can&rsquo;t help myself.</p>
             <a href="#tab-about" data-nav-tab="btn-about" class="bq-tab-next-link" style="display:inline-flex;align-items:center;gap:.5rem;font-family:'Jost',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-text);text-decoration:none;border-bottom:1px solid var(--gold);padding-bottom:.25rem;">Read My Full Story <span aria-hidden="true">&rarr;</span></a>
           </div>
         </div>
@@ -3725,9 +3733,11 @@
           </div>
           <div>
             <div style="font-family:Georgia, 'Times New Roman', serif;font-size:1.05rem;line-height:1.85;color:#2c2420;">
-              <p style="margin:0 0 1.25rem;">I created <strong>Auric Movement</strong> to build a community where we move with intention and show up for ourselves. I started it because Pilates gave me something I wanted to share &mdash; a space where you can be fully yourself, move joyfully, and leave class thinking: <em>I was challenged. I laughed. I got the Pilates shakes. I felt welcomed and made some friends along the way.</em></p>
-              <p style="margin:0 0 1.25rem;">Pilates has been my greatest teacher. It&rsquo;s shown me that strength isn&rsquo;t about things getting easier; it&rsquo;s about continuing to grow even when the challenge stays the same &mdash; and being kind to yourself through every movement.</p>
-              <p style="margin:0 0 1.5rem;">So I&rsquo;m here to help you move with purpose, build strength with grace, and remember that every shake, every breath is part of your journey. Plus, let&rsquo;s be honest &mdash; who doesn&rsquo;t love a goodie bag?</p>
+              <p style="margin:0 0 1.25rem;">Honestly? I&rsquo;ve always had a lot of love to give. More than I knew what to do with sometimes.</p>
+              <p style="margin:0 0 1.25rem;">Pilates gave it somewhere to go. It&rsquo;s been my greatest teacher. It taught me that strength isn&rsquo;t about things getting easier. It&rsquo;s about growing while the challenge stays the same. And the more I taught, the more I realized the part I loved most wasn&rsquo;t just the movement. It was the people.</p>
+              <p style="margin:0 0 1.25rem;">It was watching someone walk in nervous and walk out laughing with a new friend. It was the whole room shaking through the same set together. It was seeing people actually show up for themselves.</p>
+              <p style="margin:0 0 1.25rem;">So I started <strong>Auric Movement</strong>. It&rsquo;s my way of pouring all that love back out: good music, a little challenge, a lot of joy, and a goodie bag because I can&rsquo;t help myself.</p>
+              <p style="margin:0 0 1.5rem;">If you&rsquo;ve never done Pilates, come anyway. That&rsquo;s kind of the point.</p>
             </div>
             <div style="margin-top:1.75rem;">
               <span style="font-family:'Cormorant Garamond', serif;font-style:italic;font-size:1.4rem;color:var(--brown);">&mdash; Niara</span>
@@ -5003,7 +5013,7 @@
         var nav=document.getElementById('admin-tabnav'); if(!nav || nav._wired) return; nav._wired=true;
         var MAP={
           rosters:['admin-body'],
-          reminders:['admin-reminder-section','admin-waitlist-section'],
+          reminders:['admin-reminder-section','admin-waitlist-section','admin-wlcustom-section'],
           add:['admin-manual-add-section'],
           addevent:['admin-add-event-section'],
           lists:['admin-shared-lists','admin-agreements-section','admin-standalone-waivers-section','admin-club-section','admin-notify-list-section'],
@@ -6216,6 +6226,33 @@ Can't wait to move and connect with you!</textarea>
   };
   function acIso(z){ return z.replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/,'$1-$2-$3T$4:$5:$6Z'); }
   function acKeyFrom(cal){ var m=(cal||'').split('e='); return m.length>1?m[1]:cal; }
+  // Has an event's day already gone by? (Eastern/local midnight, not UTC — a
+  // date-only string parsed bare lands on UTC midnight and reads a day early.)
+  // Used to keep a finished event's booking overlay closed: seat counts keep
+  // moving after the fact (a credit releases a seat), and without this the
+  // overlay would quietly re-open a past session as "a spot left".
+  window.auricEventOver = function(dateISO){
+    if(!dateISO) return false;
+    var d = new Date(dateISO + 'T00:00:00');
+    if(isNaN(d.getTime())) return false;
+    var today = new Date(); today.setHours(0,0,0,0);
+    return d < today;
+  };
+  // If the event day has passed, stamp every time button Sold out and disable it,
+  // and drop any waitlist link — nobody books, or waits for, a class that's over.
+  // Returns true when it locked, so applyCap can skip the live count entirely.
+  window.auricLockIfPast = function(dateISO, stepTimeEl){
+    if(!stepTimeEl || !window.auricEventOver(dateISO)) return false;
+    Array.prototype.forEach.call(stepTimeEl.querySelectorAll('.rf-time'), function(btn){
+      var left=btn.querySelector('.rf-left-tag'); if(left) left.remove();
+      if(window.auricWaitlistClear) window.auricWaitlistClear(btn);
+      btn.disabled=true; btn.classList.add('rf-soldout');
+      if(!btn.querySelector('.rf-soldout-tag')){
+        var t=document.createElement('small'); t.className='rf-soldout-tag'; t.textContent='Sold out'; btn.appendChild(t);
+      }
+    });
+    return true;
+  };
   window.auricCalButtons = function(keyOrUrl){
     var key=acKeyFrom(keyOrUrl); var ev=AC_TABLE[key]; if(!ev) return '';
     var g='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(ev.t)+'&dates='+ev.s+'/'+ev.e+'&details='+encodeURIComponent(AC_DET)+'&location='+encodeURIComponent(ev.l);
@@ -6417,6 +6454,9 @@ document.addEventListener('DOMContentLoaded', function(){
   waiverEl.addEventListener('change', syncContinue);
 
   function applyCap(){
+    // Once the day has passed, stay sold out — post-event seat releases (credits)
+    // must not re-open a class that already happened.
+    if(window.auricLockIfPast && window.auricLockIfPast('2026-09-26', stepTime)) return;
     var c=sb(); if(!c) return;
     try {
       c.rpc('reformer_spot_counts').then(function(res){
@@ -6660,6 +6700,9 @@ document.addEventListener('DOMContentLoaded', function(){
   waiverEl.addEventListener('change', syncContinue);
 
   function applyCap(){
+    // Once the day has passed, stay sold out — post-event seat releases (credits)
+    // must not re-open a class that already happened.
+    if(window.auricLockIfPast && window.auricLockIfPast('2026-11-21', stepTime)) return;
     var c=sb(); if(!c) return;
     try {
       c.rpc('reformer_spot_counts').then(function(res){
@@ -7102,6 +7145,9 @@ document.addEventListener('DOMContentLoaded', function(){
   waiverEl.addEventListener('change', syncContinue);
 
   function applyCap(){
+    // Once the day has passed, stay sold out — post-event seat releases (credits)
+    // must not re-open a class that already happened.
+    if(window.auricLockIfPast && window.auricLockIfPast('2026-10-24', stepTime)) return;
     var c=sb(); if(!c) return;
     try {
       c.rpc('reformer_spot_counts').then(function(res){
@@ -7396,6 +7442,10 @@ document.addEventListener('DOMContentLoaded', function(){
 
     // ── Sold-out cap: hide a session once 6 paid bookings exist (fails OPEN) ──
     function applyCap(){
+      // Sept 13 is over. Seats keep moving after the fact — moving someone to a
+      // credit releases their seat — so without this the overlay would quietly
+      // re-open a finished session as "only 1 spot left". Leave it sold out.
+      if(window.auricLockIfPast && window.auricLockIfPast('2026-09-13', document.getElementById('rf-step-time'))) return;
       var sb=getSb(); if(!sb) return;
       try {
         // Aggregate counts only (no PII leaves the DB) via a security-definer function.
@@ -13893,6 +13943,23 @@ document.addEventListener('DOMContentLoaded', function() {
     'turkey-burn-2026-11-21':'Turkey Burn! · Nov 21',
     'turkey-burn-2026-11-28':'Post-Turkey Burn · Nov 28'
   };
+  // Credits found for archived people, keyed by lowercased email. Giving
+  // someone a credit marks them unpaid (that's how the seat is freed), so
+  // without this the archive would call a paying customer a non-payer.
+  var _rfArchiveCredits = {};
+  function rfArchiveCreditFor(rec){
+    if(!rec || !rec.email) return null;
+    var hits = _rfArchiveCredits[String(rec.email).trim().toLowerCase()];
+    if(!hits || !hits.length) return null;
+    // The credit button stores the event's display name in from_event, so
+    // prefer a credit that came from THIS event over one from another.
+    var evName = (RF_PAY[rec.event] && RF_PAY[rec.event].name) || '';
+    var exact = hits.filter(function(c){
+      if(!c.from_event) return false;
+      return (evName && c.from_event === evName) || c.from_event === rec.event;
+    });
+    return exact[0] || null;
+  }
   function renderReformerArchivedSection(container){
     if(!container) return;
     rfArchivedContainer = container;
@@ -13902,7 +13969,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function render(rows, err){
       rows.forEach(function(r){ rfRosterById[r.id] = r; }); // keep addressable for unarchive/remove
       var display = rows.filter(function(r){ return r.archived; });
-      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F5C4}\u{FE0F} Archived — didn’t pay · '+display.length+'</h3>';
+      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F5C4}\u{FE0F} Archived · '+display.length+'</h3>';
       if(err){ block.innerHTML += '<div class="empty-state">Archive unavailable — run REFORMER_ARCHIVE.sql in Supabase to enable it. (Everything else still works.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">Nothing archived. Use the \u{1F5C4}\u{FE0F} Archive button on any registration to move it here (kept off the roster + counts, never deleted).</div>'; return; }
       display.sort(function(a,b){ return (a.event||'').localeCompare(b.event||'') || (a.created_at||'').localeCompare(b.created_at||''); });
@@ -13911,29 +13978,62 @@ document.addEventListener('DOMContentLoaded', function() {
         var item=document.createElement('div'); item.className='admin-sub-item';
         var evLabel = RF_EVENT_LABELS[rec.event] || rec.event || '';
         var evBadge = evLabel ? ' <span class="atype" style="background:#f0efe9;color:#6b6357;">'+escapeHTML(evLabel)+'</span>' : '';
-        // Show WHY they're in here: no-show, attended, or simply never paid.
-        var attBadge = (rec.attendance==='noshow')
-          ? ' <span class="atype" style="background:#fdecea;color:var(--red);">✗ No-show</span>'
-          : (rec.attendance==='attended')
-            ? ' <span class="atype" style="background:#e8f5e9;color:#2e7d32;">✓ Attended</span>'
-            : (rec.is_paid ? '' : ' <span class="atype" style="background:#fef9e7;color:#7a6320;">never paid</span>');
+        // Say WHY they're in here. "never paid" is the LAST resort — only when
+        // nothing else explains it — because a credit or a reschedule also
+        // leaves the row unpaid, and calling those people non-payers is wrong.
+        var credit = rfArchiveCreditFor(rec);
+        var attBadge;
+        if (rec.attendance==='noshow')            attBadge = ' <span class="atype" style="background:#fdecea;color:var(--red);">✗ No-show</span>';
+        else if (rec.attendance==='attended')     attBadge = ' <span class="atype" style="background:#e8f5e9;color:#2e7d32;">✓ Attended</span>';
+        else if (rec.attendance==='credited' || credit){
+          var amt = credit ? creditMoney(credit.amount) : '';
+          attBadge = ' <span class="atype" style="background:#fbf3e2;color:#9a6535;">\u{1F3AB} Credit'+(amt?' · '+escapeHTML(amt):'')+'</span>';
+        }
+        else if (rec.attendance==='rescheduled') attBadge = ' <span class="atype" style="background:#f0ecf9;color:#5b3a8a;">\u{21C4} Rescheduled</span>';
+        else if (rec.is_paid)                    attBadge = ' <span class="atype" style="background:#e8f5e9;color:#2e7d32;">\u{1F4B5} Paid</span>';
+        else                                     attBadge = ' <span class="atype" style="background:#fef9e7;color:#7a6320;">never paid</span>';
         var sessLabel = rec.session_label || rec.session || '';
         var when = ''; try { when = rec.created_at ? new Date(rec.created_at).toLocaleString() : ''; } catch(e){}
+        // Let her correct a wrong label herself — the site can't know a
+        // reschedule happened, and only she does.
+        var creditTag = (rec.attendance==='credited')
+          ? btn("rfAdminSetReason("+id+",'')",'#fbf3e2','#e6d3a8','#9a6535','\u{1F3AB} Credit')
+          : btn("rfAdminSetReason("+id+",'credited')",'#fff','#e0d6c4','#8a7d6b','\u{1F3AB} Mark credit');
+        var reschedTag = (rec.attendance==='rescheduled')
+          ? btn("rfAdminSetReason("+id+",'')",'#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Rescheduled')
+          : btn("rfAdminSetReason("+id+",'rescheduled')",'#fff','#e0d6c4','#8a7d6b','\u{21C4} Mark rescheduled');
         var unarchiveBtn = btn('rfAdminUnarchive('+id+')','#e8f5e9','#a5d6a7','#2e7d32','\u{21A9}\u{FE0F} Unarchive');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span>'+evBadge+attBadge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span></div>'+
           '<div style="text-align:right"><span style="font-size:.75rem;color:var(--text-muted);">'+escapeHTML(sessLabel)+'</span><br><span style="font-size:.7rem;color:var(--text-muted);">'+escapeHTML(when)+'</span>'+
-          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+unarchiveBtn+removeBtn+'</div></div>';
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+creditTag+reschedTag+unarchiveBtn+removeBtn+'</div></div>';
         block.appendChild(item);
       });
     }
     container.innerHTML=''; container.appendChild(block);
+    // Load the credits first so a credited person is never labelled a
+    // non-payer. If credits aren't reachable, the roster still renders.
+    function loadRoster(){
+      try {
+        supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(res){
+          if(res && res.error){ render([], true); return; }
+          render((res && res.data) || [], false);
+        }, function(){ render([], true); });
+      } catch(e){ render([], true); }
+    }
     try {
-      supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(res){
-        if(res && res.error){ render([], true); return; }
-        render((res && res.data) || [], false);
-      }, function(){ render([], true); });
-    } catch(e){ render([], true); }
+      supabase.rpc('auric_credits_list', { pass: ADMIN_PASSWORD }).then(function(res){
+        _rfArchiveCredits = {};
+        if(res && !res.error && res.data){
+          res.data.forEach(function(c){
+            if(!c || !c.email) return;
+            var k = String(c.email).trim().toLowerCase();
+            (_rfArchiveCredits[k] = _rfArchiveCredits[k] || []).push(c);
+          });
+        }
+        loadRoster();
+      }, function(){ _rfArchiveCredits = {}; loadRoster(); });
+    } catch(e){ _rfArchiveCredits = {}; loadRoster(); }
   }
   // ─── Something's Blooming — interest list roster ───────────────────────
   var bloomRows = [];
@@ -14194,6 +14294,12 @@ document.addEventListener('DOMContentLoaded', function() {
       // Credit is safely recorded — now release the seat.
       supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: false }).then(function(r2){
         var freed = !(r2 && r2.error);
+        // Stamp WHY, so the archive shows "Credit" instead of calling someone
+        // who paid a non-payer. Best-effort: if the older SQL rejects the
+        // value, the archive still matches them to their credit by email.
+        if(!rec.attendance){
+          try { supabase.rpc('reformer_set_attendance', { pass: ADMIN_PASSWORD, rid: id, val: 'credited' }).then(function(){}, function(){}); } catch(e){}
+        }
         supabase.rpc('reformer_archive', { pass: ADMIN_PASSWORD, rid: id, val: true }).then(function(){
           alert(freed
             ? ('\u2705 Credit saved for ' + rec.name + ' and their spot is free.\n\nCheck the booking page shows the session open, then notify the waitlist.')
@@ -14213,6 +14319,21 @@ document.addEventListener('DOMContentLoaded', function() {
     supabase.rpc('reformer_set_attendance', { pass: ADMIN_PASSWORD, rid: id, val: val || '' })
       .then(function(res){ if(res&&res.error){ alert('Could not save attendance — run REFORMER_ATTENDANCE.sql in Supabase first.'); return; } rfRefresh(); },
             function(){ alert('Could not save attendance. Try again.'); });
+  };
+  // Why an archived person is archived — 'credited', 'rescheduled', or '' to
+  // clear. Stored in the same column as the attendance mark (they're mutually
+  // exclusive: someone who cancelled didn't attend), so it survives a reload
+  // and a new phone. Needs REFORMER_ARCHIVE_REASON.sql, which widens the
+  // setter to accept these two values.
+  window.rfAdminSetReason = function(id, val){
+    supabase.rpc('reformer_set_attendance', { pass: ADMIN_PASSWORD, rid: id, val: val || '' })
+      .then(function(res){
+        if(res && res.error){
+          alert('Could not save that label.\n\nRun REFORMER_ARCHIVE_REASON.sql in Supabase once, then try again.');
+          return;
+        }
+        rfRefresh();
+      }, function(){ alert('Could not save that label. Try again.'); });
   };
   // Auric Club — give a reformer attendee half a mark for referring a friend.
   // The other events tag admin_notes by code; reformer rows are keyed by id,
