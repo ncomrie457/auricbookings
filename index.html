@@ -2740,24 +2740,25 @@
   /* The plate behind the slides carries the LAST slide's image, so the only
      moment both the last and first slide are mid-fade shows that same photo
      rather than flashing back to slide 1. */
-  .bq-hero-slides{position:absolute;inset:0;z-index:0;background:#ece3d2 url('hero-slide-4.jpg') center 22%/cover no-repeat;}
+  /* Three slides, not eight. A 56-second loop meant slides four through eight
+     were seen by almost nobody, while every visitor still paid to download
+     them — about 1.5MB for pictures most people never reached. These three
+     each show something the others don't: the room full of people, the
+     Riddim & Kompa reformer night, and the goodie bags going out. */
+  .bq-hero-slides{position:absolute;inset:0;z-index:0;background:#ece3d2 url('hero-slide-3.jpg') center 30%/cover no-repeat;}
   .bq-hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;
-    animation:bqHeroFade 56s linear infinite;will-change:opacity;}
+    animation:bqHeroFade 15s linear infinite;will-change:opacity;}
   .bq-hero-slide:nth-child(1){animation-delay:0s;background-image:url('hero-slide-1.jpg');}
-  /* Riddim & Kompa — Sept 13, Valley Studio (largest group first) */
-  .bq-hero-slide:nth-child(2){animation-delay:7s;background-image:url('hero-slide-5.jpg');background-position:center 30%;}
-  .bq-hero-slide:nth-child(3){animation-delay:14s;background-image:url('hero-slide-6.jpg');background-position:center 18%;}
-  .bq-hero-slide:nth-child(4){animation-delay:21s;background-image:url('hero-slide-7.jpg');background-position:center 18%;}
-  .bq-hero-slide:nth-child(5){animation-delay:28s;background-image:url('hero-slide-2.jpg');}
-  .bq-hero-slide:nth-child(6){animation-delay:35s;background-image:url('recharge-01.jpg');background-position:center 32%;}
-  .bq-hero-slide:nth-child(7){animation-delay:42s;background-image:url('hero-slide-3.jpg');background-position:center 30%;}
-  .bq-hero-slide:nth-child(8){animation-delay:49s;background-image:url('hero-slide-4.jpg');background-position:center 22%;}
+  /* Riddim & Kompa — Valley Studio, the flag and the reformers */
+  .bq-hero-slide:nth-child(2){animation-delay:5s;background-image:url('hero-slide-5.jpg');background-position:center 30%;}
+  .bq-hero-slide:nth-child(3){animation-delay:10s;background-image:url('hero-slide-3.jpg');background-position:center 30%;}
   /* Each slide holds at full opacity until the NEXT one has completely faded
-     in over it, then drops out behind it. Slides are 7s apart in a 56s cycle
-     (12.5%) and fade in over 1.2s (2.2%), so the hold has to run to 14.7%.
-     Fading out any earlier leaves a gap where neither slide is opaque and the
-     plate behind shows through — that was the flash between pictures. */
-  @keyframes bqHeroFade{0%{opacity:0}2.2%{opacity:1}14.7%{opacity:1}14.8%{opacity:0}100%{opacity:0}}
+     in over it, then drops out behind it. Slides are 5s apart in a 15s cycle
+     (33.3%) and fade in over 1.2s (8%), so the next slide isn't fully opaque
+     until 41.3% — the hold has to run past that. Fading out any earlier
+     leaves a gap where neither slide is opaque and the plate behind shows
+     through — that was the flash between pictures. */
+  @keyframes bqHeroFade{0%{opacity:0}8%{opacity:1}41.4%{opacity:1}41.5%{opacity:0}100%{opacity:0}}
   .bq-hero-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
     background:linear-gradient(180deg, rgba(248,244,236,.9) 0%, rgba(248,244,236,.52) 20%, rgba(248,244,236,.42) 52%, rgba(248,244,236,.78) 100%);}
   .bq-hero-inner{z-index:4 !important;}
@@ -2769,11 +2770,6 @@
 </style>
 <section class="bq-hero hero" role="banner">
   <div class="bq-hero-slides" aria-hidden="true">
-    <div class="bq-hero-slide"></div>
-    <div class="bq-hero-slide"></div>
-    <div class="bq-hero-slide"></div>
-    <div class="bq-hero-slide"></div>
-    <div class="bq-hero-slide"></div>
     <div class="bq-hero-slide"></div>
     <div class="bq-hero-slide"></div>
     <div class="bq-hero-slide"></div>
@@ -3423,20 +3419,12 @@
       });
     </script>
 
-    <!-- Featured past-event videos (homepage) -->
-    <section class="bq-videos-wrap" aria-labelledby="bq-videos-head-title" id="homepage-videos-section">
-      <div class="bq-videos-head">
-        <div class="bq-videos-head-left">
-          <div class="bq-section-eyebrow">In Motion</div>
-          <h2 class="bq-section-title" id="bq-videos-head-title">Past <em>Events</em></h2>
-        </div>
-        <button type="button" class="bq-videos-link" onclick="document.getElementById('btn-events').click(); window.scrollTo({top:0,behavior:'smooth'}); return false;">View All <span aria-hidden="true">&#8594;</span></button>
-      </div>
-      <div class="bq-videos-row" id="homepage-videos-row"></div>
-    </section>
-
     <!-- ────────────────────────────────────────────────────────
          What People Say — static testimonials (homepage social proof)
+
+         Order note: proof of what an event is like, then who runs it, THEN
+         what already happened. Past Events used to sit here, above both —
+         which spent the middle of the page on events nobody can book.
     ──────────────────────────────────────────────────────── -->
     <section class="bq-testimonials-section" aria-labelledby="bq-testimonials-title" style="margin-top:1rem;">
       <div class="bq-section-head" style="text-align:center;">
@@ -3455,12 +3443,24 @@
           .am-testi .am-src{font-weight:400;color:#a99483;letter-spacing:.06em;}
           .am-testi .am-src-g{color:#9a6535;}
           .am-testi .am-src::before{content:"\00b7";margin:0 .35em;}
+          /* Sixteen reviews is a wall, and people read about three. Show three
+             until asked. The class is added by JS, so with JS off every review
+             is still in the page and still readable. Move .am-testi-lead to
+             pick a different three. */
+          .am-testi-grid.am-collapsed{column-count:3;}
+          .am-testi-grid.am-collapsed .am-testi:not(.am-testi-lead){display:none;}
+          @media(max-width:900px){.am-testi-grid.am-collapsed{column-count:2;}}
+          @media(max-width:600px){.am-testi-grid.am-collapsed{column-count:1;}}
+          .am-testi-more-btn{display:none;margin:1.4rem auto 0;font-family:'Jost',sans-serif;font-size:.78rem;
+            font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-text);
+            background:none;border:none;border-bottom:1px solid var(--gold);padding:.5rem .1rem .3rem;cursor:pointer;}
+          .am-testi-more-btn:hover{color:var(--brown);}
         </style>
-        <div class="am-testi-grid">
-          <div class="am-testi"><div class="am-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="am-quote">Absolutely amazing reformer Pilates class! Niara was fantastic&mdash;knowledgeable, encouraging, and made the entire class feel both challenging and enjoyable. I left feeling stronger, energized, and already looking forward to the next one. Highly recommend! &#128170;</p><div class="am-who">Giana G.<span class="am-src">After class</span></div></div>
+        <div class="am-testi-grid" id="am-testi-grid">
+          <div class="am-testi am-testi-lead"><div class="am-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="am-quote">Absolutely amazing reformer Pilates class! Niara was fantastic&mdash;knowledgeable, encouraging, and made the entire class feel both challenging and enjoyable. I left feeling stronger, energized, and already looking forward to the next one. Highly recommend! &#128170;</p><div class="am-who">Giana G.<span class="am-src">After class</span></div></div>
           <div class="am-testi"><div class="am-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="am-quote">I had an amazing experience with Auric Movement. Niara created a welcoming and energetic environment that made the class enjoyable for all fitness levels. The instruction was clear and the workout was both challenging and rewarding.</p><div class="am-who">Samantha N.<span class="am-src am-src-g">Google</span></div></div>
           <div class="am-testi"><div class="am-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="am-quote">I&rsquo;ve been taking Pilates with Niara for about a year now, and she is truly amazing! She&rsquo;s one of those instructors who genuinely cares about her clients and always makes you feel comfortable, motivated, and supported. She pays attention to your form, pushes you when you need it, and somehow makes even the hardest workouts enjoyable (kills me each time &#128514;). After knowing her for two years as a friend, I can honestly say she&rsquo;s not only an incredible Pilates instructor but also such a kind and positive person. I always leave her classes feeling stronger and so much better than when I walked in. If you&rsquo;re looking for someone who knows what she&rsquo;s doing and actually cares about your progress, I cannot recommend Niara enough! &#129293;</p><div class="am-who">Amrit A.<span class="am-src">After class</span></div></div>
-          <div class="am-testi"><div class="am-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="am-quote">This past Sunday I had the pleasure of taking Niara&rsquo;s class. I was ecstatic because I have been wanting to take her class for some time. Let me just say I absolutely loved it! Niara created such a warm and welcoming environment. The class was challenging and creative. Niara had modifications ready for those who needed and offered progressions for seasoned participants. The music was a wonderful bonus as I love Caribbean vibes. I highly recommend taking her class. &#128156;</p><div class="am-who">Lisa Grippo<span class="am-src am-src-g">Google</span></div></div>
+          <div class="am-testi am-testi-lead"><div class="am-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="am-quote">This past Sunday I had the pleasure of taking Niara&rsquo;s class. I was ecstatic because I have been wanting to take her class for some time. Let me just say I absolutely loved it! Niara created such a warm and welcoming environment. The class was challenging and creative. Niara had modifications ready for those who needed and offered progressions for seasoned participants. The music was a wonderful bonus as I love Caribbean vibes. I highly recommend taking her class. &#128156;</p><div class="am-who">Lisa Grippo<span class="am-src am-src-g">Google</span></div></div>
           <div class="am-testi"><div class="am-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="am-quote">Absolutely lovely experience! You feel warm, invited &mdash; a true safe space with an amazing instructor!!</p><div class="am-who">Jaz R.<span class="am-src am-src-g">Google</span></div></div>
           <div class="am-testi"><div class="am-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="am-quote">Great environment &amp; beginner friendly! Instructions were easy to follow and overall vibe felt judgement free and positive :)</p><div class="am-who">Veronica<span class="am-src">After class</span></div></div>
           <div class="am-testi"><div class="am-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="am-quote">Niara is truly one of a kind! &#128149; Her energy is unmatched, her patience is incredible, and she always knows how to push you to be your best. Don&rsquo;t let her sweet personality fool you &mdash; her workouts are SPICY &#127798; and she&rsquo;ll have you feeling muscles you didn&rsquo;t even know existed, especially the next day! &#128514; She keeps every class a vibe, making fitness fun while still delivering an amazing workout every single time. Beyond Pilates, her thoughtfulness shines through in everything she does. The event she hosted was beautiful, and the gift bags were the cutest, filled with so many goodies. She always finds ways to love back on her clients and make everyone feel appreciated. Thank you, Niara, for keeping the girlies fit, strong, and smiling. We love your energy! &#129526;&#10024; Shabang!</p><div class="am-who">Christina C.<span class="am-src">After class</span></div></div>
@@ -3471,10 +3471,41 @@
           <div class="am-testi"><div class="am-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="am-quote">Niara was very attentive and helped me with my form when needed. I love that when I&rsquo;m in Pilates classes. Just right!</p><div class="am-who">Rachel Joslyn<span class="am-src">After class</span></div></div>
           <div class="am-testi"><div class="am-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="am-quote">Great time, great workout, great instructor, and great vibes!! I would definitely be back for more! &#128149;</p><div class="am-who">Dmoney<span class="am-src">After class</span></div></div>
           <div class="am-testi"><div class="am-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="am-quote">Get ready to work &mdash; the best! Just right. Extremely easy to follow, and every time is a 5.</p><div class="am-who">Shontell Hill-Santana<span class="am-src">After class</span></div></div>
-          <div class="am-testi"><div class="am-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="am-quote">Niara is absolutely amazing! The energy at Auric Movement is such a vibe, from the music to the overall atmosphere. Her Pilates class is welcoming for all levels, and she does an incredible job guiding you through each movement without ever making you feel rushed or lost. The class is definitely challenging, but in the best way. You leave feeling accomplished and like you really worked your body. You can tell Niara genuinely cares about creating a comfortable, motivating space. Definitely a class I&rsquo;d recommend!</p><div class="am-who">Amanda V.<span class="am-src am-src-g">Google</span></div></div>
+          <div class="am-testi am-testi-lead"><div class="am-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="am-quote">Niara is absolutely amazing! The energy at Auric Movement is such a vibe, from the music to the overall atmosphere. Her Pilates class is welcoming for all levels, and she does an incredible job guiding you through each movement without ever making you feel rushed or lost. The class is definitely challenging, but in the best way. You leave feeling accomplished and like you really worked your body. You can tell Niara genuinely cares about creating a comfortable, motivating space. Definitely a class I&rsquo;d recommend!</p><div class="am-who">Amanda V.<span class="am-src am-src-g">Google</span></div></div>
           <div class="am-testi"><div class="am-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="am-quote">I loved the last event I attended with Auric Movement. I look forward to attending more of their events.</p><div class="am-who">Karleen A.<span class="am-src am-src-g">Google</span></div></div>
         </div>
+        <div style="text-align:center;">
+          <button type="button" id="am-testi-toggle" class="am-testi-more-btn" aria-expanded="false" aria-controls="am-testi-grid"></button>
+        </div>
       </div>
+      <script>
+        /* Collapse the review wall to three until asked. Runs only if JS is on,
+           so a reader without it still gets every review. */
+        (function(){
+          function init(){
+            var grid = document.getElementById('am-testi-grid');
+            var btn  = document.getElementById('am-testi-toggle');
+            if(!grid || !btn || btn._wired) return;
+            btn._wired = true;
+            var hidden = grid.querySelectorAll('.am-testi:not(.am-testi-lead)').length;
+            if(!hidden) return;
+            function paint(open){
+              grid.classList.toggle('am-collapsed', !open);
+              btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+              btn.textContent = open ? 'Show fewer ↑'
+                                     : 'Read ' + hidden + ' more kind words ↓';
+            }
+            btn.style.display = 'inline-block';
+            paint(false);
+            btn.addEventListener('click', function(){
+              var open = btn.getAttribute('aria-expanded') === 'true';
+              paint(!open);
+              if(open) grid.scrollIntoView({ behavior:'smooth', block:'start' });
+            });
+          }
+          if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init); else init();
+        })();
+      </script>
       <div style="text-align:center;margin-top:1.5rem;">
         <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:var(--text-muted);margin-bottom:1.1rem;">Real words from real guests &mdash; go read them on Google yourself. &#127775;</p>
         <div style="display:flex;gap:1.1rem;justify-content:center;flex-wrap:wrap;align-items:center;">
@@ -3516,6 +3547,18 @@
           }
         }
       </style>
+    </section>
+
+    <!-- Featured past-event videos (homepage) — three cards, "View All →" for the rest -->
+    <section class="bq-videos-wrap" aria-labelledby="bq-videos-head-title" id="homepage-videos-section" style="margin-top:3rem;">
+      <div class="bq-videos-head">
+        <div class="bq-videos-head-left">
+          <div class="bq-section-eyebrow">In Motion</div>
+          <h2 class="bq-section-title" id="bq-videos-head-title">Past <em>Events</em></h2>
+        </div>
+        <button type="button" class="bq-videos-link" onclick="document.getElementById('btn-events').click(); window.scrollTo({top:0,behavior:'smooth'}); return false;">View All <span aria-hidden="true">&#8594;</span></button>
+      </div>
+      <div class="bq-videos-row" id="homepage-videos-row"></div>
     </section>
 
     <!-- Featured Partners — auto-hides until you add partners to the PARTNERS list below -->
@@ -8067,7 +8110,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (home) {
       home.innerHTML = '';
-      renderList.slice(0, 6).forEach(function(item){ home.appendChild(buildNode(item)); });
+      // Three on the homepage — one row of the grid, so it reads as a strip
+      // rather than a wall. "View All →" carries the rest.
+      renderList.slice(0, 3).forEach(function(item){ home.appendChild(buildNode(item)); });
     }
     if (gallery) {
       gallery.innerHTML = '';
