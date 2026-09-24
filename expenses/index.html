@@ -118,13 +118,22 @@
         <div><label>Date</label><input type="date" id="p-date"></div>
         <div><label>People who paid</label><input type="number" id="p-people" min="0" step="1" inputmode="numeric" placeholder="15"></div>
         <div><label>Price per person ($)</label><input type="number" id="p-price" min="0" step="0.01" inputmode="decimal" placeholder="45.00"></div>
-        <div><label>Studio's share (%)</label><input type="number" id="p-studio" min="0" max="100" step="0.5" inputmode="decimal" value="25"></div>
+        <div>
+          <label>How the studio charges</label>
+          <select id="p-studio-mode">
+            <option value="share">A share of what I take</option>
+            <option value="flat">A flat rental fee</option>
+            <option value="both">A flat fee plus a share</option>
+          </select>
+        </div>
+        <div id="p-studio-pct-wrap"><label>Studio's share (%)</label><input type="number" id="p-studio" min="0" max="100" step="0.5" inputmode="decimal" value="25"></div>
+        <div id="p-studio-flat-wrap" style="display:none;"><label>Studio's flat fee ($)</label><input type="number" id="p-studio-flat" min="0" step="0.01" inputmode="decimal" placeholder="e.g. 250.00"></div>
         <div><label>Goodie bag, per person ($)</label><input type="number" id="p-bag" min="0" step="0.01" inputmode="decimal" placeholder="12.00"></div>
         <div><label>Everything else ($)</label><input type="number" id="p-other" min="0" step="0.01" inputmode="decimal" placeholder="travel, props, printing"></div>
         <div><label>Hours you put in (optional)</label><input type="number" id="p-hours" min="0" step="0.5" inputmode="decimal" placeholder="teaching + admin"></div>
       </div>
 
-      <div class="row-check" style="margin-top:.5rem;">
+      <div class="row-check" style="margin-top:.5rem;" id="p-studio-net-row">
         <input type="checkbox" id="p-studio-net">
         <label for="p-studio-net" style="margin:0;">The studio takes their % <strong>after</strong> Stripe fees, not off the full ticket price</label>
       </div>
@@ -286,7 +295,7 @@
     //  percentage alone understates it — and why raising the price costs
     //  proportionally less in fees than you'd guess.
     // ════════════════════════════════════════════════════════════════
-    var PNL_IDS = ['p-name','p-date','p-people','p-price','p-studio','p-bag','p-other','p-hours','p-spct','p-sfix','p-studio-net'];
+    var PNL_IDS = ['p-name','p-date','p-people','p-price','p-studio','p-studio-flat','p-studio-mode','p-bag','p-other','p-hours','p-spct','p-sfix','p-studio-net'];
     function pv(id){ var el=document.getElementById(id); if(!el) return 0; return Number(el.value)||0; }
     function pnlInputs(){
       return {
@@ -294,7 +303,9 @@
         date: document.getElementById('p-date').value || null,
         people: Math.max(0, Math.round(pv('p-people'))),
         price: pv('p-price'),
+        studioMode: document.getElementById('p-studio-mode').value,
         studioPct: pv('p-studio'),
+        studioFlat: pv('p-studio-flat'),
         studioOnNet: document.getElementById('p-studio-net').checked,
         spct: pv('p-spct'),
         sfix: pv('p-sfix'),
@@ -312,13 +323,19 @@
       var bag    = (o.bag    != null ? o.bag    : i.bag);
       var gross  = people * price;
       var stripe = people ? (gross * (i.spct/100) + people * i.sfix) : 0;
+      // A share scales with the room; a flat rental is owed whether two
+      // people turn up or fifteen. Some deals are both.
+      var mode = i.studioMode || 'share';
       var studioBase = i.studioOnNet ? (gross - stripe) : gross;
-      var studio = studioBase * (i.studioPct/100);
+      var studioShare = (mode === 'flat') ? 0 : studioBase * (i.studioPct/100);
+      var studioFlat  = (mode === 'share') ? 0 : (i.studioFlat || 0);
+      var studio = studioShare + studioFlat;
       var bags   = people * bag;
       var costs  = stripe + studio + bags + i.other;
       var net    = gross - costs;
       return {
-        people: people, price: price, gross: gross, stripe: stripe, studio: studio,
+        people: people, price: price, gross: gross, stripe: stripe,
+        studio: studio, studioShare: studioShare, studioFlat: studioFlat, studioMode: mode,
         bags: bags, other: i.other, costs: costs, net: net,
         perHead: people ? net/people : 0,
         margin: gross ? (net/gross*100) : 0,
@@ -335,7 +352,17 @@
         + (opts.neg ? '−' : '') + money(Math.abs(amount)) + '</span></div>';
     }
 
+    function pnlModeSync(){
+      var mode = document.getElementById('p-studio-mode').value;
+      document.getElementById('p-studio-pct-wrap').style.display  = (mode === 'flat')  ? 'none' : '';
+      document.getElementById('p-studio-flat-wrap').style.display = (mode === 'share') ? 'none' : '';
+      // The "after Stripe" question only exists if a percentage is involved.
+      document.getElementById('p-studio-net-row').style.display   = (mode === 'flat')  ? 'none' : '';
+    }
+    document.getElementById('p-studio-mode').addEventListener('change', pnlModeSync);
+
     function pnlRender(){
+      pnlModeSync();
       var i = pnlInputs(), c = pnlCalc(i);
       var out = document.getElementById('pnl-out');
       if (!i.people || !i.price){
@@ -345,7 +372,8 @@
       var html = '<div class="breakdown" style="display:block;">'
         + pnlRow(i.people + ' × ' + money(i.price), c.gross, { strong:true })
         + pnlRow('Stripe fees (' + i.spct + '% + ' + money(i.sfix) + ' a ticket)', c.stripe, { neg:true })
-        + pnlRow('Studio, ' + i.studioPct + '%' + (i.studioOnNet ? ' of after-Stripe' : ' of the ticket price'), c.studio, { neg:true })
+        + (c.studioFlat ? pnlRow('Studio, flat rental', c.studioFlat, { neg:true }) : '')
+        + (c.studioShare ? pnlRow('Studio, ' + i.studioPct + '%' + (i.studioOnNet ? ' of after-Stripe' : ' of the ticket price'), c.studioShare, { neg:true }) : '')
         + (c.bags ? pnlRow('Goodie bags, ' + i.people + ' × ' + money(i.bag), c.bags, { neg:true }) : '')
         + (i.other ? pnlRow('Everything else', i.other, { neg:true }) : '')
         + pnlRow(c.net >= 0 ? 'You took home' : 'You lost', c.net, { strong:true, rule:true, neg: c.net < 0, good: c.net > 0 })
@@ -374,11 +402,29 @@
           + '</strong> a head to break even, not ' + money(i.price) + '.']);
       }
 
+      // With a flat rental the room is owed for whether or not it fills, so
+      // the head count you must hit before you earn anything is a real number
+      // worth knowing. Under a pure share there is no such threshold.
+      if (c.studioFlat > 0 && i.price > 0){
+        var perHeadKeep = pnlCalc(i, { people: i.people + 1 }).net - c.net;
+        if (perHeadKeep > 0){
+          var fixed = c.studioFlat + i.other;
+          var be = Math.ceil(fixed / perHeadKeep);
+          tips.push(['You break even at ' + be + ' ' + (be === 1 ? 'person' : 'people'),
+            'The ' + money(c.studioFlat) + ' rental is owed whether the room fills or not, so the first '
+            + be + ' ' + (be === 1 ? 'ticket pays' : 'tickets pay') + ' for the room. Everyone after that is yours.'
+            + (i.people < be ? ' <strong>You were ' + (be - i.people) + ' short.</strong>' : '')]);
+        }
+      }
+
       // What one more seat is worth — the cheapest money there is.
       if (i.people > 0){
         var oneMore = pnlCalc(i, { people: i.people + 1 }).net - c.net;
         tips.push(['One more seat is worth ' + money(oneMore),
-          'Same room, same rent, same drive. Filling an empty spot is the cheapest money available to you.']);
+          'Same room, same rent, same drive. Filling an empty spot is the cheapest money available to you.'
+          + (c.studioFlat > 0 && !c.studioShare
+              ? ' On a flat rental every extra head is worth more, because the studio’s fee doesn’t grow with the room.'
+              : '')]);
       }
 
       // Price ladder.
@@ -409,7 +455,9 @@
       if (i.people > 0){
         var dbl = pnlCalc(i, { people: Math.round(i.people * 1.7) });
         tips.push(['The room is the ceiling',
-          'Reformers cap the room. The same event on mats at about <strong>'
+          (c.studioFlat && !c.studioShare
+            ? 'Reformers cap the room \u2014 and on a flat rental the rent is the same either way. The same event on mats at about <strong>'
+            : 'Reformers cap the room. The same event on mats at about <strong>')
           + Math.round(i.people * 1.7) + ' people</strong>, same price and same '
           + i.studioPct + '% split, would have paid <strong>' + money(dbl.net) + '</strong>'
           + ' — ' + money(dbl.net - c.net) + ' more for the same day.']);
@@ -448,6 +496,7 @@
     function pnlFromRow(r){
       var i = {
         people: r.people||0, price: Number(r.price_each)||0, studioPct: Number(r.studio_pct)||0,
+        studioFlat: Number(r.studio_flat)||0, studioMode: r.studio_mode || 'share',
         studioOnNet: !!r.studio_on_net, spct: Number(r.stripe_pct)||0, sfix: Number(r.stripe_fixed)||0,
         bag: Number(r.bag_each)||0, other: Number(r.other_costs)||0, hours: Number(r.hours)||0
       };
@@ -491,6 +540,7 @@
         var el=document.getElementById(id); if(!el) return;
         if(el.type==='checkbox') el.checked=false;
         else if(id==='p-studio') el.value='25';
+        else if(id==='p-studio-mode') el.value='share';
         else if(id==='p-spct') el.value='2.9';
         else if(id==='p-sfix') el.value='0.30';
         else el.value='';
@@ -506,7 +556,8 @@
       var btn=this; btn.disabled=true; msg.textContent='Saving…';
       sb.from('event_pnl').insert([{
         event_name:i.name, event_date:i.date, people:i.people, price_each:i.price,
-        studio_pct:i.studioPct, studio_on_net:i.studioOnNet, stripe_pct:i.spct,
+        studio_pct:i.studioPct, studio_flat:i.studioFlat, studio_mode:i.studioMode,
+        studio_on_net:i.studioOnNet, stripe_pct:i.spct,
         stripe_fixed:i.sfix, bag_each:i.bag, other_costs:i.other, hours:i.hours||null
       }]).then(function(res){
         btn.disabled=false;
