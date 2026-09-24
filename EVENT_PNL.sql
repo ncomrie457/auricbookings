@@ -16,6 +16,12 @@
 --  HOW TO RUN: Supabase → SQL Editor → paste ALL → Run. One time.
 -- ════════════════════════════════════════════════════════════════════
 
+--  Studios charge two different ways and the arithmetic isn't the same:
+--  a revenue SHARE scales with how full the room is, a flat RENTAL is
+--  owed whether two people turn up or fifteen. Both are stored, so an
+--  event can use either — or a flat fee plus a share, which some deals
+--  are. Safe to run again if you already ran an earlier version.
+
 create table if not exists public.event_pnl (
   id             uuid primary key default gen_random_uuid(),
   event_name     text not null,
@@ -32,6 +38,12 @@ create table if not exists public.event_pnl (
   notes          text,
   created_at     timestamptz   not null default now()
 );
+
+-- Added after the first version — these run harmlessly if they're there.
+alter table public.event_pnl
+  add column if not exists studio_flat numeric(12,2) not null default 0;
+alter table public.event_pnl
+  add column if not exists studio_mode text not null default 'share';   -- share | flat | both
 
 alter table public.event_pnl enable row level security;
 
