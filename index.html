@@ -2980,22 +2980,30 @@
           var dt=new Date(ds+'T00:00:00'); if(isNaN(dt.getTime())) return false;
           return dt<today;
         }
+        // An event that is built but not announced yet. Hidden exactly the way
+        // a past event is hidden, and checked in the same three places, so no
+        // filter can put it back on screen.
+        function isHiddenDraft(c){
+          var ev=c.getAttribute('data-draft-event');
+          return !!ev && window.auricDraftHidden && window.auricDraftHidden(ev);
+        }
+        function isOff(c){ return isPast(c) || isHiddenDraft(c); }
         // Past events don't belong under "Upcoming Events" — hide them.
-        cards.forEach(function(c){ if(isPast(c)) c.style.display='none'; });
+        cards.forEach(function(c){ if(isOff(c)) c.style.display='none'; });
         var rkExtra=document.getElementById('rk-extra');
         function isRiddim(c){ return c.getAttribute('data-riddim')==='true'; }
         // Only show a filter button if it has at least one upcoming matching event.
         Array.prototype.forEach.call(bar.querySelectorAll('.bq-loc-btn'), function(btn){
           var loc=btn.getAttribute('data-loc'); if(loc==='all') return;
           var has=cards.some(function(c){
-            if(isPast(c)) return false;
+            if(isOff(c)) return false;
             return loc==='riddim' ? isRiddim(c) : (c.getAttribute('data-location')||'all')===loc;
           });
           if(!has) btn.style.display='none';
         });
         function applyFilter(loc){
           cards.forEach(function(c){
-            if(isPast(c)){ c.style.display='none'; return; }
+            if(isOff(c)){ c.style.display='none'; return; }
             var show = loc==='all' ? true
                      : loc==='riddim' ? isRiddim(c)
                      : (c.getAttribute('data-location')||'all')===loc;
@@ -3125,6 +3133,34 @@
         <div class="bq-event-name">Riddim &amp; Kompa <em>on the Reformer</em></div>
         <div class="bq-event-loc">Brooklyn, NY</div>
         <div class="bq-event-sub">Sat &#183; 12, 1 &amp; 2 PM (45 min) &#183; $45 &#183; Maison Luxe Wellness Pilates, Brooklyn</div>
+        <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
+      </button>
+
+      <!-- ══ DRAFT — Riddim & Kompa, Brooklyn, Oct 10. Not announced. ══
+           Hidden by data-draft-event until the event is removed from
+           AURIC_DRAFT_EVENTS. Uses the interest-list art for now; swap in a
+           real flyer before publishing. -->
+      <button type="button" id="event-card-reformer-o10" class="bq-event scroll-reveal" style="display:none;" data-draft-event="riddim-kompa-brooklyn-2026-10-10" data-event-date="2026-10-10" data-event-name="Riddim &amp; Kompa &#8212; Brooklyn, Oct 10" data-location="brooklyn" data-riddim="true">
+        <div class="bq-event-photo">
+          <img src="riddim-interest-card.jpg?v=1" alt="Riddim &amp; Kompa on the Reformer &#8212; Brooklyn. Saturday, October 10 at Maison Luxe Wellness Pilates, Brooklyn NY &#183; four sessions (12, 1, 2 &amp; 3 PM) &#183; $45, complimentary goodie bag" loading="lazy" decoding="async">
+        </div>
+        <div class="bq-event-date">10.10.26 &#183; Riddim &amp; Kompa</div>
+        <div class="bq-event-name">Riddim &amp; Kompa <em>on the Reformer</em></div>
+        <div class="bq-event-loc">Brooklyn, NY</div>
+        <div class="bq-event-sub">Sat &#183; 12, 1, 2 &amp; 3 PM (45 min) &#183; $45 &#183; Maison Luxe Wellness Pilates, Brooklyn</div>
+        <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
+      </button>
+
+      <!-- ══ DRAFT — Riddim & Kompa, Brooklyn, Nov 21. Not announced. ══
+           Note: Pre-Turkey Burn is already on Nov 21 at Valley Studio. -->
+      <button type="button" id="event-card-reformer-n21" class="bq-event scroll-reveal" style="display:none;" data-draft-event="riddim-kompa-brooklyn-2026-11-21" data-event-date="2026-11-21" data-event-name="Riddim &amp; Kompa &#8212; Brooklyn, Nov 21" data-location="brooklyn" data-riddim="true">
+        <div class="bq-event-photo">
+          <img src="riddim-interest-card.jpg?v=1" alt="Riddim &amp; Kompa on the Reformer &#8212; Brooklyn. Saturday, November 21 at Maison Luxe Wellness Pilates, Brooklyn NY &#183; four sessions (12, 1, 2 &amp; 3 PM) &#183; $45, complimentary goodie bag" loading="lazy" decoding="async">
+        </div>
+        <div class="bq-event-date">11.21.26 &#183; Riddim &amp; Kompa</div>
+        <div class="bq-event-name">Riddim &amp; Kompa <em>on the Reformer</em></div>
+        <div class="bq-event-loc">Brooklyn, NY</div>
+        <div class="bq-event-sub">Sat &#183; 12, 1, 2 &amp; 3 PM (45 min) &#183; $45 &#183; Maison Luxe Wellness Pilates, Brooklyn</div>
         <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
       </button>
 
@@ -3318,6 +3354,8 @@
     var CFG={
       'event-card-reformer':    { cap:6, sessions:['1pm','2pm','3pm'] },
       'event-card-reformer-bk': { cap:5, sessions:['bk12','bk1','bk2'] },
+      'event-card-reformer-o10':{ cap:5, sessions:['o12','o1','o2','o3'] },
+      'event-card-reformer-n21':{ cap:5, sessions:['n12','n1','n2','n3'] },
       'event-card-halloween':   { cap:6, sessions:['hw1230','hw130'] },
       'event-card-turkey':      { cap:6, sessions:['tb1230','tb130'] },
       'event-card-turkey28':    { cap:6, sessions:['tb28_1230'] }
@@ -5270,6 +5308,8 @@
           <label for="wlc-event" class="au-label">Event</label>
           <select id="wlc-event" onchange="wlcOnEventChange()" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.82rem;">
             <option value="riddim-kompa-brooklyn-2026-09-26">Riddim &amp; Kompa &mdash; Brooklyn (Sep 26)</option>
+            <option value="riddim-kompa-brooklyn-2026-10-10">Riddim &amp; Kompa &mdash; Brooklyn (Oct 10)</option>
+            <option value="riddim-kompa-brooklyn-2026-11-21">Riddim &amp; Kompa &mdash; Brooklyn (Nov 21)</option>
             <option value="halloween-creek-2026-10-24">Shhh&hellip; Quiet on the Creek (Oct 24)</option>
             <option value="turkey-burn-2026-11-21">Pre-Turkey Burn (Nov 21)</option>
             <option value="turkey-burn-2026-11-28">Post-Turkey Burn (Nov 28)</option>
@@ -5356,6 +5396,14 @@
             <option value="rkbk12">Riddim &amp; Kompa &#8212; Brooklyn (12 PM)</option>
             <option value="rkbk1">Riddim &amp; Kompa &#8212; Brooklyn (1 PM)</option>
             <option value="rkbk2">Riddim &amp; Kompa &#8212; Brooklyn (2 PM)</option>
+            <option value="rko12">Riddim &amp; Kompa &#8212; Brooklyn Oct 10 (12 PM)</option>
+            <option value="rko1">Riddim &amp; Kompa &#8212; Brooklyn Oct 10 (1 PM)</option>
+            <option value="rko2">Riddim &amp; Kompa &#8212; Brooklyn Oct 10 (2 PM)</option>
+            <option value="rko3">Riddim &amp; Kompa &#8212; Brooklyn Oct 10 (3 PM)</option>
+            <option value="rkn12">Riddim &amp; Kompa &#8212; Brooklyn Nov 21 (12 PM)</option>
+            <option value="rkn1">Riddim &amp; Kompa &#8212; Brooklyn Nov 21 (1 PM)</option>
+            <option value="rkn2">Riddim &amp; Kompa &#8212; Brooklyn Nov 21 (2 PM)</option>
+            <option value="rkn3">Riddim &amp; Kompa &#8212; Brooklyn Nov 21 (3 PM)</option>
             <option value="hw1230">Shhh&hellip; Quiet on the Creek &#8212; 12:30 PM</option>
             <option value="hw130">Shhh&hellip; Quiet on the Creek &#8212; 1:35 PM</option>
             <option value="tb1230">Turkey Burn! &#8212; 12:30 PM</option>
@@ -6416,6 +6464,15 @@ Can't wait to move and connect with you!</textarea>
     'riddim-kompa-brooklyn-12pm':{t:AC_RK,s:'20260926T160000Z',e:'20260926T164500Z',l:AC_MAISON},
     'riddim-kompa-brooklyn-1pm':{t:AC_RK,s:'20260926T170000Z',e:'20260926T174500Z',l:AC_MAISON},
     'riddim-kompa-brooklyn-2pm':{t:AC_RK,s:'20260926T180000Z',e:'20260926T184500Z',l:AC_MAISON},
+    // Oct 10 is still EDT (UTC-4); Nov 21 is EST (UTC-5).
+    'riddim-kompa-oct10-12pm':{t:AC_RK,s:'20261010T160000Z',e:'20261010T164500Z',l:AC_MAISON},
+    'riddim-kompa-oct10-1pm':{t:AC_RK,s:'20261010T170000Z',e:'20261010T174500Z',l:AC_MAISON},
+    'riddim-kompa-oct10-2pm':{t:AC_RK,s:'20261010T180000Z',e:'20261010T184500Z',l:AC_MAISON},
+    'riddim-kompa-oct10-3pm':{t:AC_RK,s:'20261010T190000Z',e:'20261010T194500Z',l:AC_MAISON},
+    'riddim-kompa-nov21-12pm':{t:AC_RK,s:'20261121T170000Z',e:'20261121T174500Z',l:AC_MAISON},
+    'riddim-kompa-nov21-1pm':{t:AC_RK,s:'20261121T180000Z',e:'20261121T184500Z',l:AC_MAISON},
+    'riddim-kompa-nov21-2pm':{t:AC_RK,s:'20261121T190000Z',e:'20261121T194500Z',l:AC_MAISON},
+    'riddim-kompa-nov21-3pm':{t:AC_RK,s:'20261121T200000Z',e:'20261121T204500Z',l:AC_MAISON},
     'halloween-1230pm':{t:AC_HW,s:'20261024T163000Z',e:'20261024T171500Z',l:AC_VALLEY},
     'halloween-130pm':{t:AC_HW,s:'20261024T173000Z',e:'20261024T181500Z',l:AC_VALLEY},
     'turkey-burn-1230pm':{t:AC_TB,s:'20261121T173000Z',e:'20261121T181500Z',l:AC_VALLEY},
@@ -6424,6 +6481,32 @@ Can't wait to move and connect with you!</textarea>
   };
   function acIso(z){ return z.replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/,'$1-$2-$3T$4:$5:$6Z'); }
   function acKeyFrom(cal){ var m=(cal||'').split('e='); return m.length>1?m[1]:cal; }
+  /* ── Draft events ──────────────────────────────────────────────────────
+     An event listed here is built but NOT announced: its card never shows
+     on the Upcoming Events grid and its booking overlay only opens from a
+     preview link. Everything else about it — the roster, the reminder
+     lists, the admin sections — is already wired, so publishing is deleting
+     one line here.
+
+     To look at a draft yourself, add &preview=1 to the booking link:
+       book.auricmovement.com/?book=reformer-o10&preview=1
+     Preview mode is per-visit and never linked from anywhere public.        */
+  window.AURIC_DRAFT_EVENTS = {
+    'riddim-kompa-brooklyn-2026-10-10': true,
+    'riddim-kompa-brooklyn-2026-11-21': true
+  };
+  window.auricIsDraft = function(ev){
+    return !!(window.AURIC_DRAFT_EVENTS && window.AURIC_DRAFT_EVENTS[ev]);
+  };
+  window.auricPreview = function(){
+    try { return new URLSearchParams(location.search).get('preview') === '1'; }
+    catch(e){ return false; }
+  };
+  // Should a draft event be reachable right now? Only in preview.
+  window.auricDraftHidden = function(ev){
+    return window.auricIsDraft(ev) && !window.auricPreview();
+  };
+
   // Has an event's day already gone by? (Eastern/local midnight, not UTC — a
   // date-only string parsed bare lands on UTC midnight and reads a day early.)
   // Used to keep a finished event's booking overlay closed: seat counts keep
@@ -6726,6 +6809,488 @@ document.addEventListener('DOMContentLoaded', function(){
     try { var arr=JSON.parse(localStorage.getItem('auric_reformer_bk')||'[]'); if(arr.length){ arr[arr.length-1].is_paid=true; localStorage.setItem('auric_reformer_bk', JSON.stringify(arr)); } } catch(e){}
   }
   try { var _bp=new URLSearchParams(location.search); if(_bp.get('paid')==='reformer-bk'){ var _bs=_bp.get('s'); if(!RFBK_CONF[_bs]) _bs='bk12'; setTimeout(function(){ rfbkShowConfirmed(_bs); }, 300); } } catch(e){}
+});
+</script>
+
+<!-- ══════════ Riddim & Kompa on the Reformer — BROOKLYN booking overlay — Saturday, October 10 (DRAFT) ══════════ -->
+<div id="reformer-o10-overlay" style="display:none;position:fixed;inset:0;background:rgba(44,26,14,.85);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);z-index:9999;align-items:center;justify-content:center;padding:1rem;overflow-y:auto;">
+  <div class="rf-modal">
+    <button type="button" class="rf-x" id="reformer-o10-close" aria-label="Close">&times;</button>
+    <div class="rf-eyebrow">Auric Movement</div>
+    <p class="rf-meta" style="background:#fbf3e2;border:1px solid #e6d3a8;color:#9a6535;border-radius:8px;padding:.5rem .7rem;font-weight:600;">&#9998; Preview &mdash; this date isn’t announced yet.</p>
+    <h2 class="rf-title">Riddim &amp; Kompa on the Reformer</h2>
+    <p class="rf-meta">Saturday, October 10 &middot; Maison Luxe Wellness Pilates, Brooklyn</p>
+    <p class="rf-meta"><strong>$45</strong> &middot; 45-minute session</p>
+    <p class="rf-goodie">Every spot includes a complimentary goodie bag &#127873;</p>
+
+    <div id="rfo10-step-time">
+      <p class="rf-meta" style="margin-bottom:.7rem;font-weight:600;color:var(--brown);">Pick your time:</p>
+      <button type="button" class="rf-time" data-session="o12" data-label="12:00 PM session">&#128340; 12:00 PM &mdash; 12:45 PM<small>45-minute reformer session</small></button>
+      <button type="button" class="rf-time" data-session="o1" data-label="1:00 PM session">&#128336; 1:00 PM &mdash; 1:45 PM<small>45-minute reformer session</small></button>
+      <button type="button" class="rf-time" data-session="o2" data-label="2:00 PM session">&#128337; 2:00 PM &mdash; 2:45 PM<small>45-minute reformer session</small></button>
+      <button type="button" class="rf-time" data-session="o3" data-label="3:00 PM session">&#128338; 3:00 PM &mdash; 3:45 PM<small>45-minute reformer session</small></button>
+    </div>
+
+    <form id="rfo10-step-form" style="display:none;" novalidate>
+      <div class="rf-chosen">Booking: <strong id="rfo10-chosen-label"></strong> &middot; <a id="rfo10-change-time" role="button" tabindex="0">change time</a></div>
+      <div class="rf-field"><label for="rfo10-name">Full name</label><input type="text" id="rfo10-name" autocomplete="name" placeholder="Your name"></div>
+      <div class="rf-field"><label for="rfo10-email">Email</label><input type="email" id="rfo10-email" autocomplete="email" placeholder="you@email.com"></div>
+      <div class="rf-field"><label for="rfo10-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="rfo10-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
+      <div class="rf-field"><label for="rfo10-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="rfo10-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
+      <div class="rf-ack">
+        <input type="checkbox" id="rfo10-refund">
+        <label for="rfo10-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">All sales are final &mdash; no cash refunds. To receive a credit, cancel at least 48 hours before your session start time &mdash; we&rsquo;ll issue a credit for the full amount you paid, valid toward any future Auric Movement event hosted by Niara for 6 months from the date of issue. Cancellations within 48 hours of the session, or no-shows, are not eligible for a credit. Can&rsquo;t make it on short notice? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</span></label>
+      </div>
+      <div class="rf-ack">
+        <input type="checkbox" id="rfo10-waiver" disabled>
+        <label for="rfo10-waiver">I have read and agree to the <a id="rfo10-open-waiver" role="button" tabindex="0">liability waiver</a>. <span class="rf-opt">(open it to continue)</span></label>
+      </div>
+      <div id="rfo10-waiver-box" style="display:none;max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;padding:.75rem .85rem;margin:.2rem 0 .4rem;background:#fdfbf7;font-size:.82rem;line-height:1.6;color:#3d322a;"></div>
+      <div class="rf-field"><label for="rfo10-sign">Signature &mdash; type your full name</label><input type="text" id="rfo10-sign" autocomplete="off" placeholder="Type your full name to sign"></div>
+      <div class="rf-field">
+        <label for="rfo10-sigpad">And draw your signature</label>
+        <div style="position:relative;">
+          <canvas id="rfo10-sigpad" width="500" height="140" style="width:100%;height:140px;border:1px solid var(--border);border-radius:10px;background:#fff;touch-action:none;cursor:crosshair;display:block;"></canvas>
+          <button type="button" id="rfo10-sig-clear" style="position:absolute;top:6px;right:8px;background:#fff;border:1px solid var(--border);border-radius:6px;font-size:.72rem;padding:.2rem .55rem;cursor:pointer;font-family:'Jost',sans-serif;color:#8a5a2a;">Clear</button>
+        </div>
+      </div>
+      <div class="rf-err" id="rfo10-form-err" role="alert"></div>
+      <button type="submit" class="rf-btn" id="rfo10-continue" disabled>Continue to payment &rarr;</button>
+    </form>
+
+    <div id="rfo10-step-pay" style="display:none;">
+      <p class="rf-meta" style="margin-bottom:1rem;">&#10004; You&rsquo;re all set, <strong id="rfo10-pay-name"></strong>. Complete payment to lock your <strong id="rfo10-pay-label"></strong> spot:</p>
+      <a id="rfo10-pay-btn" class="rf-btn" style="text-decoration:none;display:block;text-align:center;" href="#" target="_blank" rel="noopener noreferrer">Pay $45 &rarr;</a>
+      <p class="rf-policy" style="margin-top:.9rem;">You&rsquo;ll get a Stripe receipt by email. Questions? auricmovement@outlook.com</p>
+      <div style="margin-top:1rem;border-top:1px solid var(--border);padding-top:.9rem;">
+        <button type="button" id="rfo10-pay-later" class="rf-close-link" style="margin-top:0;">I&rsquo;ll pay later</button>
+        <p id="rfo10-pay-later-note" class="rf-policy" style="display:none;margin-top:.7rem;color:#8a5a2a;">Got it &mdash; we&rsquo;ve saved your details. Heads up: <strong>spots aren&rsquo;t held and are released first come, first served until payment is received</strong>, so pay soon to secure your place.</p>
+      </div>
+    </div>
+
+    <div id="rfo10-step-confirmed" style="display:none;">
+      <div class="rf-conf-banner">&#10004; Payment received &mdash; you&rsquo;re booked!</div>
+      <p class="rf-meta" style="margin:0 0 1rem;">See you Saturday, October 10 in Brooklyn for your <strong id="rfo10-conf-label"></strong>. A goodie bag is waiting &#127873;</p>
+      <div id="rfo10-conf-cal" class="rf-cal-wrap"></div>
+      <div class="bag-reserve-cta" style="margin:1.1rem 0 0;padding:.95rem 1.1rem;background:#fffdf9;border:1px solid #e6dbc8;border-radius:10px;">
+        <span style="display:block;font-family:Georgia,serif;font-size:1rem;color:#5A3A1A;font-weight:600;">&#128092; Want the AURIC MVMT bag too?</span>
+        <span style="display:block;font-size:.82rem;color:#6b5d4f;margin:.3rem 0 .35rem;line-height:1.55;">Reserve yours &mdash; $30, pay at pickup. No payment now &mdash; one click and we&rsquo;ll set one aside.</span>
+        <span style="display:block;font-size:.82rem;color:#9c6b34;font-weight:600;margin:0 0 .75rem;">Limited quantity &mdash; first come, first served. Reserve to hold yours.</span>
+        <button type="button" onclick="auricBagReserve(this,'auric_reformer_o10')" style="border:none;border-radius:999px;background:#5A3A1A;color:#f5efe0;font-family:inherit;font-weight:600;font-size:.82rem;letter-spacing:0;padding:.6rem 1.4rem;cursor:pointer;">Yes, reserve mine &#10022;</button>
+      </div>
+    </div>
+
+    <div class="rf-getting">
+      <h4>Getting there</h4>
+      <p><strong>Maison Luxe Wellness Pilates</strong><br>958 Lafayette Ave<br>Brooklyn, NY 11221</p>
+      <p><a class="rf-map" href="https://maps.google.com/?q=958+Lafayette+Ave+Brooklyn+NY+11221" target="_blank" rel="noopener noreferrer">Open in Google Maps &rarr;</a></p>
+    </div>
+
+    <button type="button" class="rf-close-link" id="reformer-o10-close2">Close</button>
+  </div>
+</div>
+
+<script>
+/* Riddim & Kompa on the Reformer — BROOKLYN booking flow (self-contained;
+   shares the reformer_registrations table via event='riddim-kompa-brooklyn-2026-10-10'). */
+document.addEventListener('DOMContentLoaded', function(){
+  var card = document.getElementById('event-card-reformer-o10');
+  var ov   = document.getElementById('reformer-o10-overlay');
+  if(!card || !ov) return;
+
+  var RKO10_EVENT = 'riddim-kompa-brooklyn-2026-10-10';
+  var RKO10_LINKS = {
+    'o12': '',
+    'o1': '',
+    'o2': '',
+    'o3': ''   // ← paste the Stripe payment links here before publishing
+  };
+  var RKO10_CAP = 5;
+
+  var _sb=null;
+  function sb(){
+    if(_sb) return _sb;
+    try { if(window.supabase && window.supabase.createClient){
+      _sb = window.supabase.createClient('https://qvmiwyxerotkqpbuhpun.supabase.co','sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ');
+    }} catch(e){}
+    return _sb;
+  }
+
+  var stepTime=document.getElementById('rfo10-step-time'),
+      stepForm=document.getElementById('rfo10-step-form'),
+      stepPay =document.getElementById('rfo10-step-pay'),
+      chosenLabelEl=document.getElementById('rfo10-chosen-label'),
+      nameEl=document.getElementById('rfo10-name'), emailEl=document.getElementById('rfo10-email'),
+      refEl=document.getElementById('rfo10-referral'), healthEl=document.getElementById('rfo10-health'),
+      refundEl=document.getElementById('rfo10-refund'), waiverEl=document.getElementById('rfo10-waiver'),
+      signEl=document.getElementById('rfo10-sign'), formErr=document.getElementById('rfo10-form-err'),
+      continueBtn=document.getElementById('rfo10-continue'),
+      waiverBox=document.getElementById('rfo10-waiver-box');
+  var chosen=null, chosenLabel='';
+  var o10Sig=window.AuricSigPad(document.getElementById('rfo10-sigpad'), document.getElementById('rfo10-sig-clear'));
+
+  function openOv(){
+    // Not announced yet: only a preview link gets in.
+    if(window.auricDraftHidden && window.auricDraftHidden(RKO10_EVENT)) return;
+    ov.style.display='flex'; document.body.style.overflow='hidden'; applyCap();
+  }
+  function closeOv(){ ov.style.display='none'; document.body.style.overflow=''; }
+  card.addEventListener('click', openOv);
+  document.getElementById('reformer-o10-close').addEventListener('click', closeOv);
+  document.getElementById('reformer-o10-close2').addEventListener('click', closeOv);
+  ov.addEventListener('click', function(e){ if(e.target===ov) closeOv(); });
+
+  Array.prototype.forEach.call(stepTime.querySelectorAll('.rf-time'), function(btn){
+    btn.addEventListener('click', function(){
+      if(btn.disabled) return;
+      chosen=btn.getAttribute('data-session'); chosenLabel=btn.getAttribute('data-label');
+      chosenLabelEl.textContent=chosenLabel;
+      stepTime.style.display='none'; stepForm.style.display='';
+    });
+  });
+  document.getElementById('rfo10-change-time').addEventListener('click', function(){
+    stepForm.style.display='none'; stepTime.style.display=''; chosen=null;
+  });
+
+  document.getElementById('rfo10-open-waiver').addEventListener('click', function(){
+    if(!waiverBox.innerHTML){
+      var cl=(window.__RF_CLAUSES||[]);
+      var html=cl.map(function(c){ return '<p style="margin:0 0 .6rem;">'+c+'</p>'; }).join('');
+      html+='<p style="margin:.6rem 0 .2rem;font-weight:600;">Refund policy</p><p style="margin:0;">'+(window.__RF_REFUND_TEXT||'')+'</p>';
+      waiverBox.innerHTML=html;
+    }
+    var showing = waiverBox.style.display && waiverBox.style.display!=='none';
+    waiverBox.style.display = showing ? 'none' : 'block';
+    waiverEl.disabled=false;
+  });
+  function syncContinue(){ continueBtn.disabled = !(refundEl.checked && waiverEl.checked); }
+  refundEl.addEventListener('change', syncContinue);
+  waiverEl.addEventListener('change', syncContinue);
+
+  function applyCap(){
+    // Once the day has passed, stay sold out — post-event seat releases (credits)
+    // must not re-open a class that already happened.
+    if(window.auricLockIfPast && window.auricLockIfPast('2026-10-10', stepTime)) return;
+    var c=sb(); if(!c) return;
+    try {
+      c.rpc('reformer_spot_counts').then(function(res){
+        if(!res||res.error||!res.data) return;
+        var paid={ 'o12':0,'o1':0,'o2':0,'o3':0 };
+        res.data.forEach(function(r){ if(paid[r.session]!==undefined) paid[r.session]=Number(r.paid)||0; });
+        Array.prototype.forEach.call(stepTime.querySelectorAll('.rf-time'), function(btn){
+          var s=btn.getAttribute('data-session'); var rem=RKO10_CAP-(paid[s]||0);
+          var old=btn.querySelector('.rf-left-tag'); if(old) old.remove();
+          var so=btn.querySelector('.rf-soldout-tag'); if(so) so.remove();
+          if(window.auricWaitlistClear) window.auricWaitlistClear(btn);
+          btn.disabled=false; btn.classList.remove('rf-soldout');
+          if(rem<=0){ btn.disabled=true; btn.classList.add('rf-soldout'); var t=document.createElement('small'); t.className='rf-soldout-tag'; t.textContent='Sold out'; btn.appendChild(t); if(window.auricWaitlistAppend) window.auricWaitlistAppend(btn, RKO10_EVENT, s, btn.getAttribute('data-label')); }
+          else if(rem<=2){ var l=document.createElement('small'); l.className='rf-left-tag'; l.textContent='⚡ Almost sold out — only '+rem+' spot'+(rem===1?'':'s')+' left'; btn.appendChild(l); }
+        });
+      }, function(){});
+    } catch(e){}
+  }
+
+  stepForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    if(!chosen){ formErr.textContent='Please pick a session time first.'; return; }
+    var name=nameEl.value.trim(), email=emailEl.value.trim(), sign=signEl.value.trim();
+    if(name.length<2){ formErr.textContent='Please enter your full name.'; nameEl.focus(); return; }
+    if(!/.+@.+\..+/.test(email)){ formErr.textContent='Please enter a valid email.'; emailEl.focus(); return; }
+    if(!refundEl.checked){ formErr.textContent='Please confirm you understand the refund policy.'; return; }
+    if(!waiverEl.checked){ formErr.textContent='Please open and agree to the liability waiver.'; return; }
+    if(sign.length<2){ formErr.textContent='Please type your full name to sign.'; signEl.focus(); return; }
+    if(o10Sig.isEmpty()){ formErr.textContent='Please draw your signature in the box.'; return; }
+    formErr.textContent='';
+    var nowIso=new Date().toISOString();
+    var rec={
+      name:name, email:email, session:chosen, session_label:chosenLabel,
+      referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
+      signature:sign, signature_data:o10Sig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:19),
+      refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
+      waiver_agreed:true, is_paid:false, created_at:nowIso, event:RKO10_EVENT
+    };
+    try { var k='auric_reformer_o10'; var a=JSON.parse(localStorage.getItem(k)||'[]'); a.push(rec); localStorage.setItem(k,JSON.stringify(a)); } catch(e){}
+    try { var c=sb(); if(c) window.rfSafeInsert(c, rec); } catch(e){}
+    document.getElementById('rfo10-pay-name').textContent=name.split(' ')[0];
+    document.getElementById('rfo10-pay-label').textContent=chosenLabel;
+    var payHref = RKO10_LINKS[chosen];
+    if(!payHref){
+      // Better to say so than to hand someone a dead button.
+      formErr.textContent='Booking for this session isn\u2019t open yet \u2014 '
+        + 'email auricmovement@outlook.com and we\u2019ll hold you a spot.';
+      return;
+    }
+    document.getElementById('rfo10-pay-btn').href = payHref;
+    stepForm.style.display='none'; stepPay.style.display='';
+    stepPay.scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
+  document.getElementById('rfo10-pay-later').addEventListener('click', function(){
+    document.getElementById('rfo10-pay-later-note').style.display='block';
+    if(this._pp) return; this._pp=1;
+    window.auricSendPayPending && window.auricSendPayPending({ event:'riddim-kompa-brooklyn-2026-10-10',
+      name:(document.getElementById('rfo10-name').value||'').trim(), email:(document.getElementById('rfo10-email').value||'').trim(),
+      sessionLabel:(document.getElementById('rfo10-pay-label').textContent||''), stripeUrl:(document.getElementById('rfo10-pay-btn').getAttribute('href')||'') });
+  });
+  // Deep link from the shared flyer (/riddim-kompa-brooklyn) → open the booking popup.
+  try { if(new URLSearchParams(location.search).get('book')==='reformer-o10'){ setTimeout(openOv, 450); } } catch(e){}
+  // ── Payment confirmation (Stripe returns to ?paid=reformer-o10&s=o12|o1|o2|o3) ──
+  var RFO10_CONF = {
+    'o12': { label:'12:00 PM session', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-oct10-12pm' },
+    'o1': { label:'1:00 PM session', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-oct10-1pm' },
+    'o2': { label:'2:00 PM session', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-oct10-2pm' },
+    'o3': { label:'3:00 PM session', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-oct10-3pm' }
+  };
+  function rfo10ShowConfirmed(sk){
+    var m=RFO10_CONF[sk]||RFO10_CONF['o12'];
+    document.getElementById('rfo10-conf-label').textContent=m.label;
+    document.getElementById('rfo10-conf-cal').innerHTML=window.auricCalButtons(m.cal);
+    stepTime.style.display='none'; stepForm.style.display='none'; stepPay.style.display='none';
+    document.getElementById('rfo10-step-confirmed').style.display='';
+    openOv();
+    try { var arr=JSON.parse(localStorage.getItem('auric_reformer_o10')||'[]'); if(arr.length){ arr[arr.length-1].is_paid=true; localStorage.setItem('auric_reformer_o10', JSON.stringify(arr)); } } catch(e){}
+  }
+  try { var _bp=new URLSearchParams(location.search); if(_bp.get('paid')==='reformer-o10'){ var _bs=_bp.get('s'); if(!RFO10_CONF[_bs]) _bs='o12'; setTimeout(function(){ rfo10ShowConfirmed(_bs); }, 300); } } catch(e){}
+});
+</script>
+
+<!-- ══════════ Riddim & Kompa on the Reformer — BROOKLYN booking overlay — Saturday, November 21 (DRAFT) ══════════ -->
+<div id="reformer-n21-overlay" style="display:none;position:fixed;inset:0;background:rgba(44,26,14,.85);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);z-index:9999;align-items:center;justify-content:center;padding:1rem;overflow-y:auto;">
+  <div class="rf-modal">
+    <button type="button" class="rf-x" id="reformer-n21-close" aria-label="Close">&times;</button>
+    <div class="rf-eyebrow">Auric Movement</div>
+    <p class="rf-meta" style="background:#fbf3e2;border:1px solid #e6d3a8;color:#9a6535;border-radius:8px;padding:.5rem .7rem;font-weight:600;">&#9998; Preview &mdash; this date isn’t announced yet.</p>
+    <h2 class="rf-title">Riddim &amp; Kompa on the Reformer</h2>
+    <p class="rf-meta">Saturday, November 21 &middot; Maison Luxe Wellness Pilates, Brooklyn</p>
+    <p class="rf-meta"><strong>$45</strong> &middot; 45-minute session</p>
+    <p class="rf-goodie">Every spot includes a complimentary goodie bag &#127873;</p>
+
+    <div id="rfn21-step-time">
+      <p class="rf-meta" style="margin-bottom:.7rem;font-weight:600;color:var(--brown);">Pick your time:</p>
+      <button type="button" class="rf-time" data-session="n12" data-label="12:00 PM session">&#128340; 12:00 PM &mdash; 12:45 PM<small>45-minute reformer session</small></button>
+      <button type="button" class="rf-time" data-session="n1" data-label="1:00 PM session">&#128336; 1:00 PM &mdash; 1:45 PM<small>45-minute reformer session</small></button>
+      <button type="button" class="rf-time" data-session="n2" data-label="2:00 PM session">&#128337; 2:00 PM &mdash; 2:45 PM<small>45-minute reformer session</small></button>
+      <button type="button" class="rf-time" data-session="n3" data-label="3:00 PM session">&#128338; 3:00 PM &mdash; 3:45 PM<small>45-minute reformer session</small></button>
+    </div>
+
+    <form id="rfn21-step-form" style="display:none;" novalidate>
+      <div class="rf-chosen">Booking: <strong id="rfn21-chosen-label"></strong> &middot; <a id="rfn21-change-time" role="button" tabindex="0">change time</a></div>
+      <div class="rf-field"><label for="rfn21-name">Full name</label><input type="text" id="rfn21-name" autocomplete="name" placeholder="Your name"></div>
+      <div class="rf-field"><label for="rfn21-email">Email</label><input type="email" id="rfn21-email" autocomplete="email" placeholder="you@email.com"></div>
+      <div class="rf-field"><label for="rfn21-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="rfn21-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
+      <div class="rf-field"><label for="rfn21-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="rfn21-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
+      <div class="rf-ack">
+        <input type="checkbox" id="rfn21-refund">
+        <label for="rfn21-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">All sales are final &mdash; no cash refunds. To receive a credit, cancel at least 48 hours before your session start time &mdash; we&rsquo;ll issue a credit for the full amount you paid, valid toward any future Auric Movement event hosted by Niara for 6 months from the date of issue. Cancellations within 48 hours of the session, or no-shows, are not eligible for a credit. Can&rsquo;t make it on short notice? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</span></label>
+      </div>
+      <div class="rf-ack">
+        <input type="checkbox" id="rfn21-waiver" disabled>
+        <label for="rfn21-waiver">I have read and agree to the <a id="rfn21-open-waiver" role="button" tabindex="0">liability waiver</a>. <span class="rf-opt">(open it to continue)</span></label>
+      </div>
+      <div id="rfn21-waiver-box" style="display:none;max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;padding:.75rem .85rem;margin:.2rem 0 .4rem;background:#fdfbf7;font-size:.82rem;line-height:1.6;color:#3d322a;"></div>
+      <div class="rf-field"><label for="rfn21-sign">Signature &mdash; type your full name</label><input type="text" id="rfn21-sign" autocomplete="off" placeholder="Type your full name to sign"></div>
+      <div class="rf-field">
+        <label for="rfn21-sigpad">And draw your signature</label>
+        <div style="position:relative;">
+          <canvas id="rfn21-sigpad" width="500" height="140" style="width:100%;height:140px;border:1px solid var(--border);border-radius:10px;background:#fff;touch-action:none;cursor:crosshair;display:block;"></canvas>
+          <button type="button" id="rfn21-sig-clear" style="position:absolute;top:6px;right:8px;background:#fff;border:1px solid var(--border);border-radius:6px;font-size:.72rem;padding:.2rem .55rem;cursor:pointer;font-family:'Jost',sans-serif;color:#8a5a2a;">Clear</button>
+        </div>
+      </div>
+      <div class="rf-err" id="rfn21-form-err" role="alert"></div>
+      <button type="submit" class="rf-btn" id="rfn21-continue" disabled>Continue to payment &rarr;</button>
+    </form>
+
+    <div id="rfn21-step-pay" style="display:none;">
+      <p class="rf-meta" style="margin-bottom:1rem;">&#10004; You&rsquo;re all set, <strong id="rfn21-pay-name"></strong>. Complete payment to lock your <strong id="rfn21-pay-label"></strong> spot:</p>
+      <a id="rfn21-pay-btn" class="rf-btn" style="text-decoration:none;display:block;text-align:center;" href="#" target="_blank" rel="noopener noreferrer">Pay $45 &rarr;</a>
+      <p class="rf-policy" style="margin-top:.9rem;">You&rsquo;ll get a Stripe receipt by email. Questions? auricmovement@outlook.com</p>
+      <div style="margin-top:1rem;border-top:1px solid var(--border);padding-top:.9rem;">
+        <button type="button" id="rfn21-pay-later" class="rf-close-link" style="margin-top:0;">I&rsquo;ll pay later</button>
+        <p id="rfn21-pay-later-note" class="rf-policy" style="display:none;margin-top:.7rem;color:#8a5a2a;">Got it &mdash; we&rsquo;ve saved your details. Heads up: <strong>spots aren&rsquo;t held and are released first come, first served until payment is received</strong>, so pay soon to secure your place.</p>
+      </div>
+    </div>
+
+    <div id="rfn21-step-confirmed" style="display:none;">
+      <div class="rf-conf-banner">&#10004; Payment received &mdash; you&rsquo;re booked!</div>
+      <p class="rf-meta" style="margin:0 0 1rem;">See you Saturday, November 21 in Brooklyn for your <strong id="rfn21-conf-label"></strong>. A goodie bag is waiting &#127873;</p>
+      <div id="rfn21-conf-cal" class="rf-cal-wrap"></div>
+      <div class="bag-reserve-cta" style="margin:1.1rem 0 0;padding:.95rem 1.1rem;background:#fffdf9;border:1px solid #e6dbc8;border-radius:10px;">
+        <span style="display:block;font-family:Georgia,serif;font-size:1rem;color:#5A3A1A;font-weight:600;">&#128092; Want the AURIC MVMT bag too?</span>
+        <span style="display:block;font-size:.82rem;color:#6b5d4f;margin:.3rem 0 .35rem;line-height:1.55;">Reserve yours &mdash; $30, pay at pickup. No payment now &mdash; one click and we&rsquo;ll set one aside.</span>
+        <span style="display:block;font-size:.82rem;color:#9c6b34;font-weight:600;margin:0 0 .75rem;">Limited quantity &mdash; first come, first served. Reserve to hold yours.</span>
+        <button type="button" onclick="auricBagReserve(this,'auric_reformer_n21')" style="border:none;border-radius:999px;background:#5A3A1A;color:#f5efe0;font-family:inherit;font-weight:600;font-size:.82rem;letter-spacing:0;padding:.6rem 1.4rem;cursor:pointer;">Yes, reserve mine &#10022;</button>
+      </div>
+    </div>
+
+    <div class="rf-getting">
+      <h4>Getting there</h4>
+      <p><strong>Maison Luxe Wellness Pilates</strong><br>958 Lafayette Ave<br>Brooklyn, NY 11221</p>
+      <p><a class="rf-map" href="https://maps.google.com/?q=958+Lafayette+Ave+Brooklyn+NY+11221" target="_blank" rel="noopener noreferrer">Open in Google Maps &rarr;</a></p>
+    </div>
+
+    <button type="button" class="rf-close-link" id="reformer-n21-close2">Close</button>
+  </div>
+</div>
+
+<script>
+/* Riddim & Kompa on the Reformer — BROOKLYN booking flow (self-contained;
+   shares the reformer_registrations table via event='riddim-kompa-brooklyn-2026-11-21'). */
+document.addEventListener('DOMContentLoaded', function(){
+  var card = document.getElementById('event-card-reformer-n21');
+  var ov   = document.getElementById('reformer-n21-overlay');
+  if(!card || !ov) return;
+
+  var RKN21_EVENT = 'riddim-kompa-brooklyn-2026-11-21';
+  var RKN21_LINKS = {
+    'n12': '',
+    'n1': '',
+    'n2': '',
+    'n3': ''   // ← paste the Stripe payment links here before publishing
+  };
+  var RKN21_CAP = 5;
+
+  var _sb=null;
+  function sb(){
+    if(_sb) return _sb;
+    try { if(window.supabase && window.supabase.createClient){
+      _sb = window.supabase.createClient('https://qvmiwyxerotkqpbuhpun.supabase.co','sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ');
+    }} catch(e){}
+    return _sb;
+  }
+
+  var stepTime=document.getElementById('rfn21-step-time'),
+      stepForm=document.getElementById('rfn21-step-form'),
+      stepPay =document.getElementById('rfn21-step-pay'),
+      chosenLabelEl=document.getElementById('rfn21-chosen-label'),
+      nameEl=document.getElementById('rfn21-name'), emailEl=document.getElementById('rfn21-email'),
+      refEl=document.getElementById('rfn21-referral'), healthEl=document.getElementById('rfn21-health'),
+      refundEl=document.getElementById('rfn21-refund'), waiverEl=document.getElementById('rfn21-waiver'),
+      signEl=document.getElementById('rfn21-sign'), formErr=document.getElementById('rfn21-form-err'),
+      continueBtn=document.getElementById('rfn21-continue'),
+      waiverBox=document.getElementById('rfn21-waiver-box');
+  var chosen=null, chosenLabel='';
+  var n21Sig=window.AuricSigPad(document.getElementById('rfn21-sigpad'), document.getElementById('rfn21-sig-clear'));
+
+  function openOv(){
+    // Not announced yet: only a preview link gets in.
+    if(window.auricDraftHidden && window.auricDraftHidden(RKN21_EVENT)) return;
+    ov.style.display='flex'; document.body.style.overflow='hidden'; applyCap();
+  }
+  function closeOv(){ ov.style.display='none'; document.body.style.overflow=''; }
+  card.addEventListener('click', openOv);
+  document.getElementById('reformer-n21-close').addEventListener('click', closeOv);
+  document.getElementById('reformer-n21-close2').addEventListener('click', closeOv);
+  ov.addEventListener('click', function(e){ if(e.target===ov) closeOv(); });
+
+  Array.prototype.forEach.call(stepTime.querySelectorAll('.rf-time'), function(btn){
+    btn.addEventListener('click', function(){
+      if(btn.disabled) return;
+      chosen=btn.getAttribute('data-session'); chosenLabel=btn.getAttribute('data-label');
+      chosenLabelEl.textContent=chosenLabel;
+      stepTime.style.display='none'; stepForm.style.display='';
+    });
+  });
+  document.getElementById('rfn21-change-time').addEventListener('click', function(){
+    stepForm.style.display='none'; stepTime.style.display=''; chosen=null;
+  });
+
+  document.getElementById('rfn21-open-waiver').addEventListener('click', function(){
+    if(!waiverBox.innerHTML){
+      var cl=(window.__RF_CLAUSES||[]);
+      var html=cl.map(function(c){ return '<p style="margin:0 0 .6rem;">'+c+'</p>'; }).join('');
+      html+='<p style="margin:.6rem 0 .2rem;font-weight:600;">Refund policy</p><p style="margin:0;">'+(window.__RF_REFUND_TEXT||'')+'</p>';
+      waiverBox.innerHTML=html;
+    }
+    var showing = waiverBox.style.display && waiverBox.style.display!=='none';
+    waiverBox.style.display = showing ? 'none' : 'block';
+    waiverEl.disabled=false;
+  });
+  function syncContinue(){ continueBtn.disabled = !(refundEl.checked && waiverEl.checked); }
+  refundEl.addEventListener('change', syncContinue);
+  waiverEl.addEventListener('change', syncContinue);
+
+  function applyCap(){
+    // Once the day has passed, stay sold out — post-event seat releases (credits)
+    // must not re-open a class that already happened.
+    if(window.auricLockIfPast && window.auricLockIfPast('2026-11-21', stepTime)) return;
+    var c=sb(); if(!c) return;
+    try {
+      c.rpc('reformer_spot_counts').then(function(res){
+        if(!res||res.error||!res.data) return;
+        var paid={ 'n12':0,'n1':0,'n2':0,'n3':0 };
+        res.data.forEach(function(r){ if(paid[r.session]!==undefined) paid[r.session]=Number(r.paid)||0; });
+        Array.prototype.forEach.call(stepTime.querySelectorAll('.rf-time'), function(btn){
+          var s=btn.getAttribute('data-session'); var rem=RKN21_CAP-(paid[s]||0);
+          var old=btn.querySelector('.rf-left-tag'); if(old) old.remove();
+          var so=btn.querySelector('.rf-soldout-tag'); if(so) so.remove();
+          if(window.auricWaitlistClear) window.auricWaitlistClear(btn);
+          btn.disabled=false; btn.classList.remove('rf-soldout');
+          if(rem<=0){ btn.disabled=true; btn.classList.add('rf-soldout'); var t=document.createElement('small'); t.className='rf-soldout-tag'; t.textContent='Sold out'; btn.appendChild(t); if(window.auricWaitlistAppend) window.auricWaitlistAppend(btn, RKN21_EVENT, s, btn.getAttribute('data-label')); }
+          else if(rem<=2){ var l=document.createElement('small'); l.className='rf-left-tag'; l.textContent='⚡ Almost sold out — only '+rem+' spot'+(rem===1?'':'s')+' left'; btn.appendChild(l); }
+        });
+      }, function(){});
+    } catch(e){}
+  }
+
+  stepForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    if(!chosen){ formErr.textContent='Please pick a session time first.'; return; }
+    var name=nameEl.value.trim(), email=emailEl.value.trim(), sign=signEl.value.trim();
+    if(name.length<2){ formErr.textContent='Please enter your full name.'; nameEl.focus(); return; }
+    if(!/.+@.+\..+/.test(email)){ formErr.textContent='Please enter a valid email.'; emailEl.focus(); return; }
+    if(!refundEl.checked){ formErr.textContent='Please confirm you understand the refund policy.'; return; }
+    if(!waiverEl.checked){ formErr.textContent='Please open and agree to the liability waiver.'; return; }
+    if(sign.length<2){ formErr.textContent='Please type your full name to sign.'; signEl.focus(); return; }
+    if(n21Sig.isEmpty()){ formErr.textContent='Please draw your signature in the box.'; return; }
+    formErr.textContent='';
+    var nowIso=new Date().toISOString();
+    var rec={
+      name:name, email:email, session:chosen, session_label:chosenLabel,
+      referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
+      signature:sign, signature_data:n21Sig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:19),
+      refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
+      waiver_agreed:true, is_paid:false, created_at:nowIso, event:RKN21_EVENT
+    };
+    try { var k='auric_reformer_n21'; var a=JSON.parse(localStorage.getItem(k)||'[]'); a.push(rec); localStorage.setItem(k,JSON.stringify(a)); } catch(e){}
+    try { var c=sb(); if(c) window.rfSafeInsert(c, rec); } catch(e){}
+    document.getElementById('rfn21-pay-name').textContent=name.split(' ')[0];
+    document.getElementById('rfn21-pay-label').textContent=chosenLabel;
+    var payHref = RKN21_LINKS[chosen];
+    if(!payHref){
+      // Better to say so than to hand someone a dead button.
+      formErr.textContent='Booking for this session isn\u2019t open yet \u2014 '
+        + 'email auricmovement@outlook.com and we\u2019ll hold you a spot.';
+      return;
+    }
+    document.getElementById('rfn21-pay-btn').href = payHref;
+    stepForm.style.display='none'; stepPay.style.display='';
+    stepPay.scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
+  document.getElementById('rfn21-pay-later').addEventListener('click', function(){
+    document.getElementById('rfn21-pay-later-note').style.display='block';
+    if(this._pp) return; this._pp=1;
+    window.auricSendPayPending && window.auricSendPayPending({ event:'riddim-kompa-brooklyn-2026-11-21',
+      name:(document.getElementById('rfn21-name').value||'').trim(), email:(document.getElementById('rfn21-email').value||'').trim(),
+      sessionLabel:(document.getElementById('rfn21-pay-label').textContent||''), stripeUrl:(document.getElementById('rfn21-pay-btn').getAttribute('href')||'') });
+  });
+  // Deep link from the shared flyer (/riddim-kompa-brooklyn) → open the booking popup.
+  try { if(new URLSearchParams(location.search).get('book')==='reformer-n21'){ setTimeout(openOv, 450); } } catch(e){}
+  // ── Payment confirmation (Stripe returns to ?paid=reformer-n21&s=n12|n1|n2|n3) ──
+  var RFN21_CONF = {
+    'n12': { label:'12:00 PM session', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-nov21-12pm' },
+    'n1': { label:'1:00 PM session', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-nov21-1pm' },
+    'n2': { label:'2:00 PM session', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-nov21-2pm' },
+    'n3': { label:'3:00 PM session', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-nov21-3pm' }
+  };
+  function rfn21ShowConfirmed(sk){
+    var m=RFN21_CONF[sk]||RFN21_CONF['n12'];
+    document.getElementById('rfn21-conf-label').textContent=m.label;
+    document.getElementById('rfn21-conf-cal').innerHTML=window.auricCalButtons(m.cal);
+    stepTime.style.display='none'; stepForm.style.display='none'; stepPay.style.display='none';
+    document.getElementById('rfn21-step-confirmed').style.display='';
+    openOv();
+    try { var arr=JSON.parse(localStorage.getItem('auric_reformer_n21')||'[]'); if(arr.length){ arr[arr.length-1].is_paid=true; localStorage.setItem('auric_reformer_n21', JSON.stringify(arr)); } } catch(e){}
+  }
+  try { var _bp=new URLSearchParams(location.search); if(_bp.get('paid')==='reformer-n21'){ var _bs=_bp.get('s'); if(!RFN21_CONF[_bs]) _bs='n12'; setTimeout(function(){ rfn21ShowConfirmed(_bs); }, 300); } } catch(e){}
 });
 </script>
 
@@ -9835,6 +10400,14 @@ document.addEventListener('DOMContentLoaded', function() {
       'rkbk12': { session:'bk12',   slabel:'12:00 PM session', event:'riddim-kompa-brooklyn-2026-09-26', name:'Riddim & Kompa — Brooklyn, 12 PM' },
       'rkbk1':  { session:'bk1',    slabel:'1:00 PM session',  event:'riddim-kompa-brooklyn-2026-09-26', name:'Riddim & Kompa — Brooklyn, 1 PM' },
       'rkbk2':  { session:'bk2',    slabel:'2:00 PM session',  event:'riddim-kompa-brooklyn-2026-09-26', name:'Riddim & Kompa — Brooklyn, 2 PM' },
+      'rko12': { session:'o12', slabel:'12:00 PM session', event:'riddim-kompa-brooklyn-2026-10-10', name:'Riddim & Kompa — Brooklyn Oct 10, 12 PM' },
+      'rko1': { session:'o1', slabel:'1:00 PM session', event:'riddim-kompa-brooklyn-2026-10-10', name:'Riddim & Kompa — Brooklyn Oct 10, 1 PM' },
+      'rko2': { session:'o2', slabel:'2:00 PM session', event:'riddim-kompa-brooklyn-2026-10-10', name:'Riddim & Kompa — Brooklyn Oct 10, 2 PM' },
+      'rko3': { session:'o3', slabel:'3:00 PM session', event:'riddim-kompa-brooklyn-2026-10-10', name:'Riddim & Kompa — Brooklyn Oct 10, 3 PM' },
+      'rkn12': { session:'n12', slabel:'12:00 PM session', event:'riddim-kompa-brooklyn-2026-11-21', name:'Riddim & Kompa — Brooklyn Nov 21, 12 PM' },
+      'rkn1': { session:'n1', slabel:'1:00 PM session', event:'riddim-kompa-brooklyn-2026-11-21', name:'Riddim & Kompa — Brooklyn Nov 21, 1 PM' },
+      'rkn2': { session:'n2', slabel:'2:00 PM session', event:'riddim-kompa-brooklyn-2026-11-21', name:'Riddim & Kompa — Brooklyn Nov 21, 2 PM' },
+      'rkn3': { session:'n3', slabel:'3:00 PM session', event:'riddim-kompa-brooklyn-2026-11-21', name:'Riddim & Kompa — Brooklyn Nov 21, 3 PM' },
       'tb1230': { session:'tb1230', slabel:'12:30 PM session', event:'turkey-burn-2026-11-21',           name:'Turkey Burn! — 12:30 PM' },
       'tb130':  { session:'tb130',  slabel:'1:35 PM session',  event:'turkey-burn-2026-11-21',           name:'Turkey Burn! — 1:35 PM' },
       'hw1230': { session:'hw1230', slabel:'12:30 PM session', event:'halloween-creek-2026-10-24',       name:'Shhh… Quiet on the Creek — 12:30 PM' },
@@ -10390,6 +10963,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var crContainer       = document.createElement('div'); crContainer.id       = 'admin-cr-container';
     var reformerContainer = document.createElement('div'); reformerContainer.id = 'admin-reformer-container';
     var reformerBkContainer = document.createElement('div'); reformerBkContainer.id = 'admin-reformer-bk-container';
+    var reformerO10Container = document.createElement('div'); reformerO10Container.id = 'admin-reformer-o10-container';
+    var reformerN21Container = document.createElement('div'); reformerN21Container.id = 'admin-reformer-n21-container';
     var halloweenContainer = document.createElement('div'); halloweenContainer.id = 'admin-halloween-container';
     var turkeyContainer   = document.createElement('div'); turkeyContainer.id   = 'admin-turkey-container';
     var turkey28Container = document.createElement('div'); turkey28Container.id = 'admin-turkey28-container';
@@ -10404,6 +10979,8 @@ document.addEventListener('DOMContentLoaded', function() {
     turkey28Container.setAttribute('data-event-date', '2026-11-28');
     halloweenContainer.setAttribute('data-event-date', '2026-10-24');
     reformerBkContainer.setAttribute('data-event-date', '2026-09-26');
+    reformerO10Container.setAttribute('data-event-date', '2026-10-10');
+    reformerN21Container.setAttribute('data-event-date', '2026-11-21');
     reformerContainer.setAttribute('data-event-date', '2026-09-13');
     crContainer.setAttribute('data-event-date', '2026-08-15');
     mcContainer.setAttribute('data-event-date', '2026-08-01');
@@ -10426,7 +11003,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // and nobody has to come back and re-order this list. Upcoming run
     // soonest-first, past run most-recent-first.
     var datedSections = [
-      reformerContainer, reformerBkContainer, halloweenContainer, turkeyContainer,
+      reformerContainer, reformerBkContainer, reformerO10Container, reformerN21Container,
+      halloweenContainer, turkeyContainer,
       turkey28Container, bloomContainer, crContainer, mcContainer, sessionsContainer
     ];
     var upcomingSections = [], pastSections = [];
@@ -10463,6 +11041,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof renderCRSection === 'function') renderCRSection(crContainer);
     if (typeof renderReformerSection === 'function') renderReformerSection(reformerContainer);
     if (typeof renderReformerBkSection === 'function') renderReformerBkSection(reformerBkContainer);
+    if (typeof renderReformerO10Section === 'function') renderReformerO10Section(reformerO10Container);
+    if (typeof renderReformerN21Section === 'function') renderReformerN21Section(reformerN21Container);
     if (typeof renderReformerTbSection === 'function') renderReformerTbSection(turkeyContainer);
     if (typeof renderReformerTb28Section === 'function') renderReformerTb28Section(turkey28Container);
     if (typeof renderReformerHwSection === 'function') renderReformerHwSection(halloweenContainer);
@@ -10852,6 +11432,14 @@ document.addEventListener('DOMContentLoaded', function() {
     'rf-bk-12':  { src:'reformer', dbEvent:'riddim-kompa-brooklyn-2026-09-26', session:'bk12', name:'Riddim & Kompa — Brooklyn · 12 PM', date:'Saturday, September 26th', time:'Arrival 11:55 AM · Class 12:00 PM', loc:'Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221' },
     'rf-bk-1':   { src:'reformer', dbEvent:'riddim-kompa-brooklyn-2026-09-26', session:'bk1',  name:'Riddim & Kompa — Brooklyn · 1 PM', date:'Saturday, September 26th', time:'Arrival 12:55 PM · Class 1:00 PM', loc:'Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221' },
     'rf-bk-2':   { src:'reformer', dbEvent:'riddim-kompa-brooklyn-2026-09-26', session:'bk2',  name:'Riddim & Kompa — Brooklyn · 2 PM', date:'Saturday, September 26th', time:'Arrival 1:55 PM · Class 2:00 PM', loc:'Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221' },
+    'rf-o10-o12': { src:'reformer', dbEvent:'riddim-kompa-brooklyn-2026-10-10', session:'o12', name:'Riddim & Kompa — Brooklyn · Oct 10 · 12 PM', date:'Saturday, October 10th', time:'Arrival 11:55 AM · Class 12:00 PM', loc:'Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221' },
+    'rf-o10-o1': { src:'reformer', dbEvent:'riddim-kompa-brooklyn-2026-10-10', session:'o1', name:'Riddim & Kompa — Brooklyn · Oct 10 · 1 PM', date:'Saturday, October 10th', time:'Arrival 12:55 PM · Class 1:00 PM', loc:'Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221' },
+    'rf-o10-o2': { src:'reformer', dbEvent:'riddim-kompa-brooklyn-2026-10-10', session:'o2', name:'Riddim & Kompa — Brooklyn · Oct 10 · 2 PM', date:'Saturday, October 10th', time:'Arrival 1:55 PM · Class 2:00 PM', loc:'Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221' },
+    'rf-o10-o3': { src:'reformer', dbEvent:'riddim-kompa-brooklyn-2026-10-10', session:'o3', name:'Riddim & Kompa — Brooklyn · Oct 10 · 3 PM', date:'Saturday, October 10th', time:'Arrival 2:55 PM · Class 3:00 PM', loc:'Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221' },
+    'rf-n21-n12': { src:'reformer', dbEvent:'riddim-kompa-brooklyn-2026-11-21', session:'n12', name:'Riddim & Kompa — Brooklyn · Nov 21 · 12 PM', date:'Saturday, November 21st', time:'Arrival 11:55 AM · Class 12:00 PM', loc:'Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221' },
+    'rf-n21-n1': { src:'reformer', dbEvent:'riddim-kompa-brooklyn-2026-11-21', session:'n1', name:'Riddim & Kompa — Brooklyn · Nov 21 · 1 PM', date:'Saturday, November 21st', time:'Arrival 12:55 PM · Class 1:00 PM', loc:'Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221' },
+    'rf-n21-n2': { src:'reformer', dbEvent:'riddim-kompa-brooklyn-2026-11-21', session:'n2', name:'Riddim & Kompa — Brooklyn · Nov 21 · 2 PM', date:'Saturday, November 21st', time:'Arrival 1:55 PM · Class 2:00 PM', loc:'Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221' },
+    'rf-n21-n3': { src:'reformer', dbEvent:'riddim-kompa-brooklyn-2026-11-21', session:'n3', name:'Riddim & Kompa — Brooklyn · Nov 21 · 3 PM', date:'Saturday, November 21st', time:'Arrival 2:55 PM · Class 3:00 PM', loc:'Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221' },
     'hw-1230':   { src:'reformer', dbEvent:'halloween-creek-2026-10-24', session:'hw1230', name:'Shhh… Quiet on the Creek · 12:30 PM', date:'Saturday, October 24th', time:'Arrival 12:25 PM · Class 12:30 PM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
     'hw-130':    { src:'reformer', dbEvent:'halloween-creek-2026-10-24', session:'hw130',  name:'Shhh… Quiet on the Creek · 1:35 PM', date:'Saturday, October 24th', time:'Arrival 1:30 PM · Class 1:35 PM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
     'tb-1230':   { src:'reformer', dbEvent:'turkey-burn-2026-11-21', session:'tb1230', name:'Turkey Burn! · 12:30 PM', date:'Saturday, November 21st', time:'Arrival 12:25 PM · Class 12:30 PM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
@@ -11253,6 +11841,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // a 15-seat event and the count alone could not say which four.
   var RF_AUDIT_EVENTS = {
     'reformer-bk': 'riddim-kompa-brooklyn-2026-09-26',
+    'reformer-o10': 'riddim-kompa-brooklyn-2026-10-10',
+    'reformer-n21': 'riddim-kompa-brooklyn-2026-11-21',
     'turkey':      'turkey-burn-2026-11-21',
     'halloween':   'halloween-creek-2026-10-24'
   };
@@ -11266,6 +11856,14 @@ document.addEventListener('DOMContentLoaded', function() {
         'bk12':   { label: 'Riddim & Kompa on the Reformer — Brooklyn, 12 PM', date: 'Saturday, September 26th', arrival: '11:55 AM', start: '12:00 PM' },
         'bk1':    { label: 'Riddim & Kompa on the Reformer — Brooklyn, 1 PM',  date: 'Saturday, September 26th', arrival: '12:55 PM', start: '1:00 PM' },
         'bk2':    { label: 'Riddim & Kompa on the Reformer — Brooklyn, 2 PM',  date: 'Saturday, September 26th', arrival: '1:55 PM', start: '2:00 PM' },
+        'o12':    { label: 'Riddim & Kompa on the Reformer — Brooklyn, 12 PM', date: 'Saturday, October 10th', arrival: '11:55 AM', start: '12:00 PM' },
+        'o1':     { label: 'Riddim & Kompa on the Reformer — Brooklyn, 1 PM', date: 'Saturday, October 10th', arrival: '12:55 PM', start: '1:00 PM' },
+        'o2':     { label: 'Riddim & Kompa on the Reformer — Brooklyn, 2 PM', date: 'Saturday, October 10th', arrival: '1:55 PM', start: '2:00 PM' },
+        'o3':     { label: 'Riddim & Kompa on the Reformer — Brooklyn, 3 PM', date: 'Saturday, October 10th', arrival: '2:55 PM', start: '3:00 PM' },
+        'n12':    { label: 'Riddim & Kompa on the Reformer — Brooklyn, 12 PM', date: 'Saturday, November 21st', arrival: '11:55 AM', start: '12:00 PM' },
+        'n1':     { label: 'Riddim & Kompa on the Reformer — Brooklyn, 1 PM', date: 'Saturday, November 21st', arrival: '12:55 PM', start: '1:00 PM' },
+        'n2':     { label: 'Riddim & Kompa on the Reformer — Brooklyn, 2 PM', date: 'Saturday, November 21st', arrival: '1:55 PM', start: '2:00 PM' },
+        'n3':     { label: 'Riddim & Kompa on the Reformer — Brooklyn, 3 PM', date: 'Saturday, November 21st', arrival: '2:55 PM', start: '3:00 PM' },
         'tb1230': { label: 'Turkey Burn! — 12:30 PM', date: 'Saturday, November 21st', arrival: '12:25 PM', start: '12:30 PM' },
         'tb130':  { label: 'Turkey Burn! — 1:35 PM',  date: 'Saturday, November 21st', arrival: '1:30 PM', start: '1:35 PM' },
         'hw1230': { label: 'Shhh… Quiet on the Creek — 12:30 PM', date: 'Saturday, October 24th', arrival: '12:25 PM', start: '12:30 PM' },
@@ -11287,7 +11885,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function mine(ev){
       return isWH ? (ev !== 'riddim-kompa-brooklyn-2026-09-26'
                   && ev !== 'turkey-burn-2026-11-21'
-                  && ev !== 'halloween-creek-2026-10-24') : (ev === wanted);
+                  && ev !== 'halloween-creek-2026-10-24'
+                  && ev !== 'riddim-kompa-brooklyn-2026-10-10'
+                  && ev !== 'riddim-kompa-brooklyn-2026-11-21') : (ev === wanted);
     }
     try {
       supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(res){
@@ -11550,8 +12150,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // The three events share reformer_registrations, so filter by the event column.
         var RF_SESS = RF_REMINDER_SESS;
         var RF_EVENT_FILTER = {
-          'reformer':    function(ev){ return ev !== 'riddim-kompa-brooklyn-2026-09-26' && ev !== 'turkey-burn-2026-11-21' && ev !== 'halloween-creek-2026-10-24'; },
+          'reformer':    function(ev){ return ev !== 'riddim-kompa-brooklyn-2026-09-26' && ev !== 'turkey-burn-2026-11-21' && ev !== 'halloween-creek-2026-10-24'
+                                           && ev !== 'riddim-kompa-brooklyn-2026-10-10' && ev !== 'riddim-kompa-brooklyn-2026-11-21'; },
           'reformer-bk': function(ev){ return ev === 'riddim-kompa-brooklyn-2026-09-26'; },
+          'reformer-o10':function(ev){ return ev === 'riddim-kompa-brooklyn-2026-10-10'; },
+          'reformer-n21':function(ev){ return ev === 'riddim-kompa-brooklyn-2026-11-21'; },
           'turkey':      function(ev){ return ev === 'turkey-burn-2026-11-21'; },
           'halloween':   function(ev){ return ev === 'halloween-creek-2026-10-24'; }
         };
@@ -13058,6 +13661,12 @@ document.addEventListener('DOMContentLoaded', function() {
     'riddim-kompa-brooklyn-2026-09-26': { name:'Riddim & Kompa on the Reformer — Brooklyn', date:'Saturday, September 26', loc:'Maison Luxe Wellness Pilates, Brooklyn NY', amount:'$45.00',
       slab:{ 'bk12':'12:00 PM session','bk1':'1:00 PM session','bk2':'2:00 PM session' },
       links:{ 'bk12':'https://buy.stripe.com/6oU14m20W5mxbkwdMS9sk0a','bk1':'https://buy.stripe.com/9B6cN44949CN60c9wC9sk08','bk2':'https://buy.stripe.com/5kQ8wO350g1b2O0eQW9sk0b' } },
+    'riddim-kompa-brooklyn-2026-10-10': { name:'Riddim & Kompa on the Reformer — Brooklyn', date:'Saturday, October 10', loc:'Maison Luxe Wellness Pilates, Brooklyn NY', amount:'$45.00',
+      slab:{ 'o12':'12:00 PM session','o1':'1:00 PM session','o2':'2:00 PM session','o3':'3:00 PM session' },
+      links:{ 'o12':'','o1':'','o2':'','o3':'' } },
+    'riddim-kompa-brooklyn-2026-11-21': { name:'Riddim & Kompa on the Reformer — Brooklyn', date:'Saturday, November 21', loc:'Maison Luxe Wellness Pilates, Brooklyn NY', amount:'$45.00',
+      slab:{ 'n12':'12:00 PM session','n1':'1:00 PM session','n2':'2:00 PM session','n3':'3:00 PM session' },
+      links:{ 'n12':'','n1':'','n2':'','n3':'' } },
     'halloween-creek-2026-10-24': { name:'Shhh… Quiet on the Creek — Halloween Reformer', date:'Saturday, October 24', loc:'Valley Studio, West Hempstead NY', amount:'$45.00',
       slab:{ 'hw1230':'12:30 PM session','hw130':'1:35 PM session' },
       links:{ 'hw1230':'https://buy.stripe.com/5kQdR835016h1JWdMS9sk0e','hw130':'https://buy.stripe.com/fZu5kCeNI8yJbkw24a9sk0f' } },
@@ -13757,6 +14366,14 @@ document.addEventListener('DOMContentLoaded', function() {
     { event:'riddim-kompa-brooklyn-2026-09-26', session:'bk12',   session_label:'12:00 PM session', name:'Riddim & Kompa — Brooklyn · Sat Sep 26 · 12 PM' },
     { event:'riddim-kompa-brooklyn-2026-09-26', session:'bk1',    session_label:'1:00 PM session',  name:'Riddim & Kompa — Brooklyn · Sat Sep 26 · 1 PM' },
     { event:'riddim-kompa-brooklyn-2026-09-26', session:'bk2',    session_label:'2:00 PM session',  name:'Riddim & Kompa — Brooklyn · Sat Sep 26 · 2 PM' },
+    { event:'riddim-kompa-brooklyn-2026-10-10', session:'o12',    session_label:'12:00 PM session', name:'Riddim & Kompa — Brooklyn · Sat Oct 10 · 12 PM' },
+    { event:'riddim-kompa-brooklyn-2026-10-10', session:'o1',     session_label:'1:00 PM session', name:'Riddim & Kompa — Brooklyn · Sat Oct 10 · 1 PM' },
+    { event:'riddim-kompa-brooklyn-2026-10-10', session:'o2',     session_label:'2:00 PM session', name:'Riddim & Kompa — Brooklyn · Sat Oct 10 · 2 PM' },
+    { event:'riddim-kompa-brooklyn-2026-10-10', session:'o3',     session_label:'3:00 PM session', name:'Riddim & Kompa — Brooklyn · Sat Oct 10 · 3 PM' },
+    { event:'riddim-kompa-brooklyn-2026-11-21', session:'n12',    session_label:'12:00 PM session', name:'Riddim & Kompa — Brooklyn · Sat Nov 21 · 12 PM' },
+    { event:'riddim-kompa-brooklyn-2026-11-21', session:'n1',     session_label:'1:00 PM session', name:'Riddim & Kompa — Brooklyn · Sat Nov 21 · 1 PM' },
+    { event:'riddim-kompa-brooklyn-2026-11-21', session:'n2',     session_label:'2:00 PM session', name:'Riddim & Kompa — Brooklyn · Sat Nov 21 · 2 PM' },
+    { event:'riddim-kompa-brooklyn-2026-11-21', session:'n3',     session_label:'3:00 PM session', name:'Riddim & Kompa — Brooklyn · Sat Nov 21 · 3 PM' },
     { event:'halloween-creek-2026-10-24',       session:'hw1230', session_label:'12:30 PM session', name:'Shhh… Quiet on the Creek · Sat Oct 24 · 12:30 PM' },
     { event:'halloween-creek-2026-10-24',       session:'hw130',  session_label:'1:35 PM session',  name:'Shhh… Quiet on the Creek · Sat Oct 24 · 1:35 PM' },
     { event:'turkey-burn-2026-11-21',           session:'tb1230', session_label:'12:30 PM session', name:'Turkey Burn! · Sat Nov 21 · 12:30 PM' },
@@ -13786,7 +14403,7 @@ document.addEventListener('DOMContentLoaded', function() {
     return '';
   }
   window.markFoundingSent = function(email,ev,sess){ _foundingSent[foundingKey(email,ev,sess)] = true; try { localStorage.setItem('auric_founding_sent', JSON.stringify(_foundingSent)); } catch(e){} if(typeof rfRefresh==='function') rfRefresh(); };
-  function rfRefresh(){ if(rfAdminContainer) renderReformerSection(rfAdminContainer); if(rfBkAdminContainer) renderReformerBkSection(rfBkAdminContainer); if(rfTbAdminContainer) renderReformerTbSection(rfTbAdminContainer); if(rfTb28AdminContainer) renderReformerTb28Section(rfTb28AdminContainer); if(rfHwAdminContainer) renderReformerHwSection(rfHwAdminContainer); if(rfArchivedContainer) renderReformerArchivedSection(rfArchivedContainer); populateReturningGuests();  wlcInit(); }
+  function rfRefresh(){ if(rfAdminContainer) renderReformerSection(rfAdminContainer); if(rfBkAdminContainer) renderReformerBkSection(rfBkAdminContainer); if(rfO10AdminContainer) renderReformerO10Section(rfO10AdminContainer); if(rfN21AdminContainer) renderReformerN21Section(rfN21AdminContainer); if(rfTbAdminContainer) renderReformerTbSection(rfTbAdminContainer); if(rfTb28AdminContainer) renderReformerTb28Section(rfTb28AdminContainer); if(rfHwAdminContainer) renderReformerHwSection(rfHwAdminContainer); if(rfArchivedContainer) renderReformerArchivedSection(rfArchivedContainer); populateReturningGuests();  wlcInit(); }
 
   // Fill the "Returning guest" picker in Manual Add with everyone who has
   // attended a reformer class (deduped by email). Picking one auto-fills the
@@ -13883,6 +14500,8 @@ document.addEventListener('DOMContentLoaded', function() {
   var WL_BOOK_URL = {
     'riddim-kompa-reformer-2026-09-13': 'https://book.auricmovement.com/?book=reformer',
     'riddim-kompa-brooklyn-2026-09-26': 'https://book.auricmovement.com/?book=reformer-bk',
+    'riddim-kompa-brooklyn-2026-10-10': 'https://book.auricmovement.com/?book=reformer-o10',
+    'riddim-kompa-brooklyn-2026-11-21': 'https://book.auricmovement.com/?book=reformer-n21',
     'halloween-creek-2026-10-24':       'https://book.auricmovement.com/?book=halloween',
     'turkey-burn-2026-11-21':           'https://book.auricmovement.com/?book=turkey',
     'turkey-burn-2026-11-28':           'https://book.auricmovement.com/?book=turkey28'
@@ -14057,7 +14676,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function render(rows, err){
       rfRosterById = {};
       rows.forEach(function(r){ rfRosterById[r.id] = r; }); // keep ALL rows addressable (Valley + Brooklyn share admin actions)
-      var display = rows.filter(function(r){ return r.event !== 'riddim-kompa-brooklyn-2026-09-26' && r.event !== 'turkey-burn-2026-11-21'; }); // Valley section: exclude Brooklyn + Turkey Burn
+      var display = rows.filter(function(r){ return r.event !== 'riddim-kompa-brooklyn-2026-09-26' && r.event !== 'turkey-burn-2026-11-21'
+        && r.event !== 'riddim-kompa-brooklyn-2026-10-10' && r.event !== 'riddim-kompa-brooklyn-2026-11-21'; }); // Valley section: exclude every Brooklyn date + Turkey Burn
       display = display.filter(function(r){ return r.type!=='waitlist' && !r.archived; }); // waitlisters + archived (didn't pay) shown separately, never counted as registered
       var paid  = display.filter(function(r){ return r.is_paid; }).length;
       var att = display.filter(function(r){ return r.attendance==='attended'; }).length;
@@ -14166,6 +14786,154 @@ document.addEventListener('DOMContentLoaded', function() {
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
         if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.72rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); var _sAtt=display.filter(function(r){return r.session===_curSess&&r.attendance==='attended';}).length; if(_sAtt){ var _tb=document.createElement('button'); _tb.type='button'; _tb.style.cssText='margin:.15rem 0 .35rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.3rem .7rem;font-size:.72rem;cursor:pointer;font-family:Jost,sans-serif;'; _tb.textContent='\u{1F33A} Thank this session (' + _sAtt + ' attended)'; (function(sk,bt){ bt.onclick=function(){ window.rfSendThankYou('bk', bt, null, sk); }; })(_curSess,_tb); _curSessBlock.appendChild(_tb); } block.appendChild(_curSessBlock); }
+        var id = rec.id;
+        var item=document.createElement('div'); item.className='admin-sub-item';
+        var badge = rec.is_paid ? '<span class="atype au-chip is-paid">paid</span>' : '<span class="atype au-chip is-pending">pending</span>';
+        var ref = rec.referred_by ? '<br><span style="font-size:.72rem;color:#8a5a2a;">\u{1F91D} Referred by '+escapeHTML(rec.referred_by)+'</span>' : '';
+        var health = rec.health ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.82rem;color:#3d322a;white-space:pre-line;"><strong style="color:var(--gold-text);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;">\u{1FA79} Health disclosure:</strong><br>'+escapeHTML(rec.health)+'</div>' : '';
+        var sig = rec.signature ? '<br><span class="au-meta">\u{270D}\u{FE0F} Signed: '+escapeHTML(rec.signature)+'</span>' : '';
+        var when = ''; try { when = rec.created_at ? new Date(rec.created_at).toLocaleString() : ''; } catch(e){}
+        var paidBtn = rec.is_paid
+          ? btn('rfAdminSetPaid('+id+',false)','#fff4e5','#f0c890','#a86617','⏳ Mark unpaid')
+          : btn('rfAdminSetPaid('+id+',true)','#e8f5e9','#a5d6a7','#2e7d32','✅ Mark paid');
+        var waiverBtn = rec.signature ? btn('rfAdminWaiver('+id+')','#eef4fb','#b5d4f4','#185fa5','\u{1F4C4} Waiver') : '';
+        var clearHealthBtn = rec.health ? btn('rfAdminClearHealth('+id+')','#fef4e5','#f0c890','#a86617','\u{1FA79} Clear health') : '';
+        function timeOpt(sess,label){
+          if(rec.session===sess){ return '<span style="display:inline-block;background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;font-family:\'Jost\',sans-serif;">'+label+' ✓</span>'; }
+          return btn("rfAdminSetSession("+id+",'"+sess+"')",'#f4ecdd','#e0cfae','#7a5a2a','→ '+label);
+        }
+        var timeBtn = timeOpt('bk12','12 PM') + timeOpt('bk1','1 PM') + timeOpt('bk2','2 PM');
+        var confirmBtn = btn('rfBkAdminConfirm('+id+')','#e8f5e9','#a5d6a7','#2e7d32','\u{1F4E7} Confirm + email');
+        var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
+        var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
+        var archiveBtn = btn('rfAdminArchive('+id+')','#eceae4','#d3ccbd','#6b6357','\u{1F5C4}\u{FE0F} Archive');
+        var creditBtn = rec.is_paid ? btn('rfCreditAndRelease('+id+')','#fbf3e2','#e6d3a8','#9a6535','\u{1F3AB} Credit &amp; release') : '';
+        var _att = rec.attendance || '';
+        var attendBtn = (_att==='attended')
+          ? btn("rfAdminSetAttendance("+id+",'')",'#e8f5e9','#a5d6a7','#2e7d32','✓ Attended')
+          : btn("rfAdminSetAttendance("+id+",'attended')",'#fff','var(--gold)','var(--brown)','○ Attended');
+        var noShowBtn = (_att==='noshow')
+          ? btn("rfAdminSetAttendance("+id+",'')",'#fdecea','#f5c6c2','var(--red)','✗ No-show')
+          : btn("rfAdminSetAttendance("+id+",'noshow')",'#fff','#e0d6c4','#8a7d6b','○ No-show');
+        var moveBtn = btn('rfAdminMove('+id+')','#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Move event');
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
+          '<div style="text-align:right"><span class="au-meta">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span class="au-meta">'+escapeHTML(when)+'</span>'+
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+creditBtn+archiveBtn+removeBtn+'</div></div>';
+        (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
+      });
+    }
+    container.innerHTML=''; container.appendChild(block);
+    try {
+      supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(res){
+        if(res && res.error){ render([], true); return; }
+        render((res && res.data) || [], false);
+      }, function(){ render([], true); });
+    } catch(e){ render([], true); }
+  }
+
+  // ─── Riddim & Kompa — Brooklyn, Oct 10th (DRAFT) roster ───────────────
+  // Shares reformer_registrations via event='riddim-kompa-brooklyn-2026-10-10'.
+  var rfO10AdminContainer = null;
+  function renderReformerO10Section(container){
+    if(!container) return;
+    rfO10AdminContainer = container;
+    var _prevBlk = container.querySelector('.admin-session-block'); // preserve collapse state across re-renders
+    var block = document.createElement('div'); block.className='admin-session-block' + ((_prevBlk ? _prevBlk.classList.contains('collapsed') : isEventPast('2026-10-10'))?' collapsed':'');
+    function btn(onclick,bg,bd,fg,label){ return '<button onclick="'+onclick+'" style="background:'+bg+';border:1px solid '+bd+';color:'+fg+';border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">'+label+'</button>'; }
+    function render(rows, err){
+      rows.forEach(function(r){ rfRosterById[r.id] = r; });
+      var display = rows.filter(function(r){ return r.event === 'riddim-kompa-brooklyn-2026-10-10'; });
+      display = display.filter(function(r){ return r.type!=='waitlist' && !r.archived; }); // waitlisters + archived (didn't pay) shown separately, never counted as registered
+      var CAP = 5, pd = { 'o12':0,'o1':0,'o2':0,'o3':0 };
+      display.forEach(function(r){ if(r.is_paid && pd[r.session]!==undefined) pd[r.session]++; });
+      var paid = display.filter(function(r){ return r.is_paid; }).length;
+      var att = display.filter(function(r){ return r.attendance==='attended'; }).length;
+      block.innerHTML = '<h3 style="color:var(--gold-text);">Riddim &amp; Kompa — Brooklyn · Sep 26th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">12 PM '+pd['o12']+'/'+CAP+' · 1 PM '+pd['o1']+'/'+CAP+' · 2 PM '+pd['o2']+'/'+CAP+' · 3 PM '+pd['o3']+'/'+CAP+'</span></h3>';
+      if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
+      if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
+      var _bkOrd = { 'o12':0, 'o1':1, 'o2':2, 'o3':3 };
+      function _bkRank(s){ return _bkOrd[s]!==undefined ? _bkOrd[s] : 99; }
+      display.sort(function(a,b){ return (_bkRank(a.session)-_bkRank(b.session)) || (a.created_at||'').localeCompare(b.created_at||''); });
+      block.appendChild(rfWaitlistBlock(rows, 'riddim-kompa-brooklyn-2026-10-10'));
+      var SLAB = { 'o12':'12 PM','o1':'1 PM','o2':'2 PM','o3':'3 PM' }; var _curSess=null, _curSessBlock=null;
+      _rfMarkFirst(display);
+      display.forEach(function(rec){
+        rfRosterById[rec.id] = rec;
+        if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.72rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); var _sAtt=display.filter(function(r){return r.session===_curSess&&r.attendance==='attended';}).length; if(_sAtt){ var _tb=document.createElement('button'); _tb.type='button'; _tb.style.cssText='margin:.15rem 0 .35rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.3rem .7rem;font-size:.72rem;cursor:pointer;font-family:Jost,sans-serif;'; _tb.textContent='\u{1F33A} Thank this session (' + _sAtt + ' attended)'; (function(sk,bt){ bt.onclick=function(){ /* per-session thank-you: wire once this date has its own template */ }; })(_curSess,_tb); _curSessBlock.appendChild(_tb); } block.appendChild(_curSessBlock); }
+        var id = rec.id;
+        var item=document.createElement('div'); item.className='admin-sub-item';
+        var badge = rec.is_paid ? '<span class="atype au-chip is-paid">paid</span>' : '<span class="atype au-chip is-pending">pending</span>';
+        var ref = rec.referred_by ? '<br><span style="font-size:.72rem;color:#8a5a2a;">\u{1F91D} Referred by '+escapeHTML(rec.referred_by)+'</span>' : '';
+        var health = rec.health ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.82rem;color:#3d322a;white-space:pre-line;"><strong style="color:var(--gold-text);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;">\u{1FA79} Health disclosure:</strong><br>'+escapeHTML(rec.health)+'</div>' : '';
+        var sig = rec.signature ? '<br><span class="au-meta">\u{270D}\u{FE0F} Signed: '+escapeHTML(rec.signature)+'</span>' : '';
+        var when = ''; try { when = rec.created_at ? new Date(rec.created_at).toLocaleString() : ''; } catch(e){}
+        var paidBtn = rec.is_paid
+          ? btn('rfAdminSetPaid('+id+',false)','#fff4e5','#f0c890','#a86617','⏳ Mark unpaid')
+          : btn('rfAdminSetPaid('+id+',true)','#e8f5e9','#a5d6a7','#2e7d32','✅ Mark paid');
+        var waiverBtn = rec.signature ? btn('rfAdminWaiver('+id+')','#eef4fb','#b5d4f4','#185fa5','\u{1F4C4} Waiver') : '';
+        var clearHealthBtn = rec.health ? btn('rfAdminClearHealth('+id+')','#fef4e5','#f0c890','#a86617','\u{1FA79} Clear health') : '';
+        function timeOpt(sess,label){
+          if(rec.session===sess){ return '<span style="display:inline-block;background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;font-family:\'Jost\',sans-serif;">'+label+' ✓</span>'; }
+          return btn("rfAdminSetSession("+id+",'"+sess+"')",'#f4ecdd','#e0cfae','#7a5a2a','→ '+label);
+        }
+        var timeBtn = timeOpt('bk12','12 PM') + timeOpt('bk1','1 PM') + timeOpt('bk2','2 PM');
+        var confirmBtn = btn('rfBkAdminConfirm('+id+')','#e8f5e9','#a5d6a7','#2e7d32','\u{1F4E7} Confirm + email');
+        var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
+        var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
+        var archiveBtn = btn('rfAdminArchive('+id+')','#eceae4','#d3ccbd','#6b6357','\u{1F5C4}\u{FE0F} Archive');
+        var creditBtn = rec.is_paid ? btn('rfCreditAndRelease('+id+')','#fbf3e2','#e6d3a8','#9a6535','\u{1F3AB} Credit &amp; release') : '';
+        var _att = rec.attendance || '';
+        var attendBtn = (_att==='attended')
+          ? btn("rfAdminSetAttendance("+id+",'')",'#e8f5e9','#a5d6a7','#2e7d32','✓ Attended')
+          : btn("rfAdminSetAttendance("+id+",'attended')",'#fff','var(--gold)','var(--brown)','○ Attended');
+        var noShowBtn = (_att==='noshow')
+          ? btn("rfAdminSetAttendance("+id+",'')",'#fdecea','#f5c6c2','var(--red)','✗ No-show')
+          : btn("rfAdminSetAttendance("+id+",'noshow')",'#fff','#e0d6c4','#8a7d6b','○ No-show');
+        var moveBtn = btn('rfAdminMove('+id+')','#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Move event');
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
+          '<div style="text-align:right"><span class="au-meta">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span class="au-meta">'+escapeHTML(when)+'</span>'+
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+creditBtn+archiveBtn+removeBtn+'</div></div>';
+        (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
+      });
+    }
+    container.innerHTML=''; container.appendChild(block);
+    try {
+      supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(res){
+        if(res && res.error){ render([], true); return; }
+        render((res && res.data) || [], false);
+      }, function(){ render([], true); });
+    } catch(e){ render([], true); }
+  }
+
+  // ─── Riddim & Kompa — Brooklyn, Nov 21st (DRAFT) roster ───────────────
+  // Shares reformer_registrations via event='riddim-kompa-brooklyn-2026-11-21'.
+  var rfN21AdminContainer = null;
+  function renderReformerN21Section(container){
+    if(!container) return;
+    rfN21AdminContainer = container;
+    var _prevBlk = container.querySelector('.admin-session-block'); // preserve collapse state across re-renders
+    var block = document.createElement('div'); block.className='admin-session-block' + ((_prevBlk ? _prevBlk.classList.contains('collapsed') : isEventPast('2026-11-21'))?' collapsed':'');
+    function btn(onclick,bg,bd,fg,label){ return '<button onclick="'+onclick+'" style="background:'+bg+';border:1px solid '+bd+';color:'+fg+';border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">'+label+'</button>'; }
+    function render(rows, err){
+      rows.forEach(function(r){ rfRosterById[r.id] = r; });
+      var display = rows.filter(function(r){ return r.event === 'riddim-kompa-brooklyn-2026-11-21'; });
+      display = display.filter(function(r){ return r.type!=='waitlist' && !r.archived; }); // waitlisters + archived (didn't pay) shown separately, never counted as registered
+      var CAP = 5, pd = { 'n12':0,'n1':0,'n2':0,'n3':0 };
+      display.forEach(function(r){ if(r.is_paid && pd[r.session]!==undefined) pd[r.session]++; });
+      var paid = display.filter(function(r){ return r.is_paid; }).length;
+      var att = display.filter(function(r){ return r.attendance==='attended'; }).length;
+      block.innerHTML = '<h3 style="color:var(--gold-text);">Riddim &amp; Kompa — Brooklyn · Sep 26th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">12 PM '+pd['n12']+'/'+CAP+' · 1 PM '+pd['n1']+'/'+CAP+' · 2 PM '+pd['n2']+'/'+CAP+' · 3 PM '+pd['n3']+'/'+CAP+'</span></h3>';
+      if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
+      if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
+      var _bkOrd = { 'n12':0, 'n1':1, 'n2':2, 'n3':3 };
+      function _bkRank(s){ return _bkOrd[s]!==undefined ? _bkOrd[s] : 99; }
+      display.sort(function(a,b){ return (_bkRank(a.session)-_bkRank(b.session)) || (a.created_at||'').localeCompare(b.created_at||''); });
+      block.appendChild(rfWaitlistBlock(rows, 'riddim-kompa-brooklyn-2026-11-21'));
+      var SLAB = { 'n12':'12 PM','n1':'1 PM','n2':'2 PM','n3':'3 PM' }; var _curSess=null, _curSessBlock=null;
+      _rfMarkFirst(display);
+      display.forEach(function(rec){
+        rfRosterById[rec.id] = rec;
+        if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.72rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); var _sAtt=display.filter(function(r){return r.session===_curSess&&r.attendance==='attended';}).length; if(_sAtt){ var _tb=document.createElement('button'); _tb.type='button'; _tb.style.cssText='margin:.15rem 0 .35rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.3rem .7rem;font-size:.72rem;cursor:pointer;font-family:Jost,sans-serif;'; _tb.textContent='\u{1F33A} Thank this session (' + _sAtt + ' attended)'; (function(sk,bt){ bt.onclick=function(){ /* per-session thank-you: wire once this date has its own template */ }; })(_curSess,_tb); _curSessBlock.appendChild(_tb); } block.appendChild(_curSessBlock); }
         var id = rec.id;
         var item=document.createElement('div'); item.className='admin-sub-item';
         var badge = rec.is_paid ? '<span class="atype au-chip is-paid">paid</span>' : '<span class="atype au-chip is-pending">pending</span>';
@@ -14432,6 +15200,8 @@ document.addEventListener('DOMContentLoaded', function() {
   var RF_EVENT_LABELS = {
     'riddim-kompa-reformer-2026-09-13':'Riddim & Kompa — Valley · Sep 13',
     'riddim-kompa-brooklyn-2026-09-26':'Riddim & Kompa — Brooklyn · Sep 26',
+    'riddim-kompa-brooklyn-2026-10-10':'Riddim & Kompa — Brooklyn · Oct 10',
+    'riddim-kompa-brooklyn-2026-11-21':'Riddim & Kompa — Brooklyn · Nov 21',
     'halloween-creek-2026-10-24':'Shhh… Quiet on the Creek · Oct 24',
     'turkey-burn-2026-11-21':'Turkey Burn! · Nov 21',
     'turkey-burn-2026-11-28':'Post-Turkey Burn · Nov 28'
