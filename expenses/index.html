@@ -189,9 +189,20 @@
             <select id="f-method"></select>
           </div>
           <div><label>Purpose (business reason)</label><input type="text" id="f-purpose" placeholder="e.g. Studio rental for Mat & Chat"></div>
-          <div>
-            <label>Part of an event? (optional)</label>
-            <select id="f-event"><option value="">&mdash; not tied to an event &mdash;</option></select>
+          <div style="grid-column:1/-1;">
+            <label>Which events did this pay for? (optional)</label>
+            <div id="f-events" style="display:flex;flex-wrap:wrap;gap:.5rem;"></div>
+            <div id="f-split-row" style="display:none;margin-top:.6rem;">
+              <div class="row-check" style="gap:1.2rem;flex-wrap:wrap;">
+                <label style="margin:0;display:flex;align-items:center;gap:.4rem;font-weight:400;">
+                  <input type="radio" name="f-split" value="even" checked> Split evenly
+                </label>
+                <label style="margin:0;display:flex;align-items:center;gap:.4rem;font-weight:400;">
+                  <input type="radio" name="f-split" value="per_head"> Split by attendance
+                </label>
+              </div>
+              <div class="muted" id="f-split-note" style="font-size:.85rem;margin-top:.35rem;"></div>
+            </div>
           </div>
           <div style="grid-column:1/-1;"><label>Notes (optional)</label><textarea id="f-notes" placeholder="Anything else to remember"></textarea></div>
           <div style="grid-column:1/-1;"><label>Receipt (photo or PDF, optional)</label><input type="file" id="f-receipt" accept="image/*,application/pdf,.pdf"></div>
@@ -360,10 +371,19 @@
     // saved and being edited — a brand-new event has no id to tag against.
     function pnlLinkedExpenses(eventId){
       if(!eventId || !rows || !rows.length) return [];
-      return rows.filter(function(r){ return r.event_id === eventId; });
+      return rows.filter(function(r){ return (expenseLinks[r.id]||[]).indexOf(eventId) >= 0; });
     }
+    // An expense covering three events contributes only its share here, so
+    // the three shares add back to the one purchase rather than counting it
+    // three times over.
     function pnlLinkedTotal(eventId){
-      return pnlLinkedExpenses(eventId).reduce(function(t,r){ return t + (Number(r.amount)||0); }, 0);
+      return pnlLinkedExpenses(eventId).reduce(function(t, r){
+        var ids = expenseLinks[r.id] || [];
+        var evs = pnlRows.filter(function(e){ return ids.indexOf(e.id) >= 0; });
+        var mine = expenseShares(Number(r.amount)||0, evs, r.split_method || 'even')
+                     .filter(function(x){ return x.id === eventId; })[0];
+        return t + (mine ? mine.share : 0);
+      }, 0);
     }
 
     function pnlRow(label, amount, opts){
@@ -509,18 +529,83 @@
     // ---- saved events ----
     var pnlRows = [];
     var pnlNameById = {};      // event id -> its name, for the expense table
+    var expenseLinks = {};     // expense id -> [event id], from expense_events
+    // Replace an expense's event links wholesale — clearing first, so
+    // unticking an event actually removes it rather than leaving a stale row.
+    function saveExpenseLinks(expenseId, eventIds, cb){
+      if(!sb || !expenseId){ cb && cb(); return; }
+      sb.from('expense_events').delete().eq('expense_id', expenseId).then(function(){
+        if(!eventIds || !eventIds.length){ loadExpenseLinks(cb); return; }
+        sb.from('expense_events').insert(eventIds.map(function(eid){
+          return { expense_id: expenseId, event_id: eid };
+        })).then(function(){ loadExpenseLinks(cb); }, function(){ loadExpenseLinks(cb); });
+      }, function(){ loadExpenseLinks(cb); });
+    }
+    function loadExpenseLinks(cb){
+      if(!sb){ cb && cb(); return; }
+      sb.from('expense_events').select('*').then(function(res){
+        expenseLinks = {};
+        if(res && !res.error && res.data){
+          res.data.forEach(function(l){
+            (expenseLinks[l.expense_id] = expenseLinks[l.expense_id] || []).push(l.event_id);
+          });
+        }
+        cb && cb();
+      }, function(){ cb && cb(); });
+    }
     // Keep the expense form's event picker in step with the saved events.
     function pnlFillEventPicker(){
-      var sel = document.getElementById('f-event'); if(!sel) return;
-      var keep = sel.value;
-      sel.innerHTML = '<option value="">\u2014 not tied to an event \u2014</option>'
-        + pnlRows.map(function(r){
-            return '<option value="'+esc(r.id)+'">'+esc(r.event_name)
-                 + (r.event_date ? ' \u00b7 '+fmtDate(r.event_date) : '')+'</option>';
-          }).join('');
-      sel.value = keep;
+      var box = document.getElementById('f-events'); if(!box) return;
+      var chosen = expenseEventIds();                       // keep ticks across a reload
+      box.innerHTML = pnlRows.length
+        ? pnlRows.map(function(r){
+            return '<label class="cat-pill" style="cursor:pointer;display:inline-flex;align-items:center;'
+              + 'gap:.4rem;padding:.3rem .6rem;"><input type="checkbox" class="f-ev" value="'+esc(r.id)+'"'
+              + (chosen.indexOf(r.id) >= 0 ? ' checked' : '') + '> ' + esc(r.event_name)
+              + (r.event_date ? ' <span class="muted">' + esc(fmtDate(r.event_date)) + '</span>' : '')
+              + '</label>';
+          }).join('')
+        : '<span class="muted">Save an event above first, then you can tag expenses to it.</span>';
+      Array.prototype.forEach.call(box.querySelectorAll('.f-ev'), function(cb){
+        cb.addEventListener('change', expenseSplitSync);
+      });
+      expenseSplitSync();
     }
-    function pnlLoad(){
+    function expenseEventIds(){
+      return Array.prototype.map.call(
+        document.querySelectorAll('#f-events .f-ev:checked'), function(cb){ return cb.value; });
+    }
+    function expenseSplitMethod(){
+      var r = document.querySelector('input[name="f-split"]:checked');
+      return r ? r.value : 'even';
+    }
+    // Show the split controls only once more than one event is ticked, and
+    // say in plain money what the chosen method will do.
+    function expenseSplitSync(){
+      var ids = expenseEventIds();
+      var row = document.getElementById('f-split-row');
+      row.style.display = ids.length > 1 ? '' : 'none';
+      if (ids.length < 2) return;
+      var amt = parseFloat(document.getElementById('f-amount').value) || 0;
+      var picked = pnlRows.filter(function(r){ return ids.indexOf(r.id) >= 0; });
+      var note = document.getElementById('f-split-note');
+      if (!amt){ note.textContent = 'Enter the amount and this will show how it divides.'; return; }
+      note.innerHTML = expenseShares(amt, picked, expenseSplitMethod()).map(function(x){
+        return esc(x.name) + ' ' + money(x.share);
+      }).join(' &middot; ');
+    }
+    // One place the split is worked out, so the note, the P&L and the saved
+    // rows can never disagree. The shares always add back to the full amount.
+    function expenseShares(amount, events, method){
+      if (!events.length) return [];
+      var heads = events.reduce(function(t,r){ return t + (Number(r.people)||0); }, 0);
+      return events.map(function(r){
+        var share = (method === 'per_head' && heads > 0)
+          ? amount * ((Number(r.people)||0) / heads)
+          : amount / events.length;
+        return { id: r.id, name: r.event_name, share: share };
+      });
+    }    function pnlLoad(){
       if(!sb) return;
       sb.from('event_pnl').select('*').order('event_date', { ascending: false }).then(function(res){
         if(res && res.error){
@@ -617,6 +702,9 @@
       document.getElementById('pnl-panel').scrollIntoView({ behavior:'smooth', block:'start' });
     }
 
+    (function(){ var a=document.getElementById('f-amount');
+      if(a) a.addEventListener('input', function(){ try{ expenseSplitSync(); }catch(e){} }); })();
+
     document.getElementById('p-clear').addEventListener('click', function(){
       PNL_IDS.forEach(function(id){
         var el=document.getElementById(id); if(!el) return;
@@ -669,6 +757,7 @@
 
     // ---- load ----
     function init(){
+      loadExpenseLinks();
       pnlLoad();
       fillSelect(document.getElementById('f-method'), METHODS, false);
       load();
@@ -758,8 +847,12 @@
           '<td>'+esc(r.vendor||'')+'</td>'+
           '<td><span class="cat-pill">'+esc(r.category||'—')+'</span></td>'+
           '<td>'+esc(r.purpose||'')+(r.notes?'<br><span class="muted">'+esc(r.notes)+'</span>':'')+'</td>'+
-          '<td>'+(r.event_id && pnlNameById[r.event_id]
-                    ? '<span class="cat-pill">'+esc(pnlNameById[r.event_id])+'</span>'
+          '<td>'+((expenseLinks[r.id]||[]).length
+                    ? (expenseLinks[r.id]||[]).map(function(eid){
+                        return '<span class="cat-pill">'+esc(pnlNameById[eid]||'?')+'</span>'; }).join(' ')
+                      + ((expenseLinks[r.id]||[]).length > 1
+                          ? '<br><span class="muted">split '
+                            + ((r.split_method==='per_head') ? 'by attendance' : 'evenly') + '</span>' : '')
                     : '<span class="muted">—</span>')+'</td>'+
           '<td class="muted">'+esc(r.payment_method||'')+'</td>'+
           '<td class="amt" style="text-align:right;">'+money(r.amount)+'</td>'+
@@ -841,7 +934,13 @@
       document.getElementById('f-category').value=r.category||'Other';
       document.getElementById('f-method').value=r.payment_method||'';
       document.getElementById('f-purpose').value=r.purpose||'';
-      document.getElementById('f-event').value=r.event_id||'';
+      var mine = expenseLinks[r.id] || [];
+      Array.prototype.forEach.call(document.querySelectorAll('#f-events .f-ev'), function(cb){
+        cb.checked = mine.indexOf(cb.value) >= 0;
+      });
+      var sm = document.querySelector('input[name="f-split"][value="'+(r.split_method||'even')+'"]');
+      if (sm) sm.checked = true;
+      expenseSplitSync();
       document.getElementById('f-notes').value=r.notes||'';
       document.getElementById('f-deductible').checked=!!r.deductible;
       document.getElementById('f-repeat').checked=false; syncRepeat();
@@ -866,7 +965,7 @@
         purpose: document.getElementById('f-purpose').value.trim() || null,
         notes: document.getElementById('f-notes').value.trim() || null,
         deductible: document.getElementById('f-deductible').checked,
-        event_id: document.getElementById('f-event').value || null
+        split_method: expenseSplitMethod()
       };
 
       // A recurring subscription becomes one row per month, same amount and
@@ -891,19 +990,23 @@
 
       function afterReceipt(receiptPath){
         if(receiptPath!==undefined) recs[0].receipt_path=receiptPath;  // first month only
+        var pickedEvents = expenseEventIds();
         var op = editingId
-          ? sb.from('business_expenses').update(recs[0]).eq('id', editingId)
-          : sb.from('business_expenses').insert(recs);
+          ? sb.from('business_expenses').update(recs[0]).eq('id', editingId).select()
+          : sb.from('business_expenses').insert(recs).select();
         op.then(function(res){
           submit.disabled=false; submit.textContent = editingId ? 'Save changes' : 'Add expense';
           if(res && res.error){ msg.className='formmsg err'; msg.textContent='Could not save: '+res.error.message; return; }
           var wasEdit=!!editingId, added=recs.length;
+          // Which row the events attach to: the edited one, or the first of a
+          // monthly run — the same row the receipt goes on.
+          var targetId = editingId || (res && res.data && res.data[0] && res.data[0].id);
           resetForm();
           msg.className='formmsg ok';
           msg.textContent = wasEdit ? 'Saved.'
             : (added>1 ? 'Added '+added+' monthly expenses'+span+'. Use Edit on a month to attach its receipt.'
                        : 'Expense added.');
-          load();
+          saveExpenseLinks(targetId, pickedEvents, function(){ load(); });
         }, function(){ submit.disabled=false; submit.textContent=editingId?'Save changes':'Add expense'; msg.className='formmsg err'; msg.textContent='Could not save. Try again.'; });
       }
 
