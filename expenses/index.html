@@ -102,6 +102,62 @@
       <div class="stat"><div class="label">Deductible</div><div class="value" id="st-ded">$0</div></div>
     </div>
 
+    <!-- ── Event profit & loss ────────────────────────────────────────
+         The expense tracker below records what goes OUT. This records
+         what an event brought IN, and does the arithmetic on whether the
+         day was worth doing. -->
+    <div class="panel" id="pnl-panel">
+      <h2>Did this event <em>make money?</em></h2>
+      <p class="muted" style="margin:-.4rem 0 1rem;font-size:.9rem;">
+        Fill in what you charged and what it cost. Everything updates as you type &mdash;
+        nothing is saved until you press Save.
+      </p>
+
+      <div class="grid">
+        <div><label>Event</label><input type="text" id="p-name" placeholder="e.g. Riddim &amp; Kompa — Brooklyn"></div>
+        <div><label>Date</label><input type="date" id="p-date"></div>
+        <div><label>People who paid</label><input type="number" id="p-people" min="0" step="1" inputmode="numeric" placeholder="15"></div>
+        <div><label>Price per person ($)</label><input type="number" id="p-price" min="0" step="0.01" inputmode="decimal" placeholder="45.00"></div>
+        <div><label>Studio's share (%)</label><input type="number" id="p-studio" min="0" max="100" step="0.5" inputmode="decimal" value="25"></div>
+        <div><label>Goodie bag, per person ($)</label><input type="number" id="p-bag" min="0" step="0.01" inputmode="decimal" placeholder="12.00"></div>
+        <div><label>Everything else ($)</label><input type="number" id="p-other" min="0" step="0.01" inputmode="decimal" placeholder="travel, props, printing"></div>
+        <div><label>Hours you put in (optional)</label><input type="number" id="p-hours" min="0" step="0.5" inputmode="decimal" placeholder="teaching + admin"></div>
+      </div>
+
+      <div class="row-check" style="margin-top:.5rem;">
+        <input type="checkbox" id="p-studio-net">
+        <label for="p-studio-net" style="margin:0;">The studio takes their % <strong>after</strong> Stripe fees, not off the full ticket price</label>
+      </div>
+
+      <details style="margin-top:.6rem;">
+        <summary class="muted" style="cursor:pointer;font-size:.88rem;">Stripe's rate (only change this if yours is different)</summary>
+        <div class="grid" style="margin-top:.6rem;">
+          <div><label>Percentage (%)</label><input type="number" id="p-spct" min="0" step="0.1" inputmode="decimal" value="2.9"></div>
+          <div><label>Fixed, per ticket ($)</label><input type="number" id="p-sfix" min="0" step="0.01" inputmode="decimal" value="0.30"></div>
+        </div>
+      </details>
+
+      <div id="pnl-out" style="margin-top:1.1rem;"></div>
+
+      <div class="actions" style="margin-top:1rem;">
+        <button type="button" class="btn" id="p-save">Save this event</button>
+        <button type="button" class="btn ghost" id="p-clear">Clear</button>
+        <span class="formmsg" id="p-msg"></span>
+      </div>
+    </div>
+
+    <!-- Saved events + what they add up to -->
+    <div class="panel" id="pnl-history-panel" style="display:none;">
+      <h2>Every event <em>so far</em></h2>
+      <div class="stats" id="pnl-stats"></div>
+      <div class="tablewrap" style="margin-top:1rem;">
+        <table>
+          <thead><tr><th>Event</th><th>Date</th><th>People</th><th>Price</th><th>Took home</th><th>Per head</th><th></th></tr></thead>
+          <tbody id="pnl-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- Add / edit form -->
     <div class="panel">
       <h2 id="form-title">Add an expense</h2>
@@ -222,8 +278,251 @@
     document.getElementById('flt-month').innerHTML='<option value="">All months</option>'+
       MONTHS.map(function(name,i){ return '<option value="'+String(i+1).padStart(2,'0')+'">'+name+'</option>'; }).join('');
 
+    // ════════════════════════════════════════════════════════════════
+    //  EVENT PROFIT & LOSS
+    //
+    //  Stripe charges per TICKET, not per event: 2.9% + 30¢ each. On a
+    //  $45 ticket that fixed 30¢ is most of the fee, which is why the
+    //  percentage alone understates it — and why raising the price costs
+    //  proportionally less in fees than you'd guess.
+    // ════════════════════════════════════════════════════════════════
+    var PNL_IDS = ['p-name','p-date','p-people','p-price','p-studio','p-bag','p-other','p-hours','p-spct','p-sfix','p-studio-net'];
+    function pv(id){ var el=document.getElementById(id); if(!el) return 0; return Number(el.value)||0; }
+    function pnlInputs(){
+      return {
+        name: (document.getElementById('p-name').value||'').trim(),
+        date: document.getElementById('p-date').value || null,
+        people: Math.max(0, Math.round(pv('p-people'))),
+        price: pv('p-price'),
+        studioPct: pv('p-studio'),
+        studioOnNet: document.getElementById('p-studio-net').checked,
+        spct: pv('p-spct'),
+        sfix: pv('p-sfix'),
+        bag: pv('p-bag'),
+        other: pv('p-other'),
+        hours: pv('p-hours')
+      };
+    }
+    // One place the arithmetic lives, so the live panel, the saved rows
+    // and the what-if table can never disagree with each other.
+    function pnlCalc(i, overrides){
+      var o = overrides || {};
+      var people = (o.people != null ? o.people : i.people);
+      var price  = (o.price  != null ? o.price  : i.price);
+      var bag    = (o.bag    != null ? o.bag    : i.bag);
+      var gross  = people * price;
+      var stripe = people ? (gross * (i.spct/100) + people * i.sfix) : 0;
+      var studioBase = i.studioOnNet ? (gross - stripe) : gross;
+      var studio = studioBase * (i.studioPct/100);
+      var bags   = people * bag;
+      var costs  = stripe + studio + bags + i.other;
+      var net    = gross - costs;
+      return {
+        people: people, price: price, gross: gross, stripe: stripe, studio: studio,
+        bags: bags, other: i.other, costs: costs, net: net,
+        perHead: people ? net/people : 0,
+        margin: gross ? (net/gross*100) : 0,
+        perHour: i.hours ? net/i.hours : null
+      };
+    }
+    function pnlRow(label, amount, opts){
+      opts = opts || {};
+      return '<div style="display:flex;justify-content:space-between;gap:1rem;padding:.4rem 0;'
+        + (opts.rule ? 'border-top:1px solid rgba(0,0,0,.12);margin-top:.3rem;' : '')
+        + '"><span' + (opts.strong ? ' style="font-weight:700;"' : ' class="muted"') + '>' + esc(label) + '</span>'
+        + '<span style="font-variant-numeric:tabular-nums;' + (opts.strong ? 'font-weight:700;' : '')
+        + (opts.neg ? 'color:#b03636;' : '') + (opts.good ? 'color:#2e7d32;' : '') + '">'
+        + (opts.neg ? '−' : '') + money(Math.abs(amount)) + '</span></div>';
+    }
+
+    function pnlRender(){
+      var i = pnlInputs(), c = pnlCalc(i);
+      var out = document.getElementById('pnl-out');
+      if (!i.people || !i.price){
+        out.innerHTML = '<div class="empty">Put in how many people paid and what you charged, and the numbers appear here.</div>';
+        return;
+      }
+      var html = '<div class="breakdown" style="display:block;">'
+        + pnlRow(i.people + ' × ' + money(i.price), c.gross, { strong:true })
+        + pnlRow('Stripe fees (' + i.spct + '% + ' + money(i.sfix) + ' a ticket)', c.stripe, { neg:true })
+        + pnlRow('Studio, ' + i.studioPct + '%' + (i.studioOnNet ? ' of after-Stripe' : ' of the ticket price'), c.studio, { neg:true })
+        + (c.bags ? pnlRow('Goodie bags, ' + i.people + ' × ' + money(i.bag), c.bags, { neg:true }) : '')
+        + (i.other ? pnlRow('Everything else', i.other, { neg:true }) : '')
+        + pnlRow(c.net >= 0 ? 'You took home' : 'You lost', c.net, { strong:true, rule:true, neg: c.net < 0, good: c.net > 0 })
+        + '</div>';
+
+      html += '<div class="stats" style="margin-top:.9rem;">'
+        + '<div class="stat"><div class="label">Per person</div><div class="value">' + money(c.perHead) + '</div></div>'
+        + '<div class="stat"><div class="label">Margin</div><div class="value">' + c.margin.toFixed(0) + '%</div></div>'
+        + (c.perHour != null
+            ? '<div class="stat"><div class="label">Per hour</div><div class="value">' + money(c.perHour) + '</div></div>' : '')
+        + '</div>';
+
+      html += pnlAdvice(i, c);
+      out.innerHTML = html;
+    }
+
+    // What to actually do about it — computed from her numbers, not general
+    // advice. Every line names a dollar figure she can act on.
+    function pnlAdvice(i, c){
+      var tips = [];
+
+      if (c.net < 0){
+        var needed = i.people ? Math.ceil((c.costs) / i.people * 100)/100 : 0;
+        tips.push(['This one lost money',
+          'At ' + i.people + ' people you needed to charge about <strong>' + money(needed)
+          + '</strong> a head to break even, not ' + money(i.price) + '.']);
+      }
+
+      // What one more seat is worth — the cheapest money there is.
+      if (i.people > 0){
+        var oneMore = pnlCalc(i, { people: i.people + 1 }).net - c.net;
+        tips.push(['One more seat is worth ' + money(oneMore),
+          'Same room, same rent, same drive. Filling an empty spot is the cheapest money available to you.']);
+      }
+
+      // Price ladder.
+      var ladder = [5, 10, 15].map(function(d){
+        var n = pnlCalc(i, { price: i.price + d }).net;
+        return { d: d, net: n, delta: n - c.net };
+      });
+      tips.push(['If you charged more',
+        '<div style="margin-top:.4rem;">' + ladder.map(function(l){
+          return '<div style="display:flex;justify-content:space-between;padding:.2rem 0;">'
+            + '<span class="muted">' + money(i.price + l.d) + ' a head</span>'
+            + '<span style="font-variant-numeric:tabular-nums;">' + money(l.net)
+            + ' <span class="muted">(+' + money(l.delta) + ')</span></span></div>';
+        }).join('') + '</div>'
+        + '<div class="muted" style="margin-top:.4rem;">You sold this out at ' + money(i.price)
+        + '. Selling out is the clearest signal there is that the price has room.</div>']);
+
+      // Bags as a share of what she keeps.
+      if (c.bags > 0 && c.net > 0){
+        var share = c.bags / (c.net + c.bags) * 100;
+        tips.push(['Goodie bags cost you ' + money(c.bags),
+          'That is <strong>' + share.toFixed(0) + '%</strong> of what you would otherwise keep. '
+          + 'If a brand gifted the contents instead, this event would have paid you <strong>'
+          + money(c.net + c.bags) + '</strong> — and the bag would become marketing rather than a cost.']);
+      }
+
+      // More seats, same split — the mat argument, in her own numbers.
+      if (i.people > 0){
+        var dbl = pnlCalc(i, { people: Math.round(i.people * 1.7) });
+        tips.push(['The room is the ceiling',
+          'Reformers cap the room. The same event on mats at about <strong>'
+          + Math.round(i.people * 1.7) + ' people</strong>, same price and same '
+          + i.studioPct + '% split, would have paid <strong>' + money(dbl.net) + '</strong>'
+          + ' — ' + money(dbl.net - c.net) + ' more for the same day.']);
+      }
+
+      if (c.perHour != null && c.perHour > 0){
+        tips.push(['That worked out at ' + money(c.perHour) + ' an hour',
+          'Counting the admin, not just the teaching. Worth knowing before you price the next one.']);
+      }
+
+      if (!tips.length) return '';
+      return '<div style="margin-top:1.1rem;">'
+        + '<div class="eyebrow" style="margin-bottom:.5rem;">What would move the needle</div>'
+        + tips.map(function(t){
+            return '<div style="background:rgba(176,120,64,.07);border-left:3px solid #b07840;'
+              + 'border-radius:0 8px 8px 0;padding:.7rem .9rem;margin-bottom:.5rem;">'
+              + '<div style="font-weight:700;margin-bottom:.2rem;">' + t[0] + '</div>'
+              + '<div style="font-size:.92rem;line-height:1.6;">' + t[1] + '</div></div>';
+          }).join('')
+        + '</div>';
+    }
+
+    // ---- saved events ----
+    var pnlRows = [];
+    function pnlLoad(){
+      if(!sb) return;
+      sb.from('event_pnl').select('*').order('event_date', { ascending: false }).then(function(res){
+        if(res && res.error){
+          document.getElementById('pnl-history-panel').style.display = 'none';
+          return;
+        }
+        pnlRows = (res && res.data) || [];
+        pnlPaintHistory();
+      }, function(){});
+    }
+    function pnlFromRow(r){
+      var i = {
+        people: r.people||0, price: Number(r.price_each)||0, studioPct: Number(r.studio_pct)||0,
+        studioOnNet: !!r.studio_on_net, spct: Number(r.stripe_pct)||0, sfix: Number(r.stripe_fixed)||0,
+        bag: Number(r.bag_each)||0, other: Number(r.other_costs)||0, hours: Number(r.hours)||0
+      };
+      return pnlCalc(i);
+    }
+    function pnlPaintHistory(){
+      var panel = document.getElementById('pnl-history-panel');
+      if(!pnlRows.length){ panel.style.display='none'; return; }
+      panel.style.display='block';
+      var totNet=0, totPeople=0, totGross=0;
+      var body = pnlRows.map(function(r){
+        var c = pnlFromRow(r);
+        totNet += c.net; totPeople += c.people; totGross += c.gross;
+        return '<tr><td>'+esc(r.event_name)+'</td><td>'+fmtDate(r.event_date)+'</td>'
+          + '<td>'+c.people+'</td><td>'+money(c.price)+'</td>'
+          + '<td style="font-weight:700;color:'+(c.net>=0?'#2e7d32':'#b03636')+';">'+money(c.net)+'</td>'
+          + '<td>'+money(c.perHead)+'</td>'
+          + '<td class="actions"><button class="btn ghost rowbtn" data-pnl-del="'+esc(r.id)+'">Delete</button></td></tr>';
+      }).join('');
+      document.getElementById('pnl-tbody').innerHTML = body;
+      document.getElementById('pnl-stats').innerHTML =
+          '<div class="stat"><div class="label">Events</div><div class="value">'+pnlRows.length+'</div></div>'
+        + '<div class="stat"><div class="label">People taught</div><div class="value">'+totPeople+'</div></div>'
+        + '<div class="stat"><div class="label">Taken in</div><div class="value">'+money(totGross)+'</div></div>'
+        + '<div class="stat"><div class="label">Kept</div><div class="value" style="color:'+(totNet>=0?'#2e7d32':'#b03636')+';">'+money(totNet)+'</div></div>';
+      Array.prototype.forEach.call(document.querySelectorAll('[data-pnl-del]'), function(b){
+        b.addEventListener('click', function(){
+          if(!confirm('Delete this event from your profit history?')) return;
+          sb.from('event_pnl').delete().eq('id', b.getAttribute('data-pnl-del')).then(pnlLoad, pnlLoad);
+        });
+      });
+    }
+
+    PNL_IDS.forEach(function(id){
+      var el=document.getElementById(id); if(!el) return;
+      el.addEventListener('input', pnlRender);
+      el.addEventListener('change', pnlRender);
+    });
+    document.getElementById('p-clear').addEventListener('click', function(){
+      PNL_IDS.forEach(function(id){
+        var el=document.getElementById(id); if(!el) return;
+        if(el.type==='checkbox') el.checked=false;
+        else if(id==='p-studio') el.value='25';
+        else if(id==='p-spct') el.value='2.9';
+        else if(id==='p-sfix') el.value='0.30';
+        else el.value='';
+      });
+      document.getElementById('p-msg').textContent='';
+      pnlRender();
+    });
+    document.getElementById('p-save').addEventListener('click', function(){
+      var i = pnlInputs(), msg = document.getElementById('p-msg');
+      if(!i.name){ msg.textContent='Give the event a name first.'; return; }
+      if(!i.people || !i.price){ msg.textContent='Add how many people paid and what you charged.'; return; }
+      if(!sb){ msg.textContent='Not connected.'; return; }
+      var btn=this; btn.disabled=true; msg.textContent='Saving…';
+      sb.from('event_pnl').insert([{
+        event_name:i.name, event_date:i.date, people:i.people, price_each:i.price,
+        studio_pct:i.studioPct, studio_on_net:i.studioOnNet, stripe_pct:i.spct,
+        stripe_fixed:i.sfix, bag_each:i.bag, other_costs:i.other, hours:i.hours||null
+      }]).then(function(res){
+        btn.disabled=false;
+        if(res && res.error){
+          msg.textContent='Could not save — run EVENT_PNL.sql in Supabase first.';
+          return;
+        }
+        msg.textContent='Saved.';
+        pnlLoad();
+      }, function(){ btn.disabled=false; msg.textContent='Could not save. Try again.'; });
+    });
+    pnlRender();
+
     // ---- load ----
     function init(){
+      pnlLoad();
       fillSelect(document.getElementById('f-method'), METHODS, false);
       load();
     }
