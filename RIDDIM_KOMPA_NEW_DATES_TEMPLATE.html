@@ -1,0 +1,230 @@
+<!--
+  ════════════════════════════════════════════════════════════
+   Riddim & Kompa on the Reformer — TWO NEW BROOKLYN DATES
+   (to the Riddim & Kompa interest list at /riddim-interest)
+
+   Built on the same system as the Brooklyn confirmation email
+   (RIDDIM_KOMPA_BROOKLYN_CONFIRMATION_TEMPLATE.html) — same flag
+   stripe, same cream header and flags icon, same #faf5ee cards
+   with the gold rail, same #b0432e buttons, same half-Jamaica /
+   half-Haiti footer.
+
+   ────────────────────────────────────────────────────────────
+   BEFORE YOU SEND — replace the six booking links.
+
+   Search for REPLACE_ and you will find exactly six:
+     REPLACE_OCT10_12PM     REPLACE_NOV21_12PM
+     REPLACE_OCT10_1PM      REPLACE_NOV21_1PM
+     REPLACE_OCT10_2PM      REPLACE_NOV21_2PM
+
+   Paste each Stripe link over the matching REPLACE_ word. Nothing
+   else needs touching.
+
+   ────────────────────────────────────────────────────────────
+   COPY THIS ENTIRE FILE (Cmd+A → Cmd+C) and paste into:
+     EmailJS → Email Templates → template_0x7r3ty →
+     switch to the "Code"/HTML view → paste over everything → Save.
+
+   Suggested EmailJS Subject:
+     We're coming back to Brooklyn — twice
+
+   Alternates, all short enough to survive an iPhone's ~35-character cut:
+     You're first: two new Brooklyn dates
+     It's happening again 🎶 two Brooklyn dates
+     Brooklyn, twice — Oct 10 and Nov 21
+
+   Careful with the subject: EmailJS escapes a slash into &#x2F;
+   unless the variable is in triple braces, so write dates as
+   "Oct 10", never "10/10".
+
+   EmailJS variables used:
+     {{from_name}}  — their first name
+  ════════════════════════════════════════════════════════════
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>We&rsquo;re coming back to Brooklyn &mdash; Riddim &amp; Kompa on the Reformer</title>
+</head>
+<body style="margin:0;padding:0;background-color:#efe6d6;font-family:Georgia,'Times New Roman',serif;color:#3a2c1e;">
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#efe6d6;padding:32px 16px;">
+  <tr>
+    <td align="center">
+
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#fdfbf7;border-radius:14px;overflow:hidden;box-shadow:0 6px 30px rgba(90,58,26,0.16);max-width:600px;width:100%;">
+
+        <!-- Flag accent stripe: Jamaica (green · gold · black) + Haiti (blue · red) -->
+        <tr>
+          <td style="padding:0;font-size:0;line-height:0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td width="17%" style="height:6px;background-color:#009b3a;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="17%" style="height:6px;background-color:#fed100;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="16%" style="height:6px;background-color:#151515;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="25%" style="height:6px;background-color:#00209f;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="25%" style="height:6px;background-color:#d21034;font-size:0;line-height:0;">&nbsp;</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Header -->
+        <tr>
+          <td align="center" style="background-color:#f7f0e3;padding:38px 30px 28px;border-bottom:1px solid #e6d8c2;">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:#a5794a;letter-spacing:4px;text-transform:uppercase;font-weight:bold;">Auric Movement</div>
+            <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:34px;line-height:1.12;color:#5A3A1A;font-weight:bold;margin-top:12px;">Riddim &amp; Kompa<br>on the Reformer</div>
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:#8a6a45;letter-spacing:2.5px;text-transform:uppercase;margin-top:16px;">Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect</div>
+            <img src="https://book.auricmovement.com/riddim-kompa-icon.png" alt="Jamaican and Haitian flags on a reformer" width="260" style="display:block;margin:18px auto 4px;max-width:260px;width:100%;height:auto;border:0;outline:none;">
+            <div style="display:inline-block;background-color:#b0432e;color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;padding:8px 20px;border-radius:20px;margin-top:8px;">&#10022; Two New Brooklyn Dates</div>
+          </td>
+        </tr>
+
+        <!-- Greeting -->
+        <tr>
+          <td style="padding:34px 42px 6px;">
+            <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:24px;color:#5A3A1A;margin:0 0 14px 0;">We&rsquo;re coming back, {{from_name}}.</p>
+            <p style="font-family:Georgia,serif;font-size:16px;line-height:1.75;color:#3a2c1e;margin:0;">
+              Riddim &amp; Kompa on the Reformer is returning to Brooklyn &mdash; and this time we&rsquo;re doing it <em>twice</em>. You told me you wanted to know when the next one dropped, so here it is, before it goes out anywhere else.
+            </p>
+          </td>
+        </tr>
+
+        <!-- ── Date one: October 10 ──────────────────────────────── -->
+        <tr>
+          <td style="padding:24px 42px 8px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border-left:3px solid #c79a54;border-radius:0 8px 8px 0;">
+              <tr>
+                <td style="padding:20px 24px;">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">First Up</div>
+                  <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;line-height:1.15;color:#5A3A1A;font-weight:bold;">Saturday, October 10</div>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:10px;">
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;width:100px;vertical-align:top;"><strong>Where:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.55;">Maison Luxe Wellness Pilates<br>958 Lafayette Ave<br>Brooklyn, NY 11221</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Sessions:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">12:00 PM &middot; 1:00 PM &middot; 2:00 PM</td></tr>
+                  </table>
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="170" style="margin-top:16px;">
+                    <tr><td align="center" bgcolor="#b0432e" width="170" style="background-color:#b0432e;border-radius:8px;">
+                      <a href="REPLACE_OCT10_12PM" style="color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:block;padding:13px 0;">12:00 PM</a>
+                    </td></tr>
+                    <tr><td height="8" style="font-size:0;line-height:0;">&nbsp;</td></tr>
+                    <tr><td align="center" bgcolor="#b0432e" width="170" style="background-color:#b0432e;border-radius:8px;">
+                      <a href="REPLACE_OCT10_1PM" style="color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:block;padding:13px 0;">1:00 PM</a>
+                    </td></tr>
+                    <tr><td height="8" style="font-size:0;line-height:0;">&nbsp;</td></tr>
+                    <tr><td align="center" bgcolor="#b0432e" width="170" style="background-color:#b0432e;border-radius:8px;">
+                      <a href="REPLACE_OCT10_2PM" style="color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:block;padding:13px 0;">2:00 PM</a>
+                    </td></tr>
+                    </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- ── Date two: November 21 ─────────────────────────────── -->
+        <tr>
+          <td style="padding:12px 42px 8px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border-left:3px solid #c79a54;border-radius:0 8px 8px 0;">
+              <tr>
+                <td style="padding:20px 24px;">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">And Again In November</div>
+                  <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;line-height:1.15;color:#5A3A1A;font-weight:bold;">Saturday, November 21</div>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:10px;">
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;width:100px;vertical-align:top;"><strong>Where:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.55;">Maison Luxe Wellness Pilates<br>958 Lafayette Ave<br>Brooklyn, NY 11221</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Sessions:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">12:00 PM &middot; 1:00 PM &middot; 2:00 PM</td></tr>
+                  </table>
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="170" style="margin-top:16px;">
+                    <tr><td align="center" bgcolor="#b0432e" width="170" style="background-color:#b0432e;border-radius:8px;">
+                      <a href="REPLACE_NOV21_12PM" style="color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:block;padding:13px 0;">12:00 PM</a>
+                    </td></tr>
+                    <tr><td height="8" style="font-size:0;line-height:0;">&nbsp;</td></tr>
+                    <tr><td align="center" bgcolor="#b0432e" width="170" style="background-color:#b0432e;border-radius:8px;">
+                      <a href="REPLACE_NOV21_1PM" style="color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:block;padding:13px 0;">1:00 PM</a>
+                    </td></tr>
+                    <tr><td height="8" style="font-size:0;line-height:0;">&nbsp;</td></tr>
+                    <tr><td align="center" bgcolor="#b0432e" width="170" style="background-color:#b0432e;border-radius:8px;">
+                      <a href="REPLACE_NOV21_2PM" style="color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:block;padding:13px 0;">2:00 PM</a>
+                    </td></tr>
+                    </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Divider -->
+        <tr><td style="padding:16px 42px 4px;"><div style="border-top:1px solid #e6d8c2;"></div></td></tr>
+
+        <!-- Two islands, one rhythm -->
+        <tr>
+          <td style="padding:18px 42px 8px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border:1px solid #e6d8c2;border-radius:10px;">
+              <tr>
+                <td style="padding:24px 26px;" align="center">
+                  <div style="font-size:26px;line-height:1;">&#127925;</div>
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#9a6535;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin:10px 0 8px;">Two Islands, One Rhythm</div>
+                  <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:22px;line-height:1.4;color:#5A3A1A;margin:0;">
+                    Jamaica&rsquo;s riddim and Haiti&rsquo;s kompa, both built on the drum.
+                  </p>
+                  <p style="font-family:Georgia,serif;font-size:13px;line-height:1.6;color:#6d5f45;margin:12px 0 0 0;">
+                    One shared heartbeat &mdash; and we&rsquo;re bringing it back to the reformer. &#129293;
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- The nudge -->
+        <tr>
+          <td style="padding:22px 42px 0;">
+            <p style="font-family:Georgia,serif;font-size:15px;line-height:1.75;color:#3a2c1e;margin:0;">
+              The last three sold out, and honestly this list tends to fill them before I even post them anywhere. So if you see a time that works &mdash; take it. I&rsquo;d really love to have you in the room.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Closing -->
+        <tr>
+          <td style="padding:20px 42px 30px;">
+            <p style="font-family:Georgia,serif;font-size:14px;line-height:1.75;color:#7a6650;margin:0 0 14px 0;">
+              Can&rsquo;t make either one? No stress &mdash; stay on the list. There&rsquo;s always another one coming, and you&rsquo;ll hear about it the same way you heard about this one: first.
+            </p>
+            <p style="font-family:Georgia,serif;font-size:15px;color:#3a2c1e;line-height:1.75;margin:0 0 10px 0;">See you on the reformer &mdash; come ready to move, breathe, and connect.</p>
+            <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:20px;color:#5A3A1A;margin:0;">&mdash; Niara</p>
+          </td>
+        </tr>
+
+        <!-- Footer (half Jamaica / half Haiti) -->
+        <tr>
+          <td style="background:linear-gradient(90deg,#0a7d33 0%,#0a7d33 49%,#fed100 49%,#fed100 51%,#0a2a9c 51%,#0a2a9c 100%);background-color:#0a7d33;padding:28px 34px;" align="center">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#ffffff;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">Auric Movement</div>
+            <div style="font-family:Georgia,serif;font-size:12px;color:#ffffff;line-height:1.8;">
+              Pilates events in NYC, hosted with intention.<br>
+              <a href="mailto:auricmovement@outlook.com" style="color:#ffe9a8;text-decoration:none;">auricmovement@outlook.com</a> &middot; <a href="https://book.auricmovement.com" style="color:#ffe9a8;text-decoration:none;">book.auricmovement.com</a>
+            </div>
+            <div style="border-top:1px solid rgba(255,255,255,0.35);margin-top:20px;padding-top:16px;">
+              <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:15px;color:#ffffff;">&#10022; Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect &#10022;</div>
+            </div>
+          </td>
+        </tr>
+
+      </table>
+
+      <!-- Why they're getting this -->
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
+        <tr><td align="center" style="padding:18px 24px 0;font-family:Georgia,'Times New Roman',serif;font-size:11px;line-height:1.7;color:#8a7a64;">
+          You&rsquo;re getting this because you joined the Riddim &amp; Kompa list &mdash; thank you for that.<br>
+          Rather not? <a href="mailto:auricmovement@outlook.com?subject=Unsubscribe" style="color:#8a7a64;text-decoration:underline;">Let me know</a> and I&rsquo;ll take you off, no hard feelings.<br>
+          Auric Movement LLC &middot; New York, NY
+        </td></tr>
+      </table>
+
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>
