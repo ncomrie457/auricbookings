@@ -702,8 +702,17 @@
       document.getElementById('pnl-panel').scrollIntoView({ behavior:'smooth', block:'start' });
     }
 
-    (function(){ var a=document.getElementById('f-amount');
-      if(a) a.addEventListener('input', function(){ try{ expenseSplitSync(); }catch(e){} }); })();
+    // Recompute the live split note when the amount changes OR the method
+    // does. Without the radios wired, switching to "by attendance" silently
+    // kept showing the even split — the saved value was right, the preview
+    // lied, which is worse than no preview.
+    (function(){
+      var a=document.getElementById('f-amount');
+      if(a) a.addEventListener('input', function(){ try{ expenseSplitSync(); }catch(e){} });
+      Array.prototype.forEach.call(document.querySelectorAll('input[name="f-split"]'), function(r){
+        r.addEventListener('change', function(){ try{ expenseSplitSync(); }catch(e){} });
+      });
+    })();
 
     document.getElementById('p-clear').addEventListener('click', function(){
       PNL_IDS.forEach(function(id){
