@@ -172,6 +172,9 @@
       </div>
     </div>
 
+    <!-- The one number: every event, minus every expense -->
+    <div class="panel" id="pnl-bottom" style="display:none;"></div>
+
     <!-- Add / edit form -->
     <div class="panel">
       <h2 id="form-title">Add an expense</h2>
@@ -676,9 +679,79 @@
       return lines + exp;
     }
 
+    // Where the business actually stands, once everything is counted.
+    //
+    // Each event's "Took home" only carries the costs tagged to THAT event.
+    // An expense tagged to no event never comes off anything, so adding up
+    // the event rows alone flatters the business by exactly that amount.
+    // This subtracts it, so the last line is the real one.
+    function pnlBottomLine(){
+      var panel = document.getElementById('pnl-bottom');
+      if(!panel) return;
+      if(!pnlRows.length && !rows.length){ panel.style.display='none'; return; }
+
+      var gross=0, costs=0, net=0, people=0;
+      pnlRows.forEach(function(r){
+        var c = pnlFromRow(r);
+        gross += c.gross; costs += c.costs; net += c.net; people += c.people;
+      });
+
+      // An expense counts as loose when none of its tags points at an event
+      // that still exists — untagged, or tagged only to a deleted event.
+      var loose = rows.filter(function(x){
+        var ids = expenseLinks[x.id] || [];
+        return !ids.some(function(id){
+          return pnlRows.some(function(e){ return e.id === id; });
+        });
+      });
+      var looseTotal = loose.reduce(function(t,x){ return t + (Number(x.amount)||0); }, 0);
+      var bottom = net - looseTotal;
+
+      var evLabel = pnlRows.length + (pnlRows.length===1 ? ' event' : ' events')
+                  + (people ? ' · ' + people + (people===1 ? ' person' : ' people') : '');
+
+      var verdict;
+      if (bottom < 0 && net >= 0 && looseTotal > 0){
+        verdict = 'Your events themselves made money. It’s the '
+                + money(looseTotal) + ' of spending not tied to any event that puts you under.';
+      } else if (bottom < 0){
+        verdict = 'You are ' + money(Math.abs(bottom)) + ' down across everything so far.';
+      } else if (bottom === 0){
+        verdict = 'You are exactly even across everything so far.';
+      } else {
+        verdict = 'You are ' + money(bottom) + ' up across everything so far'
+                + (people ? ', on ' + people + ' ' + (people===1?'person':'people') + ' taught' : '') + '.';
+      }
+
+      panel.style.display = 'block';
+      panel.innerHTML =
+          '<h2>Across <em>everything</em></h2>'
+        + '<p class="muted" style="margin:-.4rem 0 1rem;font-size:.9rem;">'
+        + 'Every event you have saved, less every expense &mdash; including the ones that '
+        + 'aren’t tied to an event.</p>'
+        + '<div class="breakdown" style="display:block;max-width:560px;">'
+        +   pnlRow(evLabel || 'Events', gross, { strong:true })
+        +   (costs ? pnlRow('Costs tied to those events', costs, { neg:true }) : '')
+        +   pnlRow('Kept from events', net, { strong:true, rule:true, neg:net<0, good:net>0 })
+        +   (looseTotal
+              ? pnlRow(loose.length + ' expense' + (loose.length===1?'':'s') + ' not tied to an event',
+                       looseTotal, { neg:true })
+              : '')
+        +   pnlRow(bottom >= 0 ? 'Bottom line — kept' : 'Bottom line — short',
+                   bottom, { strong:true, rule:true, neg:bottom<0, good:bottom>0 })
+        + '</div>'
+        + '<p style="margin:.9rem 0 0;font-size:.95rem;font-weight:600;color:'
+        + (bottom>=0 ? '#2e7d32' : '#b03636') + ';">' + esc(verdict) + '</p>'
+        + (loose.length
+            ? '<p class="muted" style="margin:.5rem 0 0;font-size:.88rem;">Tag those '
+              + loose.length + ' to the events they paid for and they’ll come off those '
+              + 'events instead of sitting here on their own.</p>'
+            : '');
+    }
+
     function pnlPaintHistory(){
       var panel = document.getElementById('pnl-history-panel');
-      if(!pnlRows.length){ panel.style.display='none'; return; }
+      if(!pnlRows.length){ panel.style.display='none'; pnlBottomLine(); return; }
       panel.style.display='block';
       var totNet=0, totPeople=0, totGross=0;
       var body = pnlRows.map(function(r){
@@ -721,6 +794,7 @@
           sb.from('event_pnl').delete().eq('id', b.getAttribute('data-pnl-del')).then(pnlLoad, pnlLoad);
         });
       });
+      pnlBottomLine();
     }
 
     PNL_IDS.forEach(function(id){
@@ -827,7 +901,9 @@
 
     // ---- load ----
     function init(){
-      loadExpenseLinks();
+      // The three loads race. Whichever tag list lands last, repaint —
+      // otherwise the totals are computed against an empty link table.
+      loadExpenseLinks(pnlPaintHistory);
       pnlLoad();
       fillSelect(document.getElementById('f-method'), METHODS, false);
       load();
@@ -870,6 +946,7 @@
 
     function render(){
       renderStats(); renderBreakdown(); renderTable(); renderStatus();
+      pnlBottomLine();   // expenses moved, so the bottom line moved
     }
 
     // "12 expenses · updated 3:42 PM · in view: 2 · $130.54"
