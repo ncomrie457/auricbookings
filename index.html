@@ -5288,6 +5288,7 @@
         <button type="button" id="wlc-send" onclick="wlcSend(this)" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:10px;padding:.5rem 1rem;font-size:.82rem;cursor:pointer;font-family:'Jost',sans-serif;font-weight:600;">&#128233; Send to waitlist</button>
         <span id="wlc-count" class="au-meta"></span>
       </div>
+      <div id="wlc-who" style="margin-top:.6rem;"></div>
     </div>
 
     <div id="admin-club-section" style="display:none;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);">
@@ -11244,7 +11245,23 @@ document.addEventListener('DOMContentLoaded', function() {
     'turkey':      'turkey-burn-2026-11-21',
     'halloween':   'halloween-creek-2026-10-24'
   };
-  document.getElementById('admin-flex-reminder-audit').addEventListener('click', function(){
+  // What the roster list currently has ticked. The send reads this, so what
+  // you see in the list is exactly what goes out.
+  var _rfPick = { eventType: null, rows: {} };
+  var RF_REMINDER_SESS = {
+        '1pm':    { label: 'Riddim & Kompa on the Reformer — 1 PM', date: 'Sunday, September 13th', arrival: '12:55 PM', start: '1:00 PM' },
+        '2pm':    { label: 'Riddim & Kompa on the Reformer — 2 PM', date: 'Sunday, September 13th', arrival: '1:55 PM', start: '2:00 PM' },
+        '3pm':    { label: 'Riddim & Kompa on the Reformer — 3 PM', date: 'Sunday, September 13th', arrival: '2:55 PM', start: '3:00 PM' },
+        'bk12':   { label: 'Riddim & Kompa on the Reformer — Brooklyn, 12 PM', date: 'Saturday, September 26th', arrival: '11:55 AM', start: '12:00 PM' },
+        'bk1':    { label: 'Riddim & Kompa on the Reformer — Brooklyn, 1 PM',  date: 'Saturday, September 26th', arrival: '12:55 PM', start: '1:00 PM' },
+        'bk2':    { label: 'Riddim & Kompa on the Reformer — Brooklyn, 2 PM',  date: 'Saturday, September 26th', arrival: '1:55 PM', start: '2:00 PM' },
+        'tb1230': { label: 'Turkey Burn! — 12:30 PM', date: 'Saturday, November 21st', arrival: '12:25 PM', start: '12:30 PM' },
+        'tb130':  { label: 'Turkey Burn! — 1:35 PM',  date: 'Saturday, November 21st', arrival: '1:30 PM', start: '1:35 PM' },
+        'hw1230': { label: 'Shhh… Quiet on the Creek — 12:30 PM', date: 'Saturday, October 24th', arrival: '12:25 PM', start: '12:30 PM' },
+        'hw130':  { label: 'Shhh… Quiet on the Creek — 1:35 PM',  date: 'Saturday, October 24th', arrival: '1:30 PM', start: '1:35 PM' }
+  };
+
+  function rfReminderAudit(){
     var out = document.getElementById('admin-flex-reminder-audit-out');
     var eventType = document.getElementById('admin-flex-reminder-event').value;
     out.innerHTML = '<div class="au-meta">Checking&hellip;</div>';
@@ -11280,17 +11297,32 @@ document.addEventListener('DOMContentLoaded', function() {
           }
           (why ? skip : keep).push({ r: r, why: why });
         });
+        var keepIds = {};
+        keep.forEach(function(o){ keepIds[String(o.r.id)] = 1; });
+        // Every row is pickable. The ones that would normally be skipped come
+        // UNCHECKED rather than hidden, so a correction can be sent to exactly
+        // the people a bad send reached — tick those, untick everyone else.
+        _rfPick = { eventType: eventType, rows: {} };
         function line(o){
           var r = o.r;
           var when = ''; try { when = r.created_at ? new Date(r.created_at).toLocaleDateString() : ''; } catch(e){}
-          return '<div style="display:flex;gap:.5rem;align-items:baseline;padding:.2rem 0;border-bottom:1px solid var(--border);">'
-            + '<span style="min-width:4.5rem;" class="au-meta">' + escapeHTML(r.session || '—') + '</span>'
+          _rfPick.rows[String(r.id)] = r;
+          var status = r.archived ? ['is-credit', 'archived']
+                     : (r.type === 'waitlist') ? ['is-pending', 'waitlist']
+                     : r.is_paid ? ['is-paid', 'paid']
+                     : ['is-cancelled', 'unpaid'];
+          return '<label style="display:flex;gap:.5rem;align-items:baseline;padding:.25rem 0;'
+            + 'border-bottom:1px solid var(--border);cursor:pointer;">'
+            + '<input type="checkbox" class="rf-rem-pick" value="' + escapeHTML(String(r.id)) + '"'
+            + (o.why ? '' : ' checked') + ' style="margin-top:.25rem;accent-color:var(--gold);">'
+            + '<span style="min-width:3.5rem;" class="au-meta">' + escapeHTML(r.session || '—') + '</span>'
             + '<span style="flex:1;min-width:0;"><strong style="font-size:var(--fs-sm);">' + escapeHTML(r.name || '(no name)') + '</strong>'
             + ' <span class="au-meta">' + escapeHTML(r.email || '') + '</span></span>'
             + '<span class="au-meta">' + escapeHTML(when) + '</span>'
-            + (o.why ? '<span class="atype au-chip is-cancelled">' + escapeHTML(o.why) + '</span>'
-                     : '<span class="atype au-chip is-paid">will send</span>')
-            + '</div>';
+            + '<span class="atype au-chip ' + status[0] + '">' + status[1] + '</span>'
+            + (o.why && o.why !== 'archived' && o.why !== 'on the waitlist' && o.why !== 'not paid'
+                 ? '<span class="atype au-chip is-cancelled">' + escapeHTML(o.why) + '</span>' : '')
+            + '</label>';
         }
         // Per-session counts against the cap. If a session is over, the extra
         // rows are not archived or waitlisted — they are people who got in
@@ -11321,12 +11353,41 @@ document.addEventListener('DOMContentLoaded', function() {
           + capRow
           + keep.map(line).join('')
           + (skip.length ? '<div style="font-size:var(--fs-xs);font-weight:700;letter-spacing:var(--ls-widest);text-transform:uppercase;color:var(--gold-text);margin:.75rem 0 .25rem;">Not sending &mdash; and why</div>' + skip.map(line).join('') : '')
-          + '<div class="au-meta" style="margin-top:.6rem;">Nothing was sent. Close this by picking another event.</div>'
+          + '<div style="display:flex;gap:.5rem;margin-top:.6rem;flex-wrap:wrap;align-items:center;">'
+          + '<button type="button" class="au-btn is-compact" data-pick="all">Tick all</button>'
+          + '<button type="button" class="au-btn is-compact" data-pick="none">Untick all</button>'
+          + '<button type="button" class="au-btn is-compact" data-pick="reset">Back to the normal list</button>'
+          + '<span id="rf-rem-picked" class="au-meta"></span></div>'
+          + '<div class="au-meta" style="margin-top:.4rem;">Nothing has been sent. Send Reminder goes to whoever is ticked here.</div>'
           + '</div>';
         out.innerHTML = html;
+        function tally(){
+          var n = out.querySelectorAll('.rf-rem-pick:checked').length;
+          var t = document.getElementById('rf-rem-picked');
+          if (t) t.textContent = n + ' ticked';
+        }
+        out.addEventListener('change', function(e){ if (e.target.classList.contains('rf-rem-pick')) tally(); });
+        Array.prototype.forEach.call(out.querySelectorAll('[data-pick]'), function(b){
+          b.addEventListener('click', function(){
+            var mode = b.getAttribute('data-pick');
+            Array.prototype.forEach.call(out.querySelectorAll('.rf-rem-pick'), function(cb){
+              cb.checked = mode === 'all' ? true
+                         : mode === 'none' ? false
+                         : !!(keepIds[cb.value]);   // reset = the rows that pass the normal filter
+            });
+            tally();
+          });
+        });
+        tally();
       }, function(){ out.innerHTML = '<div class="au-meta">Could not read the roster.</div>'; });
     } catch(e){ out.innerHTML = '<div class="au-meta">Could not read the roster.</div>'; }
-  });
+  }
+  document.getElementById('admin-flex-reminder-audit').addEventListener('click', rfReminderAudit);
+  // Show the roster as soon as an event is picked, rather than making her ask
+  // for it. Not on page load: this script runs for every visitor, and the
+  // roster call is owner-only, so firing it unprompted is a failed request on
+  // every page view.
+  document.getElementById('admin-flex-reminder-event').addEventListener('change', rfReminderAudit);
 
   document.getElementById('admin-flex-reminder-send').addEventListener('click', function(){
     var eventType = document.getElementById('admin-flex-reminder-event').value;
@@ -11354,6 +11415,22 @@ document.addEventListener('DOMContentLoaded', function() {
     var daysText = phrasing.days_text;
 
     function gatherConfirmed(callback){
+      // If the roster list is on screen for this event, it wins — what she
+      // ticked is what goes out, including rows the normal filter would skip.
+      // That is how a correction reaches exactly the people a bad send hit.
+      var out = document.getElementById('admin-flex-reminder-audit-out');
+      var ticked = (_rfPick.eventType === eventType && out)
+        ? Array.prototype.slice.call(out.querySelectorAll('.rf-rem-pick:checked')) : [];
+      if (ticked.length) {
+        var picked = ticked.map(function(cb){
+          var r = _rfPick.rows[cb.value];
+          return r ? { rec: { name: r.name, email: r.email },
+                       sess: RF_REMINDER_SESS[r.session] || RF_REMINDER_SESS['1pm'] } : null;
+        }).filter(Boolean);
+        picked._handPicked = true;
+        callback(picked);
+        return;
+      }
       if (eventType === 'pilates') {
         getData(function(data){
           var confirmed = [];
@@ -11382,18 +11459,7 @@ document.addEventListener('DOMContentLoaded', function() {
       } else if (eventType === 'reformer' || eventType === 'reformer-bk' || eventType === 'turkey' || eventType === 'halloween') {
         // Paid reformer-table registrants, via the password-gated roster function.
         // The three events share reformer_registrations, so filter by the event column.
-        var RF_SESS = {
-          '1pm':    { label: 'Riddim & Kompa on the Reformer — 1 PM', date: 'Sunday, September 13th', arrival: '12:55 PM', start: '1:00 PM' },
-          '2pm':    { label: 'Riddim & Kompa on the Reformer — 2 PM', date: 'Sunday, September 13th', arrival: '1:55 PM', start: '2:00 PM' },
-          '3pm':    { label: 'Riddim & Kompa on the Reformer — 3 PM', date: 'Sunday, September 13th', arrival: '2:55 PM', start: '3:00 PM' },
-          'bk12':   { label: 'Riddim & Kompa on the Reformer — Brooklyn, 12 PM', date: 'Saturday, September 26th', arrival: '11:55 AM', start: '12:00 PM' },
-          'bk1':    { label: 'Riddim & Kompa on the Reformer — Brooklyn, 1 PM',  date: 'Saturday, September 26th', arrival: '12:55 PM', start: '1:00 PM' },
-          'bk2':    { label: 'Riddim & Kompa on the Reformer — Brooklyn, 2 PM',  date: 'Saturday, September 26th', arrival: '1:55 PM', start: '2:00 PM' },
-          'tb1230': { label: 'Turkey Burn! — 12:30 PM', date: 'Saturday, November 21st', arrival: '12:25 PM', start: '12:30 PM' },
-          'tb130':  { label: 'Turkey Burn! — 1:35 PM',  date: 'Saturday, November 21st', arrival: '1:30 PM', start: '1:35 PM' },
-          'hw1230': { label: 'Shhh… Quiet on the Creek — 12:30 PM', date: 'Saturday, October 24th', arrival: '12:25 PM', start: '12:30 PM' },
-          'hw130':  { label: 'Shhh… Quiet on the Creek — 1:35 PM',  date: 'Saturday, October 24th', arrival: '1:30 PM', start: '1:35 PM' }
-        };
+        var RF_SESS = RF_REMINDER_SESS;
         var RF_EVENT_FILTER = {
           'reformer':    function(ev){ return ev !== 'riddim-kompa-brooklyn-2026-09-26' && ev !== 'turkey-burn-2026-11-21' && ev !== 'halloween-creek-2026-10-24'; },
           'reformer-bk': function(ev){ return ev === 'riddim-kompa-brooklyn-2026-09-26'; },
@@ -11453,7 +11519,9 @@ document.addEventListener('DOMContentLoaded', function() {
         ? '\n\n(' + confirmed._dupes + ' duplicate row' + (confirmed._dupes === 1 ? '' : 's')
           + ' skipped — same person booked twice. Worth checking whether they paid twice.)'
         : '';
-      if (!confirm('Send this reminder to ' + confirmed.length + ' person(s)?\n\n' + lines + dupeNote
+      var pickNote = confirmed._handPicked
+        ? '\n\n(These are the people you ticked in the list, not the automatic set.)' : '';
+      if (!confirm('Send this reminder to ' + confirmed.length + ' person(s)?\n\n' + lines + dupeNote + pickNote
                    + '\n\nGreeting: "' + greeting + '"\nTiming: "' + daysText + '"')) return;
       if (typeof emailjs === 'undefined') { alert('EmailJS not loaded.'); return; }
 
@@ -13772,6 +13840,29 @@ document.addEventListener('DOMContentLoaded', function() {
     if (el) el.textContent = n
       ? (n + ' waiting on ' + label)
       : ('Nobody is waiting on ' + label + ' yet.');
+    // Names, not just a number. A count can't tell you the list is wrong.
+    var who = document.getElementById('wlc-who');
+    if (who){
+      var list = wlcRecipients();
+      // SLAB is local to each roster render and out of scope here; wlcSessions
+      // is the session-label map for the chosen event.
+      var slab = wlcSessions((document.getElementById('wlc-event') || {}).value) || {};
+      who.innerHTML = list.length
+        ? '<div class="au-card is-inset"><div style="font-size:var(--fs-xs);font-weight:700;'
+          + 'letter-spacing:var(--ls-widest);text-transform:uppercase;color:var(--gold-text);'
+          + 'margin-bottom:.35rem;">This would go to</div>'
+          + list.map(function(r){
+              return '<div style="display:flex;gap:.5rem;align-items:baseline;padding:.2rem 0;'
+                + 'border-bottom:1px solid var(--border);">'
+                + '<span style="flex:1;min-width:0;"><strong style="font-size:var(--fs-sm);">'
+                + escapeHTML(r.name || '(no name)') + '</strong> <span class="au-meta">'
+                + escapeHTML(r.email || '') + '</span></span>'
+                + '<span class="au-meta">' + escapeHTML(SLAB[r.session] || r.session || '') + '</span>'
+                + '</div>';
+            }).join('')
+          + '</div>'
+        : '';
+    }
     // Prefill a sensible message the first time, so there is something to edit.
     var ta = document.getElementById('wlc-msg');
     if (ta && !ta.value.trim() && !ta.dataset.touched){
