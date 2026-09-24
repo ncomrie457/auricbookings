@@ -57,19 +57,60 @@ create policy event_pnl_owner_all on public.event_pnl
 revoke all on table public.event_pnl from anon;
 grant select, insert, update, delete on table public.event_pnl to authenticated;
 
--- ── Tying an expense to an event ────────────────────────────────────
---  An expense logged in the tracker below (the studio invoice, the
---  goodie bags, the parking) can now name the event it belongs to, and
---  the Profit & Loss panel subtracts it automatically. Without this the
---  same cost has to be typed twice — once as an expense and again into
---  the event's "everything else" box — and the two drift apart.
+-- ── Tying an expense to the events it covered ───────────────────────
+--  One purchase often covers several events: a bulk goodie-bag order, a
+--  banner, a box of grip socks. So this is a join table, not a column —
+--  an expense can name as many events as it actually paid for.
 --
---  on delete set null: deleting an event must never delete the expense
---  record. It just stops being tied to anything.
+--  The expense record itself stays WHOLE. All $300 is still one
+--  deductible purchase. The split below is only for working out what a
+--  single Saturday really cost, and the shares always add back to the
+--  full amount.
+--
+--  split_method, on the expense:
+--    even     — $300 across 3 events is $100 each. Right for a banner or
+--               a speaker, used regardless of how full the room was.
+--    per_head — shared out by attendance. Right for anything consumed
+--               per person: an event of 25 used more bags than one of 15.
+--
+--  on delete cascade: removing an event drops its links, never the
+--  expense. The purchase stays in your books, tied to one fewer event.
+
+create table if not exists public.expense_events (
+  expense_id uuid not null references public.business_expenses(id) on delete cascade,
+  event_id   uuid not null references public.event_pnl(id)         on delete cascade,
+  primary key (expense_id, event_id)
+);
+
+create index if not exists expense_events_event_idx on public.expense_events (event_id);
+
 alter table public.business_expenses
-  add column if not exists event_id uuid references public.event_pnl(id) on delete set null;
+  add column if not exists split_method text not null default 'even';   -- even | per_head
 
-create index if not exists business_expenses_event_idx
-  on public.business_expenses (event_id);
+alter table public.expense_events enable row level security;
+drop policy if exists expense_events_owner_all on public.expense_events;
+create policy expense_events_owner_all on public.expense_events
+  for all using (public.is_owner()) with check (public.is_owner());
 
-select 'ready — Profit & Loss can save events, and expenses can be tied to them.' as status;
+revoke all on table public.expense_events from anon;
+grant select, insert, update, delete on table public.expense_events to authenticated;
+
+-- Carry over anything tagged under the earlier one-event-per-expense
+-- version, so nothing already recorded is lost. Wrapped in a check
+-- because that column only exists if you ran the earlier version —
+-- naming it unguarded would error for anyone who didn't.
+do $$
+begin
+  if exists (select 1 from information_schema.columns
+              where table_schema='public' and table_name='business_expenses'
+                and column_name='event_id') then
+    insert into public.expense_events (expense_id, event_id)
+      select id, event_id from public.business_expenses where event_id is not null
+    on conflict do nothing;
+    -- The join table is now the only place a link lives. Two sources
+    -- would drift the moment either was edited.
+    alter table public.business_expenses drop column event_id;
+  end if;
+end $$;
+
+select 'ready — events save, and one expense can be split across the events it covered.' as status;
