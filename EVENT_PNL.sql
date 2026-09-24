@@ -57,4 +57,19 @@ create policy event_pnl_owner_all on public.event_pnl
 revoke all on table public.event_pnl from anon;
 grant select, insert, update, delete on table public.event_pnl to authenticated;
 
-select 'ready — the Profit & Loss section on /expenses/ can now save events.' as status;
+-- ── Tying an expense to an event ────────────────────────────────────
+--  An expense logged in the tracker below (the studio invoice, the
+--  goodie bags, the parking) can now name the event it belongs to, and
+--  the Profit & Loss panel subtracts it automatically. Without this the
+--  same cost has to be typed twice — once as an expense and again into
+--  the event's "everything else" box — and the two drift apart.
+--
+--  on delete set null: deleting an event must never delete the expense
+--  record. It just stops being tied to anything.
+alter table public.business_expenses
+  add column if not exists event_id uuid references public.event_pnl(id) on delete set null;
+
+create index if not exists business_expenses_event_idx
+  on public.business_expenses (event_id);
+
+select 'ready — Profit & Loss can save events, and expenses can be tied to them.' as status;
