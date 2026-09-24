@@ -112,6 +112,11 @@
         Fill in what you charged and what it cost. Everything updates as you type &mdash;
         nothing is saved until you press Save.
       </p>
+      <p class="muted" style="margin:-.6rem 0 1rem;font-size:.88rem;">
+        Once an event is saved you can tag expenses to it in the form below, and they come off
+        here automatically. Put a cost in <em>one</em> place &mdash; either tagged as an expense
+        or typed into &ldquo;everything else&rdquo; &mdash; not both.
+      </p>
 
       <div class="grid">
         <div><label>Event</label><input type="text" id="p-name" placeholder="e.g. Riddim &amp; Kompa — Brooklyn"></div>
@@ -184,6 +189,10 @@
             <select id="f-method"></select>
           </div>
           <div><label>Purpose (business reason)</label><input type="text" id="f-purpose" placeholder="e.g. Studio rental for Mat & Chat"></div>
+          <div>
+            <label>Part of an event? (optional)</label>
+            <select id="f-event"><option value="">&mdash; not tied to an event &mdash;</option></select>
+          </div>
           <div style="grid-column:1/-1;"><label>Notes (optional)</label><textarea id="f-notes" placeholder="Anything else to remember"></textarea></div>
           <div style="grid-column:1/-1;"><label>Receipt (photo or PDF, optional)</label><input type="file" id="f-receipt" accept="image/*,application/pdf,.pdf"></div>
         </div>
@@ -223,7 +232,7 @@
     <div class="tablewrap">
       <table>
         <thead><tr>
-          <th>Date</th><th>Vendor</th><th>Category</th><th>Purpose</th>
+          <th>Date</th><th>Vendor</th><th>Category</th><th>Purpose</th><th>Event</th>
           <th>Method</th><th style="text-align:right;">Amount</th><th>Ded.</th><th>Receipt</th><th></th>
         </tr></thead>
         <tbody id="tbody"></tbody>
@@ -311,7 +320,8 @@
         sfix: pv('p-sfix'),
         bag: pv('p-bag'),
         other: pv('p-other'),
-        hours: pv('p-hours')
+        hours: pv('p-hours'),
+        linked: pnlLinkedTotal(pnlEditingId)
       };
     }
     // One place the arithmetic lives, so the live panel, the saved rows
@@ -331,17 +341,31 @@
       var studioFlat  = (mode === 'share') ? 0 : (i.studioFlat || 0);
       var studio = studioShare + studioFlat;
       var bags   = people * bag;
-      var costs  = stripe + studio + bags + i.other;
+      // Expenses logged below and tagged with this event. Counted here so the
+      // same cost is never typed twice — once as an expense and again into
+      // "everything else" — which is how two records of one Saturday drift.
+      var linked = (o.linked != null ? o.linked : (i.linked || 0));
+      var costs  = stripe + studio + bags + i.other + linked;
       var net    = gross - costs;
       return {
         people: people, price: price, gross: gross, stripe: stripe,
         studio: studio, studioShare: studioShare, studioFlat: studioFlat, studioMode: mode,
-        bags: bags, other: i.other, costs: costs, net: net,
+        bags: bags, other: i.other, linked: linked, costs: costs, net: net,
         perHead: people ? net/people : 0,
         margin: gross ? (net/gross*100) : 0,
         perHour: i.hours ? net/i.hours : null
       };
     }
+    // Expenses tagged with an event. Only meaningful once that event is
+    // saved and being edited — a brand-new event has no id to tag against.
+    function pnlLinkedExpenses(eventId){
+      if(!eventId || !rows || !rows.length) return [];
+      return rows.filter(function(r){ return r.event_id === eventId; });
+    }
+    function pnlLinkedTotal(eventId){
+      return pnlLinkedExpenses(eventId).reduce(function(t,r){ return t + (Number(r.amount)||0); }, 0);
+    }
+
     function pnlRow(label, amount, opts){
       opts = opts || {};
       return '<div style="display:flex;justify-content:space-between;gap:1rem;padding:.4rem 0;'
@@ -375,7 +399,9 @@
         + (c.studioFlat ? pnlRow('Studio, flat rental', c.studioFlat, { neg:true }) : '')
         + (c.studioShare ? pnlRow('Studio, ' + i.studioPct + '%' + (i.studioOnNet ? ' of after-Stripe' : ' of the ticket price'), c.studioShare, { neg:true }) : '')
         + (c.bags ? pnlRow('Goodie bags, ' + i.people + ' × ' + money(i.bag), c.bags, { neg:true }) : '')
-        + (i.other ? pnlRow('Everything else', i.other, { neg:true }) : '')
+        + (i.other ? pnlRow('Everything else (typed in)', i.other, { neg:true }) : '')
+        + (c.linked ? pnlRow('Logged expenses tagged to this event ('
+             + pnlLinkedExpenses(pnlEditingId).length + ')', c.linked, { neg:true }) : '')
         + pnlRow(c.net >= 0 ? 'You took home' : 'You lost', c.net, { strong:true, rule:true, neg: c.net < 0, good: c.net > 0 })
         + '</div>';
 
@@ -482,6 +508,18 @@
 
     // ---- saved events ----
     var pnlRows = [];
+    var pnlNameById = {};      // event id -> its name, for the expense table
+    // Keep the expense form's event picker in step with the saved events.
+    function pnlFillEventPicker(){
+      var sel = document.getElementById('f-event'); if(!sel) return;
+      var keep = sel.value;
+      sel.innerHTML = '<option value="">\u2014 not tied to an event \u2014</option>'
+        + pnlRows.map(function(r){
+            return '<option value="'+esc(r.id)+'">'+esc(r.event_name)
+                 + (r.event_date ? ' \u00b7 '+fmtDate(r.event_date) : '')+'</option>';
+          }).join('');
+      sel.value = keep;
+    }
     function pnlLoad(){
       if(!sb) return;
       sb.from('event_pnl').select('*').order('event_date', { ascending: false }).then(function(res){
@@ -490,7 +528,11 @@
           return;
         }
         pnlRows = (res && res.data) || [];
+        pnlNameById = {};
+        pnlRows.forEach(function(r){ pnlNameById[r.id] = r.event_name; });
+        pnlFillEventPicker();
         pnlPaintHistory();
+        if (typeof renderTable === 'function' && rows.length) renderTable();
       }, function(){});
     }
     function pnlFromRow(r){
@@ -498,7 +540,8 @@
         people: r.people||0, price: Number(r.price_each)||0, studioPct: Number(r.studio_pct)||0,
         studioFlat: Number(r.studio_flat)||0, studioMode: r.studio_mode || 'share',
         studioOnNet: !!r.studio_on_net, spct: Number(r.stripe_pct)||0, sfix: Number(r.stripe_fixed)||0,
-        bag: Number(r.bag_each)||0, other: Number(r.other_costs)||0, hours: Number(r.hours)||0
+        bag: Number(r.bag_each)||0, other: Number(r.other_costs)||0, hours: Number(r.hours)||0,
+        linked: pnlLinkedTotal(r.id)
       };
       return pnlCalc(i);
     }
@@ -705,7 +748,7 @@
 
     function renderTable(){
       var f=filtered(), tb=document.getElementById('tbody');
-      if(!f.length){ tb.innerHTML='<tr><td colspan="9" class="empty">No expenses yet. Add your first one above.</td></tr>'; return; }
+      if(!f.length){ tb.innerHTML='<tr><td colspan="10" class="empty">No expenses yet. Add your first one above.</td></tr>'; return; }
       tb.innerHTML=f.map(function(r){
         var rcpt = r.receipt_path
           ? '<button class="rowbtn rcpt" onclick="expViewReceipt(\''+esc(r.id)+'\')">View</button>'
@@ -715,6 +758,9 @@
           '<td>'+esc(r.vendor||'')+'</td>'+
           '<td><span class="cat-pill">'+esc(r.category||'—')+'</span></td>'+
           '<td>'+esc(r.purpose||'')+(r.notes?'<br><span class="muted">'+esc(r.notes)+'</span>':'')+'</td>'+
+          '<td>'+(r.event_id && pnlNameById[r.event_id]
+                    ? '<span class="cat-pill">'+esc(pnlNameById[r.event_id])+'</span>'
+                    : '<span class="muted">—</span>')+'</td>'+
           '<td class="muted">'+esc(r.payment_method||'')+'</td>'+
           '<td class="amt" style="text-align:right;">'+money(r.amount)+'</td>'+
           '<td>'+(r.deductible?'<span class="badge-yes">✓</span>':'<span class="badge-no">—</span>')+'</td>'+
@@ -795,6 +841,7 @@
       document.getElementById('f-category').value=r.category||'Other';
       document.getElementById('f-method').value=r.payment_method||'';
       document.getElementById('f-purpose').value=r.purpose||'';
+      document.getElementById('f-event').value=r.event_id||'';
       document.getElementById('f-notes').value=r.notes||'';
       document.getElementById('f-deductible').checked=!!r.deductible;
       document.getElementById('f-repeat').checked=false; syncRepeat();
@@ -818,7 +865,8 @@
         payment_method: document.getElementById('f-method').value || null,
         purpose: document.getElementById('f-purpose').value.trim() || null,
         notes: document.getElementById('f-notes').value.trim() || null,
-        deductible: document.getElementById('f-deductible').checked
+        deductible: document.getElementById('f-deductible').checked,
+        event_id: document.getElementById('f-event').value || null
       };
 
       // A recurring subscription becomes one row per month, same amount and
