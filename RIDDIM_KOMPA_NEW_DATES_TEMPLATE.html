@@ -1,11 +1,17 @@
 <!--
   ════════════════════════════════════════════════════════════
-   Auric Movement — "The next dates are here" (Riddim & Kompa
-   interest list)
+   Auric Movement — "We're coming back to Brooklyn"
+   (Riddim & Kompa interest list)
 
    Goes to everyone who joined the Riddim & Kompa interest list at
-   /riddim-interest — they asked to hear first, so the email opens by
+   /riddim-interest — they asked to hear first, so it opens by
    honouring that rather than selling.
+
+   Colours come off the Brooklyn flyer, not the site's brown:
+     cream #f7f1e6 / #fdf9f0   deep flyer red #9B1C1C
+     Haiti blue #1D3F8F        Jamaica green #1C7A42
+     Jamaica gold #E8B923
+   The four-colour ribbon under the header is the two flags.
 
    ────────────────────────────────────────────────────────────
    BEFORE YOU SEND — replace the six booking links.
@@ -24,7 +30,11 @@
      switch to the "Code"/HTML view → paste over everything → Save.
 
    Suggested EmailJS Subject:
-     Two new Riddim & Kompa dates ✦ you're hearing first
+     We're coming back to Brooklyn — and you're hearing it first
+
+   Careful with the subject line: EmailJS turns a slash into
+   &#x2F; unless the variable is in triple braces, so keep dates
+   out of it or write them "Oct 10" rather than "10/10".
 
    EmailJS variables used:
      {{from_name}}  — their first name
@@ -36,63 +46,77 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The next Riddim &amp; Kompa dates &mdash; Auric Movement</title>
+  <title>We&rsquo;re coming back to Brooklyn &mdash; Auric Movement</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
 </head>
-<body style="margin:0;padding:0;background-color:#f5f0e8;font-family:Georgia, 'Times New Roman', serif;color:#2c2420;">
+<body style="margin:0;padding:0;background-color:#f7f1e6;font-family:Georgia, 'Times New Roman', serif;color:#221c18;">
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f0e8;padding:32px 16px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f7f1e6;padding:32px 16px;">
   <tr>
     <td align="center">
 
-      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#fdfbf7;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(176,120,64,0.08);max-width:600px;width:100%;">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#fdf9f0;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(155,28,28,0.10);max-width:600px;width:100%;">
 
-        <!-- Header band -->
+        <!-- Header band — flyer red -->
         <tr>
-          <td align="center" style="background-color:#5A3A1A;padding:36px 24px 28px;">
+          <td align="center" bgcolor="#9B1C1C" style="background-color:#9B1C1C;padding:34px 24px 26px;">
             <img src="https://book.auricmovement.com/logo-am-gold-192.png" alt="" width="56" height="48" style="display:block;border:0;outline:none;margin-bottom:12px;">
-            <div style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:22px;color:#d4a370;letter-spacing:2px;">Auric Movement</div>
-            <div style="font-family:Georgia, serif;font-size:10px;color:#c8956c;letter-spacing:3px;text-transform:uppercase;margin-top:6px;">Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect</div>
+            <div style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:22px;color:#F4E3C1;letter-spacing:2px;">Auric Movement</div>
+            <div style="font-family:Georgia, serif;font-size:11px;color:#E8B923;letter-spacing:3px;text-transform:uppercase;margin-top:7px;">Riddim &#127471;&#127474; &times; Kompa &#127469;&#127481;</div>
+          </td>
+        </tr>
+
+        <!-- The two flags, as a ribbon -->
+        <tr>
+          <td style="padding:0;font-size:0;line-height:0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td width="25%" height="5" bgcolor="#1D3F8F" style="background-color:#1D3F8F;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="25%" height="5" bgcolor="#C8102E" style="background-color:#C8102E;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="25%" height="5" bgcolor="#1C7A42" style="background-color:#1C7A42;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="25%" height="5" bgcolor="#E8B923" style="background-color:#E8B923;font-size:0;line-height:0;">&nbsp;</td>
+              </tr>
+            </table>
           </td>
         </tr>
 
         <!-- Opening -->
         <tr>
-          <td style="padding:36px 40px 8px;">
-            <div style="font-family:Georgia, serif;font-size:10px;color:#9a6535;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">&#10022; You asked to hear first</div>
-            <h1 style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:28px;line-height:1.2;color:#5A3A1A;margin:0 0 12px 0;font-weight:500;">
-              Two new dates, <span style="font-weight:600;">{{from_name}}</span>.
+          <td style="padding:34px 40px 8px;">
+            <div style="font-family:Georgia, serif;font-size:10px;color:#9B1C1C;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">&#10022; You&rsquo;re on the list, so you&rsquo;re first</div>
+            <h1 style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:30px;line-height:1.2;color:#9B1C1C;margin:0 0 14px 0;font-weight:500;">
+              We&rsquo;re coming back, <span style="font-weight:700;">{{from_name}}</span>! &#127925;
             </h1>
-            <p style="font-family:Georgia, serif;font-size:15px;line-height:1.7;color:#2c2420;margin:0 0 6px 0;">
-              Riddim &amp; Kompa on the Reformer is coming back to Brooklyn &mdash; twice. You joined the list, so you&rsquo;re seeing these before they go out anywhere else.
+            <p style="font-family:Georgia, serif;font-size:15px;line-height:1.75;color:#221c18;margin:0 0 12px 0;">
+              Riddim &amp; Kompa on the Reformer is returning to Brooklyn &mdash; and this time we&rsquo;re doing it <em>twice</em>. You told me you wanted to know when the next one dropped, so here it is, before it goes out anywhere else.
             </p>
-            <p style="font-family:Georgia, serif;font-size:15px;line-height:1.7;color:#2c2420;margin:0;">
-              Every session is <strong>$45</strong>, 45 minutes, and comes with a complimentary goodie bag. Five reformers a session, so each one is small on purpose.
+            <p style="font-family:Georgia, serif;font-size:15px;line-height:1.75;color:#221c18;margin:0;">
+              Same as always: <strong>$45</strong>, 45 minutes, a goodie bag with your name on it, and only five reformers a session so the room stays close.
             </p>
           </td>
         </tr>
 
         <!-- ── October 10 ────────────────────────────────────────── -->
         <tr>
-          <td style="padding:28px 40px 0;">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border-left:3px solid #b07840;border-radius:0 8px 8px 0;">
+          <td style="padding:26px 40px 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f6efe2;border-left:4px solid #1C7A42;border-radius:0 8px 8px 0;">
               <tr>
                 <td style="padding:22px 24px;">
-                  <div style="font-family:Georgia, serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">Date one</div>
-                  <div style="font-family:'Cormorant Garamond', Georgia, serif;font-size:26px;line-height:1.2;color:#5A3A1A;font-weight:600;">Saturday, October 10</div>
-                  <div style="font-family:Georgia, serif;font-size:14px;line-height:1.7;color:#7a6e63;margin-top:4px;">Brooklyn &middot; three sessions</div>
+                  <div style="font-family:Georgia, serif;font-size:10px;color:#1C7A42;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">First up</div>
+                  <div style="font-family:'Cormorant Garamond', Georgia, serif;font-size:27px;line-height:1.2;color:#221c18;font-weight:700;">Saturday, October 10</div>
+                  <div style="font-family:Georgia, serif;font-size:14px;line-height:1.7;color:#6f6459;margin-top:5px;">Brooklyn &middot; pick your time</div>
 
                   <!-- Session buttons -->
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:16px;">
-                    <tr><td style="padding-bottom:8px;">
-                      <a href="REPLACE_OCT10_12PM" style="display:inline-block;background-color:#5A3A1A;color:#ffffff;font-family:Georgia, serif;font-size:13px;font-weight:bold;letter-spacing:1px;text-decoration:none;padding:12px 26px;border-radius:999px;">Book 12:00 PM &rarr;</a>
+                    <tr><td style="padding-bottom:9px;">
+                      <a href="REPLACE_OCT10_12PM" style="display:inline-block;background-color:#9B1C1C;color:#ffffff;font-family:Georgia, serif;font-size:13px;font-weight:bold;letter-spacing:1px;text-decoration:none;padding:13px 28px;border-radius:999px;">Grab 12:00 PM &rarr;</a>
                     </td></tr>
-                    <tr><td style="padding-bottom:8px;">
-                      <a href="REPLACE_OCT10_1PM" style="display:inline-block;background-color:#5A3A1A;color:#ffffff;font-family:Georgia, serif;font-size:13px;font-weight:bold;letter-spacing:1px;text-decoration:none;padding:12px 26px;border-radius:999px;">Book 1:00 PM &rarr;</a>
+                    <tr><td style="padding-bottom:9px;">
+                      <a href="REPLACE_OCT10_1PM" style="display:inline-block;background-color:#9B1C1C;color:#ffffff;font-family:Georgia, serif;font-size:13px;font-weight:bold;letter-spacing:1px;text-decoration:none;padding:13px 28px;border-radius:999px;">Grab 1:00 PM &rarr;</a>
                     </td></tr>
                     <tr><td>
-                      <a href="REPLACE_OCT10_2PM" style="display:inline-block;background-color:#5A3A1A;color:#ffffff;font-family:Georgia, serif;font-size:13px;font-weight:bold;letter-spacing:1px;text-decoration:none;padding:12px 26px;border-radius:999px;">Book 2:00 PM &rarr;</a>
+                      <a href="REPLACE_OCT10_2PM" style="display:inline-block;background-color:#9B1C1C;color:#ffffff;font-family:Georgia, serif;font-size:13px;font-weight:bold;letter-spacing:1px;text-decoration:none;padding:13px 28px;border-radius:999px;">Grab 2:00 PM &rarr;</a>
                     </td></tr>
                   </table>
                 </td>
@@ -103,23 +127,23 @@
 
         <!-- ── November 21 ───────────────────────────────────────── -->
         <tr>
-          <td style="padding:18px 40px 0;">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border-left:3px solid #b07840;border-radius:0 8px 8px 0;">
+          <td style="padding:16px 40px 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f6efe2;border-left:4px solid #1D3F8F;border-radius:0 8px 8px 0;">
               <tr>
                 <td style="padding:22px 24px;">
-                  <div style="font-family:Georgia, serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">Date two</div>
-                  <div style="font-family:'Cormorant Garamond', Georgia, serif;font-size:26px;line-height:1.2;color:#5A3A1A;font-weight:600;">Saturday, November 21</div>
-                  <div style="font-family:Georgia, serif;font-size:14px;line-height:1.7;color:#7a6e63;margin-top:4px;">Brooklyn &middot; three sessions</div>
+                  <div style="font-family:Georgia, serif;font-size:10px;color:#1D3F8F;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">And again in November</div>
+                  <div style="font-family:'Cormorant Garamond', Georgia, serif;font-size:27px;line-height:1.2;color:#221c18;font-weight:700;">Saturday, November 21</div>
+                  <div style="font-family:Georgia, serif;font-size:14px;line-height:1.7;color:#6f6459;margin-top:5px;">Brooklyn &middot; pick your time</div>
 
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:16px;">
-                    <tr><td style="padding-bottom:8px;">
-                      <a href="REPLACE_NOV21_12PM" style="display:inline-block;background-color:#5A3A1A;color:#ffffff;font-family:Georgia, serif;font-size:13px;font-weight:bold;letter-spacing:1px;text-decoration:none;padding:12px 26px;border-radius:999px;">Book 12:00 PM &rarr;</a>
+                    <tr><td style="padding-bottom:9px;">
+                      <a href="REPLACE_NOV21_12PM" style="display:inline-block;background-color:#9B1C1C;color:#ffffff;font-family:Georgia, serif;font-size:13px;font-weight:bold;letter-spacing:1px;text-decoration:none;padding:13px 28px;border-radius:999px;">Grab 12:00 PM &rarr;</a>
                     </td></tr>
-                    <tr><td style="padding-bottom:8px;">
-                      <a href="REPLACE_NOV21_1PM" style="display:inline-block;background-color:#5A3A1A;color:#ffffff;font-family:Georgia, serif;font-size:13px;font-weight:bold;letter-spacing:1px;text-decoration:none;padding:12px 26px;border-radius:999px;">Book 1:00 PM &rarr;</a>
+                    <tr><td style="padding-bottom:9px;">
+                      <a href="REPLACE_NOV21_1PM" style="display:inline-block;background-color:#9B1C1C;color:#ffffff;font-family:Georgia, serif;font-size:13px;font-weight:bold;letter-spacing:1px;text-decoration:none;padding:13px 28px;border-radius:999px;">Grab 1:00 PM &rarr;</a>
                     </td></tr>
                     <tr><td>
-                      <a href="REPLACE_NOV21_2PM" style="display:inline-block;background-color:#5A3A1A;color:#ffffff;font-family:Georgia, serif;font-size:13px;font-weight:bold;letter-spacing:1px;text-decoration:none;padding:12px 26px;border-radius:999px;">Book 2:00 PM &rarr;</a>
+                      <a href="REPLACE_NOV21_2PM" style="display:inline-block;background-color:#9B1C1C;color:#ffffff;font-family:Georgia, serif;font-size:13px;font-weight:bold;letter-spacing:1px;text-decoration:none;padding:13px 28px;border-radius:999px;">Grab 2:00 PM &rarr;</a>
                     </td></tr>
                   </table>
                 </td>
@@ -131,30 +155,57 @@
         <!-- The nudge -->
         <tr>
           <td style="padding:24px 40px 0;">
-            <p style="font-family:Georgia, serif;font-size:15px;line-height:1.7;color:#2c2420;margin:0;">
-              The last three sold out, and this list gets them first &mdash; so if there&rsquo;s a time you want, take it now rather than later.
+            <p style="font-family:Georgia, serif;font-size:15px;line-height:1.75;color:#221c18;margin:0;">
+              The last three sold out, and honestly this list tends to fill them before I even post them anywhere. So if you see a time that works &mdash; take it. I&rsquo;d really love to have you in the room.
             </p>
+          </td>
+        </tr>
+
+        <!-- Two islands -->
+        <tr>
+          <td style="padding:22px 40px 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf3e6;border-radius:8px;">
+              <tr><td align="center" style="padding:16px 22px;">
+                <div style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:19px;color:#9B1C1C;">Two islands, one rhythm.</div>
+                <div style="font-family:Georgia, serif;font-size:13px;line-height:1.65;color:#6f6459;margin-top:5px;">Jamaica&rsquo;s riddim and Haiti&rsquo;s kompa, both built on the drum &mdash; one shared heartbeat, on the reformer.</div>
+              </td></tr>
+            </table>
           </td>
         </tr>
 
         <!-- Sign-off -->
         <tr>
           <td style="padding:24px 40px 0;">
-            <p style="font-family:Georgia, serif;font-size:14px;line-height:1.7;color:#7a6e63;margin:0;">
-              Can&rsquo;t make either one? Stay on the list &mdash; there will be more, and you&rsquo;ll hear about them the same way.
+            <p style="font-family:Georgia, serif;font-size:14px;line-height:1.75;color:#6f6459;margin:0;">
+              Can&rsquo;t make either one? No stress &mdash; stay on the list. There&rsquo;s always another one coming, and you&rsquo;ll hear about it the same way you heard about this one: first.
             </p>
-            <p style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:22px;color:#9a6535;margin:20px 0 0;">Come move with us. &#10084;</p>
-            <p style="font-family:Georgia, serif;font-size:15px;line-height:1.6;color:#2c2420;margin:12px 0 34px;">
-              <strong style="color:#5A3A1A;">Niara</strong><br>
-              <span style="font-size:13px;color:#7a6e63;">Auric Movement LLC</span>
+            <p style="font-family:'Cormorant Garamond', Georgia, serif;font-style:italic;font-size:23px;color:#9B1C1C;margin:20px 0 0;">Come move with us. &#10084;</p>
+            <p style="font-family:Georgia, serif;font-size:15px;line-height:1.6;color:#221c18;margin:12px 0 34px;">
+              <strong style="color:#9B1C1C;">Niara</strong><br>
+              <span style="font-size:13px;color:#6f6459;">Auric Movement LLC</span>
             </p>
+          </td>
+        </tr>
+
+        <!-- Flag ribbon again, above the footer -->
+        <tr>
+          <td style="padding:0;font-size:0;line-height:0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td width="25%" height="5" bgcolor="#E8B923" style="background-color:#E8B923;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="25%" height="5" bgcolor="#1C7A42" style="background-color:#1C7A42;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="25%" height="5" bgcolor="#C8102E" style="background-color:#C8102E;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="25%" height="5" bgcolor="#1D3F8F" style="background-color:#1D3F8F;font-size:0;line-height:0;">&nbsp;</td>
+              </tr>
+            </table>
           </td>
         </tr>
 
         <!-- Footer band -->
         <tr>
-          <td style="background-color:#5A3A1A;padding:28px 40px;text-align:center;">
-            <a href="https://book.auricmovement.com" style="font-family:Georgia, serif;font-size:13px;font-weight:bold;letter-spacing:3px;text-transform:uppercase;color:#d4a370;text-decoration:none;">book.auricmovement.com</a>
+          <td bgcolor="#9B1C1C" style="background-color:#9B1C1C;padding:26px 40px;text-align:center;">
+            <a href="https://book.auricmovement.com" style="font-family:Georgia, serif;font-size:13px;font-weight:bold;letter-spacing:3px;text-transform:uppercase;color:#F4E3C1;text-decoration:none;">book.auricmovement.com</a>
+            <div style="font-family:Georgia, serif;font-size:10px;color:#E8B923;letter-spacing:3px;text-transform:uppercase;margin-top:10px;">Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect</div>
           </td>
         </tr>
 
@@ -164,10 +215,10 @@
   </tr>
 </table>
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#efe9dc;">
-  <tr><td align="center" style="padding:16px 24px;font-family:Georgia,'Times New Roman',serif;font-size:11px;line-height:1.7;color:#8a8172;">
-    You&rsquo;re receiving this because you joined the Riddim &amp; Kompa interest list.<br>
-    Prefer not to get these? <a href="mailto:auricmovement@outlook.com?subject=Unsubscribe" style="color:#8a8172;text-decoration:underline;">Unsubscribe</a> and we&rsquo;ll take you off.<br>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#efe6d5;">
+  <tr><td align="center" style="padding:16px 24px;font-family:Georgia,'Times New Roman',serif;font-size:11px;line-height:1.7;color:#847a6c;">
+    You&rsquo;re getting this because you joined the Riddim &amp; Kompa list &mdash; thank you for that.<br>
+    Rather not? <a href="mailto:auricmovement@outlook.com?subject=Unsubscribe" style="color:#847a6c;text-decoration:underline;">Let me know</a> and I&rsquo;ll take you off, no hard feelings.<br>
     Auric Movement LLC &middot; New York, NY
   </td></tr>
 </table>
