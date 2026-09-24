@@ -10858,7 +10858,9 @@ document.addEventListener('DOMContentLoaded', function() {
       try {
         supabase.rpc('reformer_roster',{pass:ADMIN_PASSWORD}).then(function(res){
           var rows=(res&&res.data)||[];
-          cb(earliest(rows.filter(function(r){return r.is_paid&&r.email&&r.event===meta.dbEvent&&r.session===meta.session;}).map(function(r){return {name:r.name,email:r.email,created:r.created_at};})));
+          // Same guard as everywhere else: an archived row isn't a registrant,
+          // so it can't be the session's first paid booker.
+          cb(earliest(rows.filter(function(r){return r.is_paid&&r.email&&!r.archived&&r.type!=='waitlist'&&r.event===meta.dbEvent&&r.session===meta.session;}).map(function(r){return {name:r.name,email:r.email,created:r.created_at};})));
         }, function(){ cb(null); });
       } catch(e){ cb(null); }
     } else cb(null);
@@ -11305,9 +11307,22 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
           supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(res){
             var rows = (res && res.data) || [];
-            var confirmed = rows.filter(function(r){ return r.is_paid && r.email && keep(r.event); }).map(function(rec){
+            // Archived rows and waitlisters are NOT registrants. Every roster
+            // view already excludes them; this send didn't, which is how a
+            // 15-seat event reminded 19 people. One person can also hold two
+            // rows (a duplicate booking, or a re-book after a cancellation),
+            // and they should get one reminder, not two.
+            var seen = {}, dupes = 0;
+            var confirmed = rows.filter(function(r){
+              if(!(r && r.is_paid && r.email && keep(r.event))) return false;
+              if(r.archived || r.type === 'waitlist') return false;
+              var k = String(r.email).trim().toLowerCase() + '|' + (r.session || '');
+              if(seen[k]){ dupes++; return false; }
+              seen[k] = 1; return true;
+            }).map(function(rec){
               return { rec: { name: rec.name, email: rec.email }, sess: RF_SESS[rec.session] || RF_SESS['1pm'] };
             });
+            confirmed._dupes = dupes;
             callback(confirmed);
           }, function(){ callback([]); });
         } catch(e){ callback([]); }
@@ -11327,7 +11342,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     gatherConfirmed(function(confirmed){
       if (!confirmed.length) { alert('No confirmed registrants for this event.'); return; }
-      if (!confirm('Send reminder to ' + confirmed.length + ' confirmed participant(s)?\n\nGreeting: "' + greeting + '"\nTiming: "' + daysText + '"')) return;
+      // Show WHO, not just how many. A count alone can't tell you the list is
+      // wrong — it took a 19 on a 15-seat event to notice.
+      var bySess = {};
+      confirmed.forEach(function(it){
+        var k = it.sess.label;
+        (bySess[k] = bySess[k] || []).push(it.rec.name || it.rec.email);
+      });
+      var lines = Object.keys(bySess).map(function(k){
+        return k + '  (' + bySess[k].length + ')\n   ' + bySess[k].join('\n   ');
+      }).join('\n\n');
+      var dupeNote = confirmed._dupes
+        ? '\n\n(' + confirmed._dupes + ' duplicate row' + (confirmed._dupes === 1 ? '' : 's')
+          + ' skipped — same person booked twice. Worth checking whether they paid twice.)'
+        : '';
+      if (!confirm('Send this reminder to ' + confirmed.length + ' person(s)?\n\n' + lines + dupeNote
+                   + '\n\nGreeting: "' + greeting + '"\nTiming: "' + daysText + '"')) return;
       if (typeof emailjs === 'undefined') { alert('EmailJS not loaded.'); return; }
 
       var btn = document.getElementById('admin-flex-reminder-send');
