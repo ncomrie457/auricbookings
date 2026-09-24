@@ -630,6 +630,52 @@
       };
       return pnlCalc(i);
     }
+    // Where one event's money actually went: the same breakdown the editor
+    // shows, plus every expense tagged to it and what share of each this
+    // event carries — a $300 order split three ways shows its $100 here,
+    // and says where the other $200 sits.
+    function pnlDetail(r, c){
+      var linked = pnlLinkedExpenses(r.id);
+      var lines = '<div class="breakdown" style="display:block;max-width:520px;">'
+        + pnlRow(c.people + ' \u00d7 ' + money(c.price), c.gross, { strong:true })
+        + pnlRow('Stripe fees', c.stripe, { neg:true })
+        + (c.studioFlat ? pnlRow('Studio, flat rental', c.studioFlat, { neg:true }) : '')
+        + (c.studioShare ? pnlRow('Studio share', c.studioShare, { neg:true }) : '')
+        + (c.bags ? pnlRow('Goodie bags', c.bags, { neg:true }) : '')
+        + (c.other ? pnlRow('Everything else (typed in)', c.other, { neg:true }) : '')
+        + (c.linked ? pnlRow('Tagged expenses', c.linked, { neg:true }) : '')
+        + pnlRow(c.net >= 0 ? 'Kept' : 'Lost', c.net, { strong:true, rule:true, neg:c.net<0, good:c.net>0 })
+        + '</div>';
+
+      var exp = '';
+      if (linked.length){
+        exp = '<div style="margin-top:.9rem;"><div class="eyebrow" style="margin-bottom:.4rem;">'
+          + 'Expenses tagged to this event</div>'
+          + linked.map(function(x){
+              var ids = expenseLinks[x.id] || [];
+              var evs = pnlRows.filter(function(e){ return ids.indexOf(e.id) >= 0; });
+              var mine = expenseShares(Number(x.amount)||0, evs, x.split_method || 'even')
+                           .filter(function(y){ return y.id === r.id; })[0];
+              var shared = ids.length > 1;
+              return '<div style="display:flex;justify-content:space-between;gap:1rem;padding:.3rem 0;'
+                + 'border-bottom:1px solid var(--border);">'
+                + '<span style="flex:1;min-width:0;">' + esc(x.vendor || x.purpose || 'Expense')
+                + (x.purpose && x.vendor ? ' <span class="muted">' + esc(x.purpose) + '</span>' : '')
+                + (shared
+                    ? '<br><span class="muted">' + money(x.amount) + ' shared across ' + ids.length
+                      + ' events, ' + (x.split_method === 'per_head' ? 'by attendance' : 'evenly') + '</span>'
+                    : '')
+                + '</span><span style="font-variant-numeric:tabular-nums;white-space:nowrap;">'
+                + money(mine ? mine.share : 0) + '</span></div>';
+            }).join('')
+          + '</div>';
+      } else {
+        exp = '<div class="muted" style="margin-top:.9rem;font-size:.88rem;">'
+            + 'No expenses tagged to this event yet. Tag them in the form below and they come off here.</div>';
+      }
+      return lines + exp;
+    }
+
     function pnlPaintHistory(){
       var panel = document.getElementById('pnl-history-panel');
       if(!pnlRows.length){ panel.style.display='none'; return; }
@@ -638,12 +684,16 @@
       var body = pnlRows.map(function(r){
         var c = pnlFromRow(r);
         totNet += c.net; totPeople += c.people; totGross += c.gross;
-        return '<tr><td>'+esc(r.event_name)+'</td><td>'+fmtDate(r.event_date)+'</td>'
+        return '<tr><td><button class="btn ghost rowbtn" data-pnl-open="'+esc(r.id)+'" '
+          + 'style="padding:.1rem .4rem;margin-right:.35rem;" aria-expanded="false" '
+          + 'title="Show the breakdown">&#9656;</button>'+esc(r.event_name)+'</td><td>'+fmtDate(r.event_date)+'</td>'
           + '<td>'+c.people+'</td><td>'+money(c.price)+'</td>'
           + '<td style="font-weight:700;color:'+(c.net>=0?'#2e7d32':'#b03636')+';">'+money(c.net)+'</td>'
           + '<td>'+money(c.perHead)+'</td>'
           + '<td class="actions"><button class="btn ghost rowbtn" data-pnl-edit="'+esc(r.id)+'">Edit</button>'
-          + '<button class="btn ghost rowbtn" data-pnl-del="'+esc(r.id)+'">Delete</button></td></tr>';
+          + '<button class="btn ghost rowbtn" data-pnl-del="'+esc(r.id)+'">Delete</button></td></tr>'
+          + '<tr class="pnl-detail" data-pnl-detail="'+esc(r.id)+'" hidden><td colspan="7" '
+          + 'style="background:rgba(176,120,64,.05);">'+pnlDetail(r, c)+'</td></tr>';
       }).join('');
       document.getElementById('pnl-tbody').innerHTML = body;
       document.getElementById('pnl-stats').innerHTML =
@@ -651,6 +701,17 @@
         + '<div class="stat"><div class="label">People taught</div><div class="value">'+totPeople+'</div></div>'
         + '<div class="stat"><div class="label">Taken in</div><div class="value">'+money(totGross)+'</div></div>'
         + '<div class="stat"><div class="label">Kept</div><div class="value" style="color:'+(totNet>=0?'#2e7d32':'#b03636')+';">'+money(totNet)+'</div></div>';
+      Array.prototype.forEach.call(document.querySelectorAll('[data-pnl-open]'), function(b){
+        b.addEventListener('click', function(){
+          var id = b.getAttribute('data-pnl-open');
+          var row = document.querySelector('[data-pnl-detail="'+id+'"]');
+          if(!row) return;
+          var open = row.hidden;                       // about to open
+          row.hidden = !open;
+          b.innerHTML = open ? '&#9662;' : '&#9656;';  // down when open
+          b.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+      });
       Array.prototype.forEach.call(document.querySelectorAll('[data-pnl-edit]'), function(b){
         b.addEventListener('click', function(){ pnlEdit(b.getAttribute('data-pnl-edit')); });
       });
