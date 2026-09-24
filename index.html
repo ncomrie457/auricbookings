@@ -5881,6 +5881,17 @@ Can't wait to move and connect with you!</textarea>
       <button type="button" id="admin-flex-reminder-send" class="btn btn-primary" style="width:100%;">&#128232; Send Reminder &rarr;</button>
       <div id="admin-flex-reminder-status" style="margin-top:.5rem;font-size:.82rem;color:var(--text-muted);"></div>
       <div id="admin-flex-reminder-audit-out" style="margin-top:.75rem;"></div>
+
+      <!-- Nothing records who a reminder actually went to, so to find out who
+           a bad send reached you need the list from Resend. Paste it here and
+           this says which addresses aren't on the roster. -->
+      <details style="margin-top:.75rem;">
+        <summary style="cursor:pointer;font-size:var(--fs-sm);color:var(--gold-text);font-weight:600;">A send went to the wrong people? Compare it with the roster</summary>
+        <p class="au-meta" style="margin:.5rem 0;line-height:1.5;">Resend &rarr; History, open the send, copy the recipient addresses and paste them here. Any format &mdash; commas, new lines, names alongside.</p>
+        <textarea id="rf-rem-sentlist" rows="5" class="au-input" style="font-family:'Jost',sans-serif;" placeholder="someone@example.com, another@example.com&#10;third@example.com"></textarea>
+        <button type="button" id="rf-rem-diff" class="au-btn is-compact" style="margin-top:.5rem;">Compare with the roster</button>
+        <div id="rf-rem-diff-out" style="margin-top:.6rem;"></div>
+      </details>
     </div>
 
     <p class="admin-hint">Ctrl+Shift+A to toggle &#183; Ctrl+Shift+N to notify waitlists</p>
@@ -11383,6 +11394,84 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch(e){ out.innerHTML = '<div class="au-meta">Could not read the roster.</div>'; }
   }
   document.getElementById('admin-flex-reminder-audit').addEventListener('click', rfReminderAudit);
+
+  // Compare a send against the roster. Nothing records who a reminder reached,
+  // so the list has to come from Resend; this says which of those addresses
+  // the roster can't account for, and which roster people were missed.
+  document.getElementById('rf-rem-diff').addEventListener('click', function(){
+    var out = document.getElementById('rf-rem-diff-out');
+    var raw = (document.getElementById('rf-rem-sentlist').value || '');
+    var sent = (raw.match(/[^\s<>,;:"']+@[^\s<>,;:"']+\.[^\s<>,;:"']+/g) || [])
+      .map(function(e){ return e.trim().toLowerCase().replace(/[.,;]+$/, ''); });
+    var uniq = {}; sent = sent.filter(function(e){ if (uniq[e]) return false; uniq[e] = 1; return true; });
+    var ids = Object.keys(_rfPick.rows);
+    if (!ids.length){ out.innerHTML = '<div class="au-meta">Pick the event above first, so the roster is loaded.</div>'; return; }
+    if (!sent.length){ out.innerHTML = '<div class="au-meta">No email addresses found in that text.</div>'; return; }
+
+    var byEmail = {};
+    ids.forEach(function(id){
+      var r = _rfPick.rows[id];
+      if (r && r.email) byEmail[String(r.email).trim().toLowerCase()] = r;
+    });
+    function state(r){
+      return r.archived ? 'archived' : (r.type === 'waitlist') ? 'on the waitlist'
+           : r.is_paid ? 'paid and booked' : 'unpaid';
+    }
+    var unexpected = [], fine = [], unknown = [];
+    sent.forEach(function(e){
+      var r = byEmail[e];
+      if (!r) { unknown.push(e); return; }
+      if (r.archived || r.type === 'waitlist' || !r.is_paid) unexpected.push(r); else fine.push(r);
+    });
+    var missed = ids.map(function(id){ return _rfPick.rows[id]; }).filter(function(r){
+      return r && r.is_paid && !r.archived && r.type !== 'waitlist' && r.email
+        && sent.indexOf(String(r.email).trim().toLowerCase()) < 0;
+    });
+    function row(r, note){
+      return '<div style="display:flex;gap:.5rem;align-items:baseline;padding:.2rem 0;border-bottom:1px solid var(--border);">'
+        + '<span style="flex:1;min-width:0;"><strong style="font-size:var(--fs-sm);">' + escapeHTML(r.name || '(no name)')
+        + '</strong> <span class="au-meta">' + escapeHTML(r.email || '') + '</span></span>'
+        + '<span class="au-meta">' + escapeHTML(r.session || '') + '</span>'
+        + '<span class="atype au-chip is-cancelled">' + escapeHTML(note || state(r)) + '</span></div>';
+    }
+    var html = '<div class="au-card is-inset">'
+      + '<div style="font-size:var(--fs-sm);font-weight:600;color:var(--brown);margin-bottom:.4rem;">'
+      + sent.length + ' address' + (sent.length === 1 ? '' : 'es') + ' pasted &middot; '
+      + fine.length + ' were genuinely booked</div>';
+    if (unexpected.length)
+      html += '<div class="au-callout is-warn" style="margin:.2rem 0 .5rem;"><span class="au-callout-label">'
+        + 'Got it, but shouldn’t have</span>These are on the roster but not as a booked, paid attendee.</div>'
+        + unexpected.map(function(r){ return row(r); }).join('');
+    if (unknown.length)
+      html += '<div class="au-callout is-warn" style="margin:.5rem 0;"><span class="au-callout-label">Not on this roster at all</span>'
+        + 'These addresses have no row for this event. Most likely they are on another event’s list, '
+        + 'or the send was run with a different event picked.</div>'
+        + unknown.map(function(e){ return '<div class="au-meta" style="padding:.2rem 0;border-bottom:1px solid var(--border);">'
+            + escapeHTML(e) + '</div>'; }).join('');
+    if (missed.length)
+      html += '<div class="au-callout" style="margin:.5rem 0;"><span class="au-callout-label">Booked but did not get it</span>'
+        + 'These are paid and booked, and their address isn’t in what you pasted.</div>'
+        + missed.map(function(r){ return row(r, 'missed'); }).join('');
+    if (!unexpected.length && !unknown.length && !missed.length)
+      html += '<div class="au-meta">Everything matches &mdash; the send went to exactly the booked attendees.</div>';
+    if (unexpected.length)
+      html += '<button type="button" id="rf-rem-tickwrong" class="au-btn is-compact" style="margin-top:.6rem;">'
+        + 'Tick only these ' + unexpected.length + ' in the roster above</button>';
+    html += '</div>';
+    out.innerHTML = html;
+
+    var tickBtn = document.getElementById('rf-rem-tickwrong');
+    if (tickBtn) tickBtn.addEventListener('click', function(){
+      var wrongIds = {}; unexpected.forEach(function(r){ wrongIds[String(r.id)] = 1; });
+      var list = document.getElementById('admin-flex-reminder-audit-out');
+      Array.prototype.forEach.call(list.querySelectorAll('.rf-rem-pick'), function(cb){
+        cb.checked = !!wrongIds[cb.value];
+      });
+      var t = document.getElementById('rf-rem-picked');
+      if (t) t.textContent = unexpected.length + ' ticked';
+      list.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
   // Show the roster as soon as an event is picked, rather than making her ask
   // for it. Not on page load: this script runs for every visitor, and the
   // roster call is owner-only, so firing it unprompted is a failed request on
