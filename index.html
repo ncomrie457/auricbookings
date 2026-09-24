@@ -5876,8 +5876,10 @@ Can't wait to move and connect with you!</textarea>
       </div>
 
       <button type="button" id="admin-flex-reminder-save" class="btn" style="width:100%;margin-bottom:.5rem;background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;">&#128190; Save these settings</button>
+      <button type="button" id="admin-flex-reminder-audit" class="btn" style="width:100%;margin-bottom:.5rem;background:#f4ecdd;border:1px solid #e0cfae;color:#7a5a2a;">&#128269; Who would this go to? (sends nothing)</button>
       <button type="button" id="admin-flex-reminder-send" class="btn btn-primary" style="width:100%;">&#128232; Send Reminder &rarr;</button>
       <div id="admin-flex-reminder-status" style="margin-top:.5rem;font-size:.82rem;color:var(--text-muted);"></div>
+      <div id="admin-flex-reminder-audit-out" style="margin-top:.75rem;"></div>
     </div>
 
     <p class="admin-hint">Ctrl+Shift+A to toggle &#183; Ctrl+Shift+N to notify waitlists</p>
@@ -11230,6 +11232,101 @@ document.addEventListener('DOMContentLoaded', function() {
     evSel.addEventListener('change', function(){ setTimeout(function(){ loadDraft(evSel.value); }, 0); });
     loadDraft(evSel.value);
   })();
+
+  // ── Who would this go to? ────────────────────────────────────────────
+  // A read-only audit of the reminder list. Sends nothing. It lists every
+  // row the roster holds for the chosen event and says, per row, whether
+  // the reminder would reach it and why not. Built because a wrong list is
+  // invisible until someone counts it: the Brooklyn reminder went to 19 on
+  // a 15-seat event and the count alone could not say which four.
+  var RF_AUDIT_EVENTS = {
+    'reformer-bk': 'riddim-kompa-brooklyn-2026-09-26',
+    'turkey':      'turkey-burn-2026-11-21',
+    'halloween':   'halloween-creek-2026-10-24'
+  };
+  document.getElementById('admin-flex-reminder-audit').addEventListener('click', function(){
+    var out = document.getElementById('admin-flex-reminder-audit-out');
+    var eventType = document.getElementById('admin-flex-reminder-event').value;
+    out.innerHTML = '<div class="au-meta">Checking&hellip;</div>';
+
+    var wanted = RF_AUDIT_EVENTS[eventType];
+    var isWH = (eventType === 'reformer');   // Sept 13 is "everything else"
+    if (!wanted && !isWH) {
+      out.innerHTML = '<div class="au-meta">This check covers the reformer events only '
+        + '(Sept 13, Brooklyn, Halloween, Turkey Burn).</div>';
+      return;
+    }
+    function mine(ev){
+      return isWH ? (ev !== 'riddim-kompa-brooklyn-2026-09-26'
+                  && ev !== 'turkey-burn-2026-11-21'
+                  && ev !== 'halloween-creek-2026-10-24') : (ev === wanted);
+    }
+    try {
+      supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(res){
+        if (res && res.error) { out.innerHTML = '<div class="au-meta">Could not read the roster.</div>'; return; }
+        var rows = ((res && res.data) || []).filter(function(r){ return r && mine(r.event); });
+        var seen = {}, keep = [], skip = [];
+        rows.sort(function(a,b){ return String(a.session||'').localeCompare(String(b.session||''))
+                                     || String(a.created_at||'').localeCompare(String(b.created_at||'')); });
+        rows.forEach(function(r){
+          var why = null;
+          if (!r.is_paid) why = 'not paid';
+          else if (!r.email) why = 'no email on file';
+          else if (r.type === 'waitlist') why = 'on the waitlist';
+          else if (r.archived) why = 'archived';
+          else {
+            var k = String(r.email).trim().toLowerCase() + '|' + (r.session || '');
+            if (seen[k]) why = 'duplicate of an earlier row'; else seen[k] = 1;
+          }
+          (why ? skip : keep).push({ r: r, why: why });
+        });
+        function line(o){
+          var r = o.r;
+          var when = ''; try { when = r.created_at ? new Date(r.created_at).toLocaleDateString() : ''; } catch(e){}
+          return '<div style="display:flex;gap:.5rem;align-items:baseline;padding:.2rem 0;border-bottom:1px solid var(--border);">'
+            + '<span style="min-width:4.5rem;" class="au-meta">' + escapeHTML(r.session || '—') + '</span>'
+            + '<span style="flex:1;min-width:0;"><strong style="font-size:var(--fs-sm);">' + escapeHTML(r.name || '(no name)') + '</strong>'
+            + ' <span class="au-meta">' + escapeHTML(r.email || '') + '</span></span>'
+            + '<span class="au-meta">' + escapeHTML(when) + '</span>'
+            + (o.why ? '<span class="atype au-chip is-cancelled">' + escapeHTML(o.why) + '</span>'
+                     : '<span class="atype au-chip is-paid">will send</span>')
+            + '</div>';
+        }
+        // Per-session counts against the cap. If a session is over, the extra
+        // rows are not archived or waitlisted — they are people who got in
+        // past the cap (comped, added by hand, or a second booking by the
+        // same person on another session), and that is the only thing that
+        // explains a recipient count higher than the seats.
+        var CAP = (eventType === 'reformer-bk') ? 5 : 6;
+        var perSess = {};
+        keep.forEach(function(o){ var s = o.r.session || '—'; perSess[s] = (perSess[s] || 0) + 1; });
+        var over = Object.keys(perSess).filter(function(s){ return perSess[s] > CAP; });
+        var capRow = '<div style="margin:.35rem 0 .6rem;display:flex;gap:.4rem;flex-wrap:wrap;">'
+          + Object.keys(perSess).sort().map(function(s){
+              var n = perSess[s], bad = n > CAP;
+              return '<span class="atype au-chip ' + (bad ? 'is-cancelled' : 'is-paid') + '">'
+                + escapeHTML(s) + ' &middot; ' + n + '/' + CAP + (bad ? ' over' : '') + '</span>';
+            }).join('') + '</div>'
+          + (over.length
+              ? '<div class="au-callout is-warn" style="margin:.2rem 0 .6rem;"><span class="au-callout-label">Over capacity</span>'
+                + 'More paid rows than seats in ' + escapeHTML(over.join(', ')) + '. Nobody archived or waitlisted '
+                + 'explains this &mdash; check for a comped or hand-added booking, or the same person booked into '
+                + 'two sessions. If two rows are one person who paid twice, that is a refund.</div>'
+              : '');
+
+        var html = '<div class="au-card is-inset">'
+          + '<div style="font-size:var(--fs-sm);font-weight:600;color:var(--brown);margin-bottom:.4rem;">'
+          + rows.length + ' row' + (rows.length === 1 ? '' : 's') + ' for this event &middot; '
+          + keep.length + ' would get the reminder, ' + skip.length + ' would not</div>'
+          + capRow
+          + keep.map(line).join('')
+          + (skip.length ? '<div style="font-size:var(--fs-xs);font-weight:700;letter-spacing:var(--ls-widest);text-transform:uppercase;color:var(--gold-text);margin:.75rem 0 .25rem;">Not sending &mdash; and why</div>' + skip.map(line).join('') : '')
+          + '<div class="au-meta" style="margin-top:.6rem;">Nothing was sent. Close this by picking another event.</div>'
+          + '</div>';
+        out.innerHTML = html;
+      }, function(){ out.innerHTML = '<div class="au-meta">Could not read the roster.</div>'; });
+    } catch(e){ out.innerHTML = '<div class="au-meta">Could not read the roster.</div>'; }
+  });
 
   document.getElementById('admin-flex-reminder-send').addEventListener('click', function(){
     var eventType = document.getElementById('admin-flex-reminder-event').value;
