@@ -514,7 +514,8 @@
           + '<td>'+c.people+'</td><td>'+money(c.price)+'</td>'
           + '<td style="font-weight:700;color:'+(c.net>=0?'#2e7d32':'#b03636')+';">'+money(c.net)+'</td>'
           + '<td>'+money(c.perHead)+'</td>'
-          + '<td class="actions"><button class="btn ghost rowbtn" data-pnl-del="'+esc(r.id)+'">Delete</button></td></tr>';
+          + '<td class="actions"><button class="btn ghost rowbtn" data-pnl-edit="'+esc(r.id)+'">Edit</button>'
+          + '<button class="btn ghost rowbtn" data-pnl-del="'+esc(r.id)+'">Delete</button></td></tr>';
       }).join('');
       document.getElementById('pnl-tbody').innerHTML = body;
       document.getElementById('pnl-stats').innerHTML =
@@ -522,6 +523,9 @@
         + '<div class="stat"><div class="label">People taught</div><div class="value">'+totPeople+'</div></div>'
         + '<div class="stat"><div class="label">Taken in</div><div class="value">'+money(totGross)+'</div></div>'
         + '<div class="stat"><div class="label">Kept</div><div class="value" style="color:'+(totNet>=0?'#2e7d32':'#b03636')+';">'+money(totNet)+'</div></div>';
+      Array.prototype.forEach.call(document.querySelectorAll('[data-pnl-edit]'), function(b){
+        b.addEventListener('click', function(){ pnlEdit(b.getAttribute('data-pnl-edit')); });
+      });
       Array.prototype.forEach.call(document.querySelectorAll('[data-pnl-del]'), function(b){
         b.addEventListener('click', function(){
           if(!confirm('Delete this event from your profit history?')) return;
@@ -535,6 +539,41 @@
       el.addEventListener('input', pnlRender);
       el.addEventListener('change', pnlRender);
     });
+    // ---- editing a saved event ----
+    // Correcting a number should not mean deleting the row and retyping the
+    // other nine fields, so Save doubles as Update while a row is loaded.
+    var pnlEditingId = null;
+    function pnlSetMode(){
+      var editing = !!pnlEditingId;
+      document.getElementById('p-save').textContent = editing ? 'Update this event' : 'Save this event';
+      document.getElementById('p-clear').textContent = editing ? 'Cancel edit' : 'Clear';
+      document.getElementById('pnl-panel').style.boxShadow = editing ? '0 0 0 2px #b07840' : '';
+    }
+    function pnlEdit(id){
+      var r = null;
+      for (var k = 0; k < pnlRows.length; k++) if (String(pnlRows[k].id) === String(id)) r = pnlRows[k];
+      if (!r) return;
+      function set(elId, v){ var el = document.getElementById(elId); if (el) el.value = (v == null ? '' : v); }
+      set('p-name', r.event_name);
+      set('p-date', r.event_date);
+      set('p-people', r.people);
+      set('p-price', r.price_each);
+      set('p-studio-mode', r.studio_mode || 'share');
+      set('p-studio', r.studio_pct);
+      set('p-studio-flat', r.studio_flat);
+      set('p-bag', r.bag_each);
+      set('p-other', r.other_costs);
+      set('p-hours', r.hours);
+      set('p-spct', r.stripe_pct);
+      set('p-sfix', r.stripe_fixed);
+      document.getElementById('p-studio-net').checked = !!r.studio_on_net;
+      pnlEditingId = r.id;
+      pnlSetMode();
+      document.getElementById('p-msg').textContent = 'Editing \u201c' + r.event_name + '\u201d.';
+      pnlRender();
+      document.getElementById('pnl-panel').scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+
     document.getElementById('p-clear').addEventListener('click', function(){
       PNL_IDS.forEach(function(id){
         var el=document.getElementById(id); if(!el) return;
@@ -546,6 +585,8 @@
         else el.value='';
       });
       document.getElementById('p-msg').textContent='';
+      pnlEditingId = null;
+      pnlSetMode();
       pnlRender();
     });
     document.getElementById('p-save').addEventListener('click', function(){
@@ -553,19 +594,31 @@
       if(!i.name){ msg.textContent='Give the event a name first.'; return; }
       if(!i.people || !i.price){ msg.textContent='Add how many people paid and what you charged.'; return; }
       if(!sb){ msg.textContent='Not connected.'; return; }
-      var btn=this; btn.disabled=true; msg.textContent='Saving…';
-      sb.from('event_pnl').insert([{
+      var btn=this; btn.disabled=true; msg.textContent = pnlEditingId ? 'Updating…' : 'Saving…';
+      var payload = {
         event_name:i.name, event_date:i.date, people:i.people, price_each:i.price,
         studio_pct:i.studioPct, studio_flat:i.studioFlat, studio_mode:i.studioMode,
         studio_on_net:i.studioOnNet, stripe_pct:i.spct,
         stripe_fixed:i.sfix, bag_each:i.bag, other_costs:i.other, hours:i.hours||null
-      }]).then(function(res){
+      };
+      var q = pnlEditingId
+        ? sb.from('event_pnl').update(payload).eq('id', pnlEditingId)
+        : sb.from('event_pnl').insert([payload]);
+      q.then(function(res){
         btn.disabled=false;
         if(res && res.error){
           msg.textContent='Could not save — run EVENT_PNL.sql in Supabase first.';
           return;
         }
-        msg.textContent='Saved.';
+        var wasEdit = !!pnlEditingId;
+        pnlEditingId = null;
+        pnlSetMode();
+        // After editing one row, reset the form. Leaving that row's numbers
+        // in place is how the NEXT event silently inherits its studio deal —
+        // you finish editing a flat-rental event, type a new name, and save
+        // a share event carrying a $250 rental it never had.
+        if (wasEdit) document.getElementById('p-clear').click();
+        msg.textContent = wasEdit ? 'Updated.' : 'Saved.';
         pnlLoad();
       }, function(){ btn.disabled=false; msg.textContent='Could not save. Try again.'; });
     });
