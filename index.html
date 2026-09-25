@@ -14717,15 +14717,80 @@ document.addEventListener('DOMContentLoaded', function() {
   // label them "Founding One" without waiting for the gift email to be sent.
   // Recomputed each render from the roster data (device-independent).
   var _foundingFirstMap = {};
-  function _rfMarkFirst(display){
-    (display||[]).forEach(function(r){ if(r) delete _foundingFirstMap[String(r.id)]; }); // clear this batch's ids
-    var earliest = {};
-    (display||[]).forEach(function(r){
-      if(!r || !r.is_paid || !r.email) return;
-      var k = (r.event||'')+'|'+(r.session||''), c = r.created_at || '';
-      if(!earliest[k] || c < earliest[k].c || (c===earliest[k].c && String(r.id) < String(earliest[k].id))) earliest[k] = { c:c, id:r.id };
+  // Every reformer event and the day it runs, so "has this already happened?"
+  // is a lookup rather than a guess at the shape of an event id.
+  var RF_EVENT_DAY = {
+    'riddim-kompa-reformer-2026-09-13': '2026-09-13',
+    'riddim-kompa-brooklyn-2026-09-26': '2026-09-26',
+    'riddim-kompa-brooklyn-2026-10-10': '2026-10-10',
+    'halloween-creek-2026-10-24':       '2026-10-24',
+    'riddim-kompa-brooklyn-2026-11-21': '2026-11-21',
+    'turkey-burn-2026-11-22':           '2026-11-22',
+    'turkey-burn-2026-11-28':           '2026-11-28'
+  };
+  // Has this person been to an Auric event before? Used for the hand-down rule
+  // below. "Been" means they paid for some OTHER event that has already run,
+  // or they are marked as having attended one. Booking a future date does not
+  // count — they have not been yet.
+  function _rfBeenBefore(email, thisEvent){
+    var e = String(email||'').trim().toLowerCase();
+    if(!e) return false;
+    var today = new Date(); today.setHours(0,0,0,0);
+    return Object.keys(rfRosterById).some(function(k){
+      var r = rfRosterById[k];
+      if(!r || String(r.email||'').trim().toLowerCase() !== e) return false;
+      if(r.event === thisEvent) return false;          // the date in question
+      if(!r.is_paid || r.type === 'waitlist') return false;
+      if(r.attendance === 'attended') return true;
+      var d = RF_EVENT_DAY[r.event];
+      return !!d && new Date(d + 'T00:00:00') < today; // a date that has passed
     });
-    Object.keys(earliest).forEach(function(k){ _foundingFirstMap[String(earliest[k].id)] = true; });
+  }
+
+  // Who is the Founding One of each event + session.
+  //
+  // The badge belongs to whoever booked THAT date first. Two wrinkles:
+  //
+  //  • A booking moved here from another date (moved_at set) is left out. It
+  //    carries the original booking time, which would otherwise put it ahead
+  //    of everyone who actually booked this date. Whatever they earned on the
+  //    date they did book first, they keep.
+  //
+  //  • If the first booker no-shows or cancels, it passes down — but only to
+  //    someone who has never been to an Auric event. The point is to welcome
+  //    somebody new, not to hand a regular a consolation prize.
+  //
+  // `all` is the full roster for this render (archived rows included) so a
+  // cancellation is visible; `display` is what is on screen.
+  function _rfMarkFirst(display, all){
+    (display||[]).forEach(function(r){ if(r) delete _foundingFirstMap[String(r.id)]; });
+    var pool = (all && all.length ? all : (display||[]));
+    var bySession = {};
+    pool.forEach(function(r){
+      if(!r || !r.is_paid || !r.email) return;
+      if(r.type === 'waitlist') return;
+      if(r.moved_at) return;                            // transferred in — not their date
+      var k = (r.event||'')+'|'+(r.session||'');
+      (bySession[k] = bySession[k] || []).push(r);
+    });
+    Object.keys(bySession).forEach(function(k){
+      var ranked = bySession[k].sort(function(a,b){
+        return String(a.created_at||'').localeCompare(String(b.created_at||''))
+            || (String(a.id) < String(b.id) ? -1 : 1);
+      });
+      function around(r){ return r && !r.archived && r.attendance !== 'noshow'; }
+      var winner = null;
+      if(around(ranked[0])){
+        winner = ranked[0];                             // the first booker, still coming
+      } else {
+        // First booker dropped out. Hand it to the earliest person after them
+        // who is new to Auric.
+        for(var i = 1; i < ranked.length; i++){
+          if(around(ranked[i]) && !_rfBeenBefore(ranked[i].email, ranked[i].event)){ winner = ranked[i]; break; }
+        }
+      }
+      if(winner) _foundingFirstMap[String(winner.id)] = true;
+    });
   }
   function fbBadge(rec){
     if(_foundingSent[foundingKey(rec.email, rec.event, rec.session)]) return ' <span class="atype" style="background:#eef3e8;color:#3b6b3f;">🎁 Founding One</span>';
@@ -15026,7 +15091,7 @@ document.addEventListener('DOMContentLoaded', function() {
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
       block.appendChild(rfWaitlistBlock(rows, 'riddim-kompa-reformer-2026-09-13'));
       var SLAB = { '1pm':'1 PM', '2pm':'2 PM', '3pm':'3 PM' }; var _curSess=null, _curSessBlock=null;
-      _rfMarkFirst(display);
+      _rfMarkFirst(display, rows);
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
         if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.72rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); var _sAtt=display.filter(function(r){return r.session===_curSess&&r.attendance==='attended';}).length; if(_sAtt){ var _tb=document.createElement('button'); _tb.type='button'; _tb.style.cssText='margin:.15rem 0 .35rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.3rem .7rem;font-size:.72rem;cursor:pointer;font-family:Jost,sans-serif;'; _tb.textContent='\u{1F33A} Thank this session (' + _sAtt + ' attended)'; (function(sk,bt){ bt.onclick=function(){ window.rfSendThankYou('valley', bt, null, sk); }; })(_curSess,_tb); _curSessBlock.appendChild(_tb); } block.appendChild(_curSessBlock); }
@@ -15112,7 +15177,7 @@ document.addEventListener('DOMContentLoaded', function() {
       display.sort(function(a,b){ return (_bkRank(a.session)-_bkRank(b.session)) || (a.created_at||'').localeCompare(b.created_at||''); });
       block.appendChild(rfWaitlistBlock(rows, 'riddim-kompa-brooklyn-2026-09-26'));
       var SLAB = { 'bk12':'12 PM','bk1':'1 PM','bk2':'2 PM' }; var _curSess=null, _curSessBlock=null;
-      _rfMarkFirst(display);
+      _rfMarkFirst(display, rows);
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
         if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.72rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); var _sAtt=display.filter(function(r){return r.session===_curSess&&r.attendance==='attended';}).length; if(_sAtt){ var _tb=document.createElement('button'); _tb.type='button'; _tb.style.cssText='margin:.15rem 0 .35rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.3rem .7rem;font-size:.72rem;cursor:pointer;font-family:Jost,sans-serif;'; _tb.textContent='\u{1F33A} Thank this session (' + _sAtt + ' attended)'; (function(sk,bt){ bt.onclick=function(){ window.rfSendThankYou('bk', bt, null, sk); }; })(_curSess,_tb); _curSessBlock.appendChild(_tb); } block.appendChild(_curSessBlock); }
@@ -15188,7 +15253,7 @@ document.addEventListener('DOMContentLoaded', function() {
       display.sort(function(a,b){ return (_bkRank(a.session)-_bkRank(b.session)) || (a.created_at||'').localeCompare(b.created_at||''); });
       block.appendChild(rfWaitlistBlock(rows, 'riddim-kompa-brooklyn-2026-10-10'));
       var SLAB = { 'o12':'12 PM','o1':'1 PM','o2':'2 PM','o3':'3 PM' }; var _curSess=null, _curSessBlock=null;
-      _rfMarkFirst(display);
+      _rfMarkFirst(display, rows);
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
         if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.72rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); var _sAtt=display.filter(function(r){return r.session===_curSess&&r.attendance==='attended';}).length; if(_sAtt){ var _tb=document.createElement('button'); _tb.type='button'; _tb.style.cssText='margin:.15rem 0 .35rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.3rem .7rem;font-size:.72rem;cursor:pointer;font-family:Jost,sans-serif;'; _tb.textContent='\u{1F33A} Thank this session (' + _sAtt + ' attended)'; (function(sk,bt){ bt.onclick=function(){ window.rfSendThankYou('o10', bt, null, sk); }; })(_curSess,_tb); _curSessBlock.appendChild(_tb); } block.appendChild(_curSessBlock); }
@@ -15264,7 +15329,7 @@ document.addEventListener('DOMContentLoaded', function() {
       display.sort(function(a,b){ return (_bkRank(a.session)-_bkRank(b.session)) || (a.created_at||'').localeCompare(b.created_at||''); });
       block.appendChild(rfWaitlistBlock(rows, 'riddim-kompa-brooklyn-2026-11-21'));
       var SLAB = { 'n12':'12 PM','n1':'1 PM','n2':'2 PM','n3':'3 PM' }; var _curSess=null, _curSessBlock=null;
-      _rfMarkFirst(display);
+      _rfMarkFirst(display, rows);
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
         if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.72rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); var _sAtt=display.filter(function(r){return r.session===_curSess&&r.attendance==='attended';}).length; if(_sAtt){ var _tb=document.createElement('button'); _tb.type='button'; _tb.style.cssText='margin:.15rem 0 .35rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.3rem .7rem;font-size:.72rem;cursor:pointer;font-family:Jost,sans-serif;'; _tb.textContent='\u{1F33A} Thank this session (' + _sAtt + ' attended)'; (function(sk,bt){ bt.onclick=function(){ window.rfSendThankYou('n21', bt, null, sk); }; })(_curSess,_tb); _curSessBlock.appendChild(_tb); } block.appendChild(_curSessBlock); }
@@ -15342,7 +15407,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return (ra-rb) || (a.created_at||'').localeCompare(b.created_at||'');
       });
       var SLAB = { 'tb28_1130':'11:30 AM','tb28_1230':'12:30 PM','tb28_130':'1:30 PM' };
-      _rfMarkFirst(display);
+      _rfMarkFirst(display, rows);
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
         var id = rec.id;
@@ -15417,7 +15482,7 @@ document.addEventListener('DOMContentLoaded', function() {
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
       block.appendChild(rfWaitlistBlock(rows, 'turkey-burn-2026-11-22'));
       var SLAB = { 'tb1130':'11:30 AM','tb1230':'12:30 PM','tb130':'1:30 PM' }; var _curSess=null, _curSessBlock=null;
-      _rfMarkFirst(display);
+      _rfMarkFirst(display, rows);
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
         if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.72rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); var _sAtt=display.filter(function(r){return r.session===_curSess&&r.attendance==='attended';}).length; if(_sAtt){ var _tb=document.createElement('button'); _tb.type='button'; _tb.style.cssText='margin:.15rem 0 .35rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.3rem .7rem;font-size:.72rem;cursor:pointer;font-family:Jost,sans-serif;'; _tb.textContent='\u{1F33A} Thank this session (' + _sAtt + ' attended)'; (function(sk,bt){ bt.onclick=function(){ window.rfSendThankYou('turkey', bt, null, sk); }; })(_curSess,_tb); _curSessBlock.appendChild(_tb); } block.appendChild(_curSessBlock); }
@@ -15494,7 +15559,7 @@ document.addEventListener('DOMContentLoaded', function() {
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
       block.appendChild(rfWaitlistBlock(rows, 'halloween-creek-2026-10-24'));
       var SLAB = { 'hw1130':'11:30 AM','hw1230':'12:30 PM','hw130':'1:30 PM' }; var _curSess=null, _curSessBlock=null;
-      _rfMarkFirst(display);
+      _rfMarkFirst(display, rows);
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
         if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.72rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); var _sAtt=display.filter(function(r){return r.session===_curSess&&r.attendance==='attended';}).length; if(_sAtt){ var _tb=document.createElement('button'); _tb.type='button'; _tb.style.cssText='margin:.15rem 0 .35rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.3rem .7rem;font-size:.72rem;cursor:pointer;font-family:Jost,sans-serif;'; _tb.textContent='\u{1F33A} Thank this session (' + _sAtt + ' attended)'; (function(sk,bt){ bt.onclick=function(){ window.rfSendThankYou('halloween', bt, null, sk); }; })(_curSess,_tb); _curSessBlock.appendChild(_tb); } block.appendChild(_curSessBlock); }
