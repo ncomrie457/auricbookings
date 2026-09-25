@@ -91,6 +91,49 @@ the payment to the booking). In Stripe → Payment Links, open each link → con
 
 ---
 
+## Redeploying after a change (the short version)
+
+The setup above is one-time. Whenever the helper's code changes — a new event
+added, a template swapped — it has to be **redeployed**, or Supabase keeps
+running the old copy. Nothing on the website triggers this; it is a separate
+thing that lives in Supabase.
+
+You already have the tools installed and the project linked, so it's three
+commands in Terminal:
+
+```
+cd auricbookings
+git pull
+supabase functions deploy stripe-webhook --no-verify-jwt
+```
+
+It prints `Deployed Function stripe-webhook` when it's done. That's it — your
+secrets stay set, and Stripe keeps pointing at the same URL.
+
+**If `cd auricbookings` says "no such file"** you are in the wrong folder, or the
+code isn't on this computer. Run `git clone https://github.com/ncomrie457/auricbookings.git`
+first, then `cd auricbookings`.
+
+**If `supabase` says "command not found"**, reinstall the CLI:
+`npm install -g supabase`, then `supabase login` and
+`supabase link --project-ref qvmiwyxerotkqpbuhpun`.
+
+### Did it work?
+Supabase dashboard → **Edge Functions → stripe-webhook**. The **Deployed at**
+time should be a moment ago. The **Logs** tab shows each payment as it comes in.
+
+### When you need to redeploy
+Any time an event is added or changed, because the helper holds its own copy of:
+
+- which events send a confirmation, and which template each uses
+- each session's class time, arrival time and calendar link
+- the date shown in the confirmation email
+
+If a new event is missing from it, the buyer is still marked paid — they just
+get no confirmation email, only their Stripe receipt.
+
+---
+
 ## Test it
 1. Book a spot on the live site with a **test email you control**, choose a session,
    reach the payment step, and pay (a real $45 charge — you can refund it in Stripe after).
@@ -106,7 +149,11 @@ the payment to the booking). In Stripe → Payment Links, open each link → con
   booked with, the auto-match won't find them — you'd just confirm that one by hand
   (the manual "Confirm + email" button still works as always).
 - **Your manual button still works** for any edge case.
-- **Only reformer events** (Riddim & Kompa West Hempstead + Brooklyn, Halloween,
-  Turkey Burn) are auto-confirmed. Other events' payments are safely ignored.
+- **Only reformer events** are auto-confirmed — Riddim & Kompa (West Hempstead,
+  and Brooklyn on Sept 26, Oct 10 and Nov 21), Halloween, and both Turkey Burns.
+  Other events' payments are safely ignored.
+- **Every Maison Luxe date shares one confirmation template** (template_pq0dq1h).
+  The date is filled in per booking, so a new Brooklyn date needs no new template —
+  just its line in the helper, and a redeploy.
 - To change confirmation wording, edit the EmailJS templates as usual — the function
   just triggers them.
