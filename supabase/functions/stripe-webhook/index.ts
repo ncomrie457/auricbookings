@@ -39,7 +39,10 @@ const EVENT_TEMPLATE: Record<string, string> = {
   "riddim-kompa-reformer-2026-09-13": "template_pdfnmgu",
   "riddim-kompa-brooklyn-2026-09-26": "template_pq0dq1h",
   "halloween-creek-2026-10-24": "template_hhjwepr",
-  "turkey-burn-2026-11-21": "template_96eon3x",
+  // Both Turkey Burn dates share one template; like the Brooklyn one, the date
+  // rides in as event_date rather than being written into the HTML.
+  "turkey-burn-2026-11-22": "template_96eon3x",
+  "turkey-burn-2026-11-28": "template_96eon3x",
   // Every Maison Luxe date shares the Brooklyn template; the date rides in
   // as event_date, so a new Brooklyn date needs no new template.
   "riddim-kompa-brooklyn-2026-10-10": "template_pq0dq1h",
@@ -49,7 +52,8 @@ const RECEIPT_PREFIX: Record<string, string> = {
   "riddim-kompa-reformer-2026-09-13": "RK",
   "riddim-kompa-brooklyn-2026-09-26": "RKBK",
   "halloween-creek-2026-10-24": "HW",
-  "turkey-burn-2026-11-21": "TB",
+  "turkey-burn-2026-11-22": "TB",
+  "turkey-burn-2026-11-28": "TB28",
   "riddim-kompa-brooklyn-2026-10-10": "RKO10",
   "riddim-kompa-brooklyn-2026-11-21": "RKN21",
 };
@@ -60,8 +64,13 @@ const SESSION_META: Record<string, { time: string; arrival: string; cal: string 
   "bk12":   { time: "12:00 PM", arrival: "11:55 AM", cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-brooklyn-12pm" },
   "bk1":    { time: "1:00 PM",  arrival: "12:55 PM", cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-brooklyn-1pm" },
   "bk2":    { time: "2:00 PM",  arrival: "1:55 PM",  cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-brooklyn-2pm" },
+  "tb1130": { time: "11:30 AM", arrival: "11:25 AM", cal: "https://book.auricmovement.com/calendar/add/?e=turkey-burn-1130am" },
   "tb1230": { time: "12:30 PM", arrival: "12:25 PM", cal: "https://book.auricmovement.com/calendar/add/?e=turkey-burn-1230pm" },
   "tb130":  { time: "1:30 PM",  arrival: "1:25 PM",  cal: "https://book.auricmovement.com/calendar/add/?e=turkey-burn-130pm" },
+  "tb28_1130": { time: "11:30 AM", arrival: "11:25 AM", cal: "https://book.auricmovement.com/calendar/add/?e=turkey-burn-1128-1130am" },
+  "tb28_1230": { time: "12:30 PM", arrival: "12:25 PM", cal: "https://book.auricmovement.com/calendar/add/?e=turkey-burn-1128-1230pm" },
+  "tb28_130":  { time: "1:30 PM",  arrival: "1:25 PM",  cal: "https://book.auricmovement.com/calendar/add/?e=turkey-burn-1128-130pm" },
+  "hw1130": { time: "11:30 AM", arrival: "11:25 AM", cal: "https://book.auricmovement.com/calendar/add/?e=halloween-1130am" },
   "hw1230": { time: "12:30 PM", arrival: "12:25 PM", cal: "https://book.auricmovement.com/calendar/add/?e=halloween-1230pm" },
   "hw130":  { time: "1:30 PM",  arrival: "1:25 PM",  cal: "https://book.auricmovement.com/calendar/add/?e=halloween-130pm" },
   "o12":     { time: "12:00 PM", arrival: "11:55 AM", cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-oct10-12pm" },
@@ -73,13 +82,19 @@ const SESSION_META: Record<string, { time: string; arrival: string; cal: string 
   "n2":      { time: "2:00 PM", arrival: "1:55 PM", cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-nov21-2pm" },
   "n3":      { time: "3:00 PM", arrival: "2:55 PM", cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-nov21-3pm" },
 };
+// Pre- and Post-Turkey Burn share one template, so the email has to be told
+// which one it is as well as when.
+const EVENT_NAME: Record<string, string> = {
+  "turkey-burn-2026-11-22": "Pre-Turkey Burn",
+  "turkey-burn-2026-11-28": "Post-Turkey Burn",
+};
 const EVENT_DATE: Record<string, string> = {
   "riddim-kompa-reformer-2026-09-13": "Sunday, September 13th",
   "riddim-kompa-brooklyn-2026-09-26": "Saturday, September 26th",
   "riddim-kompa-brooklyn-2026-10-10": "Saturday, October 10th",
   "riddim-kompa-brooklyn-2026-11-21": "Saturday, November 21st",
   "halloween-creek-2026-10-24": "Saturday, October 24th",
-  "turkey-burn-2026-11-21": "Saturday, November 21st",
+  "turkey-burn-2026-11-22": "Sunday, November 22nd",
   "turkey-burn-2026-11-28": "Saturday, November 28th",
 };
 const REFUND_TEXT = "All sales are final — no refunds or credits. Spot transfers to a friend are welcome up to 24 hours before the event — email auricmovement@outlook.com with both names.";
@@ -103,6 +118,7 @@ async function sendConfirmation(row: Record<string, unknown>, amountCents: numbe
     from_name: row.name ?? "there",
     to_email: row.email,
     event_date: EVENT_DATE[event] ?? "",
+    event_name: EVENT_NAME[event] ?? "",
     arrival_time: sess.arrival,
     class_time: sess.time,
     calendar_url: sess.cal,
