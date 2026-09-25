@@ -47,7 +47,7 @@
   (function(){
     // Event table — keyed by the .ics basename. Times are UTC (compact iCal form).
     var LOC_VALLEY = 'Valley Studio, 45 Cherry Valley Ave, West Hempstead, NY 11552';
-    var LOC_MAISON = 'Maison Luxe Wellness Pilates, 958 Lafayette Ave, Brooklyn, NY 11221';
+    var LOC_MAISON = 'Maison Luxe Pilates & Wellness, 958 Lafayette Ave, Brooklyn, NY 11221';
     var LOC_FITIN  = 'The Fitin, 297 7th Ave, Floor 3, New York, NY 10001';
     var LOC_SPACE  = 'The Space Pilates Studio, 36 West 20th Street, 2nd Floor, New York, NY 10011';
     var LOC_DIAMOND= 'Inner Diamond Studio, 300 W 38th Street, 2F, New York, NY 10018';
@@ -55,6 +55,10 @@
     var RK = 'Riddim & Kompa on the Reformer ✦ Auric Movement';
     var HW = 'Halloween Reformer Pilates — Shhh… Quiet on the Creek ✦ Auric Movement';
     var TB = 'Turkey Burn! on the Reformer ✦ Auric Movement';
+    var TB28 = 'Post-Turkey Burn on the Reformer ✦ Auric Movement';
+    // NOTE: every slug index.html hands out must exist here AND as
+    // calendar/<slug>.ics. A slug that is missing shows "we couldn't find that
+    // event" to someone who already paid — so add both when you add a date.
     var E = {
       'riddim-kompa-west-hempstead-1pm': { t:RK, s:'20260913T170000Z', e:'20260913T174500Z', l:LOC_VALLEY, w:'Sunday, September 13 · 1:00 PM' },
       'riddim-kompa-west-hempstead-2pm': { t:RK, s:'20260913T180000Z', e:'20260913T184500Z', l:LOC_VALLEY, w:'Sunday, September 13 · 2:00 PM' },
@@ -62,10 +66,21 @@
       'riddim-kompa-brooklyn-12pm':      { t:RK, s:'20260926T160000Z', e:'20260926T164500Z', l:LOC_MAISON, w:'Saturday, September 26 · 12:00 PM' },
       'riddim-kompa-brooklyn-1pm':       { t:RK, s:'20260926T170000Z', e:'20260926T174500Z', l:LOC_MAISON, w:'Saturday, September 26 · 1:00 PM' },
       'riddim-kompa-brooklyn-2pm':       { t:RK, s:'20260926T180000Z', e:'20260926T184500Z', l:LOC_MAISON, w:'Saturday, September 26 · 2:00 PM' },
-      'halloween-1230pm':                { t:HW, s:'20261024T163000Z', e:'20261024T171500Z', l:LOC_VALLEY, w:'Saturday, October 24 · 12:30 PM' },
+      // Oct 10 is still EDT (UTC-4); Nov 21 is EST (UTC-5) — that is why the
+      // same clock time has a different Z below.
+      'riddim-kompa-oct10-12pm':         { t:RK, s:'20261010T160000Z', e:'20261010T164500Z', l:LOC_MAISON, w:'Saturday, October 10 · 12:00 PM' },
+      'riddim-kompa-oct10-1pm':          { t:RK, s:'20261010T170000Z', e:'20261010T174500Z', l:LOC_MAISON, w:'Saturday, October 10 · 1:00 PM' },
+      'riddim-kompa-oct10-2pm':          { t:RK, s:'20261010T180000Z', e:'20261010T184500Z', l:LOC_MAISON, w:'Saturday, October 10 · 2:00 PM' },
+      'riddim-kompa-oct10-3pm':          { t:RK, s:'20261010T190000Z', e:'20261010T194500Z', l:LOC_MAISON, w:'Saturday, October 10 · 3:00 PM' },
+      'riddim-kompa-nov21-12pm':         { t:RK, s:'20261121T170000Z', e:'20261121T174500Z', l:LOC_MAISON, w:'Saturday, November 21 · 12:00 PM' },
+      'riddim-kompa-nov21-1pm':          { t:RK, s:'20261121T180000Z', e:'20261121T184500Z', l:LOC_MAISON, w:'Saturday, November 21 · 1:00 PM' },
+      'riddim-kompa-nov21-2pm':          { t:RK, s:'20261121T190000Z', e:'20261121T194500Z', l:LOC_MAISON, w:'Saturday, November 21 · 2:00 PM' },
+      'riddim-kompa-nov21-3pm':          { t:RK, s:'20261121T200000Z', e:'20261121T204500Z', l:LOC_MAISON, w:'Saturday, November 21 · 3:00 PM' },
+      'halloween-1230pm':              { t:HW, s:'20261024T163000Z', e:'20261024T171500Z', l:LOC_VALLEY, w:'Saturday, October 24 · 12:30 PM' },
       'halloween-130pm':                 { t:HW, s:'20261024T173500Z', e:'20261024T182000Z', l:LOC_VALLEY, w:'Saturday, October 24 · 1:35 PM' },
       'turkey-burn-1230pm':              { t:TB, s:'20261121T173000Z', e:'20261121T181500Z', l:LOC_VALLEY, w:'Saturday, November 21 · 12:30 PM' },
       'turkey-burn-130pm':               { t:TB, s:'20261121T183500Z', e:'20261121T192000Z', l:LOC_VALLEY, w:'Saturday, November 21 · 1:35 PM' },
+      'turkey-burn-1128-1230pm':         { t:TB28, s:'20261128T173000Z', e:'20261128T181500Z', l:LOC_VALLEY, w:'Saturday, November 28 · 12:30 PM' },
       'mat-and-chat':                    { t:'Mat & Chat ✦ Auric Movement', s:'20260801T153000Z', e:'20260801T163000Z', l:LOC_FITIN, w:'Saturday, August 1 · 11:30 AM' },
       'pilates-x-niara-1pm':             { t:'Pilates x Niara ✦ Auric Movement', s:'20260619T170000Z', e:'20260619T180000Z', l:LOC_SPACE, w:'Friday, June 19 · 1:00 PM' },
       'pilates-x-niara-2pm':             { t:'Pilates x Niara ✦ Auric Movement', s:'20260619T180000Z', e:'20260619T190000Z', l:LOC_SPACE, w:'Friday, June 19 · 2:00 PM' },

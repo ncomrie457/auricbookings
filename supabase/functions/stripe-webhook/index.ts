@@ -39,7 +39,10 @@ const EVENT_TEMPLATE: Record<string, string> = {
   "riddim-kompa-reformer-2026-09-13": "template_pdfnmgu",
   "riddim-kompa-brooklyn-2026-09-26": "template_pq0dq1h",
   "halloween-creek-2026-10-24": "template_hhjwepr",
+  // Both Turkey Burn dates share one template; like the Brooklyn one, the date
+  // rides in as event_date rather than being written into the HTML.
   "turkey-burn-2026-11-21": "template_96eon3x",
+  "turkey-burn-2026-11-28": "template_96eon3x",
   // Every Maison Luxe date shares the Brooklyn template; the date rides in
   // as event_date, so a new Brooklyn date needs no new template.
   "riddim-kompa-brooklyn-2026-10-10": "template_pq0dq1h",
@@ -50,6 +53,7 @@ const RECEIPT_PREFIX: Record<string, string> = {
   "riddim-kompa-brooklyn-2026-09-26": "RKBK",
   "halloween-creek-2026-10-24": "HW",
   "turkey-burn-2026-11-21": "TB",
+  "turkey-burn-2026-11-28": "TB28",
   "riddim-kompa-brooklyn-2026-10-10": "RKO10",
   "riddim-kompa-brooklyn-2026-11-21": "RKN21",
 };
@@ -61,9 +65,12 @@ const SESSION_META: Record<string, { time: string; arrival: string; cal: string 
   "bk1":    { time: "1:00 PM",  arrival: "12:55 PM", cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-brooklyn-1pm" },
   "bk2":    { time: "2:00 PM",  arrival: "1:55 PM",  cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-brooklyn-2pm" },
   "tb1230": { time: "12:30 PM", arrival: "12:25 PM", cal: "https://book.auricmovement.com/calendar/add/?e=turkey-burn-1230pm" },
-  "tb130":  { time: "1:30 PM",  arrival: "1:25 PM",  cal: "https://book.auricmovement.com/calendar/add/?e=turkey-burn-130pm" },
+  // 1:35, not 1:30 — the booking form, the roster and the .ics all say 1:35 PM,
+  // and this is the only place that disagreed.
+  "tb130":  { time: "1:35 PM",  arrival: "1:30 PM",  cal: "https://book.auricmovement.com/calendar/add/?e=turkey-burn-130pm" },
+  "tb28_1230": { time: "12:30 PM", arrival: "12:25 PM", cal: "https://book.auricmovement.com/calendar/add/?e=turkey-burn-1128-1230pm" },
   "hw1230": { time: "12:30 PM", arrival: "12:25 PM", cal: "https://book.auricmovement.com/calendar/add/?e=halloween-1230pm" },
-  "hw130":  { time: "1:30 PM",  arrival: "1:25 PM",  cal: "https://book.auricmovement.com/calendar/add/?e=halloween-130pm" },
+  "hw130":  { time: "1:35 PM",  arrival: "1:30 PM",  cal: "https://book.auricmovement.com/calendar/add/?e=halloween-130pm" },
   "o12":     { time: "12:00 PM", arrival: "11:55 AM", cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-oct10-12pm" },
   "o1":      { time: "1:00 PM", arrival: "12:55 PM", cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-oct10-1pm" },
   "o2":      { time: "2:00 PM", arrival: "1:55 PM", cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-oct10-2pm" },
