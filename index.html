@@ -3244,7 +3244,7 @@
       <button type="button" id="event-card-turkey" class="bq-event scroll-reveal" data-event-date="2026-11-22" data-event-name="Pre-Turkey Burn" data-location="long-island">
         <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
         <div class="bq-event-photo">
-          <img src="turkey-burn-flyer.jpg?v=3" alt="Pre-Turkey Burn on the Reformer &#8212; Sunday, November 22 at Valley Studio, West Hempstead NY &#183; three sessions (11:30 AM, 12:30 &amp; 1:30 PM) &#183; $45" loading="lazy" decoding="async">
+          <img src="turkey-burn-flyer.jpg?v=4" alt="Pre-Turkey Burn on the Reformer &#8212; Sunday, November 22 at Valley Studio, West Hempstead NY &#183; three sessions (11:30 AM, 12:30 &amp; 1:30 PM) &#183; $45" loading="lazy" decoding="async">
         </div>
         <div class="bq-event-date">11.22.26 &#183; Pre-Turkey Burn</div>
         <div class="bq-event-name">Pre-Turkey <em>Burn</em></div>
@@ -3258,12 +3258,12 @@
       <button type="button" id="event-card-turkey28" class="bq-event scroll-reveal" data-event-date="2026-11-28" data-event-name="Post-Turkey Burn" data-location="long-island">
         <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
         <div class="bq-event-photo">
-          <img src="post-turkey-burn-flyer.png?v=1" alt="Post-Turkey Burn on the Reformer &#8212; Saturday, November 28 at Valley Studio, West Hempstead NY &#183; 12:30 PM &#183; $45" loading="lazy" decoding="async">
+          <img src="post-turkey-burn-flyer.jpg?v=2" alt="Post-Turkey Burn on the Reformer &#8212; Saturday, November 28 at Valley Studio, West Hempstead NY &#183; three sessions (11:30 AM, 12:30 &amp; 1:30 PM) &#183; $45" loading="lazy" decoding="async">
         </div>
         <div class="bq-event-date">11.28.26 &#183; Post-Turkey Burn</div>
         <div class="bq-event-name">Post-Turkey <em>Burn</em></div>
         <div class="bq-event-loc">West Hempstead, NY</div>
-        <div class="bq-event-sub">Sat &#183; 12:30 PM &#183; $45 &#183; Valley Studio, West Hempstead NY</div>
+        <div class="bq-event-sub">Sat &#183; 11:30 AM, 12:30 &amp; 1:30 PM &#183; $45 &#183; Valley Studio, West Hempstead NY</div>
         <div class="bq-event-raffle">&#127903; Prize drawing &#183; win a 4-class package</div>
         <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
       </button>
@@ -7738,7 +7738,7 @@ document.addEventListener('DOMContentLoaded', function(){
     <div class="rf-eyebrow">Auric Movement</div>
     <h2 class="rf-title">Post-Turkey Burn</h2>
     <p class="rf-meta">Saturday, November 28 &middot; Valley Studio, West Hempstead NY</p>
-    <p class="rf-meta"><strong>$45</strong> &middot; 45-minute session &middot; 12:30 PM</p>
+    <p class="rf-meta"><strong>$45</strong> &middot; 45-minute session &middot; 11:30 AM, 12:30 &amp; 1:30 PM</p>
     <p class="rf-goodie">Sweat off the Thanksgiving feast on the Reformer &#127831;</p>
     <div class="rf-desc" data-rf-desc="turkey-burn-2026-11-28"></div>
     <div class="rf-raffle">
@@ -7832,7 +7832,8 @@ document.addEventListener('DOMContentLoaded', function(){
 
 <script>
 /* Post-Turkey Burn! booking flow (Nov 28) — shares reformer_registrations via
-   event='turkey-burn-2026-11-28'; single 12:30 session; Stripe buy button.
+   event='turkey-burn-2026-11-28'; sessions tb28_1130 / tb28_1230 / tb28_130,
+   each with its own Stripe payment link.
    Confirmation returns via ?paid=turkey28. */
 document.addEventListener('DOMContentLoaded', function(){
   var card = document.getElementById('event-card-turkey28');
@@ -15278,15 +15279,22 @@ document.addEventListener('DOMContentLoaded', function() {
     function render(rows, err){
       rows.forEach(function(r){ rfRosterById[r.id] = r; });
       var display = rows.filter(function(r){ return r.event === 'turkey-burn-2026-11-28' && r.type!=='waitlist' && !r.archived; });
+      var CAP = 6, pd = { 'tb28_1130':0,'tb28_1230':0,'tb28_130':0 };
+      display.forEach(function(r){ if(r.is_paid && pd[r.session]!==undefined) pd[r.session]++; });
       var paid = display.filter(function(r){ return r.is_paid; }).length;
       var att = display.filter(function(r){ return r.attendance==='attended'; }).length;
       var win = display.filter(function(r){ return r.winner; }).length;
-      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F983} Post-Turkey Burn · Nov 28th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(12:30 PM)</span></h3>';
+      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F983} Post-Turkey Burn · Nov 28th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(11:30 AM '+pd.tb28_1130+'/'+CAP+' · 12:30 PM '+pd.tb28_1230+'/'+CAP+' · 1:30 PM '+pd.tb28_130+'/'+CAP+')</span></h3>';
       block.innerHTML += '<button onclick="rfSendThankYou(\'tb28\', this)" style="margin:.1rem 0 .7rem;background:#fdeeea;border:1px solid #f2b8ab;color:#a8391f;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F983} Send Post-Turkey Burn thank-you ('+att+' attended) — after the event</button>';
       block.innerHTML += '<button type="button" onclick="rfTyForget()" title="Allow everyone to be thanked again" style="margin:.1rem 0 .7rem .35rem;background:none;border:none;color:#8a7d6b;font-size:.72rem;text-decoration:underline;cursor:pointer;font-family:Jost,sans-serif;">Reset thank-you memory</button>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
-      display.sort(function(a,b){ return (a.created_at||'').localeCompare(b.created_at||''); });
+      var _o28 = { 'tb28_1130':0, 'tb28_1230':1, 'tb28_130':2 };
+      display.sort(function(a,b){
+        var ra = _o28[a.session]!==undefined ? _o28[a.session] : 99, rb = _o28[b.session]!==undefined ? _o28[b.session] : 99;
+        return (ra-rb) || (a.created_at||'').localeCompare(b.created_at||'');
+      });
+      var SLAB = { 'tb28_1130':'11:30 AM','tb28_1230':'12:30 PM','tb28_130':'1:30 PM' };
       _rfMarkFirst(display);
       display.forEach(function(rec){
         rfRosterById[rec.id] = rec;
@@ -15300,6 +15308,11 @@ document.addEventListener('DOMContentLoaded', function() {
         var paidBtn = rec.is_paid
           ? btn('rfAdminSetPaid('+id+',false)','#fff4e5','#f0c890','#a86617','⏳ Mark unpaid')
           : btn('rfAdminSetPaid('+id+',true)','#e8f5e9','#a5d6a7','#2e7d32','✅ Mark paid');
+        function timeOpt(sess,label){
+          if(rec.session===sess){ return '<span style="display:inline-block;background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;">'+label+'</span>'; }
+          return btn("rfAdminSetSession("+id+",'"+sess+"')",'#f4ecdd','#e0cfae','#7a5a2a','\u2192 '+label);
+        }
+        var timeBtn = timeOpt('tb28_1130','11:30 AM') + timeOpt('tb28_1230','12:30 PM') + timeOpt('tb28_130','1:30 PM');
         var confirmBtn = btn('rfTb28AdminConfirm('+id+')','#fdeeea','#f2b8ab','#a8391f','\u{1F4E7} Confirm + email');
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var moveBtn = btn('rfAdminMove('+id+')','#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Move event');
@@ -15319,8 +15332,8 @@ document.addEventListener('DOMContentLoaded', function() {
           ? btn("rfAdminSetAttendance("+id+",'')",'#fdecea','#f5c6c2','var(--red)','✗ No-show')
           : btn("rfAdminSetAttendance("+id+",'noshow')",'#fff','#e0d6c4','#8a7d6b','○ No-show');
         item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
-          '<div style="text-align:right"><span class="au-meta">12:30 PM</span><br><span class="au-meta">'+escapeHTML(when)+'</span>'+
-          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+winnerBtn+creditBtn+archiveBtn+removeBtn+'</div></div>';
+          '<div style="text-align:right"><span class="au-meta">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span class="au-meta">'+escapeHTML(when)+'</span>'+
+          '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+winnerBtn+creditBtn+archiveBtn+removeBtn+'</div></div>';
         block.appendChild(item);
       });
     }
@@ -15343,12 +15356,12 @@ document.addEventListener('DOMContentLoaded', function() {
       rows.forEach(function(r){ rfRosterById[r.id] = r; });
       var display = rows.filter(function(r){ return r.event === 'turkey-burn-2026-11-22'; });
       display = display.filter(function(r){ return r.type!=='waitlist' && !r.archived; }); // waitlisters + archived (didn't pay) shown separately, never counted as registered
-      var CAP = 6, pd = { 'tb1230':0,'tb130':0 };
+      var CAP = 6, pd = { 'tb1130':0,'tb1230':0,'tb130':0 };
       display.forEach(function(r){ if(r.is_paid && pd[r.session]!==undefined) pd[r.session]++; });
       var paid = display.filter(function(r){ return r.is_paid; }).length;
       var att = display.filter(function(r){ return r.attendance==='attended'; }).length;
       var win = display.filter(function(r){ return r.winner; }).length;
-      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F983} Pre-Turkey Burn · Nov 22nd · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(12:30 PM '+pd.tb1230+'/'+CAP+' · 1:30 PM '+pd.tb130+'/'+CAP+')</span></h3>';
+      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F983} Pre-Turkey Burn · Nov 22nd · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(11:30 AM '+pd.tb1130+'/'+CAP+' · 12:30 PM '+pd.tb1230+'/'+CAP+' · 1:30 PM '+pd.tb130+'/'+CAP+')</span></h3>';
       block.innerHTML += '<button onclick="rfSendWinnerEmail(\'turkey\', this)" style="margin:.1rem .35rem .7rem 0;background:#fbf3e2;border:1px solid #e6d3a8;color:#9a6535;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F39F}\u{FE0F} Send 4-class winner email ('+win+')</button>';
       block.innerHTML += '<button onclick="rfSendThankYou(\'turkey\', this)" style="margin:.1rem 0 .7rem;background:#fdeeea;border:1px solid #f2b8ab;color:#a8391f;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F983} Send Turkey Burn thank-you ('+att+' attended) — after the event</button>';
       block.innerHTML += '<button type="button" onclick="rfTyForget()" title="Allow everyone to be thanked again" style="margin:.1rem 0 .7rem .35rem;background:none;border:none;color:#8a7d6b;font-size:.72rem;text-decoration:underline;cursor:pointer;font-family:Jost,sans-serif;">Reset thank-you memory</button>';
@@ -15420,12 +15433,12 @@ document.addEventListener('DOMContentLoaded', function() {
       rows.forEach(function(r){ rfRosterById[r.id] = r; });
       var display = rows.filter(function(r){ return r.event === 'halloween-creek-2026-10-24'; });
       display = display.filter(function(r){ return r.type!=='waitlist' && !r.archived; }); // waitlisters + archived (didn't pay) shown separately, never counted as registered
-      var CAP = 6, pd = { 'hw1230':0,'hw130':0 };
+      var CAP = 6, pd = { 'hw1130':0,'hw1230':0,'hw130':0 };
       display.forEach(function(r){ if(r.is_paid && pd[r.session]!==undefined) pd[r.session]++; });
       var paid = display.filter(function(r){ return r.is_paid; }).length;
       var att = display.filter(function(r){ return r.attendance==='attended'; }).length;
       var win = display.filter(function(r){ return r.winner; }).length;
-      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F383} Shhh… Quiet on the Creek · Oct 24th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(12:30 PM '+pd.hw1230+'/'+CAP+' · 1:30 PM '+pd.hw130+'/'+CAP+')</span></h3>';
+      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F383} Shhh… Quiet on the Creek · Oct 24th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(11:30 AM '+pd.hw1130+'/'+CAP+' · 12:30 PM '+pd.hw1230+'/'+CAP+' · 1:30 PM '+pd.hw130+'/'+CAP+')</span></h3>';
       block.innerHTML += '<button onclick="rfSendWinnerEmail(\'halloween\', this)" style="margin:.1rem .35rem .7rem 0;background:#fbf3e2;border:1px solid #e6d3a8;color:#9a6535;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F39F}\u{FE0F} Send 4-class winner email ('+win+')</button>';
       block.innerHTML += '<button onclick="rfSendThankYou(\'halloween\', this)" style="margin:.1rem 0 .7rem;background:#f3ecff;border:1px solid #cbb6f0;color:#5b3a8a;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F383} Send Halloween thank-you ('+att+' attended) — after the event</button>';
       block.innerHTML += '<button type="button" onclick="rfTyForget()" title="Allow everyone to be thanked again" style="margin:.1rem 0 .7rem .35rem;background:none;border:none;color:#8a7d6b;font-size:.72rem;text-decoration:underline;cursor:pointer;font-family:Jost,sans-serif;">Reset thank-you memory</button>';
