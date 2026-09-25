@@ -10,13 +10,20 @@
    half-Haiti footer.
 
    ────────────────────────────────────────────────────────────
-   All eight booking links are in — nothing to paste. Each button
-   goes straight to that session's own Stripe link:
+   All eight buttons are wired — nothing to paste.
 
-     Oct 10  12 PM  …9sk0i        Nov 21  12 PM  …9sk0j
-     Oct 10   1 PM  …9sk0k        Nov 21   1 PM  …9sk0n
-     Oct 10   2 PM  …9sk0l        Nov 21   2 PM  …9sk0o
-     Oct 10   3 PM  …9sk0m        Nov 21   3 PM  …9sk0p
+   They point at the booking form on the site, NOT straight at Stripe:
+     …/?book=reformer-o10&s=o1   (Oct 10, 1 PM)
+     …/?book=reformer-n21&s=n3   (Nov 21, 3 PM)   …and so on
+
+   That is deliberate. The form collects the liability waiver, the
+   signature, the health disclosure and the refund acknowledgment BEFORE
+   payment, and it creates the booking the roster and the reminders read.
+   A raw Stripe link takes someone's money and leaves no record, no signed
+   waiver, and nothing for the payment to attach to.
+
+   The &s= part opens the form already set to that time, so a reader still
+   picks a session in one click.
 
    ────────────────────────────────────────────────────────────
    COPY THIS ENTIRE FILE (Cmd+A → Cmd+C) and paste into:
@@ -104,19 +111,19 @@
                   </table>
                     <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="170" style="margin-top:16px;">
                     <tr><td align="center" bgcolor="#b0432e" width="170" style="background-color:#b0432e;border-radius:8px;">
-                      <a href="https://buy.stripe.com/00w3cu0WSbKV3S49wC9sk0i" style="color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:block;padding:13px 0;">12:00 PM</a>
+                      <a href="https://book.auricmovement.com/?book=reformer-o10&amp;s=o12" style="color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:block;padding:13px 0;">12:00 PM</a>
                     </td></tr>
                     <tr><td height="8" style="font-size:0;line-height:0;">&nbsp;</td></tr>
                     <tr><td align="center" bgcolor="#b0432e" width="170" style="background-color:#b0432e;border-radius:8px;">
-                      <a href="https://buy.stripe.com/5kQ14mbBw9CNcoAcIO9sk0k" style="color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:block;padding:13px 0;">1:00 PM</a>
+                      <a href="https://book.auricmovement.com/?book=reformer-o10&amp;s=o1" style="color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:block;padding:13px 0;">1:00 PM</a>
                     </td></tr>
                     <tr><td height="8" style="font-size:0;line-height:0;">&nbsp;</td></tr>
                     <tr><td align="center" bgcolor="#b0432e" width="170" style="background-color:#b0432e;border-radius:8px;">
-                      <a href="https://buy.stripe.com/28EcN47lg5mx1JW24a9sk0l" style="color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:block;padding:13px 0;">2:00 PM</a>
+                      <a href="https://book.auricmovement.com/?book=reformer-o10&amp;s=o2" style="color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:block;padding:13px 0;">2:00 PM</a>
                     </td></tr>
                     <tr><td height="8" style="font-size:0;line-height:0;">&nbsp;</td></tr>
                     <tr><td align="center" bgcolor="#b0432e" width="170" style="background-color:#b0432e;border-radius:8px;">
-                      <a href="https://buy.stripe.com/00w5kCdJE6qB74g5gm9sk0m" style="color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:block;padding:13px 0;">3:00 PM</a>
+                      <a href="https://book.auricmovement.com/?book=reformer-o10&amp;s=o3" style="color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:block;padding:13px 0;">3:00 PM</a>
                     </td></tr>
                     </table>
                 </td>
@@ -139,19 +146,19 @@
                   </table>
                     <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="170" style="margin-top:16px;">
                     <tr><td align="center" bgcolor="#b0432e" width="170" style="background-color:#b0432e;border-radius:8px;">
-                      <a href="https://buy.stripe.com/fZu8wO6hc4itbkw6kq9sk0j" style="color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:block;padding:13px 0;">12:00 PM</a>
+                      <a href="https://book.auricmovement.com/?book=reformer-n21&amp;s=n12" style="color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:block;padding:13px 0;">12:00 PM</a>
                     </td></tr>
                     <tr><td height="8" style="font-size:0;line-height:0;">&nbsp;</td></tr>
                     <tr><td align="center" bgcolor="#b0432e" width="170" style="background-color:#b0432e;border-radius:8px;">
-                      <a href="https://buy.stripe.com/14A3cueNIeX70FS6kq9sk0n" style="color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:block;padding:13px 0;">1:00 PM</a>
+                      <a href="https://book.auricmovement.com/?book=reformer-n21&amp;s=n1" style="color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:block;padding:13px 0;">1:00 PM</a>
                     </td></tr>
                     <tr><td height="8" style="font-size:0;line-height:0;">&nbsp;</td></tr>
                     <tr><td align="center" bgcolor="#b0432e" width="170" style="background-color:#b0432e;border-radius:8px;">
-                      <a href="https://buy.stripe.com/cNi00i4944itcoA1069sk0o" style="color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:block;padding:13px 0;">2:00 PM</a>
+                      <a href="https://book.auricmovement.com/?book=reformer-n21&amp;s=n2" style="color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:block;padding:13px 0;">2:00 PM</a>
                     </td></tr>
                     <tr><td height="8" style="font-size:0;line-height:0;">&nbsp;</td></tr>
                     <tr><td align="center" bgcolor="#b0432e" width="170" style="background-color:#b0432e;border-radius:8px;">
-                      <a href="https://buy.stripe.com/4gM00igVQ5mx0FSfV09sk0p" style="color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:block;padding:13px 0;">3:00 PM</a>
+                      <a href="https://book.auricmovement.com/?book=reformer-n21&amp;s=n3" style="color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;display:block;padding:13px 0;">3:00 PM</a>
                     </td></tr>
                     </table>
                 </td>
