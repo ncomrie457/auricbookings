@@ -7862,7 +7862,30 @@ document.addEventListener('DOMContentLoaded', function(){
       waiverBox=document.getElementById('tb28-waiver-box');
   var tbSig=window.AuricSigPad(document.getElementById('tb28-sigpad'), document.getElementById('tb28-sig-clear'));
 
-  function openOv(){ ov.style.display='flex'; document.body.style.overflow='hidden'; }
+  var TB28_CAP = 6;
+  function applyCap(){
+    // Once the day has passed, stay sold out — a post-event seat release
+    // (a credit) must not re-open a class that already happened.
+    if(window.auricLockIfPast && window.auricLockIfPast('2026-11-28', stepTime)) return;
+    var c=sb(); if(!c) return;
+    try {
+      c.rpc('reformer_spot_counts').then(function(res){
+        if(!res||res.error||!res.data) return;
+        var paid={ 'tb28_1130':0,'tb28_1230':0,'tb28_130':0 };
+        res.data.forEach(function(r){ if(paid[r.session]!==undefined) paid[r.session]=Number(r.paid)||0; });
+        Array.prototype.forEach.call(stepTime.querySelectorAll('.rf-time'), function(btn){
+          var sk=btn.getAttribute('data-session'); var rem=TB28_CAP-(paid[sk]||0);
+          var old=btn.querySelector('.rf-left-tag'); if(old) old.remove();
+          var so=btn.querySelector('.rf-soldout-tag'); if(so) so.remove();
+          if(window.auricWaitlistClear) window.auricWaitlistClear(btn);
+          btn.disabled=false; btn.classList.remove('rf-soldout');
+          if(rem<=0){ btn.disabled=true; btn.classList.add('rf-soldout'); var t=document.createElement('small'); t.className='rf-soldout-tag'; t.textContent='Sold out'; btn.appendChild(t); if(window.auricWaitlistAppend) window.auricWaitlistAppend(btn, TB28_EVENT, sk, btn.getAttribute('data-label')); }
+          else if(rem<=2){ var l=document.createElement('small'); l.className='rf-left-tag'; l.textContent='\u26a1 Almost sold out \u2014 only '+rem+' spot'+(rem===1?'':'s')+' left'; btn.appendChild(l); }
+        });
+      }, function(){});
+    } catch(e){}
+  }
+  function openOv(){ ov.style.display='flex'; document.body.style.overflow='hidden'; applyCap(); }
   function closeOv(){ ov.style.display='none'; document.body.style.overflow=''; }
   card.addEventListener('click', openOv);
   document.getElementById('turkey28-close').addEventListener('click', closeOv);
@@ -15289,6 +15312,7 @@ document.addEventListener('DOMContentLoaded', function() {
       block.innerHTML += '<button type="button" onclick="rfTyForget()" title="Allow everyone to be thanked again" style="margin:.1rem 0 .7rem .35rem;background:none;border:none;color:#8a7d6b;font-size:.72rem;text-decoration:underline;cursor:pointer;font-family:Jost,sans-serif;">Reset thank-you memory</button>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
+      block.appendChild(rfWaitlistBlock(rows, 'turkey-burn-2026-11-28'));
       var _o28 = { 'tb28_1130':0, 'tb28_1230':1, 'tb28_130':2 };
       display.sort(function(a,b){
         var ra = _o28[a.session]!==undefined ? _o28[a.session] : 99, rb = _o28[b.session]!==undefined ? _o28[b.session] : 99;
