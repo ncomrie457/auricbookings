@@ -9020,6 +9020,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var TMPL_WL_OPEN    = 'template_upkcys7'; // Pilates \u2014 Waitlist Spot Opened
   var TMPL_ADMIN      = 'template_6qkcf8j'; // Admin Notification (shared)
   var TMPL_REMINDER_WEEK  = 'template_rvzyaff'; // Pilates \u2014 1-Week Reminder (branded HTML version)
+  var TMPL_RK_NEW_DATES   = 'template_0x7r3ty'; // Riddim & Kompa \u2014 new dates, to the interest list
   var TMPL_THANKYOU       = 'template_7oa2caj'; // Pilates \u2014 Post-Event Thank You
   var MC_TMPL_THANKYOU    = 'template_7oa2caj'; // Mat & Chat thank-you (MATCHAT_THANKYOU_TEMPLATE.html) \u2014 sent via Resend
   var TMPL_BLAST           = 'template_ncfk6or'; // Registration Open (shared)
@@ -15477,7 +15478,9 @@ document.addEventListener('DOMContentLoaded', function() {
       block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F3B6} Riddim &amp; Kompa \u2014 Next-Date Interest List \u00b7 '+rows.length+' waiting</h3>';
       if(err){ block.innerHTML += '<div class="empty-state">Interest list unavailable \u2014 run the blooming_interest read policy SQL to view it here. (Signups are still being saved.)</div>'; return; }
       if(!rows.length){ block.innerHTML += '<div class="empty-state">No signups yet. Share book.auricmovement.com/riddim-interest</div>'; return; }
-      block.innerHTML += '<button onclick="riddimExportCSV()" style="margin:.1rem 0 .7rem;background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u2b07\ufe0f Export interest list (CSV)</button>';
+      block.innerHTML += '<button onclick="riddimExportCSV()" style="margin:.1rem .35rem .7rem 0;background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u2b07\ufe0f Export interest list (CSV)</button>';
+      block.innerHTML += '<button onclick="rkNewDatesPick()" style="margin:.1rem 0 .7rem;background:#fbf3e2;border:1px solid #e6d3a8;color:#9a6535;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u2709\ufe0f Send the new-dates email\u2026</button>';
+      block.innerHTML += '<div id="rk-newdates-out" style="margin:0 0 .7rem;"></div>';
       rows.forEach(function(rec){
         var item=document.createElement('div'); item.className='admin-sub-item';
         var when=''; try{ when=rec.created_at?new Date(rec.created_at).toLocaleString():''; }catch(e){}
@@ -15500,6 +15503,129 @@ document.addEventListener('DOMContentLoaded', function() {
       }, function(){ render([], true); });
     } catch(e){ render([], true); }
   }
+  /* ── The new-dates email, to the Riddim & Kompa interest list ─────────
+     This list had no sender at all: every other send filters these rows
+     out by name, so template_0x7r3ty existed with nothing to call it.
+
+     It shows the roster BEFORE sending, one line per person, each one
+     tickable. That is deliberate. The Brooklyn reminder once reached 19
+     people on a 15-seat event and the count alone could not say who —
+     seeing the names is what catches it.
+
+     Two things are handled for you: a person with two signups is listed
+     once, and anyone already sent this email comes UNTICKED, with a chip
+     saying so, so a second pass does not mail them twice.              */
+  var RK_SENT_KEY = 'auric_rk_newdates_sent';
+  function rkSentSet(){
+    try { var a = JSON.parse(localStorage.getItem(RK_SENT_KEY) || '[]');
+          var m = {}; a.forEach(function(e){ m[String(e).toLowerCase()] = 1; }); return m; }
+    catch(e){ return {}; }
+  }
+  function rkSentAdd(email){
+    try { var a = JSON.parse(localStorage.getItem(RK_SENT_KEY) || '[]');
+          a.push(String(email).toLowerCase());
+          localStorage.setItem(RK_SENT_KEY, JSON.stringify(a)); } catch(e){}
+  }
+  window.rkNewDatesForget = function(){
+    if(!confirm('Allow everyone on the list to be sent this email again?')) return;
+    try { localStorage.removeItem(RK_SENT_KEY); } catch(e){}
+    rkNewDatesPick();
+  };
+
+  window.rkNewDatesPick = function(){
+    var out = document.getElementById('rk-newdates-out');
+    if(!out) return;
+    var sent = rkSentSet(), seen = {}, people = [], dupes = 0, noEmail = 0;
+    (riddimRows || []).forEach(function(r){
+      if(!r.email){ noEmail++; return; }
+      var key = String(r.email).trim().toLowerCase();
+      if(seen[key]){ dupes++; return; }
+      seen[key] = 1;
+      people.push({ id: r.id, name: r.name || '', email: r.email,
+                    loc: r.location || 'Brooklyn', already: !!sent[key],
+                    when: (function(){ try { return r.created_at ? new Date(r.created_at).toLocaleDateString() : ''; } catch(e){ return ''; } })() });
+    });
+    if(!people.length){ out.innerHTML = '<div class="au-meta">Nobody on the list has an email address.</div>'; return; }
+
+    var fresh = people.filter(function(p){ return !p.already; }).length;
+    var html = '<div class="au-card is-inset" style="padding:.75rem .85rem;">'
+      + '<div class="au-meta" style="margin-bottom:.5rem;">'
+      + people.length + ' on the list'
+      + (dupes ? ' · ' + dupes + ' duplicate signup' + (dupes === 1 ? '' : 's') + ' merged' : '')
+      + (noEmail ? ' · ' + noEmail + ' with no email' : '')
+      + (people.length - fresh ? ' · ' + (people.length - fresh) + ' already sent, unticked' : '')
+      + '</div>'
+      + '<div style="margin-bottom:.5rem;">'
+      + '<button type="button" class="au-btn is-quiet is-compact" onclick="rkNewDatesTick(1)">Tick all</button> '
+      + '<button type="button" class="au-btn is-quiet is-compact" onclick="rkNewDatesTick(0)">Tick none</button> '
+      + '<button type="button" class="au-btn is-quiet is-compact" onclick="rkNewDatesForget()">Reset &ldquo;already sent&rdquo;</button>'
+      + '</div>'
+      + '<div style="max-height:19rem;overflow:auto;border-top:1px solid var(--border);">';
+    people.forEach(function(p){
+      html += '<label style="display:flex;gap:.5rem;align-items:baseline;padding:.25rem 0;'
+        + 'border-bottom:1px solid var(--border);cursor:pointer;">'
+        + '<input type="checkbox" class="rk-nd-pick" value="' + escapeHTML(String(p.id)) + '"'
+        + (p.already ? '' : ' checked') + ' style="margin-top:.25rem;accent-color:var(--gold);">'
+        + '<span style="flex:1;min-width:0;"><strong style="font-size:var(--fs-sm);">'
+        + escapeHTML(p.name || '(no name)') + '</strong> <span class="au-meta">'
+        + escapeHTML(p.email) + '</span></span>'
+        + '<span class="au-meta">' + escapeHTML(p.loc) + '</span>'
+        + '<span class="au-meta">' + escapeHTML(p.when) + '</span>'
+        + (p.already ? '<span class="atype au-chip is-credit">already sent</span>' : '')
+        + '</label>';
+    });
+    html += '</div><div style="margin-top:.6rem;">'
+      + '<button type="button" class="au-btn is-primary is-compact" onclick="rkNewDatesSend(this)">'
+      + 'Send to the ticked people</button>'
+      + '<span class="au-meta" style="margin-left:.5rem;">Oct 10 &amp; Nov 21 · template_0x7r3ty</span>'
+      + '</div></div>';
+    out.innerHTML = html;
+    window._rkPick = {};
+    people.forEach(function(p){ window._rkPick[String(p.id)] = p; });
+  };
+
+  window.rkNewDatesTick = function(on){
+    Array.prototype.forEach.call(document.querySelectorAll('.rk-nd-pick'),
+      function(cb){ cb.checked = !!on; });
+  };
+
+  window.rkNewDatesSend = function(btn){
+    var picked = Array.prototype.filter.call(document.querySelectorAll('.rk-nd-pick'),
+      function(cb){ return cb.checked; }).map(function(cb){ return (window._rkPick || {})[cb.value]; })
+      .filter(Boolean);
+    if(!picked.length){ alert('Nobody is ticked.'); return; }
+    if(typeof emailjs === 'undefined'){ alert('EmailJS not loaded.'); return; }
+    var names = picked.map(function(p){ return (p.name || p.email); }).join('\n   ');
+    if(!confirm('Send the Oct 10 & Nov 21 email to ' + picked.length + ' person(s)?\n\n   '
+                + names)) return;
+
+    btn.disabled = true;
+    var label = btn.textContent, sent = 0, failed = 0, bad = [];
+    function next(i){
+      if(i >= picked.length){
+        btn.disabled = false; btn.textContent = label;
+        var msg = '✅ Sent ' + sent + ' email(s).';
+        if(failed) msg += '\n\n⚠️ ' + failed + ' failed: ' + bad.join(', ')
+                        + '\n\nCheck EmailJS → History.';
+        alert(msg);
+        rkNewDatesPick();          // repaint so the sent ones show as sent
+        return;
+      }
+      var p = picked[i];
+      emailjs.send(EMAILJS_SERVICE_RESEND, TMPL_RK_NEW_DATES, {
+        from_name: (p.name || '').trim().split(' ')[0] || 'there',
+        to_email:  p.email
+      }).then(function(){ sent++; rkSentAdd(p.email); })
+        .catch(function(err){ failed++; bad.push(p.email);
+          console.error('[riddim new dates] FAILED for ' + p.email, err); })
+        .then(function(){
+          btn.textContent = 'Sending… (' + (sent + failed) + '/' + picked.length + ')';
+          setTimeout(function(){ next(i + 1); }, 600);
+        });
+    }
+    next(0);
+  };
+
   window.riddimAdminRemove = function(id){
     if(!id) return;
     if(!confirm('Remove this person from the Riddim & Kompa interest list?')) return;
