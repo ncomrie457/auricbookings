@@ -2990,6 +2990,23 @@
         } catch(e){}
         var bar=document.getElementById('bq-loc-filter'); if(!bar) return;
         var cards=[].slice.call(document.querySelectorAll('#tab-events .bq-events .bq-event'));
+        // Soonest first, by the date each card already carries, so a new event
+        // lands in the right place on its own instead of wherever it happened to
+        // be pasted. The interest lists and the bag have no date and stay at the
+        // end, in the order they were written.
+        (function sortByDate(){
+          var grid = document.querySelector('#tab-events .bq-events'); if(!grid) return;
+          var pos = {}; cards.forEach(function(c, i){ pos[c.id || ('i' + i)] = i; });
+          var ordered = cards.slice().sort(function(a, b){
+            var da = a.getAttribute('data-event-date'), db = b.getAttribute('data-event-date');
+            if(da && db && da !== db) return da < db ? -1 : 1;   // ISO dates sort as text
+            if(da && !db) return -1;
+            if(!da && db) return 1;
+            return pos[a.id || ''] - pos[b.id || ''];            // otherwise leave them be
+          });
+          ordered.forEach(function(c){ grid.appendChild(c); });
+          cards = ordered;
+        })();
         var today=new Date(); today.setHours(0,0,0,0);
         function isPast(c){
           if(c.getAttribute('data-past')==='true') return true;
