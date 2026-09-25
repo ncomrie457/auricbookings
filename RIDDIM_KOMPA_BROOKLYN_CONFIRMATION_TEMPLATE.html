@@ -1,7 +1,14 @@
 <!--
   ════════════════════════════════════════════════════════════
-   Riddim & Kompa on the Reformer — BROOKLYN Booking Confirmation
-   (Maison Luxe Wellness Pilates · Saturday, September 26)
+   Auric Movement — booking confirmation
+   MAISON LUXE PILATES & WELLNESS · Brooklyn
+   EmailJS template_pq0dq1h
+
+   ONE template for EVERY Maison Luxe date. The date is a variable, so
+   Sept 26, Oct 10, Nov 21 and anything after all use this same template —
+   there is no second copy to keep in step, and no date baked into the HTML
+   that could go out wrong.
+
    ────────────────────────────────────────────────────────────
    COPY THIS ENTIRE FILE (Cmd+A → Cmd+C) and paste into:
      EmailJS → Email Templates → template_pq0dq1h →
@@ -10,10 +17,17 @@
    Suggested EmailJS Subject:
      You're in — Riddim & Kompa on the Reformer (Brooklyn) ✦ Auric Movement
 
-   EmailJS variables (same names as the West Hempstead version):
-     {{from_name}} {{arrival_time}} {{class_time}} {{calendar_url}}
+   EmailJS variables:
+     {{from_name}}            their first name
+     {{event_date}}           e.g. "Saturday, October 10th"  ← the date
+     {{arrival_time}}         e.g. "12:55 PM"
+     {{class_time}}           e.g. "1:00 PM"
+     {{calendar_url}}         add-to-calendar link for that session
      {{receipt_amount}} {{receipt_code}} {{receipt_signed_as}}
      {{receipt_signed_at}} {{refund_policy_text}} {{refund_policy_ack_at}}
+
+   The site and the Stripe webhook both fill event_date from the event
+   being booked, so adding a Maison Luxe date needs no change here.
   ════════════════════════════════════════════════════════════
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -62,7 +76,7 @@
           <td style="padding:34px 42px 6px;">
             <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:24px;color:#5A3A1A;margin:0 0 14px 0;">You&rsquo;re in, {{from_name}}.</p>
             <p style="font-family:Georgia,serif;font-size:16px;line-height:1.75;color:#3a2c1e;margin:0;">
-              Your payment is in and your spot for <strong>Riddim &amp; Kompa on the Reformer &mdash; Saturday, September 26th in Brooklyn</strong> is officially secured. We can&rsquo;t wait to move and connect with you. Here&rsquo;s everything you need.
+              Your payment is in and your spot for <strong>Riddim &amp; Kompa on the Reformer &mdash; {{event_date}} in Brooklyn</strong> is officially secured. We can&rsquo;t wait to move and connect with you. Here&rsquo;s everything you need.
             </p>
           </td>
         </tr>
@@ -97,10 +111,10 @@
                   <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:12px;">Your Session</div>
                   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                     <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;width:120px;"><strong>Event:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">Riddim &amp; Kompa on the Reformer</td></tr>
-                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Date:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">Saturday, September 26th &middot; {{class_time}}</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Date:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{event_date}} &middot; {{class_time}}</td></tr>
                     <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Arrival:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{arrival_time}}</td></tr>
                     <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Class starts:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{class_time}}</td></tr>
-                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;vertical-align:top;"><strong>Location:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.55;">Maison Luxe Wellness Pilates<br>958 Lafayette Ave<br>Brooklyn, NY 11221</td></tr>
+                    <tr><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;vertical-align:top;"><strong>Location:</strong></td><td style="padding:4px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.55;">Maison Luxe Pilates &amp; Wellness<br>958 Lafayette Ave<br>Brooklyn, NY 11221</td></tr>
                   </table>
                 </td>
               </tr>
