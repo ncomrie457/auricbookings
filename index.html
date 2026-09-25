@@ -15308,7 +15308,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var att = display.filter(function(r){ return r.attendance==='attended'; }).length;
       var win = display.filter(function(r){ return r.winner; }).length;
       block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F983} Post-Turkey Burn · Nov 28th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(11:30 AM '+pd.tb28_1130+'/'+CAP+' · 12:30 PM '+pd.tb28_1230+'/'+CAP+' · 1:30 PM '+pd.tb28_130+'/'+CAP+')</span></h3>';
-      block.innerHTML += '<button onclick="rfSendThankYou(\'tb28\', this)" style="margin:.1rem 0 .7rem;background:#fdeeea;border:1px solid #f2b8ab;color:#a8391f;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F983} Send Post-Turkey Burn thank-you ('+att+' attended) — after the event</button>';
+      block.innerHTML += tyTurkeyPicker('ty-turkey-pick-28', 'tb28');
       block.innerHTML += '<button type="button" onclick="rfTyForget()" title="Allow everyone to be thanked again" style="margin:.1rem 0 .7rem .35rem;background:none;border:none;color:#8a7d6b;font-size:.72rem;text-decoration:underline;cursor:pointer;font-family:Jost,sans-serif;">Reset thank-you memory</button>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
@@ -15387,7 +15387,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var win = display.filter(function(r){ return r.winner; }).length;
       block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F983} Pre-Turkey Burn · Nov 22nd · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(11:30 AM '+pd.tb1130+'/'+CAP+' · 12:30 PM '+pd.tb1230+'/'+CAP+' · 1:30 PM '+pd.tb130+'/'+CAP+')</span></h3>';
       block.innerHTML += '<button onclick="rfSendWinnerEmail(\'turkey\', this)" style="margin:.1rem .35rem .7rem 0;background:#fbf3e2;border:1px solid #e6d3a8;color:#9a6535;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F39F}\u{FE0F} Send 4-class winner email ('+win+')</button>';
-      block.innerHTML += '<button onclick="rfSendThankYou(\'turkey\', this)" style="margin:.1rem 0 .7rem;background:#fdeeea;border:1px solid #f2b8ab;color:#a8391f;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F983} Send Turkey Burn thank-you ('+att+' attended) — after the event</button>';
+      block.innerHTML += tyTurkeyPicker('ty-turkey-pick-22', 'turkey');
       block.innerHTML += '<button type="button" onclick="rfTyForget()" title="Allow everyone to be thanked again" style="margin:.1rem 0 .7rem .35rem;background:none;border:none;color:#8a7d6b;font-size:.72rem;text-decoration:underline;cursor:pointer;font-family:Jost,sans-serif;">Reset thank-you memory</button>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
@@ -16463,8 +16463,40 @@ document.addEventListener('DOMContentLoaded', function() {
     o10:       { event:'riddim-kompa-brooklyn-2026-10-10', tmpl:RF_BK_TMPL_THANKYOU, tmplVar:'RF_BK_TMPL_THANKYOU', label:'Riddim & Kompa',           where:'Brooklyn · Oct 10' },
     n21:       { event:'riddim-kompa-brooklyn-2026-11-21', tmpl:RF_BK_TMPL_THANKYOU, tmplVar:'RF_BK_TMPL_THANKYOU', label:'Riddim & Kompa',           where:'Brooklyn · Nov 21' },
     halloween: { event:'halloween-creek-2026-10-24',       tmpl:RF_HW_TMPL_THANKYOU, tmplVar:'RF_HW_TMPL_THANKYOU', label:'Shhh… Quiet on the Creek', where:'Valley Studio · Oct 24' },
-    turkey:    { event:'turkey-burn-2026-11-22',           tmpl:RF_TB_TMPL_THANKYOU, tmplVar:'RF_TB_TMPL_THANKYOU', label:'Turkey Burn!',             where:'Valley Studio · Nov 22' },
+    turkey:    { event:'turkey-burn-2026-11-22',           tmpl:RF_TB_TMPL_THANKYOU, tmplVar:'RF_TB_TMPL_THANKYOU', label:'Pre-Turkey Burn',          where:'Valley Studio · Nov 22' },
     tb28:      { event:'turkey-burn-2026-11-28',           tmpl:RF_TB_TMPL_THANKYOU, tmplVar:'RF_TB_TMPL_THANKYOU', label:'Post-Turkey Burn',         where:'Valley Studio · Nov 28' }
+  };
+  // The two Turkey Burn dates share one thank-you template, so they share one
+  // control: pick a date, or a single session within a date, and send only to
+  // that group. Rendered on both Turkey rosters so it is wherever you look.
+  var TY_TURKEY_GROUPS = [
+    { v:'turkey',            t:'Sun Nov 22 \u2014 everyone who attended' },
+    { v:'turkey|tb1130',     t:'Sun Nov 22 \u2014 11:30 AM only' },
+    { v:'turkey|tb1230',     t:'Sun Nov 22 \u2014 12:30 PM only' },
+    { v:'turkey|tb130',      t:'Sun Nov 22 \u2014 1:30 PM only' },
+    { v:'tb28',              t:'Sat Nov 28 \u2014 everyone who attended' },
+    { v:'tb28|tb28_1130',    t:'Sat Nov 28 \u2014 11:30 AM only' },
+    { v:'tb28|tb28_1230',    t:'Sat Nov 28 \u2014 12:30 PM only' },
+    { v:'tb28|tb28_130',     t:'Sat Nov 28 \u2014 1:30 PM only' }
+  ];
+  function tyTurkeyPicker(id, preselect){
+    var opts = TY_TURKEY_GROUPS.map(function(g){
+      return '<option value="'+g.v+'"'+(g.v===preselect?' selected':'')+'>'+g.t+'</option>';
+    }).join('');
+    return '<div style="margin:.1rem 0 .7rem;display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;">'
+      + '<label for="'+id+'" style="font-size:.72rem;color:#8a7d6b;">\u{1F983} Thank-you \u2014 send to:</label>'
+      + '<select id="'+id+'" style="font-family:Jost,sans-serif;font-size:.78rem;padding:.3rem .45rem;border:1px solid #e0cfae;border-radius:6px;background:#fff;color:#3d322a;">'+opts+'</select>'
+      + '<button type="button" onclick="rfSendTurkeyThankYou(\''+id+'\', this)" style="background:#fdeeea;border:1px solid #f2b8ab;color:#a8391f;border-radius:6px;padding:.35rem .8rem;font-size:.78rem;cursor:pointer;font-family:Jost,sans-serif;">Send</button>'
+      + '</div>';
+  }
+  // Splits the picker's value back into which-event + which-session and hands
+  // it to the normal sender, so the dedupe and the "only attended" rule are
+  // exactly the same as every other thank-you.
+  window.rfSendTurkeyThankYou = function(selectId, btn){
+    var el = document.getElementById(selectId);
+    if(!el){ alert('Pick a group first.'); return; }
+    var parts = String(el.value||'').split('|');
+    window.rfSendThankYou(parts[0], btn, null, parts[1] || null);
   };
   window.rfSendThankYou = function(which, triggerBtn, mode, onlySession){
     var ty = TY_EVENTS[which];
@@ -16512,7 +16544,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       var rec=recips[i];
       if(btn){ btn.textContent='Sending... ('+(sent+failed)+'/'+recips.length+')'; }
-      emailjs.send(EMAILJS_SERVICE_RESEND, thankTmpl, { from_name: rec.name, to_email: rec.email })
+      emailjs.send(EMAILJS_SERVICE_RESEND, thankTmpl, { from_name: rec.name, to_email: rec.email, event_name: eventLabel })
         .then(function(){ sent++; if(!isFollowUp) rfTyRemember(rec.id); }).catch(function(err){ failed++; failedRecipients.push(rec.email); console.error('[rf '+kind+'] FAILED for '+rec.email, err); })
         .then(function(){ setTimeout(function(){ sendNext(i+1); }, 600); });
     }
