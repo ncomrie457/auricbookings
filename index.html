@@ -3178,11 +3178,9 @@
         <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
       </button>
 
-      <!-- ══ DRAFT — Riddim & Kompa, Brooklyn, Oct 10. Not announced. ══
-           Hidden by data-draft-event until the event is removed from
-           AURIC_DRAFT_EVENTS. Uses the interest-list art for now; swap in a
-           real flyer before publishing. -->
-      <button type="button" id="event-card-reformer-o10" class="bq-event scroll-reveal" style="display:none;" data-draft-event="riddim-kompa-brooklyn-2026-10-10" data-event-date="2026-10-10" data-event-name="Riddim &amp; Kompa &#8212; Brooklyn, Oct 10" data-location="brooklyn" data-riddim="true">
+      <!-- Riddim & Kompa on the Reformer — Brooklyn, Oct 10. Opens the Oct 10
+           booking overlay. Still using the interest-list art. -->
+      <button type="button" id="event-card-reformer-o10" class="bq-event scroll-reveal" data-event-date="2026-10-10" data-event-name="Riddim &amp; Kompa &#8212; Brooklyn, Oct 10" data-location="brooklyn" data-riddim="true">
         <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
         <div class="bq-event-photo">
           <img src="riddim-interest-card.jpg?v=1" alt="Riddim &amp; Kompa on the Reformer &#8212; Brooklyn. Saturday, October 10 at Maison Luxe Wellness Pilates, Brooklyn NY &#183; four sessions (12, 1, 2 &amp; 3 PM) &#183; $45, complimentary goodie bag" loading="lazy" decoding="async">
@@ -3194,9 +3192,9 @@
         <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
       </button>
 
-      <!-- ══ DRAFT — Riddim & Kompa, Brooklyn, Nov 21. Not announced. ══
-           Note: Pre-Turkey Burn is already on Nov 21 at Valley Studio. -->
-      <button type="button" id="event-card-reformer-n21" class="bq-event scroll-reveal" style="display:none;" data-draft-event="riddim-kompa-brooklyn-2026-11-21" data-event-date="2026-11-21" data-event-name="Riddim &amp; Kompa &#8212; Brooklyn, Nov 21" data-location="brooklyn" data-riddim="true">
+      <!-- Riddim & Kompa on the Reformer — Brooklyn, Nov 21. Opens the Nov 21
+           booking overlay. Note: Pre-Turkey Burn is also on Nov 21 at Valley. -->
+      <button type="button" id="event-card-reformer-n21" class="bq-event scroll-reveal" data-event-date="2026-11-21" data-event-name="Riddim &amp; Kompa &#8212; Brooklyn, Nov 21" data-location="brooklyn" data-riddim="true">
         <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
         <div class="bq-event-photo">
           <img src="riddim-interest-card.jpg?v=1" alt="Riddim &amp; Kompa on the Reformer &#8212; Brooklyn. Saturday, November 21 at Maison Luxe Wellness Pilates, Brooklyn NY &#183; four sessions (12, 1, 2 &amp; 3 PM) &#183; $45, complimentary goodie bag" loading="lazy" decoding="async">
@@ -6577,8 +6575,7 @@ Can't wait to move and connect with you!</textarea>
        book.auricmovement.com/?book=reformer-o10&preview=1
      Preview mode is per-visit and never linked from anywhere public.        */
   window.AURIC_DRAFT_EVENTS = {
-    'riddim-kompa-brooklyn-2026-10-10': true,
-    'riddim-kompa-brooklyn-2026-11-21': true
+    // Nothing is drafted right now. Add an event id here to hide it again.
   };
   window.auricIsDraft = function(ev){
     return !!(window.AURIC_DRAFT_EVENTS && window.AURIC_DRAFT_EVENTS[ev]);
@@ -6903,7 +6900,6 @@ document.addEventListener('DOMContentLoaded', function(){
   <div class="rf-modal">
     <button type="button" class="rf-x" id="reformer-o10-close" aria-label="Close">&times;</button>
     <div class="rf-eyebrow">Auric Movement</div>
-    <p class="rf-meta" style="background:#fbf3e2;border:1px solid #e6d3a8;color:#9a6535;border-radius:8px;padding:.5rem .7rem;font-weight:600;">&#9998; Preview &mdash; this date isn’t announced yet.</p>
     <h2 class="rf-title">Riddim &amp; Kompa on the Reformer</h2>
     <p class="rf-meta">Saturday, October 10 &middot; Maison Luxe Wellness Pilates, Brooklyn</p>
     <p class="rf-meta"><strong>$45</strong> &middot; 45-minute session</p>
@@ -7118,8 +7114,24 @@ document.addEventListener('DOMContentLoaded', function(){
       name:(document.getElementById('rfo10-name').value||'').trim(), email:(document.getElementById('rfo10-email').value||'').trim(),
       sessionLabel:(document.getElementById('rfo10-pay-label').textContent||''), stripeUrl:(document.getElementById('rfo10-pay-btn').getAttribute('href')||'') });
   });
-  // Deep link from the shared flyer (/riddim-kompa-brooklyn) → open the booking popup.
-  try { if(new URLSearchParams(location.search).get('book')==='reformer-o10'){ setTimeout(openOv, 450); } } catch(e){}
+  // Deep link → open the booking popup. An emailed link may also name the
+  // session (&s=o1), so the reader lands on the form for the time they
+  // clicked instead of picking it a second time. The click waits for the
+  // seat counts to land, and is skipped if that session sold out.
+  try {
+    var _dq = new URLSearchParams(location.search);
+    if(_dq.get('book')==='reformer-o10'){
+      var _ds = _dq.get('s');
+      setTimeout(function(){
+        openOv();
+        if(!_ds) return;
+        setTimeout(function(){
+          var _b = stepTime.querySelector('.rf-time[data-session="' + _ds + '"]');
+          if(_b && !_b.disabled) _b.click();
+        }, 700);
+      }, 450);
+    }
+  } catch(e){}
   // ── Payment confirmation (Stripe returns to ?paid=reformer-o10&s=o12|o1|o2|o3) ──
   var RFO10_CONF = {
     'o12': { label:'12:00 PM session', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-oct10-12pm' },
@@ -7145,7 +7157,6 @@ document.addEventListener('DOMContentLoaded', function(){
   <div class="rf-modal">
     <button type="button" class="rf-x" id="reformer-n21-close" aria-label="Close">&times;</button>
     <div class="rf-eyebrow">Auric Movement</div>
-    <p class="rf-meta" style="background:#fbf3e2;border:1px solid #e6d3a8;color:#9a6535;border-radius:8px;padding:.5rem .7rem;font-weight:600;">&#9998; Preview &mdash; this date isn’t announced yet.</p>
     <h2 class="rf-title">Riddim &amp; Kompa on the Reformer</h2>
     <p class="rf-meta">Saturday, November 21 &middot; Maison Luxe Wellness Pilates, Brooklyn</p>
     <p class="rf-meta"><strong>$45</strong> &middot; 45-minute session</p>
@@ -7360,8 +7371,24 @@ document.addEventListener('DOMContentLoaded', function(){
       name:(document.getElementById('rfn21-name').value||'').trim(), email:(document.getElementById('rfn21-email').value||'').trim(),
       sessionLabel:(document.getElementById('rfn21-pay-label').textContent||''), stripeUrl:(document.getElementById('rfn21-pay-btn').getAttribute('href')||'') });
   });
-  // Deep link from the shared flyer (/riddim-kompa-brooklyn) → open the booking popup.
-  try { if(new URLSearchParams(location.search).get('book')==='reformer-n21'){ setTimeout(openOv, 450); } } catch(e){}
+  // Deep link → open the booking popup. An emailed link may also name the
+  // session (&s=o1), so the reader lands on the form for the time they
+  // clicked instead of picking it a second time. The click waits for the
+  // seat counts to land, and is skipped if that session sold out.
+  try {
+    var _dq = new URLSearchParams(location.search);
+    if(_dq.get('book')==='reformer-n21'){
+      var _ds = _dq.get('s');
+      setTimeout(function(){
+        openOv();
+        if(!_ds) return;
+        setTimeout(function(){
+          var _b = stepTime.querySelector('.rf-time[data-session="' + _ds + '"]');
+          if(_b && !_b.disabled) _b.click();
+        }, 700);
+      }, 450);
+    }
+  } catch(e){}
   // ── Payment confirmation (Stripe returns to ?paid=reformer-n21&s=n12|n1|n2|n3) ──
   var RFN21_CONF = {
     'n12': { label:'12:00 PM session', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-nov21-12pm' },
