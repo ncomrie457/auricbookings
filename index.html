@@ -3505,13 +3505,17 @@
       document.addEventListener('DOMContentLoaded', function(){
         var mount = document.getElementById('bq-nextup');
         if(!mount) return;
-        var ids = ['event-card-recharge','event-card-reformer','event-card-reformer-bk','event-card-halloween','event-card-turkey','event-card-matchat','event-card-pilates'];
+        var ids = ['event-card-recharge','event-card-reformer','event-card-reformer-bk',
+                   'event-card-reformer-o10','event-card-reformer-n21',
+                   'event-card-halloween','event-card-turkey','event-card-matchat','event-card-pilates'];
         var today = new Date(); today.setHours(0,0,0,0);
         var best=null, bestDate=null;
         ids.forEach(function(id){
           var c=document.getElementById(id);
           if(!c) return;
           if(c.getAttribute('data-past')==='true') return;  // event happened → not "next up"
+          var _dev=c.getAttribute('data-draft-event');       // not announced → not "next up"
+          if(_dev && window.auricDraftHidden && window.auricDraftHidden(_dev)) return;
           if(c.getAttribute('data-soldout')==='true') return; // sold out → feature the next bookable one
           var ds=c.getAttribute('data-event-date'); if(!ds) return;
           var dt=new Date(ds+'T00:00:00'); if(isNaN(dt.getTime())) return;
@@ -3551,6 +3555,8 @@
       .bq-ae-status.ok{color:var(--green);}
       .bq-ae-status.warn{color:#b5791f;}
       .bq-ae-body{padding:1.1rem 1.25rem 1.35rem;display:flex;flex-direction:column;flex:1;}
+      .bq-ae-date{font-family:'Jost',sans-serif;font-size:.62rem;letter-spacing:.2em;
+        text-transform:uppercase;color:var(--gold-text);font-weight:600;margin-bottom:.35rem;}
       .bq-ae-name{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1.25rem;color:var(--brown);line-height:1.12;}
       .bq-ae-name em{font-style:italic;color:var(--gold-text);}
       .bq-ae-sub{font-family:'Jost',sans-serif;font-size:.82rem;color:var(--text-muted);margin:.45rem 0 0;line-height:1.5;flex:1;}
@@ -3575,6 +3581,8 @@
         var items=[
           {id:'event-card-reformer', tag:'Almost sold out', cls:'warn'},
           {id:'event-card-reformer-bk', tag:'Almost sold out', cls:'warn'},
+          {id:'event-card-reformer-o10', tag:'Now booking', cls:'ok'},
+          {id:'event-card-reformer-n21', tag:'Now booking', cls:'ok'},
           {id:'event-card-halloween', tag:'Now booking', cls:'ok'},
           {id:'event-card-turkey', tag:'Now booking', cls:'ok'},
           {id:'event-card-turkey28', tag:'Now booking', cls:'ok'}
@@ -3583,8 +3591,12 @@
         // Same test the Events tab uses, so the two stay in step and each event
         // falls off by itself the day after it runs.
         var today=new Date(); today.setHours(0,0,0,0);
+        // A card that is past, or drafted and so not announced, does not belong
+        // under a heading that says "Upcoming".
         function isPastCard(c){
           if(c.getAttribute('data-past')==='true') return true;
+          var dev=c.getAttribute('data-draft-event');
+          if(dev && window.auricDraftHidden && window.auricDraftHidden(dev)) return true;
           var ds=c.getAttribute('data-event-date'); if(!ds) return false;
           var dt=new Date(ds+'T00:00:00'); if(isNaN(dt.getTime())) return false;
           return dt<today;
@@ -3595,9 +3607,12 @@
           if(isPastCard(c)) return;   // already happened — it belongs in Past Events
           var img=c.querySelector('.bq-event-photo img'); var src=img?img.getAttribute('src'):'';
           var name=c.querySelector('.bq-event-name'); var sub=c.querySelector('.bq-event-sub');
+          var dateEl=c.querySelector('.bq-event-date');
           out+='<article class="bq-ae-card">'
             +'<div class="bq-ae-photo" style="background-image:url(\''+src+'\')"><span class="bq-ae-status '+it.cls+'" id="aestatus-'+it.id+'">'+it.tag+'</span></div>'
-            +'<div class="bq-ae-body"><div class="bq-ae-name">'+(name?name.innerHTML:'')+'</div>'
+            +'<div class="bq-ae-body">'
+            +(dateEl?'<div class="bq-ae-date">'+dateEl.innerHTML+'</div>':'')
+            +'<div class="bq-ae-name">'+(name?name.innerHTML:'')+'</div>'
             +'<div class="bq-ae-sub">'+(sub?sub.innerHTML:'')+'</div>'
             +'<button type="button" class="bq-ae-btn" data-target="'+it.id+'">Book</button></div></article>';
         });
