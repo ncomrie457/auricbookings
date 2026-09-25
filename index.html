@@ -16109,26 +16109,37 @@ document.addEventListener('DOMContentLoaded', function() {
     if(!recips.length){ alert('Nobody is marked as the winner yet.\n\nTap "\u{1F39F}\u{FE0F} Mark winner" on the person whose name you drew, then send.'); return; }
     if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
     if(RF_TMPL_WINNER.indexOf('REPLACE')!==-1){ alert('Set RF_TMPL_WINNER to your EmailJS template id first (create it from EMAIL_PRIZE_WINNER_4CLASS.html).'); return; }
-    if(!confirm('Send the 4-class winner email to:\n\n' + recips.map(function(r){ return '• '+(r.name||'(no name)')+' — '+r.email; }).join('\n') + '\n\nSend now?')) return;
-    var btn = triggerBtn, originalText = btn ? btn.textContent : '';
-    if(btn){ btn.disabled=true; }
-    var sent=0, failed=0, failedRecipients=[];
-    function sendNext(i){
-      if(i>=recips.length){
-        if(btn){ btn.disabled=false; btn.textContent=originalText; }
-        var msg='✅ Sent '+sent+' winner email(s).';
-        if(failed>0){ msg+='\n\n⚠️ '+failed+' failed: '+failedRecipients.join(', ')+'\n\nCheck EmailJS Dashboard → History.'; }
-        alert(msg); return;
-      }
-      var rec=recips[i];
-      if(btn){ btn.textContent='Sending... ('+(sent+failed)+'/'+recips.length+')'; }
-      var fn=((rec.name||'').trim().split(/\s+/)[0])||'there';
-      emailjs.send(EMAILJS_SERVICE_RESEND, RF_TMPL_WINNER, { from_name: fn, to_email: rec.email, name: rec.name||'', email: rec.email })
-        .then(function(){ sent++; }).catch(function(err){ failed++; failedRecipients.push(rec.email); console.error('[rf winner] FAILED for '+rec.email, err); })
-        .then(function(){ setTimeout(function(){ sendNext(i+1); }, 600); });
-    }
-    sendNext(0);
+    // Same review step as the thank-you: see the names, untick anyone, then send.
+    recips.forEach(function(r){
+      r.__sessLabel = (RF_ADMIN_SESS[r.session] && RF_ADMIN_SESS[r.session].time) || r.session_label || r.session || '';
+    });
+    window.rfPickRecipients(
+      triggerBtn,
+      '4-class winner email \u2014 ' + ty.where,
+      'Only people marked \u{1F39F}\ufe0f Winner are listed.',
+      recips, 'Send',
+      function(list){
+        var btn = triggerBtn, originalText = btn ? btn.textContent : '';
+        if(btn){ btn.disabled=true; }
+        var sent=0, failed=0, failedRecipients=[];
+        function sendNext(i){
+          if(i>=list.length){
+            if(btn){ btn.disabled=false; btn.textContent=originalText; }
+            var msg='\u2705 Sent '+sent+' winner email(s).';
+            if(failed>0){ msg+='\n\n\u26a0\ufe0f '+failed+' failed: '+failedRecipients.join(', ')+'\n\nCheck EmailJS Dashboard \u2192 History.'; }
+            alert(msg); return;
+          }
+          var rec=list[i];
+          if(btn){ btn.textContent='Sending... ('+(sent+failed)+'/'+list.length+')'; }
+          var fn=((rec.name||'').trim().split(/\s+/)[0])||'there';
+          emailjs.send(EMAILJS_SERVICE_RESEND, RF_TMPL_WINNER, { from_name: fn, to_email: rec.email, name: rec.name||'', email: rec.email })
+            .then(function(){ sent++; }).catch(function(err){ failed++; failedRecipients.push(rec.email); console.error('[rf winner] FAILED for '+rec.email, err); })
+            .then(function(){ setTimeout(function(){ sendNext(i+1); }, 600); });
+        }
+        sendNext(0);
+      });
   };
+
   window.rfAdminSetSession = function(id, newSession){
     var rec = rfRosterById[id]; if(!rec){ return; }
     var meta = RF_ADMIN_SESS[newSession]; if(!meta){ return; } // Valley (1pm/2pm), Brooklyn (bk*), Turkey Burn (tb*)
@@ -16521,6 +16532,66 @@ document.addEventListener('DOMContentLoaded', function() {
     var parts = String(el.value||'').split('|');
     window.rfSendThankYou(parts[0], btn, null, parts[1] || null);
   };
+  // Nothing goes out until you have seen who it is going to. A count in a
+  // confirm box cannot tell you the list is wrong — names can. Everyone is
+  // ticked to start; untick anyone who should not get this one.
+  window.rfPickRecipients = function(anchorBtn, title, note, rows, sendLabel, onSend){
+    if(!rows || !rows.length) return;
+    if(!anchorBtn || !anchorBtn.parentNode){
+      // Nowhere to draw the list, so name everyone in the confirm instead of
+      // falling back to a bare count.
+      var names = rows.map(function(r){ return '• ' + (r.name||'(no name)') + ' — ' + r.email; }).join('\n');
+      if(!confirm(title + '\n\n' + names + '\n\nSend to all ' + rows.length + '?')) return;
+      onSend(rows); return;
+    }
+    var prev = anchorBtn.parentNode.querySelector('[data-rf-pick]');
+    if(prev && prev.parentNode) prev.parentNode.removeChild(prev);
+    var box = document.createElement('div');
+    box.setAttribute('data-rf-pick','1');
+    box.style.cssText = 'margin:.4rem 0 .8rem;padding:.7rem .8rem;background:#fff;border:1px solid #e0cfae;border-radius:10px;';
+    box.innerHTML =
+      '<div style="font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-text);margin-bottom:.3rem;">' + escapeHTML(title) + '</div>'
+      + (note ? '<div style="font-size:.72rem;color:#8a7d6b;margin-bottom:.4rem;">' + escapeHTML(note) + '</div>' : '')
+      + '<label style="display:flex;gap:.4rem;align-items:center;font-size:.72rem;color:#8a7d6b;margin-bottom:.3rem;cursor:pointer;"><input type="checkbox" checked data-rf-pick-all> Everyone</label>'
+      + '<div style="max-height:190px;overflow-y:auto;border-top:1px solid var(--border);padding-top:.3rem;">'
+      + rows.map(function(r,i){
+          return '<label style="display:flex;gap:.45rem;align-items:baseline;padding:.18rem 0;font-size:.8rem;color:#3d322a;cursor:pointer;">'
+            + '<input type="checkbox" checked data-rf-pick-row="'+i+'">'
+            + '<span><strong>' + escapeHTML(r.name||'(no name)') + '</strong> '
+            + '<span style="color:#8a7d6b;">' + escapeHTML(r.email||'') + '</span>'
+            + (r.__sessLabel ? ' <span style="color:#a9853f;">· ' + escapeHTML(r.__sessLabel) + '</span>' : '')
+            + '</span></label>';
+        }).join('')
+      + '</div>'
+      + '<div style="display:flex;gap:.5rem;align-items:center;margin-top:.5rem;">'
+      + '<button type="button" data-rf-pick-send style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.35rem .8rem;font-size:.78rem;cursor:pointer;font-family:Jost,sans-serif;"></button>'
+      + '<button type="button" data-rf-pick-cancel style="background:none;border:none;color:#8a7d6b;font-size:.72rem;text-decoration:underline;cursor:pointer;font-family:Jost,sans-serif;">Cancel</button>'
+      + '</div>';
+    anchorBtn.parentNode.insertBefore(box, anchorBtn.nextSibling);
+    function chosen(){
+      return rows.filter(function(r,i){
+        var cb = box.querySelector('[data-rf-pick-row="'+i+'"]');
+        return cb && cb.checked;
+      });
+    }
+    function refresh(){ box.querySelector('[data-rf-pick-send]').textContent = sendLabel + ' (' + chosen().length + ')'; }
+    box.addEventListener('change', function(e){
+      if(e.target && e.target.hasAttribute('data-rf-pick-all')){
+        var on = e.target.checked;
+        Array.prototype.forEach.call(box.querySelectorAll('[data-rf-pick-row]'), function(cb){ cb.checked = on; });
+      }
+      refresh();
+    });
+    box.querySelector('[data-rf-pick-cancel]').addEventListener('click', function(){ if(box.parentNode) box.parentNode.removeChild(box); });
+    box.querySelector('[data-rf-pick-send]').addEventListener('click', function(){
+      var list = chosen();
+      if(!list.length){ alert('Nobody is ticked — nothing was sent.'); return; }
+      if(box.parentNode) box.parentNode.removeChild(box);
+      onSend(list);
+    });
+    refresh();
+    try { box.scrollIntoView({behavior:'smooth', block:'nearest'}); } catch(e){}
+  };
   window.rfSendThankYou = function(which, triggerBtn, mode, onlySession){
     var ty = TY_EVENTS[which];
     if(!ty){ alert('Unknown event "'+which+'" — nothing was sent.\n\nAdd it to TY_EVENTS.'); return; }
@@ -16554,24 +16625,36 @@ document.addEventListener('DOMContentLoaded', function() {
     if(!recips.length){ alert('Nobody is marked "✓ Attended" for '+eventLabel+' — '+where+' yet.\n\nTap "✓ Attended" on everyone who showed up first, then send. That way the '+kind+' only goes to people who actually came.'); return; }
     if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
     if(thankTmpl.indexOf('REPLACE')!==-1){ alert('Set '+thankVar+' to your real EmailJS template id first.'); return; }
-    if(!confirm('Send the '+eventLabel+' '+kind+' to '+recips.length+' attendee(s)'+(onlySession?' in the '+onlySession+' session':'')+' — '+where+'?'+(already?'\n\nSkipping '+already+' who already got it.':'')+'\n\n(Only people marked "✓ Attended". Sends through Resend.)')) return;
-    var btn = triggerBtn; var originalText = btn ? btn.textContent : '';
-    if(btn){ btn.disabled=true; }
-    var sent=0, failed=0, failedRecipients=[];
-    function sendNext(i){
-      if(i>=recips.length){
-        if(btn){ btn.disabled=false; btn.textContent=originalText; }
-        var msg='✅ Sent '+sent+' '+eventLabel+' '+kind+' email(s).';
-        if(failed>0){ msg+='\n\n⚠️ '+failed+' failed: '+failedRecipients.join(', ')+'\n\nCheck EmailJS Dashboard → History.'; }
-        alert(msg); return;
-      }
-      var rec=recips[i];
-      if(btn){ btn.textContent='Sending... ('+(sent+failed)+'/'+recips.length+')'; }
-      emailjs.send(EMAILJS_SERVICE_RESEND, thankTmpl, { from_name: rec.name, to_email: rec.email, event_name: eventLabel })
-        .then(function(){ sent++; if(!isFollowUp) rfTyRemember(rec.id); }).catch(function(err){ failed++; failedRecipients.push(rec.email); console.error('[rf '+kind+'] FAILED for '+rec.email, err); })
-        .then(function(){ setTimeout(function(){ sendNext(i+1); }, 600); });
-    }
-    sendNext(0);
+    // Show exactly who this would reach, and let her untick anyone, before
+    // a single email leaves. The filters above decide the candidates; this
+    // decides the send.
+    recips.forEach(function(r){
+      r.__sessLabel = (RF_ADMIN_SESS[r.session] && RF_ADMIN_SESS[r.session].time) || r.session_label || r.session || '';
+    });
+    window.rfPickRecipients(
+      triggerBtn,
+      eventLabel + ' ' + kind + ' \u2014 ' + where + (onlySession ? ' \u00b7 ' + onlySession + ' only' : ''),
+      (already ? already + ' already had this one, so they are not listed.' : 'Only people marked \u2713 Attended are listed.'),
+      recips, 'Send',
+      function(list){
+        var btn = triggerBtn; var originalText = btn ? btn.textContent : '';
+        if(btn){ btn.disabled=true; }
+        var sent=0, failed=0, failedRecipients=[];
+        function sendNext(i){
+          if(i>=list.length){
+            if(btn){ btn.disabled=false; btn.textContent=originalText; }
+            var msg='\u2705 Sent '+sent+' '+eventLabel+' '+kind+' email(s).';
+            if(failed>0){ msg+='\n\n\u26a0\ufe0f '+failed+' failed: '+failedRecipients.join(', ')+'\n\nCheck EmailJS Dashboard \u2192 History.'; }
+            alert(msg); return;
+          }
+          var rec=list[i];
+          if(btn){ btn.textContent='Sending... ('+(sent+failed)+'/'+list.length+')'; }
+          emailjs.send(EMAILJS_SERVICE_RESEND, thankTmpl, { from_name: rec.name, to_email: rec.email, event_name: eventLabel })
+            .then(function(){ sent++; if(!isFollowUp) rfTyRemember(rec.id); }).catch(function(err){ failed++; failedRecipients.push(rec.email); console.error('[rf '+kind+'] FAILED for '+rec.email, err); })
+            .then(function(){ setTimeout(function(){ sendNext(i+1); }, 600); });
+        }
+        sendNext(0);
+      });
   };
   // Sep 13 follow-up: the reminders email (Google review, Wellhub, prize
   // winners). Same attended list as the thank-you, different template.
