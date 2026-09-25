@@ -18088,17 +18088,28 @@ document.addEventListener('DOMContentLoaded', function() {
 (function(){
   var PP_TMPL='template_547l0yl', PP_SERVICE='service_ieahnue';
   var PP_META={
-    'riddim-kompa-reformer-2026-09-13':{ name:'Riddim & Kompa on the Reformer — West Hempstead', date:'Sunday, September 13', loc:'Valley Studio, West Hempstead NY', amount:'$45.00' },
-    'riddim-kompa-brooklyn-2026-09-26':{ name:'Riddim & Kompa on the Reformer — Brooklyn', date:'Saturday, September 26', loc:'Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221', amount:'$45.00' },
-    'halloween-creek-2026-10-24':      { name:'Shhh… Quiet on the Creek — Halloween Reformer', date:'Saturday, October 24', loc:'Valley Studio, West Hempstead NY', amount:'$45.00' },
-    'turkey-burn-2026-11-21':          { name:'Turkey Burn! on the Reformer', date:'Saturday, November 21', loc:'Valley Studio, West Hempstead NY', amount:'$45.00' }
+    'riddim-kompa-reformer-2026-09-13':{ name:'Riddim & Kompa on the Reformer — West Hempstead', date:'Sunday, September 13', loc:'Valley Studio, West Hempstead NY', amount:'$45.00', book:'https://book.auricmovement.com/?book=reformer' },
+    'riddim-kompa-brooklyn-2026-09-26':{ name:'Riddim & Kompa on the Reformer — Brooklyn', date:'Saturday, September 26', loc:'Maison Luxe Wellness Pilates · 958 Lafayette Ave, Brooklyn, NY 11221', amount:'$45.00', book:'https://book.auricmovement.com/?book=reformer-bk' },
+    'halloween-creek-2026-10-24':      { name:'Shhh… Quiet on the Creek — Halloween Reformer', date:'Saturday, October 24', loc:'Valley Studio, West Hempstead NY', amount:'$45.00', book:'https://book.auricmovement.com/?book=halloween' },
+    'turkey-burn-2026-11-21':          { name:'Turkey Burn! on the Reformer', date:'Saturday, November 21', loc:'Valley Studio, West Hempstead NY', amount:'$45.00', book:'https://book.auricmovement.com/?book=turkey' },
+    'turkey-burn-2026-11-28':          { name:'Post-Turkey Burn on the Reformer', date:'Saturday, November 28', loc:'Valley Studio, West Hempstead NY', amount:'$45.00', book:'https://book.auricmovement.com/?book=turkey28' },
+    'riddim-kompa-brooklyn-2026-10-10':{ name:'Riddim × Kompa on the Reformer — Brooklyn', date:'Saturday, October 10', loc:'Maison Luxe Pilates & Wellness · 958 Lafayette Ave, Brooklyn, NY 11221', amount:'$45.00', book:'https://book.auricmovement.com/?book=reformer-o10' },
+    'riddim-kompa-brooklyn-2026-11-21':{ name:'Riddim × Kompa on the Reformer — Brooklyn', date:'Saturday, November 21', loc:'Maison Luxe Pilates & Wellness · 958 Lafayette Ave, Brooklyn, NY 11221', amount:'$45.00', book:'https://book.auricmovement.com/?book=reformer-n21' }
   };
   window.auricSendPayPending=function(o){
     try{
       if(!o || !o.email || !/.+@.+\..+/.test(o.email) || typeof emailjs==='undefined') return;
       if(PP_TMPL.indexOf('REPLACE')!==-1) return;
-      var m=PP_META[o.event]||{};
-      var url=(o.stripeUrl && o.stripeUrl.indexOf('buy.stripe.com')>=0) ? o.stripeUrl : 'https://book.auricmovement.com';
+      var m=PP_META[o.event];
+      if(!m){
+        // Without this the email goes out reading “your event” with no date
+        // and no address, and nothing anywhere says why.
+        console.error('[pay later] no details for event “' + o.event + '” — '
+          + 'add it to PP_META or the email goes out blank.');
+        m = {};
+      }
+      var url = (o.stripeUrl && o.stripeUrl.indexOf('buy.stripe.com') >= 0) ? o.stripeUrl
+              : (m.book || 'https://book.auricmovement.com');
       emailjs.send(PP_SERVICE, PP_TMPL, {
         from_name:o.name||'there', to_email:o.email,
         event_name:m.name||'your event', event_date:m.date||'',
