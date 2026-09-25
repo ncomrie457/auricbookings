@@ -40,12 +40,18 @@ const EVENT_TEMPLATE: Record<string, string> = {
   "riddim-kompa-brooklyn-2026-09-26": "template_pq0dq1h",
   "halloween-creek-2026-10-24": "template_hhjwepr",
   "turkey-burn-2026-11-21": "template_96eon3x",
+  // Every Maison Luxe date shares the Brooklyn template; the date rides in
+  // as event_date, so a new Brooklyn date needs no new template.
+  "riddim-kompa-brooklyn-2026-10-10": "template_pq0dq1h",
+  "riddim-kompa-brooklyn-2026-11-21": "template_pq0dq1h",
 };
 const RECEIPT_PREFIX: Record<string, string> = {
   "riddim-kompa-reformer-2026-09-13": "RK",
   "riddim-kompa-brooklyn-2026-09-26": "RKBK",
   "halloween-creek-2026-10-24": "HW",
   "turkey-burn-2026-11-21": "TB",
+  "riddim-kompa-brooklyn-2026-10-10": "RKO10",
+  "riddim-kompa-brooklyn-2026-11-21": "RKN21",
 };
 const SESSION_META: Record<string, { time: string; arrival: string; cal: string }> = {
   "1pm":    { time: "1:00 PM",  arrival: "12:55 PM", cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-west-hempstead-1pm" },
@@ -58,6 +64,23 @@ const SESSION_META: Record<string, { time: string; arrival: string; cal: string 
   "tb130":  { time: "1:30 PM",  arrival: "1:25 PM",  cal: "https://book.auricmovement.com/calendar/add/?e=turkey-burn-130pm" },
   "hw1230": { time: "12:30 PM", arrival: "12:25 PM", cal: "https://book.auricmovement.com/calendar/add/?e=halloween-1230pm" },
   "hw130":  { time: "1:30 PM",  arrival: "1:25 PM",  cal: "https://book.auricmovement.com/calendar/add/?e=halloween-130pm" },
+  "o12":     { time: "12:00 PM", arrival: "11:55 AM", cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-oct10-12pm" },
+  "o1":      { time: "1:00 PM", arrival: "12:55 PM", cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-oct10-1pm" },
+  "o2":      { time: "2:00 PM", arrival: "1:55 PM", cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-oct10-2pm" },
+  "o3":      { time: "3:00 PM", arrival: "2:55 PM", cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-oct10-3pm" },
+  "n12":     { time: "12:00 PM", arrival: "11:55 AM", cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-nov21-12pm" },
+  "n1":      { time: "1:00 PM", arrival: "12:55 PM", cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-nov21-1pm" },
+  "n2":      { time: "2:00 PM", arrival: "1:55 PM", cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-nov21-2pm" },
+  "n3":      { time: "3:00 PM", arrival: "2:55 PM", cal: "https://book.auricmovement.com/calendar/add/?e=riddim-kompa-nov21-3pm" },
+};
+const EVENT_DATE: Record<string, string> = {
+  "riddim-kompa-reformer-2026-09-13": "Sunday, September 13th",
+  "riddim-kompa-brooklyn-2026-09-26": "Saturday, September 26th",
+  "riddim-kompa-brooklyn-2026-10-10": "Saturday, October 10th",
+  "riddim-kompa-brooklyn-2026-11-21": "Saturday, November 21st",
+  "halloween-creek-2026-10-24": "Saturday, October 24th",
+  "turkey-burn-2026-11-21": "Saturday, November 21st",
+  "turkey-burn-2026-11-28": "Saturday, November 28th",
 };
 const REFUND_TEXT = "All sales are final — no refunds or credits. Spot transfers to a friend are welcome up to 24 hours before the event — email auricmovement@outlook.com with both names.";
 
@@ -65,6 +88,11 @@ async function sendConfirmation(row: Record<string, unknown>, amountCents: numbe
   const event = String(row.event ?? "");
   const templateId = EVENT_TEMPLATE[event];
   if (!templateId) return; // not a reformer event we send confirmations for — nothing to send
+  if (templateId.startsWith("REPLACE")) {
+    // The event is listed but its template was never created, so this buyer
+    // would silently get nothing. Throw: Stripe retries, and the log says why.
+    throw new Error(`no confirmation template for ${event} — create it and set EVENT_TEMPLATE`);
+  }
   // Missing keys is a real misconfiguration: throw so the caller does NOT stamp
   // emailed_at, and Stripe's retry tries again once the keys are restored.
   if (!EMAILJS_PUBLIC || !EMAILJS_PRIVATE) throw new Error("EmailJS keys missing");
@@ -74,6 +102,7 @@ async function sendConfirmation(row: Record<string, unknown>, amountCents: numbe
   const params = {
     from_name: row.name ?? "there",
     to_email: row.email,
+    event_date: EVENT_DATE[event] ?? "",
     arrival_time: sess.arrival,
     class_time: sess.time,
     calendar_url: sess.cal,

@@ -13817,7 +13817,16 @@ document.addEventListener('DOMContentLoaded', function() {
   var RF_BK_TMPL_THANKYOU = 'template_p5n3p19';   // RIDDIM_KOMPA_BROOKLYN_THANKYOU_TEMPLATE.html — sent via Resend
   var RF_TMPL_DAYOF    = 'template_pdfnmgu';   // "The Day Is Here" day-of email for Sep 13 (EMAIL_DAY_IS_HERE_RIDDIM.html). NOTE: currently shares the confirmation template id.
   var RF_TMPL_WINNER   = 'template_hajk0et';   // 4-class prize winner (EMAIL_PRIZE_WINNER_4CLASS.html) — sent via Resend
-  var RF_HW_TMPL_CONFIRM  = 'template_hhjwepr';   // Halloween "Shhh… Quiet on the Creek" payment confirmation (HALLOWEEN_CREEK_CONFIRMATION_TEMPLATE.html) — sent via Resend
+  // Every Maison Luxe date shares one confirmation template; the date is a
+  // variable, so a new Brooklyn date needs no new template.
+
+  var RF_O10_TMPL_CONFIRM = RF_BK_TMPL_CONFIRM;
+  var RF_N21_TMPL_CONFIRM = RF_BK_TMPL_CONFIRM;
+  var RF_MAISON_DATE = {
+    'riddim-kompa-brooklyn-2026-09-26': 'Saturday, September 26th',
+    'riddim-kompa-brooklyn-2026-10-10': 'Saturday, October 10th',
+    'riddim-kompa-brooklyn-2026-11-21': 'Saturday, November 21st'
+  };  var RF_HW_TMPL_CONFIRM  = 'template_hhjwepr';   // Halloween "Shhh… Quiet on the Creek" payment confirmation (HALLOWEEN_CREEK_CONFIRMATION_TEMPLATE.html) — sent via Resend
   var RF_HW_TMPL_THANKYOU = 'template_g125fph';  // Halloween "Shhh… Quiet on the Creek" post-event thank-you (HALLOWEEN_CREEK_THANKYOU_TEMPLATE.html) — sent via Resend
   var RF_TB_TMPL_CONFIRM  = 'template_96eon3x';   // Turkey Burn! payment confirmation (TURKEY_BURN_CONFIRMATION_TEMPLATE.html) — sent via Resend
   var RF_TB_TMPL_THANKYOU = 'template_cnl8smi';  // Turkey Burn! post-event thank-you (TURKEY_BURN_THANKYOU_TEMPLATE.html) — sent via Resend
@@ -14526,7 +14535,15 @@ document.addEventListener('DOMContentLoaded', function() {
     'tb1230': { time:'12:30 PM', arrival:'12:25 PM', cal:'https://book.auricmovement.com/calendar/add/?e=turkey-burn-1230pm' },
     'tb130':  { time:'1:35 PM', arrival:'1:30 PM', cal:'https://book.auricmovement.com/calendar/add/?e=turkey-burn-130pm' },
     'hw1230': { time:'12:30 PM', arrival:'12:25 PM', cal:'https://book.auricmovement.com/calendar/add/?e=halloween-1230pm' },
-    'hw130':  { time:'1:35 PM', arrival:'1:30 PM', cal:'https://book.auricmovement.com/calendar/add/?e=halloween-130pm' }
+    'hw130':  { time:'1:35 PM', arrival:'1:30 PM', cal:'https://book.auricmovement.com/calendar/add/?e=halloween-130pm' },
+    'o12':    { time:'12:00 PM', arrival:'11:55 AM', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-oct10-12pm' },
+    'o1':     { time:'1:00 PM', arrival:'12:55 PM', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-oct10-1pm' },
+    'o2':     { time:'2:00 PM', arrival:'1:55 PM', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-oct10-2pm' },
+    'o3':     { time:'3:00 PM', arrival:'2:55 PM', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-oct10-3pm' },
+    'n12':    { time:'12:00 PM', arrival:'11:55 AM', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-nov21-12pm' },
+    'n1':     { time:'1:00 PM', arrival:'12:55 PM', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-nov21-1pm' },
+    'n2':     { time:'2:00 PM', arrival:'1:55 PM', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-nov21-2pm' },
+    'n3':    { time:'3:00 PM', arrival:'2:55 PM', cal:'https://book.auricmovement.com/calendar/add/?e=riddim-kompa-nov21-3pm' }
   };
   // Every reformer event + session a booking can be MOVED into (e.g. a no-show
   // rebooked onto a future event). Order = how they appear in the picker.
@@ -15019,7 +15036,7 @@ document.addEventListener('DOMContentLoaded', function() {
       display.forEach(function(r){ if(r.is_paid && pd[r.session]!==undefined) pd[r.session]++; });
       var paid = display.filter(function(r){ return r.is_paid; }).length;
       var att = display.filter(function(r){ return r.attendance==='attended'; }).length;
-      block.innerHTML = '<h3 style="color:var(--gold-text);">Riddim &amp; Kompa — Brooklyn · Sep 26th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">12 PM '+pd['o12']+'/'+CAP+' · 1 PM '+pd['o1']+'/'+CAP+' · 2 PM '+pd['o2']+'/'+CAP+' · 3 PM '+pd['o3']+'/'+CAP+'</span></h3>';
+      block.innerHTML = '<h3 style="color:var(--gold-text);">Riddim &amp; Kompa — Brooklyn · Oct 10th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">12 PM '+pd['o12']+'/'+CAP+' · 1 PM '+pd['o1']+'/'+CAP+' · 2 PM '+pd['o2']+'/'+CAP+' · 3 PM '+pd['o3']+'/'+CAP+'</span></h3>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       var _bkOrd = { 'o12':0, 'o1':1, 'o2':2, 'o3':3 };
@@ -15047,8 +15064,8 @@ document.addEventListener('DOMContentLoaded', function() {
           if(rec.session===sess){ return '<span style="display:inline-block;background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;font-family:\'Jost\',sans-serif;">'+label+' ✓</span>'; }
           return btn("rfAdminSetSession("+id+",'"+sess+"')",'#f4ecdd','#e0cfae','#7a5a2a','→ '+label);
         }
-        var timeBtn = timeOpt('bk12','12 PM') + timeOpt('bk1','1 PM') + timeOpt('bk2','2 PM');
-        var confirmBtn = btn('rfBkAdminConfirm('+id+')','#e8f5e9','#a5d6a7','#2e7d32','\u{1F4E7} Confirm + email');
+        var timeBtn = timeOpt('o12','12 PM') + timeOpt('o1','1 PM') + timeOpt('o2','2 PM') + timeOpt('o3','3 PM');
+        var confirmBtn = btn('rfO10AdminConfirm('+id+')','#e8f5e9','#a5d6a7','#2e7d32','\u{1F4E7} Confirm + email');
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
         var archiveBtn = btn('rfAdminArchive('+id+')','#eceae4','#d3ccbd','#6b6357','\u{1F5C4}\u{FE0F} Archive');
@@ -15093,7 +15110,7 @@ document.addEventListener('DOMContentLoaded', function() {
       display.forEach(function(r){ if(r.is_paid && pd[r.session]!==undefined) pd[r.session]++; });
       var paid = display.filter(function(r){ return r.is_paid; }).length;
       var att = display.filter(function(r){ return r.attendance==='attended'; }).length;
-      block.innerHTML = '<h3 style="color:var(--gold-text);">Riddim &amp; Kompa — Brooklyn · Sep 26th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">12 PM '+pd['n12']+'/'+CAP+' · 1 PM '+pd['n1']+'/'+CAP+' · 2 PM '+pd['n2']+'/'+CAP+' · 3 PM '+pd['n3']+'/'+CAP+'</span></h3>';
+      block.innerHTML = '<h3 style="color:var(--gold-text);">Riddim &amp; Kompa — Brooklyn · Nov 21st · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">12 PM '+pd['n12']+'/'+CAP+' · 1 PM '+pd['n1']+'/'+CAP+' · 2 PM '+pd['n2']+'/'+CAP+' · 3 PM '+pd['n3']+'/'+CAP+'</span></h3>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       var _bkOrd = { 'n12':0, 'n1':1, 'n2':2, 'n3':3 };
@@ -15121,8 +15138,8 @@ document.addEventListener('DOMContentLoaded', function() {
           if(rec.session===sess){ return '<span style="display:inline-block;background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;font-family:\'Jost\',sans-serif;">'+label+' ✓</span>'; }
           return btn("rfAdminSetSession("+id+",'"+sess+"')",'#f4ecdd','#e0cfae','#7a5a2a','→ '+label);
         }
-        var timeBtn = timeOpt('bk12','12 PM') + timeOpt('bk1','1 PM') + timeOpt('bk2','2 PM');
-        var confirmBtn = btn('rfBkAdminConfirm('+id+')','#e8f5e9','#a5d6a7','#2e7d32','\u{1F4E7} Confirm + email');
+        var timeBtn = timeOpt('n12','12 PM') + timeOpt('n1','1 PM') + timeOpt('n2','2 PM') + timeOpt('n3','3 PM');
+        var confirmBtn = btn('rfN21AdminConfirm('+id+')','#e8f5e9','#a5d6a7','#2e7d32','\u{1F4E7} Confirm + email');
         var editBtn = btn('rfAdminEdit('+id+')','#eef4fb','#b5d4f4','#185fa5','✏\u{FE0F} Edit');
         var removeBtn = btn('rfAdminRemove('+id+')','#fdecea','#f5c6c2','var(--red)','\u{1F5D1} Remove');
         var archiveBtn = btn('rfAdminArchive('+id+')','#eceae4','#d3ccbd','#6b6357','\u{1F5C4}\u{FE0F} Archive');
@@ -16046,9 +16063,74 @@ document.addEventListener('DOMContentLoaded', function() {
     var when=''; try { when = rec.created_at ? new Date(rec.created_at).toLocaleString() : ''; } catch(e){}
     emailjs.send(EMAILJS_SERVICE_RESEND, RF_BK_TMPL_CONFIRM, {
       from_name: rec.name, to_email: rec.email,
+      event_date: RF_MAISON_DATE[rec.event] || '',
       arrival_time: sess.arrival, class_time: sess.time, calendar_url: sess.cal,
       receipt_amount: '$45.00',
       receipt_code: 'RKBK-' + rec.id,
+      receipt_signed_as: rec.signature || rec.name,
+      receipt_signed_at: when,
+      refund_policy_ack_at: when,
+      refund_policy_text: rec.refund_policy_text || window.__RF_REFUND_TEXT || 'All sales are final — no cash refunds. Cancel at least 48 hours before your session start time for a credit valid 6 months.'
+    }).then(function(){ alert('✅ Confirmation sent to '+rec.email); }, function(){ alert('⚠️ Could not send. Check EmailJS dashboard.'); });
+    supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: true })
+      .then(function(){ rfRefresh(); }, function(){});
+  };
+  // Oct 10 Brooklyn confirmation — its own template and its own session metadata.
+  // Kept separate from the Brooklyn one on purpose: sharing it would send this
+  // guest a September date, and an unknown session would fall back to
+  // September's 12 PM.
+  window.rfO10AdminConfirm = function(id){
+    var rec = rfRosterById[id]; if(!rec){ return; }
+    if(!rec.email){ alert('No email on file for this registration.'); return; }
+    if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
+    if(RF_O10_TMPL_CONFIRM.indexOf('REPLACE')!==-1){
+      alert('No confirmation template for Oct 10 Brooklyn yet.\n\nCreate one in EmailJS from '
+          + 'RIDDIM_KOMPA_OCT10_CONFIRMATION_TEMPLATE.html, then put its id in RF_O10_TMPL_CONFIRM.\n\n'
+          + 'Nothing was sent — sending the Brooklyn one would give them the September date.');
+      return;
+    }
+    var sess = RF_ADMIN_SESS[rec.session];
+    if(!sess){ alert('Unknown session “'+rec.session+'” — not sending, rather than guessing a time.'); return; }
+    if(!confirm('Send the Oct 10 Brooklyn confirmation email to '+rec.name+' ('+rec.email+') and mark them paid?')) return;
+    var when=''; try { when = rec.created_at ? new Date(rec.created_at).toLocaleString() : ''; } catch(e){}
+    emailjs.send(EMAILJS_SERVICE_RESEND, RF_O10_TMPL_CONFIRM, {
+      from_name: rec.name, to_email: rec.email,
+      event_date: RF_MAISON_DATE[rec.event] || '',
+      arrival_time: sess.arrival, class_time: sess.time, calendar_url: sess.cal,
+      receipt_amount: '$45.00',
+      receipt_code: 'RKO10-' + rec.id,
+      receipt_signed_as: rec.signature || rec.name,
+      receipt_signed_at: when,
+      refund_policy_ack_at: when,
+      refund_policy_text: rec.refund_policy_text || window.__RF_REFUND_TEXT || 'All sales are final — no cash refunds. Cancel at least 48 hours before your session start time for a credit valid 6 months.'
+    }).then(function(){ alert('✅ Confirmation sent to '+rec.email); }, function(){ alert('⚠️ Could not send. Check EmailJS dashboard.'); });
+    supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: true })
+      .then(function(){ rfRefresh(); }, function(){});
+  };
+  // Nov 21 Brooklyn confirmation — its own template and its own session metadata.
+  // Kept separate from the Brooklyn one on purpose: sharing it would send this
+  // guest a September date, and an unknown session would fall back to
+  // September's 12 PM.
+  window.rfN21AdminConfirm = function(id){
+    var rec = rfRosterById[id]; if(!rec){ return; }
+    if(!rec.email){ alert('No email on file for this registration.'); return; }
+    if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
+    if(RF_N21_TMPL_CONFIRM.indexOf('REPLACE')!==-1){
+      alert('No confirmation template for Nov 21 Brooklyn yet.\n\nCreate one in EmailJS from '
+          + 'RIDDIM_KOMPA_NOV21_CONFIRMATION_TEMPLATE.html, then put its id in RF_N21_TMPL_CONFIRM.\n\n'
+          + 'Nothing was sent — sending the Brooklyn one would give them the September date.');
+      return;
+    }
+    var sess = RF_ADMIN_SESS[rec.session];
+    if(!sess){ alert('Unknown session “'+rec.session+'” — not sending, rather than guessing a time.'); return; }
+    if(!confirm('Send the Nov 21 Brooklyn confirmation email to '+rec.name+' ('+rec.email+') and mark them paid?')) return;
+    var when=''; try { when = rec.created_at ? new Date(rec.created_at).toLocaleString() : ''; } catch(e){}
+    emailjs.send(EMAILJS_SERVICE_RESEND, RF_N21_TMPL_CONFIRM, {
+      from_name: rec.name, to_email: rec.email,
+      event_date: RF_MAISON_DATE[rec.event] || '',
+      arrival_time: sess.arrival, class_time: sess.time, calendar_url: sess.cal,
+      receipt_amount: '$45.00',
+      receipt_code: 'RKN21-' + rec.id,
       receipt_signed_as: rec.signature || rec.name,
       receipt_signed_at: when,
       refund_policy_ack_at: when,
