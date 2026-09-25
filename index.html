@@ -1785,6 +1785,20 @@
     .bq-event:hover .bq-event-photo img { transform: scale(1.04); }
     .bq-event:hover .bq-event-link { gap: .85rem; color: var(--gold-text); }
 
+    /* Every card reserves the donor banner's space whether or not that event
+       has donors, so the flyers line up across a row instead of the donor
+       cards sitting lower than their neighbours. */
+    .bq-event .bq-donor-slot {
+      min-height: 1.85rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* And the CTA sits at the bottom, so a card whose blurb runs to an extra
+       line still ends level with the rest of its row. */
+    .bq-event .bq-event-link { margin-top: auto; }
+
     .bq-event-photo {
       width: 100%;
       aspect-ratio: 2 / 3;
@@ -3075,6 +3089,7 @@
 
       <!-- Pilates x Niara -->
       <button type="button" id="event-card-pilates" class="bq-event scroll-reveal" data-event-date="2026-06-19" data-event-name="Pilates x Niara" data-location="manhattan">
+        <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
         <div class="bq-event-photo">
           <picture>
             <source srcset="flyer.webp" type="image/webp">
@@ -3092,6 +3107,7 @@
 
       <!-- Mat & Chat -->
       <button type="button" id="event-card-matchat" class="bq-event scroll-reveal" data-event-date="2026-08-01" data-event-name="Mat &amp; Chat" data-reg-opens="2026-07-01" data-location="manhattan">
+        <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
         <div class="bq-event-photo">
           <picture>
             <source srcset="flyer2.webp?v=3" type="image/webp">
@@ -3114,6 +3130,7 @@
 
       <!-- Create & Recharge -->
       <button type="button" id="event-card-recharge" class="bq-event scroll-reveal" data-event-date="2026-08-15" data-event-name="Create &amp; Recharge" data-reg-opens="2026-07-15" data-past="true" data-location="manhattan">
+        <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
         <div class="bq-event-photo">
           <picture>
             <source srcset="recharge-flyer.webp?v=3" type="image/webp">
@@ -3135,6 +3152,7 @@
 
       <!-- Reformer Pilates — Sept 13. Opens a time-picker overlay with Stripe buy buttons. -->
       <button type="button" id="event-card-reformer" class="bq-event scroll-reveal" data-event-date="2026-09-13" data-event-name="Reformer Pilates" data-location="long-island" data-riddim="true" data-soldout="true">
+        <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
         <div class="bq-event-photo">
           <img src="reformer-flier-sept13.png?v=5" alt="Riddim &amp; Kompa on the Reformer &#8212; Sunday, September 13th at Valley Studio, West Hempstead, NY &#183; 1, 2 &amp; 3 PM &#183; $45, complimentary goodie bag" loading="lazy" decoding="async">
           <div class="bq-event-status" aria-hidden="true">Sold Out</div>
@@ -3149,6 +3167,7 @@
 
       <!-- Riddim & Kompa on the Reformer — Brooklyn, Sept 26. Opens the Brooklyn booking overlay. -->
       <button type="button" id="event-card-reformer-bk" class="bq-event scroll-reveal" data-event-date="2026-09-26" data-event-name="Riddim &amp; Kompa &#8212; Brooklyn" data-location="brooklyn" data-riddim="true" data-soldout="true">
+        <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
         <div class="bq-event-photo">
           <img src="riddim-kompa-brooklyn-flyer.jpg?v=3" alt="Riddim &amp; Kompa on the Reformer &#8212; Brooklyn. Saturday, September 26 at Maison Luxe Wellness Pilates, Brooklyn NY &#183; three sessions (12, 1 &amp; 2 PM) &#183; $45, complimentary goodie bag" loading="lazy" decoding="async">
         </div>
@@ -3164,6 +3183,7 @@
            AURIC_DRAFT_EVENTS. Uses the interest-list art for now; swap in a
            real flyer before publishing. -->
       <button type="button" id="event-card-reformer-o10" class="bq-event scroll-reveal" style="display:none;" data-draft-event="riddim-kompa-brooklyn-2026-10-10" data-event-date="2026-10-10" data-event-name="Riddim &amp; Kompa &#8212; Brooklyn, Oct 10" data-location="brooklyn" data-riddim="true">
+        <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
         <div class="bq-event-photo">
           <img src="riddim-interest-card.jpg?v=1" alt="Riddim &amp; Kompa on the Reformer &#8212; Brooklyn. Saturday, October 10 at Maison Luxe Wellness Pilates, Brooklyn NY &#183; four sessions (12, 1, 2 &amp; 3 PM) &#183; $45, complimentary goodie bag" loading="lazy" decoding="async">
         </div>
@@ -3177,6 +3197,7 @@
       <!-- ══ DRAFT — Riddim & Kompa, Brooklyn, Nov 21. Not announced. ══
            Note: Pre-Turkey Burn is already on Nov 21 at Valley Studio. -->
       <button type="button" id="event-card-reformer-n21" class="bq-event scroll-reveal" style="display:none;" data-draft-event="riddim-kompa-brooklyn-2026-11-21" data-event-date="2026-11-21" data-event-name="Riddim &amp; Kompa &#8212; Brooklyn, Nov 21" data-location="brooklyn" data-riddim="true">
+        <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
         <div class="bq-event-photo">
           <img src="riddim-interest-card.jpg?v=1" alt="Riddim &amp; Kompa on the Reformer &#8212; Brooklyn. Saturday, November 21 at Maison Luxe Wellness Pilates, Brooklyn NY &#183; four sessions (12, 1, 2 &amp; 3 PM) &#183; $45, complimentary goodie bag" loading="lazy" decoding="async">
         </div>
@@ -3189,6 +3210,7 @@
 
       <!-- Halloween — Shhh… Quiet on the Creek — Oct 24, Valley Studio. Opens the Halloween booking overlay. -->
       <button type="button" id="event-card-halloween" class="bq-event scroll-reveal" data-event-date="2026-10-24" data-event-name="Halloween Reformer Pilates" data-location="long-island">
+        <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
         <div class="bq-event-photo">
           <img src="halloween-creek-flyer.jpg?v=2" alt="Halloween Reformer Pilates &#8212; Shhh&hellip; Quiet on the Creek. Saturday, October 24 at Valley Studio, West Hempstead NY &#183; two sessions (12:30 &amp; 1:30 PM) &#183; $45, costumes encouraged" loading="lazy" decoding="async">
         </div>
@@ -3202,6 +3224,7 @@
 
       <!-- Turkey Burn! — Nov 21, Valley Studio. Opens the Turkey Burn booking overlay. -->
       <button type="button" id="event-card-turkey" class="bq-event scroll-reveal" data-event-date="2026-11-21" data-event-name="Pre-Turkey Burn" data-location="long-island">
+        <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
         <div class="bq-event-photo">
           <img src="turkey-burn-flyer.jpg?v=3" alt="Pre-Turkey Burn on the Reformer &#8212; Saturday, November 21 at Valley Studio, West Hempstead NY &#183; two sessions (12:30 &amp; 1:30 PM) &#183; $45" loading="lazy" decoding="async">
         </div>
@@ -3215,6 +3238,7 @@
 
       <!-- Post-Turkey Burn — Nov 28, Valley Studio. Opens the Post-Turkey Burn booking overlay. -->
       <button type="button" id="event-card-turkey28" class="bq-event scroll-reveal" data-event-date="2026-11-28" data-event-name="Post-Turkey Burn" data-location="long-island">
+        <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
         <div class="bq-event-photo">
           <img src="post-turkey-burn-flyer.png?v=1" alt="Post-Turkey Burn on the Reformer &#8212; Saturday, November 28 at Valley Studio, West Hempstead NY &#183; 12:30 PM &#183; $45" loading="lazy" decoding="async">
         </div>
@@ -3228,6 +3252,7 @@
 
       <!-- Something's Blooming — Dec 13, Long Island. Interest list → /blooming -->
       <a href="/blooming" id="event-card-blooming" class="bq-event scroll-reveal" data-event-date="2026-12-13" data-event-name="Something&#8217;s Blooming" data-location="long-island">
+        <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
         <div class="bq-event-photo">
           <img src="blooming-flyer.png?v=1" alt="Something&rsquo;s Blooming &#8212; Saturday, December 13th, Long Island" loading="lazy" decoding="async" style="object-position:center 20%;">
         </div>
@@ -3239,6 +3264,7 @@
 
       <!-- Riddim & Kompa — next-date interest (join the list) -->
       <a href="/riddim-interest" id="event-card-riddim-interest" class="bq-event scroll-reveal" data-event-name="Riddim &amp; Kompa — Next Date" data-location="all" data-riddim="true">
+        <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
         <div class="bq-event-photo">
           <img src="riddim-interest-card.jpg?v=1" alt="Riddim &amp; Kompa on the Reformer is coming back — join the early list for the next date" loading="lazy" decoding="async">
         </div>
@@ -3250,6 +3276,7 @@
 
       <!-- AURIC MVMT bag — reserve yours (no payment) -->
       <a href="/reserve-bag" id="event-card-bag-reserve" class="bq-event scroll-reveal" data-event-name="AURIC MVMT Bag — Reserve" data-location="all">
+        <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
         <div class="bq-event-photo">
           <img src="auric-bag.jpg?v=1" alt="The AURIC MVMT bag — matte, made to move from reformer to real life" loading="lazy" decoding="async">
         </div>
@@ -5741,7 +5768,7 @@
             // 1) Events-tab card (matches .bq-event)
             if(eventsWrap){
               var b=document.createElement('button'); b.type='button'; b.className='bq-event scroll-reveal'; b.setAttribute('data-custom-event','1');
-              b.innerHTML='<div class="bq-event-photo">'+(flyer?'<img src="'+esc(flyer)+'" alt="'+esc(ev.title)+'" style="object-fit:cover;" loading="lazy">':'')+'</div>'+
+              b.innerHTML='<div data-donor-badge-wrap="1" class="bq-donor-slot"></div><div class="bq-event-photo">'+(flyer?'<img src="'+esc(flyer)+'" alt="'+esc(ev.title)+'" style="object-fit:cover;" loading="lazy">':'')+'</div>'+
                 '<div class="bq-event-date">'+(ev.event_date?esc(fmtShort(ev.event_date))+' &middot; ':'')+esc(ev.title)+'</div>'+
                 '<div class="bq-event-name">'+esc(ev.title)+'</div>'+
                 (loc?'<div class="bq-event-loc">'+esc(loc)+'</div>':'')+
@@ -9467,9 +9494,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Rose/blush gradient — sits ABOVE the flyer as a prominent banner
     return '<span style="display:inline-block;background:linear-gradient(135deg,#d4716e,#e8a294);color:#fff;font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:.4rem .9rem;border-radius:16px;box-shadow:0 2px 8px rgba(212,113,110,.3);">\u{1F381} Donor Supported</span>';
   }
-  function donorBadgeWrapperHTML(badgeHTML) {
-    // Wrapper centers the badge above the flyer with proper spacing
-    return '<div data-donor-badge-wrap="1" style="text-align:center;margin-bottom:1rem;">' + badgeHTML + '</div>';
+  // Give every card the same empty banner slot above its flyer. Without this
+  // a card with donors starts its flyer ~43px lower than the card beside it.
+  function ensureDonorSlots() {
+    Array.prototype.forEach.call(document.querySelectorAll('.bq-event'), function(card){
+      if (card.querySelector('[data-donor-badge-wrap]')) return;
+      var photo = card.querySelector('.bq-event-photo');
+      if (photo) photo.insertAdjacentHTML('beforebegin',
+        '<div data-donor-badge-wrap="1" class="bq-donor-slot"></div>');
+    });
   }
 
   // Parse donor string (comma-separated) into trimmed array of company names
@@ -9479,6 +9512,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function applyEventBadges() {
+    ensureDonorSlots();
     getEventConfig(function(cfg){
       var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat', recharge: 'event-card-recharge', reformer: 'event-card-reformer', 'reformer-bk': 'event-card-reformer-bk', halloween: 'event-card-halloween', turkey: ['event-card-turkey','event-card-turkey28'], blooming: 'event-card-blooming' };
       Object.keys(cards).forEach(function(key){
@@ -9495,7 +9529,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var existingDonor = card.querySelector('span[data-donor-badge]');
         if (existingDonor) existingDonor.remove();
         var existingDonorWrap = card.querySelector('div[data-donor-badge-wrap]');
-        if (existingDonorWrap) existingDonorWrap.remove();
+        if (existingDonorWrap) existingDonorWrap.innerHTML = '';
         var existingThanks = card.querySelector('div[data-donor-thanks]');
         if (existingThanks) existingThanks.remove();
 
@@ -9507,11 +9541,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Donor badge (ABOVE the flyer — centered banner) + "With thanks to" line
         var donors = parseDonors(cfg[key] && cfg[key].donors);
         if (donors.length) {
-          if (photo) {
-            var donorHTML = donorBadgeHTML().replace('<span ', '<span data-donor-badge="1" ');
-            // Insert wrapper BEFORE the photo (above the flyer)
-            photo.insertAdjacentHTML('beforebegin', donorBadgeWrapperHTML(donorHTML));
-          }
+          var slot = card.querySelector('[data-donor-badge-wrap]');
+          if (slot) slot.innerHTML = donorBadgeHTML().replace('<span ', '<span data-donor-badge="1" ');
           var sub = card.querySelector('.bq-event-sub');
           if (sub) {
             var thanks = document.createElement('div');
