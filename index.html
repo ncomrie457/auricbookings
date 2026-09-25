@@ -3224,7 +3224,7 @@
       </button>
 
       <!-- Turkey Burn! — Nov 21, Valley Studio. Opens the Turkey Burn booking overlay. -->
-      <button type="button" id="event-card-turkey" class="bq-event scroll-reveal" data-event-date="2026-11-21" data-event-name="Pre-Turkey Burn" data-location="long-island">
+      <button type="button" id="event-card-turkey" class="bq-event scroll-reveal" style="display:none;" data-draft-event="turkey-burn-2026-11-21" data-event-date="2026-11-21" data-event-name="Pre-Turkey Burn" data-location="long-island">
         <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
         <div class="bq-event-photo">
           <img src="turkey-burn-flyer.jpg?v=3" alt="Pre-Turkey Burn on the Reformer &#8212; Saturday, November 21 at Valley Studio, West Hempstead NY &#183; two sessions (12:30 &amp; 1:30 PM) &#183; $45" loading="lazy" decoding="async">
@@ -6578,7 +6578,10 @@ Can't wait to move and connect with you!</textarea>
        book.auricmovement.com/?book=reformer-o10&preview=1
      Preview mode is per-visit and never linked from anywhere public.        */
   window.AURIC_DRAFT_EVENTS = {
-    // Nothing is drafted right now. Add an event id here to hide it again.
+    // Pre-Turkey Burn is off the site while its date is decided — Nov 21 now
+    // has Riddim & Kompa in Brooklyn. Delete this line to put it back, or
+    // change the date first and then delete it.
+    'turkey-burn-2026-11-21': true
   };
   window.auricIsDraft = function(ev){
     return !!(window.AURIC_DRAFT_EVENTS && window.AURIC_DRAFT_EVENTS[ev]);
@@ -7015,9 +7018,11 @@ document.addEventListener('DOMContentLoaded', function(){
   var chosen=null, chosenLabel='';
   var o10Sig=window.AuricSigPad(document.getElementById('rfo10-sigpad'), document.getElementById('rfo10-sig-clear'));
 
-  function openOv(){
+  // `force` is for someone returning from Stripe: they have already paid, so
+  // the draft gate must not leave them staring at a blank page.
+  function openOv(force){
     // Not announced yet: only a preview link gets in.
-    if(window.auricDraftHidden && window.auricDraftHidden(RKO10_EVENT)) return;
+    if(!force && window.auricDraftHidden && window.auricDraftHidden(RKO10_EVENT)) return;
     ov.style.display='flex'; document.body.style.overflow='hidden'; applyCap();
   }
   function closeOv(){ ov.style.display='none'; document.body.style.overflow=''; }
@@ -7148,7 +7153,7 @@ document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('rfo10-conf-cal').innerHTML=window.auricCalButtons(m.cal);
     stepTime.style.display='none'; stepForm.style.display='none'; stepPay.style.display='none';
     document.getElementById('rfo10-step-confirmed').style.display='';
-    openOv();
+    openOv(true);
     try { var arr=JSON.parse(localStorage.getItem('auric_reformer_o10')||'[]'); if(arr.length){ arr[arr.length-1].is_paid=true; localStorage.setItem('auric_reformer_o10', JSON.stringify(arr)); } } catch(e){}
   }
   try { var _bp=new URLSearchParams(location.search); if(_bp.get('paid')==='reformer-o10'){ var _bs=_bp.get('s'); if(!RFO10_CONF[_bs]) _bs='o12'; setTimeout(function(){ rfo10ShowConfirmed(_bs); }, 300); } } catch(e){}
@@ -7272,9 +7277,11 @@ document.addEventListener('DOMContentLoaded', function(){
   var chosen=null, chosenLabel='';
   var n21Sig=window.AuricSigPad(document.getElementById('rfn21-sigpad'), document.getElementById('rfn21-sig-clear'));
 
-  function openOv(){
+  // `force` is for someone returning from Stripe: they have already paid, so
+  // the draft gate must not leave them staring at a blank page.
+  function openOv(force){
     // Not announced yet: only a preview link gets in.
-    if(window.auricDraftHidden && window.auricDraftHidden(RKN21_EVENT)) return;
+    if(!force && window.auricDraftHidden && window.auricDraftHidden(RKN21_EVENT)) return;
     ov.style.display='flex'; document.body.style.overflow='hidden'; applyCap();
   }
   function closeOv(){ ov.style.display='none'; document.body.style.overflow=''; }
@@ -7405,7 +7412,7 @@ document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('rfn21-conf-cal').innerHTML=window.auricCalButtons(m.cal);
     stepTime.style.display='none'; stepForm.style.display='none'; stepPay.style.display='none';
     document.getElementById('rfn21-step-confirmed').style.display='';
-    openOv();
+    openOv(true);
     try { var arr=JSON.parse(localStorage.getItem('auric_reformer_n21')||'[]'); if(arr.length){ arr[arr.length-1].is_paid=true; localStorage.setItem('auric_reformer_n21', JSON.stringify(arr)); } } catch(e){}
   }
   try { var _bp=new URLSearchParams(location.search); if(_bp.get('paid')==='reformer-n21'){ var _bs=_bp.get('s'); if(!RFN21_CONF[_bs]) _bs='n12'; setTimeout(function(){ rfn21ShowConfirmed(_bs); }, 300); } } catch(e){}
@@ -7547,7 +7554,13 @@ document.addEventListener('DOMContentLoaded', function(){
   var chosen=null, chosenLabel='';
   var tbSig=window.AuricSigPad(document.getElementById('tb-sigpad'), document.getElementById('tb-sig-clear'));
 
-  function openOv(){ ov.style.display='flex'; document.body.style.overflow='hidden'; applyCap(); }
+  // `force` is for someone returning from Stripe: they have already paid, so
+  // the draft gate must not leave them staring at a blank page.
+  function openOv(force){
+    // Off the site while the date is being changed.
+    if(!force && window.auricDraftHidden && window.auricDraftHidden(TB_EVENT)) return;
+    ov.style.display='flex'; document.body.style.overflow='hidden'; applyCap();
+  }
   function closeOv(){ ov.style.display='none'; document.body.style.overflow=''; }
   card.addEventListener('click', openOv);
   document.getElementById('turkey-close').addEventListener('click', closeOv);
@@ -7653,7 +7666,7 @@ document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('tb-conf-cal').innerHTML=window.auricCalButtons(m.cal);
     stepTime.style.display='none'; stepForm.style.display='none'; stepPay.style.display='none';
     document.getElementById('tb-step-confirmed').style.display='';
-    openOv();
+    openOv(true);
     try { var arr=JSON.parse(localStorage.getItem('auric_turkey_burn')||'[]'); if(arr.length){ arr[arr.length-1].is_paid=true; localStorage.setItem('auric_turkey_burn', JSON.stringify(arr)); } } catch(e){}
   }
   try { var _tp=new URLSearchParams(location.search); if(_tp.get('paid')==='turkey'){ var _ts=_tp.get('s'); if(!TB_CONF[_ts]) _ts='tb1230'; setTimeout(function(){ tbShowConfirmed(_ts); }, 300); } } catch(e){}
