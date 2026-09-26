@@ -15,8 +15,19 @@
 
    Variables (sent by the admin "Send Custom Reminder" tool):
      {{from_name}} {{to_email}} {{session_label}} {{event_date}}
-     {{arrival_time}} {{class_time}} {{greeting}} {{days_text}} {{custom_message}}
+     {{arrival_time}} {{class_time}} {{greeting}} {{days_text}}
      {{{question_block}}}   ← the whole highlighted prompt box (raw HTML; empty = omitted)
+     {{{message_body}}}     ← the message you typed, with any link made clickable
+     {{{link_block}}}       ← the optional button (raw HTML; empty = omitted)
+
+   NOTE ON THE TRIPLE BRACES: {{{ }}} tells Mustache to leave the HTML alone.
+   Written as {{message_body}} the <a> tags would be escaped and your guests
+   would see the markup instead of a link. The panel escapes anything typed
+   into the box before it builds the HTML, so this is safe.
+
+   {{custom_message}} still arrives too — the same text, plain, with no links.
+   It is what this template used before and is kept only so an older copy of
+   the template keeps working. Use {{{message_body}}}.
 
    Palette: cream #fffaf0/#fffdfa · brown #5A3A1A · gold #a9853f / #9a6535
   ════════════════════════════════════════════════════════════
@@ -67,14 +78,18 @@
         </table>
       </td></tr>
 
-      <!-- Editable message from the admin panel -->
+      <!-- Editable message from the admin panel. Any link in it arrives as a
+           real <a> tag, so it must NOT be escaped — hence the triple braces. -->
       <tr><td style="padding:0 40px 28px;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f3ece0;border-left:3px solid #7a5326;border-radius:0 8px 8px 0;">
           <tr><td style="padding:18px 22px;">
-            <div style="font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.75;white-space:pre-line;">{{custom_message}}</div>
+            <div style="font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.75;white-space:pre-line;">{{{message_body}}}</div>
           </td></tr>
         </table>
       </td></tr>
+
+      <!-- Optional button, straight from the panel. Blank = this row vanishes. -->
+      {{{link_block}}}
 
       <!-- Closing -->
       <tr><td style="padding:0 40px 32px;">

@@ -26,7 +26,12 @@
      {{arrival_time}}  — e.g. 11:55 AM
      {{price}}         — e.g. $45
      {{book_url}}      — the Stripe link, or book.auricmovement.com
-     {{custom_message}} — optional extra line; leave blank if unused
+     {{{message_body}}} — the message you typed, with any link made clickable.
+                          TRIPLE braces: {{message_body}} would escape the <a>
+                          tags and show the markup instead of a link.
+                          ({{custom_message}} still arrives too — the same text,
+                          plain, no links. Kept only so an older copy of this
+                          template keeps working. Use {{{message_body}}}.)
   ════════════════════════════════════════════════════════════
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -97,10 +102,13 @@
           </td>
         </tr>
 
-        <!-- Anything extra Niara wants to add -->
+        <!-- Anything extra Niara wants to add. Triple braces: any link she
+             pastes arrives as a real <a> tag and must not be escaped.
+             pre-line keeps her paragraph breaks — without it the whole
+             message collapsed into one block. -->
         <tr>
           <td style="padding:22px 40px 0;">
-            <p style="font-family:Georgia, serif;font-size:15px;line-height:1.7;color:#2c2420;margin:0;">{{custom_message}}</p>
+            <p style="font-family:Georgia, serif;font-size:15px;line-height:1.7;color:#2c2420;margin:0;white-space:pre-line;">{{{message_body}}}</p>
           </td>
         </tr>
 

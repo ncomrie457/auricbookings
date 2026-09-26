@@ -5418,6 +5418,7 @@
       </div>
       <label for="wlc-msg" class="au-label">Message</label>
       <textarea id="wlc-msg" rows="7" style="width:100%;padding:.6rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.82rem;line-height:1.6;resize:vertical;"></textarea>
+      <p class="au-meta" style="margin-top:.25rem;font-style:italic;">Paste a link anywhere in here and it arrives clickable. The email already carries a &ldquo;Claim the spot&rdquo; button to the booking form.</p>
       <p style="font-size:.72rem;color:var(--text-muted);margin:.4rem 0 .8rem;line-height:1.5;">Their first name, the event date and the session time are added automatically &mdash; just write the body.</p>
       <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;">
         <button type="button" id="wlc-send" onclick="wlcSend(this)" style="background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:10px;padding:.5rem 1rem;font-size:.82rem;cursor:pointer;font-family:'Jost',sans-serif;font-weight:600;">&#128233; Send to waitlist</button>
@@ -6030,6 +6031,16 @@ Location: The Fitin &middot; 297 7th Ave, Floor 3, New York, NY 10001
 Please arrive on time &mdash; class begins promptly with a 5-minute grace period only, and late arrivals can't be admitted.
 
 Can't wait to move and connect with you!</textarea>
+        <p style="font-size:.72rem;color:var(--text-muted);margin-top:.25rem;font-style:italic;">Paste a link anywhere in here and it arrives clickable &mdash; web addresses and email addresses both.</p>
+      </div>
+
+      <!-- Optional button. A bare link in the message is clickable, but a
+           button is what people actually press, so offer both. -->
+      <div style="margin-bottom:.85rem;padding-top:.75rem;border-top:1px dashed var(--border);">
+        <label for="admin-flex-reminder-link-text" class="au-label">Button <span style="font-weight:400;color:var(--text-muted);">(optional &mdash; leave both blank for no button)</span></label>
+        <input type="text" id="admin-flex-reminder-link-text" placeholder="Words on the button (e.g., Add it to your calendar)" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.82rem;box-sizing:border-box;background:#fff;color:#3d322a;margin-bottom:.4rem;">
+        <input type="text" id="admin-flex-reminder-link-url" placeholder="Where it goes (e.g., book.auricmovement.com/calendar/add/)" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.82rem;box-sizing:border-box;background:#fff;color:#3d322a;">
+        <p style="font-size:.72rem;color:var(--text-muted);margin-top:.25rem;font-style:italic;">Sits under the message, styled like the buttons in the other emails. https:// is added for you if you leave it off.</p>
       </div>
 
       <!-- Question box (highlighted reflection prompt) -->
@@ -12084,7 +12095,9 @@ document.addEventListener('DOMContentLoaded', function() {
       days:      'admin-flex-reminder-days',
       qEyebrow:  'admin-flex-reminder-question-eyebrow',
       qQuestion: 'admin-flex-reminder-question',
-      qSub:      'admin-flex-reminder-question-sub'
+      qSub:      'admin-flex-reminder-question-sub',
+      linkText:  'admin-flex-reminder-link-text',
+      linkUrl:   'admin-flex-reminder-link-url'
     };
     function el(id){ return document.getElementById(id); }
     function key(ev){ return 'auric_reminder_draft_' + ev; }
@@ -12358,6 +12371,46 @@ document.addEventListener('DOMContentLoaded', function() {
   // every page view.
   document.getElementById('admin-flex-reminder-event').addEventListener('change', rfReminderAudit);
 
+  // ── Make a pasted link clickable ─────────────────────────────────────
+  // A URL typed into a free-text box arrives in the email as plain text.
+  // Some clients guess and auto-link it; Outlook often doesn't, so the
+  // recipient sees the address and can't click it. This turns the text into
+  // HTML with real <a> tags, and is sent through a triple-brace variable
+  // ({{{message_body}}}) so Mustache passes the tags through.
+  //
+  // Newlines are left alone — the template's message box uses
+  // white-space:pre-line and renders them itself.
+  window.auricLinkify = function(text){
+    var raw = (text == null ? '' : String(text));
+    function esc(s){ var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    function a(href, label){
+      return '<a href="' + esc(href) + '" style="color:#9a6535;text-decoration:underline;">'
+           + esc(label) + '</a>';
+    }
+    // Find the links in the RAW text and escape each piece as it is emitted.
+    // Doing it in that order matters: escaping first turns < and " into &lt;
+    // and &quot;, which no longer stop a URL, so a link typed next to an angle
+    // bracket would swallow the escaped markup into its href.
+    var RE = /(https?:\/\/[^\s<>"']+)|(www\.[^\s<>"']+)|([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})/g;
+    var out = '', last = 0, m;
+    while ((m = RE.exec(raw)) !== null){
+      var token = m[0], start = m.index;
+      // A bare www. only counts at the start of a word, so "x.www.y" is left be.
+      // Skipping without moving `last` means the text is emitted as plain text
+      // by the next slice, so nothing is lost.
+      if (m[2] && start > 0 && !/[\s(]/.test(raw.charAt(start - 1))) continue;
+      // Trailing punctuation is sentence punctuation, not part of the address:
+      // "book at book.auricmovement.com." must not link the full stop. The email
+      // pattern already ends on a letter, so it needs no trimming.
+      var tail = m[3] ? null : token.match(/[.,;:!?)\]]+$/);
+      if (tail) token = token.slice(0, -tail[0].length);
+      var href = m[1] ? token : m[2] ? 'https://' + token : 'mailto:' + token;
+      out += esc(raw.slice(last, start)) + a(href, token) + (tail ? esc(tail[0]) : '');
+      last = start + m[0].length;
+    }
+    return out + esc(raw.slice(last));
+  };
+
   document.getElementById('admin-flex-reminder-send').addEventListener('click', function(){
     var eventType = document.getElementById('admin-flex-reminder-event').value;
     var days = parseInt(document.getElementById('admin-flex-reminder-days').value, 10) || 0;
@@ -12378,6 +12431,24 @@ document.addEventListener('DOMContentLoaded', function() {
       + '<p style="font-family:\'Cormorant Garamond\',Georgia,serif;font-style:italic;font-size:24px;line-height:1.35;color:#5A3A1A;margin:0 0 10px 0;">'+esc(qQuestion)+'</p>'
       + (qSub ? '<p style="font-family:Georgia,serif;font-size:13px;line-height:1.6;color:#8a7a5f;margin:0;">'+esc(qSub)+'</p>' : '')
       + '</td></tr></table></td></tr>'
+    ) : '';
+    // An optional button, for when a bare link in the message isn't enough.
+    // Both fields or neither — a button with no destination is a dead end, and
+    // a destination with no words on it is a mystery.
+    var linkText = (document.getElementById('admin-flex-reminder-link-text').value || '').trim();
+    var linkUrl  = (document.getElementById('admin-flex-reminder-link-url').value || '').trim();
+    if (linkUrl && !/^(https?:\/\/|mailto:|tel:)/i.test(linkUrl)) linkUrl = 'https://' + linkUrl;
+    if (linkUrl && !linkText) linkText = 'Open the link';
+    if (linkText && !linkUrl){
+      alert('The button has words on it but nowhere to go.\n\nPaste the link into "Button link", or clear the button text.');
+      return;
+    }
+    var linkBlock = linkUrl ? (
+      '<tr><td align="center" style="padding:0 40px 28px;">'
+      + '<a href="' + esc(linkUrl) + '" style="display:inline-block;background-color:#5A3A1A;color:#ffffff;'
+      + 'font-family:Georgia,serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;'
+      + 'text-decoration:none;padding:14px 30px;border-radius:999px;">' + esc(linkText) + ' &rarr;</a>'
+      + '</td></tr>'
     ) : '';
     var phrasing = getReminderPhrasing(days);
     var greeting = customGreeting || phrasing.greeting;
@@ -12532,7 +12603,12 @@ document.addEventListener('DOMContentLoaded', function() {
           question_block: questionBlock,
           greeting:      greeting,
           days_text:     daysText,
-          custom_message: customMessage
+          // The plain text, for the template as it stands today, and the same
+          // text as HTML with live links, for the template once it's updated.
+          // Sending both means neither version of the template breaks.
+          custom_message: customMessage,
+          message_body:  window.auricLinkify(customMessage),
+          link_block:    linkBlock
         }).then(function(){
           sent++;
         }).catch(function(err){
@@ -15038,7 +15114,9 @@ document.addEventListener('DOMContentLoaded', function() {
         arrival_time:   sInfo.arrival || '',
         price:          ev.amount || '',
         book_url:       WL_BOOK_URL[dbEvent] || 'https://book.auricmovement.com',
-        custom_message: msg
+        // Plain for the template as it stands, linkified for the updated one.
+        custom_message: msg,
+        message_body:   window.auricLinkify(msg)
       }).then(function(){ sent++; }, function(err){
         failed++; failedList.push(r.email); console.error('[waitlist custom] failed for ' + r.email, err);
       }).then(function(){ setTimeout(function(){ next(i + 1); }, 700); });
