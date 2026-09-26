@@ -14854,12 +14854,24 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   // Build a "⏳ Waitlist" sub-block for one event (rows = full roster; filters type='waitlist').
   function rfWaitlistBlock(allRows, eventId){
-    var waits = (allRows||[]).filter(function(r){ return r.type==='waitlist' && r.event===eventId; });
+    var mine  = (allRows||[]).filter(function(r){ return r.type==='waitlist' && r.event===eventId; });
+    // An archived waitlister is out of the running: off this list, out of the
+    // count, and skipped by every waitlist email. Nothing is deleted — they sit
+    // in 🗄️ Archived and Unarchive puts them straight back here.
+    var waits  = mine.filter(function(r){ return !r.archived; });
+    var tucked = mine.length - waits.length;
     var wrap = document.createElement('div'); wrap.className='admin-session-block'; wrap.style.cssText='margin:.6rem 0 .2rem;padding:.5rem .6rem;background:#fffaf0;border:1px solid #f0e0bd;border-radius:10px;';
     var h=document.createElement('h3'); h.style.cssText='font-size:.72rem;color:#7a6320;margin:0 0 .3rem;';
-    h.textContent='⏳ Waitlist · '+waits.length+(waits.length===1?' person':' people');
+    h.textContent='⏳ Waitlist · '+waits.length+(waits.length===1?' person':' people')
+      + (tucked ? ' · '+tucked+' archived' : '');
     wrap.appendChild(h);
-    if(!waits.length){ var e=document.createElement('div'); e.style.cssText='font-size:.82rem;color:var(--text-muted);'; e.textContent='No one on the waitlist yet.'; wrap.appendChild(e); return wrap; }
+    if(!waits.length){
+      var e=document.createElement('div'); e.style.cssText='font-size:.82rem;color:var(--text-muted);';
+      e.textContent = tucked
+        ? ('No one waiting — the '+tucked+' who were are archived. Unarchive them from 🗄️ Archived to put them back.')
+        : 'No one on the waitlist yet.';
+      wrap.appendChild(e); return wrap;
+    }
     waits.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
     // Sept 13 only: one-click "email the waitlist that 3 PM opened".
     if(eventId==='riddim-kompa-reformer-2026-09-13'){
@@ -14873,9 +14885,12 @@ document.addEventListener('DOMContentLoaded', function() {
       rfRosterById[rec.id]=rec;
       var when=''; try{ when=rec.created_at?new Date(rec.created_at).toLocaleString():''; }catch(e){}
       var item=document.createElement('div'); item.className='admin-sub-item';
+      // Archive first, Remove second: archiving is the reversible one, so it is
+      // the one to reach for when someone is simply no longer waiting.
+      var ar='<button onclick="rfAdminArchive('+rec.id+')" style="background:#eceae4;border:1px solid #d3ccbd;color:#6b6357;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F5C4}\u{FE0F} Archive</button>';
       var rm='<button onclick="rfAdminRemove('+rec.id+')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F5D1} Remove</button>';
       item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> <span class="atype au-chip is-pending">waitlist</span><br><span class="aemail">'+escapeHTML(rec.email||'')+'</span></div>'+
-        '<div style="text-align:right"><span class="au-meta">'+escapeHTML(rec.session_label||rec.session||'')+'</span><br><span class="au-meta">'+escapeHTML(when)+'</span><br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;">'+rm+'</div></div>';
+        '<div style="text-align:right"><span class="au-meta">'+escapeHTML(rec.session_label||rec.session||'')+'</span><br><span class="au-meta">'+escapeHTML(when)+'</span><br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+ar+rm+'</div></div>';
       wrap.appendChild(item);
     });
     return wrap;
@@ -14917,6 +14932,7 @@ document.addEventListener('DOMContentLoaded', function() {
     Object.keys(rfRosterById).forEach(function(k){
       var r = rfRosterById[k];
       if (!r || r.type !== 'waitlist' || r.event !== dbEvent) return;
+      if (r.archived) return;   // archived waitlisters are off the list on purpose
       if (sess && sess !== '*' && r.session !== sess) return;
       if (!(r.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(r.email))) return;
       var e = r.email.toLowerCase(); if (seen[e]) return; seen[e] = 1;
@@ -15036,6 +15052,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var seen = {}, list = [];
     all.forEach(function(r){
       if(!r || r.type!=='waitlist' || r.event!==eventId) return;
+      if(r.archived) return;   // archived waitlisters are off the list on purpose
       if(!(r.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(r.email))) return;
       var e = r.email.toLowerCase(); if(seen[e]) return; seen[e]=1; list.push(r);
     });
@@ -15612,7 +15629,9 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch(e){ render([], true); }
   }
 
-  // ─── Archived reformer registrations (started signing up, didn't pay) ───
+  // ─── Archived reformer rows — anyone set aside without being deleted ───
+  // Usually someone who started signing up and never paid, but also credited
+  // and rescheduled bookings, and waitlisters who are no longer waiting.
   var rfArchivedContainer = null;
   var RF_EVENT_LABELS = {
     'riddim-kompa-reformer-2026-09-13':'Riddim & Kompa — Valley · Sep 13',
@@ -15663,7 +15682,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // leaves the row unpaid, and calling those people non-payers is wrong.
         var credit = rfArchiveCreditFor(rec);
         var attBadge;
-        if (rec.attendance==='noshow')            attBadge = ' <span class="atype" style="background:#fdecea;color:var(--red);">✗ No-show</span>';
+        // A waitlister never owed anything, so "never paid" would be a slur on
+        // them. Say what they actually were.
+        if (rec.type==='waitlist')               attBadge = ' <span class="atype" style="background:#fef9e7;color:#7a6320;">⏳ Was on the waitlist</span>';
+        else if (rec.attendance==='noshow')       attBadge = ' <span class="atype" style="background:#fdecea;color:var(--red);">✗ No-show</span>';
         else if (rec.attendance==='attended')     attBadge = ' <span class="atype au-chip is-paid">✓ Attended</span>';
         else if (rec.attendance==='credited' || credit){
           var amt = credit ? creditMoney(credit.amount) : '';
@@ -16015,12 +16037,19 @@ document.addEventListener('DOMContentLoaded', function() {
       .then(function(res){ if(res&&res.error){ alert('Could not remove — run the reformer admin SQL first.'); return; } rfRefresh(); },
             function(){ alert('Could not remove. Try again.'); });
   };
-  // Archive / unarchive — move someone who started signing up but didn't pay
-  // off the active roster (and out of the counts) without deleting them. They
-  // land in the "🗄️ Archived — didn't pay" section and can be brought back.
+  // Archive / unarchive — set someone aside without deleting them. A booking
+  // comes off the roster and out of the counts; a waitlister comes off the
+  // waitlist and out of the waitlist emails. Either way they land in
+  // 🗄️ Archived and Unarchive puts them back exactly where they were.
   window.rfAdminArchive = function(id){
     var rec = rfRosterById[id]; if(!rec){ return; }
-    if(!confirm('Archive '+(rec.name||'this registration')+'?\n\nThey’ll move to the Archived list and drop off the roster and counts. Nothing is deleted — you can unarchive them anytime.')) return;
+    var who = rec.name || 'this registration';
+    var what = (rec.type === 'waitlist')
+      // A waitlister isn't on a roster and isn't in a count, so say what
+      // archiving actually does for them: it stops the emails.
+      ? 'Archive '+who+' off the waitlist?\n\nThey’ll come off the waitlist and stop being included in waitlist emails. Nothing is deleted — you can unarchive them anytime.'
+      : 'Archive '+who+'?\n\nThey’ll move to the Archived list and drop off the roster and counts. Nothing is deleted — you can unarchive them anytime.';
+    if(!confirm(what)) return;
     supabase.rpc('reformer_archive', { pass: ADMIN_PASSWORD, rid: id, val: true })
       .then(function(res){ if(res&&res.error){ alert('Could not archive — run the reformer_archive SQL (REFORMER_ARCHIVE.sql) in Supabase first.'); return; } rfRefresh(); },
             function(){ alert('Could not archive. Try again.'); });
