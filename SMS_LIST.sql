@@ -37,6 +37,33 @@ comment on column public.reformer_registrations.sms_events is
   'True only if they ticked the box asking to hear about future events. '
   'This is the express written consent that promotional texts require.';
 
+-- 3) A setter, so a number someone sends back by email can be typed into the
+--    roster. reformer_edit() takes a fixed name/email pair and cannot carry
+--    this, so it gets its own — owner-only, like every other reformer write.
+--    Blank clears the number, which is how someone opts back out.
+create or replace function public.reformer_set_phone(
+  pass text,
+  rid  bigint,
+  val  text
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not public.is_owner() then
+    raise exception 'not authorized';
+  end if;
+
+  update public.reformer_registrations
+     set phone = nullif(btrim(coalesce(val, '')), '')
+   where id = rid;
+end;
+$$;
+
+revoke all on function public.reformer_set_phone(text, bigint, text) from public, anon;
+
 -- ─── Checks ──────────────────────────────────────────────────────────────
 
 -- 1) Did it land? Every existing row will read 0 for both — nobody has been
