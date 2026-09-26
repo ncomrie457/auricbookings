@@ -3203,7 +3203,7 @@
       </button>
 
       <!-- Riddim & Kompa on the Reformer — Brooklyn, Sept 26. Opens the Brooklyn booking overlay. -->
-      <button type="button" id="event-card-reformer-bk" class="bq-event scroll-reveal" data-event-id="riddim-kompa-brooklyn-2026-09-26" data-event-date="2026-09-26" data-event-name="Riddim &amp; Kompa &#8212; Brooklyn" data-location="brooklyn" data-riddim="true" data-soldout="true">
+      <button type="button" id="event-card-reformer-bk" class="bq-event scroll-reveal" data-event-id="riddim-kompa-brooklyn-2026-09-26" data-past="true" data-event-date="2026-09-26" data-event-name="Riddim &amp; Kompa &#8212; Brooklyn" data-location="brooklyn" data-riddim="true" data-soldout="true">
         <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
         <div class="bq-event-photo">
           <img src="riddim-kompa-brooklyn-flyer.jpg?v=3" alt="Riddim &amp; Kompa on the Reformer &#8212; Brooklyn. Saturday, September 26 at Maison Luxe Wellness Pilates, Brooklyn NY &#183; three sessions (12, 1 &amp; 2 PM) &#183; $45, complimentary goodie bag" loading="lazy" decoding="async">
@@ -3416,6 +3416,59 @@
     <div id="past-events-grid" style="display:none;margin-top:3rem;">
       <div id="past-events-empty" class="empty-state" style="grid-column:1/-1;">No past events yet &#8212; events appear here automatically after their date passes.</div>
     </div>
+    <script>
+      /* Fill the archive from the real event cards. This grid has always been
+         here and has never been filled, so every event that finished simply
+         vanished off the site. A card lands here when its date has passed, or
+         when it is marked data-past="true" by hand — which is how a date that
+         was rescheduled leaves Upcoming before its day arrives.
+
+         A rescheduled date keeps its notice here. Without it the explanation
+         would disappear at the moment people go looking for it. */
+      document.addEventListener('DOMContentLoaded', function(){
+        var grid=document.getElementById('past-events-grid'); if(!grid) return;
+        var today=new Date(); today.setHours(0,0,0,0);
+        function isPast(c){
+          if(c.getAttribute('data-past')==='true') return true;
+          var ds=c.getAttribute('data-event-date'); if(!ds) return false;
+          var dt=new Date(ds+'T00:00:00'); if(isNaN(dt.getTime())) return false;
+          return dt<today;
+        }
+        var cards=Array.prototype.filter.call(
+          document.querySelectorAll('.bq-event[data-event-date]'),
+          function(c){
+            if(!isPast(c)) return false;
+            // A draft was never announced, so it never happened either.
+            var dev=c.getAttribute('data-draft-event');
+            return !(dev && window.auricDraftHidden && window.auricDraftHidden(dev));
+          });
+        if(!cards.length) return;   // leave the empty state in place
+        // Most recent first — the archive reads backwards from now.
+        cards.sort(function(a,b){
+          var da=a.getAttribute('data-event-date')||'', db=b.getAttribute('data-event-date')||'';
+          return da===db ? 0 : (da > db ? -1 : 1);
+        });
+        var out='';
+        cards.forEach(function(c){
+          var img=c.querySelector('.bq-event-photo img'); var src=img?img.getAttribute('src'):'';
+          var name=c.querySelector('.bq-event-name'), sub=c.querySelector('.bq-event-sub');
+          var dateEl=c.querySelector('.bq-event-date');
+          var shut=window.auricClosedCopy?window.auricClosedCopy(c.getAttribute('data-event-id')):null;
+          out+='<article class="bq-ae-card'+(shut?' is-closed':'')+'">'
+            +'<div class="bq-ae-photo" style="background-image:url(\''+src+'\')">'
+            +'<span class="bq-ae-status'+(shut?' warn':'')+'">'+(shut?shut.past:'Past event')+'</span>'
+            +(shut && shut.say ? '<div class="bq-ae-notice"><div>'+shut.say+'</div></div>' : '')
+            +'</div><div class="bq-ae-body">'
+            +(dateEl?'<div class="bq-ae-date">'+dateEl.innerHTML+'</div>':'')
+            +'<div class="bq-ae-name">'+(name?name.innerHTML:'')+'</div>'
+            +'<div class="bq-ae-sub">'+(sub?sub.innerHTML:'')+'</div>'
+            +'</div></article>';
+        });
+        grid.className='bq-allevents-grid';
+        grid.removeAttribute('style');
+        grid.innerHTML=out;
+      });
+    </script>
 
   </div>
 
@@ -6778,9 +6831,11 @@ Can't wait to move and connect with you!</textarea>
       why:  'nor’easter on the day, plus multiple cancellations — moved to Oct 10',
       // The button says where the date went; the status pill says Sold out so
       // the live seat count can't advertise the empty room as availability;
-      // the session rows inside say Sold out too.
+      // the session rows inside say Sold out too; `past` is how it is labelled
+      // once it drops into the archive.
       card: 'Moved to Oct 10',
       tag:  'Sold out',
+      past: 'Rescheduled',
       // The two dates are named, but not linked: the choice is being made by
       // reply, one person at a time, so a button straight into a booking form
       // would take payment from someone who already has a paid spot.
@@ -6810,6 +6865,8 @@ Can't wait to move and connect with you!</textarea>
       // already says Sold out, and that is all a passer-by needs.
       card: c.card === false ? null : (c.card || 'Registration closed'),
       tag:  c.tag || (c.card === false ? 'Sold out' : c.card) || 'Registration closed',
+      // How the archive labels it once the date drops out of Upcoming.
+      past: c.past || 'Rescheduled',
       say:  c.say  || '<strong>Registration is closed for this date.</strong><br>'
                     + 'Already booked? You’re all set — check your confirmation email for '
                     + 'your arrival time. Hoping to join us? Have a look at the other dates below.'
