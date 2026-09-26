@@ -6716,15 +6716,21 @@ Can't wait to move and connect with you!</textarea>
     'riddim-kompa-brooklyn-2026-09-26': {
       why:  'nor’easter on the day, plus multiple cancellations — moved to Oct 10',
       card: 'Moved to Oct 10',
+      // "Nothing to do" and "reply with your preference" cannot both be true.
+      // They are being asked to choose, so the copy asks once, plainly.
       say:  '<strong>This date has moved to Saturday, October 10.</strong><br>'
           + 'The weather on the 26th made getting here unsafe for too many people, '
           + 'so the whole day is moving rather than running it short.<br><br>'
           + '<strong>Already booked for September 26?</strong> Your spot moves with you — '
-          + 'same class, same studio, no charge. You’ll get an email with your new time; '
-          + 'there’s nothing you need to do. If October 10 doesn’t work, just reply to it '
-          + 'and we’ll sort something out.<br><br>'
+          + 'same class, same studio, no charge. Everyone who was signed up has been emailed. '
+          + 'You can take <strong>Saturday, October 10</strong> or '
+          + '<strong>Saturday, November 21</strong> — just reply to that email and tell me '
+          + 'which you’d like, and I’ll send your new time.<br><br>'
           + '<a href="/?book=reformer-o10" style="color:#8a5a2a;font-weight:600;">'
-          + 'Book October 10 &rarr;</a>'
+          + 'October 10 &rarr;</a>'
+          + '<span style="color:#c4a27a;"> &nbsp;·&nbsp; </span>'
+          + '<a href="/?book=reformer-n21" style="color:#8a5a2a;font-weight:600;">'
+          + 'November 21 &rarr;</a>'
     }
   };
   window.auricIsClosed = function(ev){
@@ -14967,6 +14973,22 @@ document.addEventListener('DOMContentLoaded', function() {
     if(_foundingFirstMap[String(rec.id)]) return ' <span class="atype" style="background:#f6efe0;color:#9a6535;">✦ Founding One</span>';
     return '';
   }
+  // Someone who was moved onto this date rather than booking it. After a
+  // washed-out day the roster holds two different kinds of people and they
+  // look identical without this — which is exactly when you need to tell
+  // them apart, to know who is owed an explanation.
+  //
+  // moved_from carries the date they came from; a row moved before that
+  // column existed has moved_at but no origin, so it just says "Moved here".
+  function movedBadge(rec){
+    if(!rec || !rec.moved_at) return '';
+    var label = 'Moved here', day = rec.moved_from && RF_EVENT_DAY[rec.moved_from];
+    if(day){
+      var d = new Date(day + 'T00:00:00');
+      if(!isNaN(d.getTime())) label = 'Moved from ' + d.toLocaleDateString(undefined, { month:'short', day:'numeric' });
+    }
+    return ' <span class="atype" style="background:#f0ecf9;color:#5b3a8a;">⇄ ' + escapeHTML(label) + '</span>';
+  }
   window.markFoundingSent = function(email,ev,sess){ _foundingSent[foundingKey(email,ev,sess)] = true; try { localStorage.setItem('auric_founding_sent', JSON.stringify(_foundingSent)); } catch(e){} if(typeof rfRefresh==='function') rfRefresh(); };
   function rfRefresh(){ if(rfAdminContainer) renderReformerSection(rfAdminContainer); if(rfBkAdminContainer) renderReformerBkSection(rfBkAdminContainer); if(rfO10AdminContainer) renderReformerO10Section(rfO10AdminContainer); if(rfN21AdminContainer) renderReformerN21Section(rfN21AdminContainer); if(rfTbAdminContainer) renderReformerTbSection(rfTbAdminContainer); if(rfTb28AdminContainer) renderReformerTb28Section(rfTb28AdminContainer); if(rfHwAdminContainer) renderReformerHwSection(rfHwAdminContainer); if(rfArchivedContainer) renderReformerArchivedSection(rfArchivedContainer); populateReturningGuests();  wlcInit(); }
 
@@ -15322,7 +15344,7 @@ document.addEventListener('DOMContentLoaded', function() {
           ? btn("rfAdminSetAttendance("+id+",'')",'#fdecea','#f5c6c2','var(--red)','✗ No-show')
           : btn("rfAdminSetAttendance("+id+",'noshow')",'#fff','#e0d6c4','#8a7d6b','○ No-show');
         var moveBtn = btn('rfAdminMove('+id+')','#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Move event');
-        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+movedBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span class="au-meta">'+escapeHTML(rec.session_label||rec.session||'')+'</span><br><span class="au-meta">'+escapeHTML(when)+'</span>'+
           '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+winnerBtn+creditBtn+archiveBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
@@ -15400,7 +15422,7 @@ document.addEventListener('DOMContentLoaded', function() {
           ? btn("rfAdminSetAttendance("+id+",'')",'#fdecea','#f5c6c2','var(--red)','✗ No-show')
           : btn("rfAdminSetAttendance("+id+",'noshow')",'#fff','#e0d6c4','#8a7d6b','○ No-show');
         var moveBtn = btn('rfAdminMove('+id+')','#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Move event');
-        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+movedBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span class="au-meta">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span class="au-meta">'+escapeHTML(when)+'</span>'+
           '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+creditBtn+archiveBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
@@ -15476,7 +15498,7 @@ document.addEventListener('DOMContentLoaded', function() {
           ? btn("rfAdminSetAttendance("+id+",'')",'#fdecea','#f5c6c2','var(--red)','✗ No-show')
           : btn("rfAdminSetAttendance("+id+",'noshow')",'#fff','#e0d6c4','#8a7d6b','○ No-show');
         var moveBtn = btn('rfAdminMove('+id+')','#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Move event');
-        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+movedBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span class="au-meta">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span class="au-meta">'+escapeHTML(when)+'</span>'+
           '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+creditBtn+archiveBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
@@ -15552,7 +15574,7 @@ document.addEventListener('DOMContentLoaded', function() {
           ? btn("rfAdminSetAttendance("+id+",'')",'#fdecea','#f5c6c2','var(--red)','✗ No-show')
           : btn("rfAdminSetAttendance("+id+",'noshow')",'#fff','#e0d6c4','#8a7d6b','○ No-show');
         var moveBtn = btn('rfAdminMove('+id+')','#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Move event');
-        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+movedBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span class="au-meta">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span class="au-meta">'+escapeHTML(when)+'</span>'+
           '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+creditBtn+archiveBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
@@ -15632,7 +15654,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var noShowBtn = (_att==='noshow')
           ? btn("rfAdminSetAttendance("+id+",'')",'#fdecea','#f5c6c2','var(--red)','✗ No-show')
           : btn("rfAdminSetAttendance("+id+",'noshow')",'#fff','#e0d6c4','#8a7d6b','○ No-show');
-        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+movedBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span class="au-meta">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span class="au-meta">'+escapeHTML(when)+'</span>'+
           '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+winnerBtn+creditBtn+archiveBtn+removeBtn+'</div></div>';
         block.appendChild(item);
@@ -15708,7 +15730,7 @@ document.addEventListener('DOMContentLoaded', function() {
           ? btn("rfAdminSetAttendance("+id+",'')",'#fdecea','#f5c6c2','var(--red)','✗ No-show')
           : btn("rfAdminSetAttendance("+id+",'noshow')",'#fff','#e0d6c4','#8a7d6b','○ No-show');
         var moveBtn = btn('rfAdminMove('+id+')','#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Move event');
-        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+movedBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span class="au-meta">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span class="au-meta">'+escapeHTML(when)+'</span>'+
           '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+confirmBtn+paidBtn+timeBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+winnerBtn+creditBtn+archiveBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
@@ -15786,7 +15808,7 @@ document.addEventListener('DOMContentLoaded', function() {
           ? btn("rfAdminSetAttendance("+id+",'')",'#fdecea','#f5c6c2','var(--red)','✗ No-show')
           : btn("rfAdminSetAttendance("+id+",'noshow')",'#fff','#e0d6c4','#8a7d6b','○ No-show');
         var moveBtn = btn('rfAdminMove('+id+')','#f0ecf9','#c9bce9','#5b3a8a','\u{21C4} Move event');
-        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+shirt+ref+sig+health+'</div>'+
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span> '+badge+fbBadge(rec)+movedBadge(rec)+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+shirt+ref+sig+health+'</div>'+
           '<div style="text-align:right"><span class="au-meta">'+escapeHTML(SLAB[rec.session]||rec.session_label||rec.session||'')+'</span><br><span class="au-meta">'+escapeHTML(when)+'</span>'+
           '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">'+paidBtn+timeBtn+confirmBtn+waiverBtn+clearHealthBtn+(rec.is_paid?'':btn('rfSendPayReminder('+id+')','#fff4e5','#f0c890','#a86617','⏳ Reminder'))+editBtn+moveBtn+attendBtn+noShowBtn+winnerBtn+creditBtn+archiveBtn+removeBtn+'</div></div>';
         (typeof _curSessBlock!=='undefined'&&_curSessBlock?_curSessBlock:block).appendChild(item);
