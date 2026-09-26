@@ -6706,12 +6706,43 @@ Can't wait to move and connect with you!</textarea>
      TO CLOSE ONE: add its event id below, with a note to yourself.
      TO REOPEN:    delete the line. Anyone who already paid is untouched —
                    their confirmation, roster row and reminders all stand,
-                   and the ?paid= return screen still works.                */
+                   and the ?paid= return screen still works.
+
+     Each entry carries three things: `why` is your own note and is never
+     shown; `card` is the few words that replace "Reserve" on the card in the
+     grid; `say` is what the booking popup tells someone who opens it anyway.
+     Give it a plain string instead of an object and it just reads closed.    */
   window.AURIC_CLOSED_EVENTS = {
-    'riddim-kompa-brooklyn-2026-09-26': 'closed the morning of — nor’easter'
+    'riddim-kompa-brooklyn-2026-09-26': {
+      why:  'nor’easter on the day, plus multiple cancellations — moved to Oct 10',
+      card: 'Moved to Oct 10',
+      say:  '<strong>This date has moved to Saturday, October 10.</strong><br>'
+          + 'The weather on the 26th made getting here unsafe for too many people, '
+          + 'so the whole day is moving rather than running it short.<br><br>'
+          + '<strong>Already booked for September 26?</strong> Your spot moves with you — '
+          + 'same class, same studio, no charge. You’ll get an email with your new time; '
+          + 'there’s nothing you need to do. If October 10 doesn’t work, just reply to it '
+          + 'and we’ll sort something out.<br><br>'
+          + '<a href="/?book=reformer-o10" style="color:#8a5a2a;font-weight:600;">'
+          + 'Book October 10 &rarr;</a>'
+    }
   };
   window.auricIsClosed = function(ev){
     return !!(window.AURIC_CLOSED_EVENTS && window.AURIC_CLOSED_EVENTS[ev]);
+  };
+  // What a closed event should say, with sensible wording when an entry is
+  // just a string.
+  window.auricClosedCopy = function(ev){
+    var c = (window.AURIC_CLOSED_EVENTS || {})[ev];
+    if(!c) return null;
+    if(typeof c === 'string') c = {};
+    return {
+      card: c.card || 'Registration closed',
+      tag:  c.card || 'Registration closed',
+      say:  c.say  || '<strong>Registration is closed for this date.</strong><br>'
+                    + 'Already booked? You’re all set — check your confirmation email for '
+                    + 'your arrival time. Hoping to join us? Have a look at the other dates below.'
+    };
   };
   // Stamp every time button with `tag`, disable it, and drop any waitlist
   // link. Shared so a closed event and a finished one behave identically.
@@ -6732,26 +6763,29 @@ Can't wait to move and connect with you!</textarea>
     _rfLockTimes(stepTimeEl, 'Sold out');
     return true;
   };
-  // Same, for an event closed by hand. Says "Registration closed" rather than
-  // "Sold out", because those are different facts and a guest can tell.
+  // Same, for an event closed by hand. Never says "Sold out" — a date that
+  // moved and a date that filled are different facts, and a guest can tell.
   window.auricLockIfClosed = function(ev, stepTimeEl){
     if(!stepTimeEl || !window.auricIsClosed(ev)) return false;
-    _rfLockTimes(stepTimeEl, 'Registration closed');
+    var copy = window.auricClosedCopy(ev);
+    _rfLockTimes(stepTimeEl, copy.tag);
     if(!stepTimeEl.querySelector('.rf-closed-note')){
       var n=document.createElement('p'); n.className='rf-closed-note';
-      n.style.cssText='font-size:.82rem;line-height:1.55;color:#8a5a2a;background:#fdf4e7;border:1px solid #f0d9b5;border-radius:10px;padding:.7rem .85rem;margin:0 0 .9rem;text-align:left;';
-      n.innerHTML='<strong>Registration is closed for this date.</strong><br>Already booked? You’re all set — check your confirmation email for your arrival time. Hoping to join us? Have a look at the other dates below.';
+      n.style.cssText='font-size:.82rem;line-height:1.55;color:#8a5a2a;background:#fdf4e7;border:1px solid #f0d9b5;border-radius:10px;padding:.8rem .9rem;margin:0 0 .9rem;text-align:left;';
+      n.innerHTML=copy.say;
       stepTimeEl.insertBefore(n, stepTimeEl.firstChild);
     }
     return true;
   };
   // And say it on the card, so nobody clicks "Reserve" only to find they can't.
-  // The card keeps its place in the grid — the class is still happening.
+  // The card keeps its place in the grid — people need to see what happened to
+  // a date they booked, and "it vanished" is the worst possible answer.
   document.addEventListener('DOMContentLoaded', function(){
     Array.prototype.forEach.call(document.querySelectorAll('[data-event-id]'), function(card){
-      if(!window.auricIsClosed(card.getAttribute('data-event-id'))) return;
+      var copy = window.auricClosedCopy(card.getAttribute('data-event-id'));
+      if(!copy) return;
       var link = card.querySelector('.bq-event-link');
-      if(link){ link.textContent = 'Registration closed'; link.style.opacity = '.62'; }
+      if(link){ link.textContent = copy.card; link.style.opacity = '.62'; }
       card.setAttribute('data-soldout','true');   // and stop it being featured
     });
   });
