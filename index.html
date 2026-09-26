@@ -6715,22 +6715,20 @@ Can't wait to move and connect with you!</textarea>
   window.AURIC_CLOSED_EVENTS = {
     'riddim-kompa-brooklyn-2026-09-26': {
       why:  'nor’easter on the day, plus multiple cancellations — moved to Oct 10',
-      card: 'Moved to Oct 10',
-      // "Nothing to do" and "reply with your preference" cannot both be true.
-      // They are being asked to choose, so the copy asks once, plainly.
-      say:  '<strong>This date has moved to Saturday, October 10.</strong><br>'
-          + 'The weather on the 26th made getting here unsafe for too many people, '
-          + 'so the whole day is moving rather than running it short.<br><br>'
-          + '<strong>Already booked for September 26?</strong> Your spot moves with you — '
-          + 'same class, same studio, no charge. Everyone who was signed up has been emailed. '
-          + 'You can take <strong>Saturday, October 10</strong> or '
-          + '<strong>Saturday, November 21</strong> — just reply to that email and tell me '
-          + 'which you’d like, and I’ll send your new time.<br><br>'
-          + '<a href="/?book=reformer-o10" style="color:#8a5a2a;font-weight:600;">'
-          + 'October 10 &rarr;</a>'
-          + '<span style="color:#c4a27a;"> &nbsp;·&nbsp; </span>'
-          + '<a href="/?book=reformer-n21" style="color:#8a5a2a;font-weight:600;">'
-          + 'November 21 &rarr;</a>'
+      // Publicly this reads as a normal full date rather than announcing a
+      // cancellation to everyone scrolling past. Anyone who opens it still
+      // gets the whole story in `say`, and everyone booked was emailed.
+      card: 'Sold out',
+      tag:  'Sold out',
+      // No alternative dates named here on purpose — the reschedule is being
+      // handled by email, one person at a time, and this popup is public.
+      // It still has to tell someone who paid what happened to their spot.
+      say:  '<strong>September 26 isn’t running.</strong><br>'
+          + 'The weather made getting here unsafe for too many people, so the day '
+          + 'is being rescheduled rather than run short.<br><br>'
+          + '<strong>Already booked?</strong> Your spot is safe and you haven’t been '
+          + 'charged anything extra. Everyone who was signed up has been emailed — '
+          + 'check your inbox, and reply there and I’ll sort out your new date.'
     }
   };
   window.auricIsClosed = function(ev){
@@ -6743,8 +6741,10 @@ Can't wait to move and connect with you!</textarea>
     if(!c) return null;
     if(typeof c === 'string') c = {};
     return {
+      // `tag` falls back to `card`, so an entry only needs to say it twice
+      // when the public wording and the session rows should differ.
       card: c.card || 'Registration closed',
-      tag:  c.card || 'Registration closed',
+      tag:  c.tag || c.card || 'Registration closed',
       say:  c.say  || '<strong>Registration is closed for this date.</strong><br>'
                     + 'Already booked? You’re all set — check your confirmation email for '
                     + 'your arrival time. Hoping to join us? Have a look at the other dates below.'
