@@ -3601,6 +3601,24 @@
         text-transform:uppercase;font-weight:600;padding:.35rem .7rem;border-radius:999px;background:rgba(255,253,249,.94);color:var(--red);}
       .bq-ae-status.ok{color:var(--green);}
       .bq-ae-status.warn{color:#b5791f;}
+      /* A closed date carries its notice here too, so the homepage says the
+         same thing as the events page. The tile's photo is 185px, too short
+         for the wording, so a closed one gets a taller frame rather than a
+         scrollbar nobody notices. */
+      .bq-ae-card.is-closed .bq-ae-photo{height:340px;}
+      /* The Sold out pill sits above the notice, not under it — every other
+         tile shows one, and a missing one reads as a rendering fault. The
+         notice's top padding clears it. */
+      .bq-ae-card.is-closed .bq-ae-status{z-index:3;}
+      .bq-ae-notice{position:absolute;inset:0;z-index:2;display:flex;align-items:center;
+        overflow-y:auto;padding:2.6rem 1.05rem 1rem;background:rgba(28,20,14,.9);
+        -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+        font-family:'Jost',sans-serif;font-size:.72rem;line-height:1.58;
+        color:#f0e2ca;text-align:left;}
+      .bq-ae-notice > div{width:100%;}
+      .bq-ae-notice strong{color:#fff;font-weight:600;}
+      @media(max-width:820px){.bq-ae-card.is-closed .bq-ae-photo{height:auto;min-height:340px;}
+        .bq-ae-notice{font-size:.78rem;position:static;min-height:340px;}}
       .bq-ae-body{padding:1.1rem 1.25rem 1.35rem;display:flex;flex-direction:column;flex:1;}
       .bq-ae-date{font-family:'Jost',sans-serif;font-size:.62rem;letter-spacing:.2em;
         text-transform:uppercase;color:var(--gold-text);font-weight:600;margin-bottom:.35rem;}
@@ -3666,13 +3684,21 @@
           var img=c.querySelector('.bq-event-photo img'); var src=img?img.getAttribute('src'):'';
           var name=c.querySelector('.bq-event-name'); var sub=c.querySelector('.bq-event-sub');
           var dateEl=c.querySelector('.bq-event-date');
-          out+='<article class="bq-ae-card">'
-            +'<div class="bq-ae-photo" style="background-image:url(\''+src+'\')"><span class="bq-ae-status '+it.cls+'" id="aestatus-'+it.id+'">'+it.tag+'</span></div>'
+          // A closed date says the same thing here as on the events page: the
+          // notice over the flyer, Sold out rather than a seat-count guess, and
+          // a button that names where the date went instead of "Book".
+          var shut = window.auricClosedCopy ? window.auricClosedCopy(c.getAttribute('data-event-id')) : null;
+          out+='<article class="bq-ae-card'+(shut?' is-closed':'')+'">'
+            +'<div class="bq-ae-photo" style="background-image:url(\''+src+'\')">'
+            +'<span class="bq-ae-status '+(shut?'':it.cls)+'" id="aestatus-'+it.id+'">'+(shut?'Sold out':it.tag)+'</span>'
+            +(shut && shut.say ? '<div class="bq-ae-notice"><div>'+shut.say+'</div></div>' : '')
+            +'</div>'
             +'<div class="bq-ae-body">'
             +(dateEl?'<div class="bq-ae-date">'+dateEl.innerHTML+'</div>':'')
             +'<div class="bq-ae-name">'+(name?name.innerHTML:'')+'</div>'
             +'<div class="bq-ae-sub">'+(sub?sub.innerHTML:'')+'</div>'
-            +'<button type="button" class="bq-ae-btn" data-target="'+it.id+'">Book</button></div></article>';
+            +'<button type="button" class="bq-ae-btn" data-target="'+it.id+'">'
+            +((shut && shut.card) ? shut.card : 'Book')+'</button></div></article>';
         });
         out+='<article class="bq-ae-card">'
           +'<div class="bq-ae-photo" style="background-image:url(\'blooming-flyer.png\');background-position:center 18%;"><span class="bq-ae-status ok">Interest list</span></div>'
@@ -3704,7 +3730,13 @@
             _sb.rpc('reformer_spot_counts').then(function(res){
               if(!res||res.error||!res.data) return;
               var paid={}; res.data.forEach(function(r){ paid[r.session]=Number(r.paid)||0; });
-              function setTag(id,text,cls){ var el=document.getElementById('aestatus-'+id); if(el){ el.textContent=text; el.className='bq-ae-status '+(cls||''); } }
+              function setTag(id,text,cls){
+                // A closed date's seats keep freeing up as people are moved off
+                // it, so the emptier it gets the more this would insist it is
+                // "Now booking". It stays Sold out however empty the room is.
+                var card=document.getElementById(id);
+                if(card && window.auricIsClosed && window.auricIsClosed(card.getAttribute('data-event-id'))) return;
+                var el=document.getElementById('aestatus-'+id); if(el){ el.textContent=text; el.className='bq-ae-status '+(cls||''); } }
               // West Hempstead · Sep 13 — cap 6 per session
               var CW=6, w1=paid['1pm']||0, w2=paid['2pm']||0, w3=paid['3pm']||0;
               var remW=(CW-w1)+(CW-w2)+(CW-w3); if(remW<0) remW=0;
