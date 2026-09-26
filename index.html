@@ -6467,7 +6467,7 @@ Can't wait to move and connect with you!</textarea>
   :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-time small{display:block;font-weight:400;color:var(--text-muted);font-size:.82rem;margin-top:.15rem;}
   :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-field{text-align:left;margin:0 0 .8rem;}
   :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-field label{display:block;font-size:.82rem;font-weight:600;color:var(--brown);margin-bottom:.3rem;}
-  :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-field input[type=text],:is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-field input[type=email]{width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;background:#fff;color:#2c1a0e;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-field input[type=text],:is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-field input[type=email],:is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-field input[type=tel]{width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;background:#fff;color:#2c1a0e;}
   :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-field input:focus{outline:none;border-color:var(--gold);}
   :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-opt{font-weight:400;color:var(--text-muted);font-size:.72rem;}
   :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-ack{display:flex;gap:.6rem;align-items:flex-start;text-align:left;background:#faf5ee;border:1px solid var(--border);border-radius:10px;padding:.75rem .85rem;margin:0 0 .8rem;}
@@ -6571,6 +6571,8 @@ Can't wait to move and connect with you!</textarea>
       <div class="rf-chosen">Booking: <strong id="rf-chosen-label"></strong> &middot; <a id="rf-change-time" role="button" tabindex="0">change time</a></div>
       <div class="rf-field"><label for="rf-name">Full name</label><input type="text" id="rf-name" autocomplete="name" placeholder="Your name"></div>
       <div class="rf-field"><label for="rf-email">Email</label><input type="email" id="rf-email" autocomplete="email" placeholder="you@email.com"></div>
+      <div class="rf-field"><label for="rf-phone">Mobile <span class="rf-opt">(optional &mdash; only for day-of updates about this class)</span></label><input type="tel" id="rf-phone" autocomplete="tel" placeholder="(555) 123-4567"></div>
+      <div class="rf-ack"><input type="checkbox" id="rf-sms"><label for="rf-sms">Text me about future Auric Movement events.<span class="rf-policy">Separate from the above, and entirely optional &mdash; leave it unticked and you&rsquo;ll only ever hear from us about a class you booked. Reply STOP at any time.</span></label></div>
       <div class="rf-field"><label for="rf-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="rf-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
       <div class="rf-field"><label for="rf-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="rf-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
       <div class="rf-ack">
@@ -6686,7 +6688,7 @@ Can't wait to move and connect with you!</textarea>
     // the matching SQL has not been run. Drop them one at a time and retry, so
     // a booking is never lost just because a column is missing — losing the
     // shirt size costs nothing, losing the booking costs a customer.
-    var OPTIONAL = ['signature_data', 'shirt_size'];
+    var OPTIONAL = ['phone', 'sms_events', 'signature_data', 'shirt_size'];
     function without(drop){
       var r2 = {}; for (var k in rec){ if (drop.indexOf(k) < 0) r2[k] = rec[k]; } return r2;
     }
@@ -7023,6 +7025,8 @@ Can't wait to move and connect with you!</textarea>
       <div class="rf-chosen">Booking: <strong id="rfbk-chosen-label"></strong> &middot; <a id="rfbk-change-time" role="button" tabindex="0">change time</a></div>
       <div class="rf-field"><label for="rfbk-name">Full name</label><input type="text" id="rfbk-name" autocomplete="name" placeholder="Your name"></div>
       <div class="rf-field"><label for="rfbk-email">Email</label><input type="email" id="rfbk-email" autocomplete="email" placeholder="you@email.com"></div>
+      <div class="rf-field"><label for="rfbk-phone">Mobile <span class="rf-opt">(optional &mdash; only for day-of updates about this class)</span></label><input type="tel" id="rfbk-phone" autocomplete="tel" placeholder="(555) 123-4567"></div>
+      <div class="rf-ack"><input type="checkbox" id="rfbk-sms"><label for="rfbk-sms">Text me about future Auric Movement events.<span class="rf-policy">Separate from the above, and entirely optional &mdash; leave it unticked and you&rsquo;ll only ever hear from us about a class you booked. Reply STOP at any time.</span></label></div>
       <div class="rf-field"><label for="rfbk-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="rfbk-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
       <div class="rf-field"><label for="rfbk-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="rfbk-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
       <div class="rf-ack">
@@ -7187,7 +7191,12 @@ document.addEventListener('DOMContentLoaded', function(){
     formErr.textContent='';
     var nowIso=new Date().toISOString();
     var rec={
-      name:name, email:email, session:chosen, session_label:chosenLabel,
+      name:name, email:email,
+// Given under a label saying it is for day-of updates about this
+// class. The tick below is a separate, explicit yes to marketing.
+phone: (document.getElementById('rfbk-phone')||{}).value ? document.getElementById('rfbk-phone').value.trim() : null,
+sms_events: !!(document.getElementById('rfbk-sms')||{}).checked,
+session:chosen, session_label:chosenLabel,
       referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
       signature:sign, signature_data:bkSig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:19),
       refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
@@ -7252,6 +7261,8 @@ document.addEventListener('DOMContentLoaded', function(){
       <div class="rf-chosen">Booking: <strong id="rfo10-chosen-label"></strong> &middot; <a id="rfo10-change-time" role="button" tabindex="0">change time</a></div>
       <div class="rf-field"><label for="rfo10-name">Full name</label><input type="text" id="rfo10-name" autocomplete="name" placeholder="Your name"></div>
       <div class="rf-field"><label for="rfo10-email">Email</label><input type="email" id="rfo10-email" autocomplete="email" placeholder="you@email.com"></div>
+      <div class="rf-field"><label for="rfo10-phone">Mobile <span class="rf-opt">(optional &mdash; only for day-of updates about this class)</span></label><input type="tel" id="rfo10-phone" autocomplete="tel" placeholder="(555) 123-4567"></div>
+      <div class="rf-ack"><input type="checkbox" id="rfo10-sms"><label for="rfo10-sms">Text me about future Auric Movement events.<span class="rf-policy">Separate from the above, and entirely optional &mdash; leave it unticked and you&rsquo;ll only ever hear from us about a class you booked. Reply STOP at any time.</span></label></div>
       <div class="rf-field"><label for="rfo10-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="rfo10-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
       <div class="rf-field"><label for="rfo10-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="rfo10-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
       <div class="rf-ack">
@@ -7423,7 +7434,12 @@ document.addEventListener('DOMContentLoaded', function(){
     formErr.textContent='';
     var nowIso=new Date().toISOString();
     var rec={
-      name:name, email:email, session:chosen, session_label:chosenLabel,
+      name:name, email:email,
+// Given under a label saying it is for day-of updates about this
+// class. The tick below is a separate, explicit yes to marketing.
+phone: (document.getElementById('rfo10-phone')||{}).value ? document.getElementById('rfo10-phone').value.trim() : null,
+sms_events: !!(document.getElementById('rfo10-sms')||{}).checked,
+session:chosen, session_label:chosenLabel,
       referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
       signature:sign, signature_data:o10Sig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:19),
       refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
@@ -7512,6 +7528,8 @@ document.addEventListener('DOMContentLoaded', function(){
       <div class="rf-chosen">Booking: <strong id="rfn21-chosen-label"></strong> &middot; <a id="rfn21-change-time" role="button" tabindex="0">change time</a></div>
       <div class="rf-field"><label for="rfn21-name">Full name</label><input type="text" id="rfn21-name" autocomplete="name" placeholder="Your name"></div>
       <div class="rf-field"><label for="rfn21-email">Email</label><input type="email" id="rfn21-email" autocomplete="email" placeholder="you@email.com"></div>
+      <div class="rf-field"><label for="rfn21-phone">Mobile <span class="rf-opt">(optional &mdash; only for day-of updates about this class)</span></label><input type="tel" id="rfn21-phone" autocomplete="tel" placeholder="(555) 123-4567"></div>
+      <div class="rf-ack"><input type="checkbox" id="rfn21-sms"><label for="rfn21-sms">Text me about future Auric Movement events.<span class="rf-policy">Separate from the above, and entirely optional &mdash; leave it unticked and you&rsquo;ll only ever hear from us about a class you booked. Reply STOP at any time.</span></label></div>
       <div class="rf-field"><label for="rfn21-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="rfn21-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
       <div class="rf-field"><label for="rfn21-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="rfn21-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
       <div class="rf-ack">
@@ -7683,7 +7701,12 @@ document.addEventListener('DOMContentLoaded', function(){
     formErr.textContent='';
     var nowIso=new Date().toISOString();
     var rec={
-      name:name, email:email, session:chosen, session_label:chosenLabel,
+      name:name, email:email,
+// Given under a label saying it is for day-of updates about this
+// class. The tick below is a separate, explicit yes to marketing.
+phone: (document.getElementById('rfn21-phone')||{}).value ? document.getElementById('rfn21-phone').value.trim() : null,
+sms_events: !!(document.getElementById('rfn21-sms')||{}).checked,
+session:chosen, session_label:chosenLabel,
       referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
       signature:sign, signature_data:n21Sig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:19),
       refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
@@ -7776,6 +7799,8 @@ document.addEventListener('DOMContentLoaded', function(){
       <div class="rf-chosen">Booking: <strong id="tb-chosen-label"></strong> &middot; <a id="tb-change-time" role="button" tabindex="0">change time</a></div>
       <div class="rf-field"><label for="tb-name">Full name</label><input type="text" id="tb-name" autocomplete="name" placeholder="Your name"></div>
       <div class="rf-field"><label for="tb-email">Email</label><input type="email" id="tb-email" autocomplete="email" placeholder="you@email.com"></div>
+      <div class="rf-field"><label for="tb-phone">Mobile <span class="rf-opt">(optional &mdash; only for day-of updates about this class)</span></label><input type="tel" id="tb-phone" autocomplete="tel" placeholder="(555) 123-4567"></div>
+      <div class="rf-ack"><input type="checkbox" id="tb-sms"><label for="tb-sms">Text me about future Auric Movement events.<span class="rf-policy">Separate from the above, and entirely optional &mdash; leave it unticked and you&rsquo;ll only ever hear from us about a class you booked. Reply STOP at any time.</span></label></div>
       <div class="rf-field"><label for="tb-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="tb-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
       <div class="rf-field"><label for="tb-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="tb-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
       <div class="rf-ack">
@@ -7966,7 +7991,12 @@ document.addEventListener('DOMContentLoaded', function(){
     formErr.textContent='';
     var nowIso=new Date().toISOString();
     var rec={
-      name:name, email:email, session:chosen, session_label:chosenLabel,
+      name:name, email:email,
+// Given under a label saying it is for day-of updates about this
+// class. The tick below is a separate, explicit yes to marketing.
+phone: (document.getElementById('tb-phone')||{}).value ? document.getElementById('tb-phone').value.trim() : null,
+sms_events: !!(document.getElementById('tb-sms')||{}).checked,
+session:chosen, session_label:chosenLabel,
       referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
       signature:sign, signature_data:tbSig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:19),
       refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
@@ -8037,6 +8067,8 @@ document.addEventListener('DOMContentLoaded', function(){
       <div class="rf-chosen">Booking: <strong id="tb28-chosen-label">Saturday, Nov 28</strong> &middot; <a id="tb28-change-time" role="button" tabindex="0">change time</a></div>
       <div class="rf-field"><label for="tb28-name">Full name</label><input type="text" id="tb28-name" autocomplete="name" placeholder="Your name"></div>
       <div class="rf-field"><label for="tb28-email">Email</label><input type="email" id="tb28-email" autocomplete="email" placeholder="you@email.com"></div>
+      <div class="rf-field"><label for="tb28-phone">Mobile <span class="rf-opt">(optional &mdash; only for day-of updates about this class)</span></label><input type="tel" id="tb28-phone" autocomplete="tel" placeholder="(555) 123-4567"></div>
+      <div class="rf-ack"><input type="checkbox" id="tb28-sms"><label for="tb28-sms">Text me about future Auric Movement events.<span class="rf-policy">Separate from the above, and entirely optional &mdash; leave it unticked and you&rsquo;ll only ever hear from us about a class you booked. Reply STOP at any time.</span></label></div>
       <div class="rf-field"><label for="tb28-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="tb28-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
       <div class="rf-field"><label for="tb28-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="tb28-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
       <div class="rf-ack">
@@ -8209,7 +8241,12 @@ document.addEventListener('DOMContentLoaded', function(){
     if(tbSig.isEmpty()){ formErr.textContent='Please draw your signature in the box.'; return; }
     formErr.textContent='';
     var rec={
-      name:name, email:email, session:chosen, session_label:chosenLabel,
+      name:name, email:email,
+// Given under a label saying it is for day-of updates about this
+// class. The tick below is a separate, explicit yes to marketing.
+phone: (document.getElementById('tb28-phone')||{}).value ? document.getElementById('tb28-phone').value.trim() : null,
+sms_events: !!(document.getElementById('tb28-sms')||{}).checked,
+session:chosen, session_label:chosenLabel,
       referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
       signature:sign, signature_data:tbSig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:19),
       refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
@@ -8286,6 +8323,8 @@ document.addEventListener('DOMContentLoaded', function(){
       <div class="rf-chosen">Booking: <strong id="hw-chosen-label"></strong> &middot; <a id="hw-change-time" role="button" tabindex="0">change time</a></div>
       <div class="rf-field"><label for="hw-name">Full name</label><input type="text" id="hw-name" autocomplete="name" placeholder="Your name"></div>
       <div class="rf-field"><label for="hw-email">Email</label><input type="email" id="hw-email" autocomplete="email" placeholder="you@email.com"></div>
+      <div class="rf-field"><label for="hw-phone">Mobile <span class="rf-opt">(optional &mdash; only for day-of updates about this class)</span></label><input type="tel" id="hw-phone" autocomplete="tel" placeholder="(555) 123-4567"></div>
+      <div class="rf-ack"><input type="checkbox" id="hw-sms"><label for="hw-sms">Text me about future Auric Movement events.<span class="rf-policy">Separate from the above, and entirely optional &mdash; leave it unticked and you&rsquo;ll only ever hear from us about a class you booked. Reply STOP at any time.</span></label></div>
       <div class="rf-field"><label for="hw-shirt">What size shirt are you in a long sleeve?</label><select id="hw-shirt" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;background:#fff;color:#2c1a0e;"><option value="">Select a size&hellip;</option><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>2XL</option><option>3XL</option></select></div>
       <div class="rf-field"><label for="hw-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="hw-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
       <div class="rf-field"><label for="hw-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="hw-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
@@ -8472,7 +8511,12 @@ document.addEventListener('DOMContentLoaded', function(){
     formErr.textContent='';
     var nowIso=new Date().toISOString();
     var rec={
-      name:name, email:email, session:chosen, session_label:chosenLabel,
+      name:name, email:email,
+// Given under a label saying it is for day-of updates about this
+// class. The tick below is a separate, explicit yes to marketing.
+phone: (document.getElementById('hw-phone')||{}).value ? document.getElementById('hw-phone').value.trim() : null,
+sms_events: !!(document.getElementById('hw-sms')||{}).checked,
+session:chosen, session_label:chosenLabel,
       referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
       signature:sign, signature_data:hwSig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:19),
       shirt_size:(shirtEl && shirtEl.value)||null,
@@ -8704,7 +8748,10 @@ document.addEventListener('DOMContentLoaded', function(){
 
       var nowIso=new Date().toISOString();
       saveRegistration({
-        name:name, email:email, session:chosen, session_label:chosenLabel,
+        name:name, email:email,
+        phone: (document.getElementById('rf-phone')||{}).value ? document.getElementById('rf-phone').value.trim() : null,
+        sms_events: !!(document.getElementById('rf-sms')||{}).checked,
+        session:chosen, session_label:chosenLabel,
         referred_by: refEl.value.trim() || null,
         health: (healthEl && healthEl.value.trim()) || null,
         signature:sign, signature_data:rfSig.toDataURL(), clauses_agreed: RF_CLAUSES.length,
@@ -15211,6 +15258,62 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch(e){}
   }
   // Build a "⏳ Waitlist" sub-block for one event (rows = full roster; filters type='waitlist').
+  // ── "📱 Text list" — the numbers to text about ONE event's day of ────
+  // Built after the nor'easter, when the 12 PM group needed telling that
+  // morning and email reached nobody in time.
+  //
+  // Everyone here gave their number at booking under a label saying it was
+  // for day-of updates about this class, so a text about a time change or
+  // the weather is what they agreed to. It is NOT a marketing list: the
+  // separate "future events" tick is counted at the bottom and deliberately
+  // not copyable from here, so the two can't be muddled in a hurry.
+  function rfTextBlock(allRows, eventId){
+    var mine = (allRows||[]).filter(function(r){
+      return r && r.event === eventId && r.is_paid && r.type !== 'waitlist'
+          && !r.archived && r.phone && String(r.phone).trim();
+    });
+    var wrap = document.createElement('div'); wrap.className='admin-session-block';
+    wrap.style.cssText='margin:.6rem 0 .2rem;padding:.5rem .6rem;background:#f2f7f3;border:1px solid #cfe3d5;border-radius:10px;';
+    var h=document.createElement('h3'); h.style.cssText='font-size:.72rem;color:#2e6b45;margin:0 0 .3rem;';
+    h.textContent='📱 Text list · '+mine.length+(mine.length===1?' number':' numbers');
+    wrap.appendChild(h);
+    if(!mine.length){
+      var e=document.createElement('div'); e.style.cssText='font-size:.82rem;color:var(--text-muted);';
+      e.textContent='Nobody booked for this date has given a number yet. The field is optional, and it only appears on bookings made from now on.';
+      wrap.appendChild(e); return wrap;
+    }
+    mine.sort(function(a,b){
+      return String(a.session||'').localeCompare(String(b.session||''))
+          || String(a.created_at||'').localeCompare(String(b.created_at||''));
+    });
+    var list=document.createElement('div'); list.style.cssText='font-size:.82rem;color:#2c2420;line-height:1.7;';
+    list.innerHTML = mine.map(function(r){
+      return '<div>'+escapeHTML(r.name||'(no name)')+' &middot; <strong>'+escapeHTML(r.phone)+'</strong>'
+           + ' <span class="au-meta">'+escapeHTML(r.session_label||r.session||'')+'</span></div>';
+    }).join('');
+    wrap.appendChild(list);
+    var nums = mine.map(function(r){ return String(r.phone).trim(); }).join(', ');
+    var cb=document.createElement('button'); cb.type='button';
+    cb.style.cssText='margin:.5rem 0 .2rem;background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;border-radius:6px;padding:.35rem .75rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;';
+    cb.textContent='Copy '+mine.length+' number'+(mine.length===1?'':'s');
+    cb.onclick=function(){
+      function done(){ cb.textContent='Copied ✓'; setTimeout(function(){ cb.textContent='Copy '+mine.length+' number'+(mine.length===1?'':'s'); }, 1600); }
+      try {
+        if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(nums).then(done, function(){ prompt('Copy these:', nums); }); return; }
+      } catch(e){}
+      prompt('Copy these:', nums);   // a fallback beats a button that does nothing
+    };
+    wrap.appendChild(cb);
+    var optedIn = mine.filter(function(r){ return r.sms_events; }).length;
+    var note=document.createElement('div'); note.style.cssText='font-size:.72rem;color:var(--text-muted);margin-top:.35rem;line-height:1.5;';
+    note.innerHTML = 'Send these one at a time, not as one group thread &mdash; a group text shows '
+      + 'everyone each other&rsquo;s number. Fine to text about <em>this</em> class: the time, the '
+      + 'weather, the room.<br>'
+      + '<strong>' + optedIn + ' of these ' + mine.length + '</strong> also ticked &ldquo;text me about '
+      + 'future events&rdquo;. Only those may be told about a different date.';
+    wrap.appendChild(note);
+    return wrap;
+  }
   function rfWaitlistBlock(allRows, eventId){
     var mine  = (allRows||[]).filter(function(r){ return r.type==='waitlist' && r.event===eventId; });
     // An archived waitlister is out of the running: off this list, out of the
@@ -15466,6 +15569,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
+      block.appendChild(rfTextBlock(rows, 'riddim-kompa-reformer-2026-09-13'));
       block.appendChild(rfWaitlistBlock(rows, 'riddim-kompa-reformer-2026-09-13'));
       var SLAB = { '1pm':'1 PM', '2pm':'2 PM', '3pm':'3 PM' }; var _curSess=null, _curSessBlock=null;
       _rfMarkFirst(display, rows);
@@ -15552,6 +15656,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var _bkOrd = { 'bk12':0, 'bk1':1, 'bk2':2 };
       function _bkRank(s){ return _bkOrd[s]!==undefined ? _bkOrd[s] : 99; }
       display.sort(function(a,b){ return (_bkRank(a.session)-_bkRank(b.session)) || (a.created_at||'').localeCompare(b.created_at||''); });
+      block.appendChild(rfTextBlock(rows, 'riddim-kompa-brooklyn-2026-09-26'));
       block.appendChild(rfWaitlistBlock(rows, 'riddim-kompa-brooklyn-2026-09-26'));
       var SLAB = { 'bk12':'12 PM','bk1':'1 PM','bk2':'2 PM' }; var _curSess=null, _curSessBlock=null;
       _rfMarkFirst(display, rows);
@@ -15628,6 +15733,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var _bkOrd = { 'o12':0, 'o1':1, 'o2':2, 'o3':3 };
       function _bkRank(s){ return _bkOrd[s]!==undefined ? _bkOrd[s] : 99; }
       display.sort(function(a,b){ return (_bkRank(a.session)-_bkRank(b.session)) || (a.created_at||'').localeCompare(b.created_at||''); });
+      block.appendChild(rfTextBlock(rows, 'riddim-kompa-brooklyn-2026-10-10'));
       block.appendChild(rfWaitlistBlock(rows, 'riddim-kompa-brooklyn-2026-10-10'));
       var SLAB = { 'o12':'12 PM','o1':'1 PM','o2':'2 PM','o3':'3 PM' }; var _curSess=null, _curSessBlock=null;
       _rfMarkFirst(display, rows);
@@ -15704,6 +15810,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var _bkOrd = { 'n12':0, 'n1':1, 'n2':2, 'n3':3 };
       function _bkRank(s){ return _bkOrd[s]!==undefined ? _bkOrd[s] : 99; }
       display.sort(function(a,b){ return (_bkRank(a.session)-_bkRank(b.session)) || (a.created_at||'').localeCompare(b.created_at||''); });
+      block.appendChild(rfTextBlock(rows, 'riddim-kompa-brooklyn-2026-11-21'));
       block.appendChild(rfWaitlistBlock(rows, 'riddim-kompa-brooklyn-2026-11-21'));
       var SLAB = { 'n12':'12 PM','n1':'1 PM','n2':'2 PM','n3':'3 PM' }; var _curSess=null, _curSessBlock=null;
       _rfMarkFirst(display, rows);
@@ -15777,6 +15884,7 @@ document.addEventListener('DOMContentLoaded', function() {
       block.innerHTML += '<button type="button" onclick="rfTyForget()" title="Allow everyone to be thanked again" style="margin:.1rem 0 .7rem .35rem;background:none;border:none;color:#8a7d6b;font-size:.72rem;text-decoration:underline;cursor:pointer;font-family:Jost,sans-serif;">Reset thank-you memory</button>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
+      block.appendChild(rfTextBlock(rows, 'turkey-burn-2026-11-28'));
       block.appendChild(rfWaitlistBlock(rows, 'turkey-burn-2026-11-28'));
       var _o28 = { 'tb28_1130':0, 'tb28_1230':1, 'tb28_130':2 };
       display.sort(function(a,b){
@@ -15857,6 +15965,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
+      block.appendChild(rfTextBlock(rows, 'turkey-burn-2026-11-22'));
       block.appendChild(rfWaitlistBlock(rows, 'turkey-burn-2026-11-22'));
       var SLAB = { 'tb1130':'11:30 AM','tb1230':'12:30 PM','tb130':'1:30 PM' }; var _curSess=null, _curSessBlock=null;
       _rfMarkFirst(display, rows);
@@ -15934,6 +16043,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
+      block.appendChild(rfTextBlock(rows, 'halloween-creek-2026-10-24'));
       block.appendChild(rfWaitlistBlock(rows, 'halloween-creek-2026-10-24'));
       var SLAB = { 'hw1130':'11:30 AM','hw1230':'12:30 PM','hw130':'1:30 PM' }; var _curSess=null, _curSessBlock=null;
       _rfMarkFirst(display, rows);
