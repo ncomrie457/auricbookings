@@ -3431,7 +3431,15 @@
     var pills={};
     Object.keys(CFG).forEach(function(id){
       var card=document.getElementById(id); if(!card) return;
-      var pill=document.createElement('div'); pill.className='bq-event-cardstatus ok'; pill.textContent='Now booking';
+      // A closed date starts — and stays — Sold out. Its seats keep coming back
+      // as people are moved off it, and without this the pill reads its empty
+      // room as availability and invites people onto a date that isn't running.
+      // Set at creation, not just after the count, so it never flashes "Now
+      // booking" first and is still right if the count never arrives.
+      var shut = window.auricIsClosed && window.auricIsClosed(card.getAttribute('data-event-id'));
+      var pill=document.createElement('div');
+      pill.className='bq-event-cardstatus ' + (shut ? 'sold' : 'ok');
+      pill.textContent = shut ? 'Sold out' : 'Now booking';
       var dateEl=card.querySelector('.bq-event-date');
       if(dateEl) card.insertBefore(pill, dateEl); else card.appendChild(pill);
       pills[id]=pill;
@@ -3450,6 +3458,10 @@
             // would otherwise flip the pill back to "Now booking".
             var cardEl=document.getElementById(id);
             if(cardEl && window.auricEventOver && window.auricEventOver(cardEl.getAttribute('data-event-date'))){
+              set(id,'Sold out','sold'); return;
+            }
+            // Same for a date closed by hand — the live count must not undo it.
+            if(cardEl && window.auricIsClosed && window.auricIsClosed(cardEl.getAttribute('data-event-id'))){
               set(id,'Sold out','sold'); return;
             }
             cfg.sessions.forEach(function(s){ var r=cfg.cap-(paid[s]||0); rem+=(r>0?r:0); });
@@ -6715,20 +6727,23 @@ Can't wait to move and connect with you!</textarea>
   window.AURIC_CLOSED_EVENTS = {
     'riddim-kompa-brooklyn-2026-09-26': {
       why:  'nor’easter on the day, plus multiple cancellations — moved to Oct 10',
-      // Publicly this reads as a normal full date rather than announcing a
-      // cancellation to everyone scrolling past. Anyone who opens it still
-      // gets the whole story in `say`, and everyone booked was emailed.
-      card: 'Sold out',
+      // card:false leaves the "Reserve →" link alone, so the card reads exactly
+      // like any other full date — the status pill says Sold out and nothing
+      // else announces a cancellation to people scrolling past. Anyone who
+      // opens it still gets the whole story in `say`.
+      card: false,
       tag:  'Sold out',
-      // No alternative dates named here on purpose — the reschedule is being
-      // handled by email, one person at a time, and this popup is public.
-      // It still has to tell someone who paid what happened to their spot.
-      say:  '<strong>September 26 isn’t running.</strong><br>'
-          + 'The weather made getting here unsafe for too many people, so the day '
-          + 'is being rescheduled rather than run short.<br><br>'
-          + '<strong>Already booked?</strong> Your spot is safe and you haven’t been '
-          + 'charged anything extra. Everyone who was signed up has been emailed — '
-          + 'check your inbox, and reply there and I’ll sort out your new date.'
+      // The two dates are named, but not linked: the choice is being made by
+      // reply, one person at a time, so a button straight into a booking form
+      // would take payment from someone who already has a paid spot.
+      say:  '<strong>This date has moved to Saturday, October 10.</strong><br>'
+          + 'The weather on the 26th made getting here unsafe for too many people, '
+          + 'so the whole day is moving rather than running it short.<br><br>'
+          + '<strong>Already booked for September 26?</strong> Your spot moves with you — '
+          + 'same class, same studio, no charge. Everyone who was signed up has been emailed. '
+          + 'You can take <strong>Saturday, October 10</strong> or '
+          + '<strong>Saturday, November 21</strong> — just reply to that email and tell me '
+          + 'which you’d like, and I’ll send your new time.'
     }
   };
   window.auricIsClosed = function(ev){
@@ -6743,8 +6758,10 @@ Can't wait to move and connect with you!</textarea>
     return {
       // `tag` falls back to `card`, so an entry only needs to say it twice
       // when the public wording and the session rows should differ.
-      card: c.card || 'Registration closed',
-      tag:  c.tag || c.card || 'Registration closed',
+      // card:false leaves the card's own link untouched — the status pill
+      // already says Sold out, and that is all a passer-by needs.
+      card: c.card === false ? null : (c.card || 'Registration closed'),
+      tag:  c.tag || (c.card === false ? 'Sold out' : c.card) || 'Registration closed',
       say:  c.say  || '<strong>Registration is closed for this date.</strong><br>'
                     + 'Already booked? You’re all set — check your confirmation email for '
                     + 'your arrival time. Hoping to join us? Have a look at the other dates below.'
@@ -6791,7 +6808,7 @@ Can't wait to move and connect with you!</textarea>
       var copy = window.auricClosedCopy(card.getAttribute('data-event-id'));
       if(!copy) return;
       var link = card.querySelector('.bq-event-link');
-      if(link){ link.textContent = copy.card; link.style.opacity = '.62'; }
+      if(link && copy.card){ link.textContent = copy.card; link.style.opacity = '.62'; }
       card.setAttribute('data-soldout','true');   // and stop it being featured
     });
   });
