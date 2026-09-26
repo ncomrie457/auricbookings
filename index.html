@@ -1817,6 +1817,23 @@
       transition: transform .6s ease;
     }
 
+    /* A closed date wears its notice on the flyer, so the reason is readable
+       straight from the grid without opening the card. Scrolls rather than
+       clips if the wording outgrows the frame on a narrow screen. */
+    .bq-event-notice {
+      position: absolute; inset: 0; z-index: 2;
+      display: flex; align-items: center; justify-content: center;
+      overflow-y: auto; padding: 1.1rem;
+      background: rgba(28,20,14,.88);
+      -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+      border-radius: 6px;
+      font-family: 'Jost', sans-serif; font-size: .78rem; line-height: 1.6;
+      color: #f0e2ca; text-align: left;
+    }
+    .bq-event-notice > div { width: 100%; }
+    .bq-event-notice strong { color: #fff; font-weight: 600; }
+    @media (max-width: 600px) { .bq-event-notice { font-size: .82rem; } }
+
     /* Riddim & Kompa card: show the whole illustrated flyer (not a crop).
        Frame background matches the flyer's cream (#f8f1e7) so the letterbox is seamless. */
     #event-card-reformer .bq-event-photo, #event-card-reformer-bk .bq-event-photo, #event-card-turkey .bq-event-photo, #event-card-turkey28 .bq-event-photo { background: #f5efe3; }
@@ -6727,11 +6744,10 @@ Can't wait to move and connect with you!</textarea>
   window.AURIC_CLOSED_EVENTS = {
     'riddim-kompa-brooklyn-2026-09-26': {
       why:  'nor’easter on the day, plus multiple cancellations — moved to Oct 10',
-      // card:false leaves the "Reserve →" link alone, so the card reads exactly
-      // like any other full date — the status pill says Sold out and nothing
-      // else announces a cancellation to people scrolling past. Anyone who
-      // opens it still gets the whole story in `say`.
-      card: false,
+      // The button says where the date went; the status pill says Sold out so
+      // the live seat count can't advertise the empty room as availability;
+      // the session rows inside say Sold out too.
+      card: 'Moved to Oct 10',
       tag:  'Sold out',
       // The two dates are named, but not linked: the choice is being made by
       // reply, one person at a time, so a button straight into a booking form
@@ -6810,6 +6826,16 @@ Can't wait to move and connect with you!</textarea>
       var link = card.querySelector('.bq-event-link');
       if(link && copy.card){ link.textContent = copy.card; link.style.opacity = '.62'; }
       card.setAttribute('data-soldout','true');   // and stop it being featured
+      // The same notice the popup shows, laid over the flyer. Same string, not
+      // a second copy — a notice that drifts out of step with the popup is
+      // worse than no notice at all.
+      var photo = card.querySelector('.bq-event-photo');
+      if(photo && copy.say && !photo.querySelector('.bq-event-notice')){
+        var box = document.createElement('div');
+        box.className = 'bq-event-notice';
+        box.innerHTML = '<div>' + copy.say + '</div>';
+        photo.appendChild(box);
+      }
     });
   });
   window.auricCalButtons = function(keyOrUrl){
