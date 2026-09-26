@@ -6767,17 +6767,32 @@ Can't wait to move and connect with you!</textarea>
     + 'Brooklyn &mdash; Maison Luxe Pilates &amp; Wellness, 958 Lafayette Ave<br>'
     + 'Long Island &mdash; Valley Studio, inside Cherry Valley Sports, West Hempstead</p>';
 
+  var RK_SHORT =
+      '<p>Riddim &#215; Kompa is a reformer Pilates experience built on the sounds of '
+    + 'Jamaica and Haiti &mdash; Jamaica&rsquo;s riddim and Haiti&rsquo;s kompa &mdash; taught by '
+    + 'an instructor who is both. The music is the reason the class exists, and it&rsquo;s hers.</p>'
+    + '<p>Forty-five minutes of full-body reformer work in a small room. Every level is '
+    + 'welcome and every movement has a modification. Everyone leaves with a curated goodie '
+    + 'bag: Haitian and Jamaican treats, plus a quick-facts sheet on the culture, history '
+    + 'and sounds of both islands.</p>';
+
   /* ── What each event actually is ───────────────────────────────────────
      The description shown inside a booking popup, under the date and price
      and above "Pick your time". Keyed by event id; an event with no entry
      here simply shows nothing. To reword one, edit the text below — the
      same copy feeds every date of that event.                            */
   var RF_EVENT_DESC = {
-    'riddim-kompa': RK_DESC,                 // the series, for the Events tab intro
-    'riddim-kompa-reformer-2026-09-13': RK_DESC,
-    'riddim-kompa-brooklyn-2026-09-26': RK_DESC,
-    'riddim-kompa-brooklyn-2026-10-10': RK_DESC,
-    'riddim-kompa-brooklyn-2026-11-21': RK_DESC,
+    // The long piece belongs to the Events tab, under "The Experience", where
+    // someone is deciding whether this is for them and has room to read.
+    'riddim-kompa': RK_DESC,
+    // A booking popup is a different moment: they have already decided, and
+    // its header is showing the date, the venue and the price a few lines
+    // above. Repeating the title and the venue there reads like a fault, so
+    // the popups get the short telling instead.
+    'riddim-kompa-reformer-2026-09-13': RK_SHORT,
+    'riddim-kompa-brooklyn-2026-09-26': RK_SHORT,
+    'riddim-kompa-brooklyn-2026-10-10': RK_SHORT,
+    'riddim-kompa-brooklyn-2026-11-21': RK_SHORT,
     'halloween-creek-2026-10-24':
       '<p><strong>Shhh&hellip; Quiet on the Creek</strong> is a Halloween reformer Pilates experience with dim lighting, moody music, and a little something different.</p><p>Expect a full 45-minute reformer workout in a low-lit room, with the playlist setting the Halloween mood from start to finish. Come in costume &mdash; everyone else will be.</p>',
     'turkey-burn-2026-11-22':
