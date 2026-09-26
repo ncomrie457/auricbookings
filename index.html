@@ -5517,7 +5517,7 @@
         <div>
           <label for="wlc-event" class="au-label">Event</label>
           <select id="wlc-event" onchange="wlcOnEventChange()" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.82rem;">
-            <option value="riddim-kompa-brooklyn-2026-09-26" data-event-date="2026-09-26">Riddim &amp; Kompa &mdash; Brooklyn (Sep 26)</option>
+            <option value="riddim-kompa-brooklyn-2026-09-26" data-event-date="2026-09-26" data-past="true">Riddim &amp; Kompa &mdash; Brooklyn (Sep 26)</option>
             <option value="riddim-kompa-brooklyn-2026-10-10" data-event-date="2026-10-10">Riddim &amp; Kompa &mdash; Brooklyn (Oct 10)</option>
             <option value="riddim-kompa-brooklyn-2026-11-21" data-event-date="2026-11-21">Riddim &amp; Kompa &mdash; Brooklyn (Nov 21)</option>
             <option value="halloween-creek-2026-10-24" data-event-date="2026-10-24">Shhh&hellip; Quiet on the Creek (Oct 24)</option>
@@ -5604,9 +5604,9 @@
             <option value="rk1pm" data-event-date="2026-09-13">Riddim &amp; Kompa &#8212; West Hempstead &#183; Sun Sep 13 &#183; 1 PM</option>
             <option value="rk2pm" data-event-date="2026-09-13">Riddim &amp; Kompa &#8212; West Hempstead &#183; Sun Sep 13 &#183; 2 PM</option>
             <option value="rk3pm" data-event-date="2026-09-13">Riddim &amp; Kompa &#8212; West Hempstead &#183; Sun Sep 13 &#183; 3 PM</option>
-            <option value="rkbk12" data-event-date="2026-09-26">Riddim &amp; Kompa &#8212; Brooklyn &#183; Sat Sep 26 &#183; 12 PM</option>
-            <option value="rkbk1" data-event-date="2026-09-26">Riddim &amp; Kompa &#8212; Brooklyn &#183; Sat Sep 26 &#183; 1 PM</option>
-            <option value="rkbk2" data-event-date="2026-09-26">Riddim &amp; Kompa &#8212; Brooklyn &#183; Sat Sep 26 &#183; 2 PM</option>
+            <option value="rkbk12" data-event-date="2026-09-26" data-past="true">Riddim &amp; Kompa &#8212; Brooklyn &#183; Sat Sep 26 &#183; 12 PM</option>
+            <option value="rkbk1" data-event-date="2026-09-26" data-past="true">Riddim &amp; Kompa &#8212; Brooklyn &#183; Sat Sep 26 &#183; 1 PM</option>
+            <option value="rkbk2" data-event-date="2026-09-26" data-past="true">Riddim &amp; Kompa &#8212; Brooklyn &#183; Sat Sep 26 &#183; 2 PM</option>
             <option value="rko12" data-event-date="2026-10-10">Riddim &amp; Kompa &#8212; Brooklyn &#183; Sat Oct 10 &#183; 12 PM</option>
             <option value="rko1" data-event-date="2026-10-10">Riddim &amp; Kompa &#8212; Brooklyn &#183; Sat Oct 10 &#183; 1 PM</option>
             <option value="rko2" data-event-date="2026-10-10">Riddim &amp; Kompa &#8212; Brooklyn &#183; Sat Oct 10 &#183; 2 PM</option>
@@ -6053,7 +6053,7 @@
           <select id="admin-flex-reminder-event" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.82rem;box-sizing:border-box;background:#fff;color:#3d322a;">
             <optgroup label="Upcoming events" data-when="upcoming">
               <option value="reformer" data-event-date="2026-09-13">Riddim &amp; Kompa &mdash; West Hempstead (Sep 13)</option>
-              <option value="reformer-bk" data-event-date="2026-09-26">Riddim &amp; Kompa &mdash; Brooklyn (Sep 26)</option>
+              <option value="reformer-bk" data-event-date="2026-09-26" data-past="true">Riddim &amp; Kompa &mdash; Brooklyn (Sep 26)</option>
               <option value="reformer-o10" data-event-date="2026-10-10">Riddim &amp; Kompa &mdash; Brooklyn (Oct 10)</option>
               <option value="reformer-n21" data-event-date="2026-11-21">Riddim &amp; Kompa &mdash; Brooklyn (Nov 21)</option>
               <option value="halloween" data-event-date="2026-10-24">Shhh&hellip; Quiet on the Creek (Oct 24)</option>
@@ -6090,13 +6090,17 @@
             var dated = [];
             Array.prototype.forEach.call(sel.querySelectorAll('option[data-event-date]'), function(o){
               var d = new Date(o.getAttribute('data-event-date') + 'T00:00:00');
-              if(!isNaN(d.getTime())) dated.push({ el:o, d:d });
+              // data-past files an event under the archive before its date
+              // arrives — a date that was cancelled or rescheduled is finished
+              // as far as these pickers are concerned, whatever the calendar
+              // says. Same flag the event cards use.
+              if(!isNaN(d.getTime())) dated.push({ el:o, d:d, past:o.getAttribute('data-past')==='true' });
             });
             if(!dated.length) return;
-            dated.filter(function(x){ return x.d >= today; })
+            dated.filter(function(x){ return !x.past && x.d >= today; })
                  .sort(function(a,b){ return a.d - b.d; })
                  .forEach(function(x){ up.appendChild(x.el); });
-            dated.filter(function(x){ return x.d < today; })
+            dated.filter(function(x){ return x.past || x.d < today; })
                  .sort(function(a,b){ return b.d - a.d; })
                  .forEach(function(x){ past.appendChild(x.el); });
             up.hidden = !up.children.length;
@@ -11515,6 +11519,10 @@ document.addEventListener('DOMContentLoaded', function() {
     turkey28Container.setAttribute('data-event-date', '2026-11-28');
     halloweenContainer.setAttribute('data-event-date', '2026-10-24');
     reformerBkContainer.setAttribute('data-event-date', '2026-09-26');
+    // Rescheduled, so it belongs with the finished events even though its date
+    // has not arrived. Its roster stays reachable — people still have to be
+    // moved off it.
+    reformerBkContainer.setAttribute('data-past', 'true');
     reformerO10Container.setAttribute('data-event-date', '2026-10-10');
     reformerN21Container.setAttribute('data-event-date', '2026-11-21');
     reformerContainer.setAttribute('data-event-date', '2026-09-13');
@@ -11543,12 +11551,20 @@ document.addEventListener('DOMContentLoaded', function() {
       halloweenContainer, turkeyContainer,
       turkey28Container, bloomContainer, crContainer, mcContainer, sessionsContainer
     ];
+    // One test, used by both the ordering below and the Show-events filter, so
+    // the two can never disagree about where an event belongs. data-past files
+    // a section under Past before its date arrives — a date that was cancelled
+    // or rescheduled is finished here whatever the calendar says.
+    function sectionIsPast(el){
+      if(el.getAttribute('data-past') === 'true') return true;
+      var ds = el.getAttribute('data-event-date');
+      return !!ds && isEventPast(ds);
+    }
     var upcomingSections = [], pastSections = [];
     datedSections.forEach(function(el){
       var ds = el.getAttribute('data-event-date'); if(!ds) return;
       var d = new Date(ds + 'T00:00:00'); if(isNaN(d.getTime())) return;
-      // Same test the Show-events filter uses, so order and filter always agree.
-      (isEventPast(ds) ? pastSections : upcomingSections).push({ el: el, d: d });
+      (sectionIsPast(el) ? pastSections : upcomingSections).push({ el: el, d: d });
     });
     upcomingSections.sort(function(a,b){ return a.d - b.d; });
     pastSections.sort(function(a,b){ return b.d - a.d; });
@@ -11566,7 +11582,7 @@ document.addEventListener('DOMContentLoaded', function() {
       adminEventFilterValue = v;
       body.querySelectorAll('[data-event-date]').forEach(function(c){
         var d = c.getAttribute('data-event-date'); if(!d) return;
-        var past = (typeof isEventPast === 'function') ? isEventPast(d) : false;
+        var past = sectionIsPast(c);
         var show = (v==='all') || (v==='past' && past) || (v==='recent' && !past);
         c.style.display = show ? '' : 'none';
       });
