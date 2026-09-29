@@ -6836,6 +6836,48 @@ Can't wait to move and connect with you!</textarea>
           + 'which you’d like, and I’ll send your new time.'
     }
   };
+  /* ── A single session held back ───────────────────────────────────────
+     Different from closing a whole date. The event keeps selling; one slot
+     stops taking money because it is spoken for — a private booking, a
+     birthday group, anything held for someone by arrangement.
+
+     No waitlist is offered on a held slot. A waitlist means "tell me if a
+     seat frees up", and this seat is not going to: it already has someone's
+     name on it. Offering one would collect hope and deliver nothing.
+
+     TO HOLD ONE:  add the session key under its event, with what the button
+                   should say.
+     TO RELEASE:   delete the line and it goes straight back on sale at
+                   whatever the live count says.                          */
+  window.AURIC_CLOSED_SESSIONS = {
+    'riddim-kompa-brooklyn-2026-11-21': { 'n3': 'Registration closed' }   // held for a birthday
+  };
+  // Lock every held slot on a screen, without asking the database anything.
+  // This runs before the seat count, so a hold survives Supabase being slow,
+  // blocked or down — the count re-enables buttons when it arrives, and if it
+  // never arrives the hold has to stand on its own. Someone else booking a
+  // seat that is promised to a birthday group is not a recoverable mistake.
+  window.auricLockHeldSessions = function(ev, stepTimeEl){
+    if(!stepTimeEl) return;
+    Array.prototype.forEach.call(stepTimeEl.querySelectorAll('.rf-time'), function(btn){
+      window.auricLockSession(ev, btn.getAttribute('data-session'), btn);
+    });
+  };
+  // Returns true when it locked the button, so the caller skips the seat
+  // count entirely — a held slot is not for sale however empty it is.
+  window.auricLockSession = function(ev, session, btn){
+    var held = (window.AURIC_CLOSED_SESSIONS || {})[ev];
+    var tag  = held && held[session];
+    if(!tag || !btn) return false;
+    var left = btn.querySelector('.rf-left-tag');    if(left) left.remove();
+    var old  = btn.querySelector('.rf-soldout-tag'); if(old) old.remove();
+    if(window.auricWaitlistClear) window.auricWaitlistClear(btn);
+    btn.disabled = true; btn.classList.add('rf-soldout');
+    var t = document.createElement('small');
+    t.className = 'rf-soldout-tag'; t.textContent = tag;
+    btn.appendChild(t);
+    return true;
+  };
   window.auricIsClosed = function(ev){
     return !!(window.AURIC_CLOSED_EVENTS && window.AURIC_CLOSED_EVENTS[ev]);
   };
@@ -7122,6 +7164,8 @@ document.addEventListener('DOMContentLoaded', function(){
     // must not re-open a class that already happened.
     if(window.auricLockIfClosed && window.auricLockIfClosed(RKBK_EVENT, stepTime)) return;
     if(window.auricLockIfPast && window.auricLockIfPast('2026-09-26', stepTime)) return;
+    // Held slots lock here, before anything is asked of the database.
+    if(window.auricLockHeldSessions) window.auricLockHeldSessions(RKBK_EVENT, stepTime);
     var c=sb(); if(!c) return;
     try {
       c.rpc('reformer_spot_counts').then(function(res){
@@ -7134,6 +7178,9 @@ document.addEventListener('DOMContentLoaded', function(){
           var so=btn.querySelector('.rf-soldout-tag'); if(so) so.remove();
           if(window.auricWaitlistClear) window.auricWaitlistClear(btn);
           btn.disabled=false; btn.classList.remove('rf-soldout');
+          // A held slot is not for sale however empty it is, so this comes
+          // before the seat count and skips it.
+          if(window.auricLockSession && window.auricLockSession(RKBK_EVENT, s, btn)) return;
           if(rem<=0){ btn.disabled=true; btn.classList.add('rf-soldout'); var t=document.createElement('small'); t.className='rf-soldout-tag'; t.textContent='Sold out'; btn.appendChild(t); if(window.auricWaitlistAppend) window.auricWaitlistAppend(btn, RKBK_EVENT, s, btn.getAttribute('data-label')); }
           else if(rem<=2){ var l=document.createElement('small'); l.className='rf-left-tag'; l.textContent='⚡ Almost sold out — only '+rem+' spot'+(rem===1?'':'s')+' left'; btn.appendChild(l); }
         });
@@ -7365,6 +7412,8 @@ document.addEventListener('DOMContentLoaded', function(){
     // must not re-open a class that already happened.
     if(window.auricLockIfClosed && window.auricLockIfClosed(RKO10_EVENT, stepTime)) return;
     if(window.auricLockIfPast && window.auricLockIfPast('2026-10-10', stepTime)) return;
+    // Held slots lock here, before anything is asked of the database.
+    if(window.auricLockHeldSessions) window.auricLockHeldSessions(RKO10_EVENT, stepTime);
     var c=sb(); if(!c) return;
     try {
       c.rpc('reformer_spot_counts').then(function(res){
@@ -7377,6 +7426,9 @@ document.addEventListener('DOMContentLoaded', function(){
           var so=btn.querySelector('.rf-soldout-tag'); if(so) so.remove();
           if(window.auricWaitlistClear) window.auricWaitlistClear(btn);
           btn.disabled=false; btn.classList.remove('rf-soldout');
+          // A held slot is not for sale however empty it is, so this comes
+          // before the seat count and skips it.
+          if(window.auricLockSession && window.auricLockSession(RKO10_EVENT, s, btn)) return;
           if(rem<=0){ btn.disabled=true; btn.classList.add('rf-soldout'); var t=document.createElement('small'); t.className='rf-soldout-tag'; t.textContent='Sold out'; btn.appendChild(t); if(window.auricWaitlistAppend) window.auricWaitlistAppend(btn, RKO10_EVENT, s, btn.getAttribute('data-label')); }
           else if(rem<=2){ var l=document.createElement('small'); l.className='rf-left-tag'; l.textContent='⚡ Almost sold out — only '+rem+' spot'+(rem===1?'':'s')+' left'; btn.appendChild(l); }
         });
@@ -7632,6 +7684,8 @@ document.addEventListener('DOMContentLoaded', function(){
     // must not re-open a class that already happened.
     if(window.auricLockIfClosed && window.auricLockIfClosed(RKN21_EVENT, stepTime)) return;
     if(window.auricLockIfPast && window.auricLockIfPast('2026-11-21', stepTime)) return;
+    // Held slots lock here, before anything is asked of the database.
+    if(window.auricLockHeldSessions) window.auricLockHeldSessions(RKN21_EVENT, stepTime);
     var c=sb(); if(!c) return;
     try {
       c.rpc('reformer_spot_counts').then(function(res){
@@ -7644,6 +7698,9 @@ document.addEventListener('DOMContentLoaded', function(){
           var so=btn.querySelector('.rf-soldout-tag'); if(so) so.remove();
           if(window.auricWaitlistClear) window.auricWaitlistClear(btn);
           btn.disabled=false; btn.classList.remove('rf-soldout');
+          // A held slot is not for sale however empty it is, so this comes
+          // before the seat count and skips it.
+          if(window.auricLockSession && window.auricLockSession(RKN21_EVENT, s, btn)) return;
           if(rem<=0){ btn.disabled=true; btn.classList.add('rf-soldout'); var t=document.createElement('small'); t.className='rf-soldout-tag'; t.textContent='Sold out'; btn.appendChild(t); if(window.auricWaitlistAppend) window.auricWaitlistAppend(btn, RKN21_EVENT, s, btn.getAttribute('data-label')); }
           else if(rem<=2){ var l=document.createElement('small'); l.className='rf-left-tag'; l.textContent='⚡ Almost sold out — only '+rem+' spot'+(rem===1?'':'s')+' left'; btn.appendChild(l); }
         });
@@ -7919,6 +7976,8 @@ document.addEventListener('DOMContentLoaded', function(){
     // must not re-open a class that already happened.
     if(window.auricLockIfClosed && window.auricLockIfClosed(TB_EVENT, stepTime)) return;
     if(window.auricLockIfPast && window.auricLockIfPast('2026-11-22', stepTime)) return;
+    // Held slots lock here, before anything is asked of the database.
+    if(window.auricLockHeldSessions) window.auricLockHeldSessions(TB_EVENT, stepTime);
     var c=sb(); if(!c) return;
     try {
       c.rpc('reformer_spot_counts').then(function(res){
@@ -7934,6 +7993,9 @@ document.addEventListener('DOMContentLoaded', function(){
           var so=btn.querySelector('.rf-soldout-tag'); if(so) so.remove();
           if(window.auricWaitlistClear) window.auricWaitlistClear(btn);
           btn.disabled=false; btn.classList.remove('rf-soldout');
+          // A held slot is not for sale however empty it is, so this comes
+          // before the seat count and skips it.
+          if(window.auricLockSession && window.auricLockSession(TB_EVENT, s, btn)) return;
           if(rem<=0){ btn.disabled=true; btn.classList.add('rf-soldout'); var t=document.createElement('small'); t.className='rf-soldout-tag'; t.textContent='Sold out'; btn.appendChild(t); if(window.auricWaitlistAppend) window.auricWaitlistAppend(btn, TB_EVENT, s, btn.getAttribute('data-label')); }
           else if(rem<=2){ var l=document.createElement('small'); l.className='rf-left-tag'; l.textContent='⚡ Almost sold out — only '+rem+' spot'+(rem===1?'':'s')+' left'; btn.appendChild(l); }
         });
@@ -8142,6 +8204,8 @@ document.addEventListener('DOMContentLoaded', function(){
     // (a credit) must not re-open a class that already happened.
     if(window.auricLockIfClosed && window.auricLockIfClosed(TB28_EVENT, stepTime)) return;
     if(window.auricLockIfPast && window.auricLockIfPast('2026-11-28', stepTime)) return;
+    // Held slots lock here, before anything is asked of the database.
+    if(window.auricLockHeldSessions) window.auricLockHeldSessions(TB28_EVENT, stepTime);
     var c=sb(); if(!c) return;
     try {
       c.rpc('reformer_spot_counts').then(function(res){
@@ -8154,6 +8218,9 @@ document.addEventListener('DOMContentLoaded', function(){
           var so=btn.querySelector('.rf-soldout-tag'); if(so) so.remove();
           if(window.auricWaitlistClear) window.auricWaitlistClear(btn);
           btn.disabled=false; btn.classList.remove('rf-soldout');
+          // A held slot is not for sale however empty it is, so this comes
+          // before the seat count and skips it.
+          if(window.auricLockSession && window.auricLockSession(TB28_EVENT, sk, btn)) return;
           if(rem<=0){ btn.disabled=true; btn.classList.add('rf-soldout'); var t=document.createElement('small'); t.className='rf-soldout-tag'; t.textContent='Sold out'; btn.appendChild(t); if(window.auricWaitlistAppend) window.auricWaitlistAppend(btn, TB28_EVENT, sk, btn.getAttribute('data-label')); }
           else if(rem<=2){ var l=document.createElement('small'); l.className='rf-left-tag'; l.textContent='\u26a1 Almost sold out \u2014 only '+rem+' spot'+(rem===1?'':'s')+' left'; btn.appendChild(l); }
         });
@@ -8439,6 +8506,8 @@ document.addEventListener('DOMContentLoaded', function(){
     // must not re-open a class that already happened.
     if(window.auricLockIfClosed && window.auricLockIfClosed(HW_EVENT, stepTime)) return;
     if(window.auricLockIfPast && window.auricLockIfPast('2026-10-24', stepTime)) return;
+    // Held slots lock here, before anything is asked of the database.
+    if(window.auricLockHeldSessions) window.auricLockHeldSessions(HW_EVENT, stepTime);
     var c=sb(); if(!c) return;
     try {
       c.rpc('reformer_spot_counts').then(function(res){
@@ -8453,6 +8522,9 @@ document.addEventListener('DOMContentLoaded', function(){
           var so=btn.querySelector('.rf-soldout-tag'); if(so) so.remove();
           if(window.auricWaitlistClear) window.auricWaitlistClear(btn);
           btn.disabled=false; btn.classList.remove('rf-soldout');
+          // A held slot is not for sale however empty it is, so this comes
+          // before the seat count and skips it.
+          if(window.auricLockSession && window.auricLockSession(HW_EVENT, s, btn)) return;
           if(rem<=0){ btn.disabled=true; btn.classList.add('rf-soldout'); var t=document.createElement('small'); t.className='rf-soldout-tag'; t.textContent='Sold out'; btn.appendChild(t); if(window.auricWaitlistAppend) window.auricWaitlistAppend(btn, HW_EVENT, s, btn.getAttribute('data-label')); }
           else if(rem<=2){ var l=document.createElement('small'); l.className='rf-left-tag'; l.textContent='⚡ Almost sold out — only '+rem+' spot'+(rem===1?'':'s')+' left'; btn.appendChild(l); }
         });
