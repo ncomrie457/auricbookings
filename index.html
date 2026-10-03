@@ -13519,9 +13519,14 @@ document.addEventListener('DOMContentLoaded', function() {
               sign_time:timeStr, clauses_agreed:'19 of 19', cancel_code:code
             }).then(function(){ console.log('[admin notif] mat&chat sent for', code); })
               .catch(function(err){ console.error('[admin notif] mat&chat FAILED for', code, err); });
-            // If pair, email the friend a prefilled waiver link
+            // If pair, email the friend a prefilled waiver link.
+            // Points at book.auricmovement.com/waiver/ directly, NOT the
+            // waiver.auricmovement.com vanity subdomain: that one is a
+            // Namecheap URL Redirect Record, and the sibling record on the
+            // bare domain started timing out, so the short form can't be
+            // trusted to deliver someone to a signature page.
             if (isPair && friendName && friendEmail) {
-              var waiverUrl = 'https://waiver.auricmovement.com/?' +
+              var waiverUrl = 'https://book.auricmovement.com/waiver/?' +
                 'name='  + encodeURIComponent(friendName) +
                 '&email=' + encodeURIComponent(friendEmail) +
                 '&event=' + encodeURIComponent('Mat & Chat') +
