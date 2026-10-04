@@ -13519,9 +13519,14 @@ document.addEventListener('DOMContentLoaded', function() {
               sign_time:timeStr, clauses_agreed:'19 of 19', cancel_code:code
             }).then(function(){ console.log('[admin notif] mat&chat sent for', code); })
               .catch(function(err){ console.error('[admin notif] mat&chat FAILED for', code, err); });
-            // If pair, email the friend a prefilled waiver link
+            // If pair, email the friend a prefilled waiver link.
+            // Points at book.auricmovement.com/waiver/ directly, NOT the
+            // waiver.auricmovement.com vanity subdomain: that one is a
+            // Namecheap URL Redirect Record, and the sibling record on the
+            // bare domain started timing out, so the short form can't be
+            // trusted to deliver someone to a signature page.
             if (isPair && friendName && friendEmail) {
-              var waiverUrl = 'https://waiver.auricmovement.com/?' +
+              var waiverUrl = 'https://book.auricmovement.com/waiver/?' +
                 'name='  + encodeURIComponent(friendName) +
                 '&email=' + encodeURIComponent(friendEmail) +
                 '&event=' + encodeURIComponent('Mat & Chat') +
@@ -16535,6 +16540,26 @@ document.addEventListener('DOMContentLoaded', function() {
       .then(function(res){ if(res&&res.error){ alert('Could not update — run the reformer admin SQL first.'); return; } rfRefresh(); },
             function(){ alert('Could not update payment status.'); });
   };
+  // Used by every "Confirm + email" button, once its confirmation has gone out.
+  //
+  // Marks the registration paid AND stamps emailed_at. The stamp matters: the
+  // Stripe webhook treats a row with emailed_at still null as a confirmation it
+  // owes, so a row confirmed here by hand would otherwise stay on that list for
+  // good — cluttering the "paid but never emailed" check that exists to catch
+  // genuinely lost emails, and leaving the row eligible for a duplicate send.
+  //
+  // A failed stamp is not worth an alert. They are paid, their email has gone,
+  // and the worst case is the row looks unemailed — so it is logged, not raised.
+  window.rfMarkConfirmed = function(id){
+    return supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: true })
+      .then(function(){
+        return supabase.rpc('reformer_mark_emailed', { pass: ADMIN_PASSWORD, rid: id })
+          .then(function(res){
+            if(res && res.error) console.warn('[confirm] emailed_at not stamped for', id, res.error.message);
+          }, function(err){ console.warn('[confirm] emailed_at not stamped for', id, err); });
+      }, function(){})
+      .then(function(){ rfRefresh(); }, function(){ rfRefresh(); });
+  };
   window.rfAdminRemove = function(id){
     var rec = rfRosterById[id]; if(!rec){ return; }
     if(!confirm('Remove '+(rec.name||'this registration')+'? This cannot be undone.')) return;
@@ -16835,8 +16860,7 @@ document.addEventListener('DOMContentLoaded', function() {
       refund_policy_ack_at: when,
       refund_policy_text: rec.refund_policy_text || window.__RF_REFUND_TEXT || 'All sales are final — no cash refunds. Cancel at least 48 hours before your session start time for a credit valid 6 months.'
     }).then(function(){ alert('✅ Confirmation sent to '+rec.email); }, function(){ alert('⚠️ Could not send. Check EmailJS dashboard.'); });
-    supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: true })
-      .then(function(){ rfRefresh(); }, function(){});
+    window.rfMarkConfirmed(id);
   };
   // Brooklyn confirmation — same flow as rfAdminConfirm but uses the Brooklyn
   // template (template_pq0dq1h) + Brooklyn session metadata (bk12/bk1/bk2).
@@ -16859,8 +16883,7 @@ document.addEventListener('DOMContentLoaded', function() {
       refund_policy_ack_at: when,
       refund_policy_text: rec.refund_policy_text || window.__RF_REFUND_TEXT || 'All sales are final — no cash refunds. Cancel at least 48 hours before your session start time for a credit valid 6 months.'
     }).then(function(){ alert('✅ Confirmation sent to '+rec.email); }, function(){ alert('⚠️ Could not send. Check EmailJS dashboard.'); });
-    supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: true })
-      .then(function(){ rfRefresh(); }, function(){});
+    window.rfMarkConfirmed(id);
   };
   // Oct 10 Brooklyn confirmation — its own template and its own session metadata.
   // Kept separate from the Brooklyn one on purpose: sharing it would send this
@@ -16891,8 +16914,7 @@ document.addEventListener('DOMContentLoaded', function() {
       refund_policy_ack_at: when,
       refund_policy_text: rec.refund_policy_text || window.__RF_REFUND_TEXT || 'All sales are final — no cash refunds. Cancel at least 48 hours before your session start time for a credit valid 6 months.'
     }).then(function(){ alert('✅ Confirmation sent to '+rec.email); }, function(){ alert('⚠️ Could not send. Check EmailJS dashboard.'); });
-    supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: true })
-      .then(function(){ rfRefresh(); }, function(){});
+    window.rfMarkConfirmed(id);
   };
   // Nov 21 Brooklyn confirmation — its own template and its own session metadata.
   // Kept separate from the Brooklyn one on purpose: sharing it would send this
@@ -16923,8 +16945,7 @@ document.addEventListener('DOMContentLoaded', function() {
       refund_policy_ack_at: when,
       refund_policy_text: rec.refund_policy_text || window.__RF_REFUND_TEXT || 'All sales are final — no cash refunds. Cancel at least 48 hours before your session start time for a credit valid 6 months.'
     }).then(function(){ alert('✅ Confirmation sent to '+rec.email); }, function(){ alert('⚠️ Could not send. Check EmailJS dashboard.'); });
-    supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: true })
-      .then(function(){ rfRefresh(); }, function(){});
+    window.rfMarkConfirmed(id);
   };
   // Halloween confirmation — same flow as rfBkAdminConfirm but uses the Halloween
   // template + Halloween session metadata (hw1230/hw130).
@@ -16946,8 +16967,7 @@ document.addEventListener('DOMContentLoaded', function() {
       refund_policy_ack_at: when,
       refund_policy_text: rec.refund_policy_text || window.__RF_REFUND_TEXT || 'All sales are final — no cash refunds. Cancel at least 48 hours before your session start time for a credit valid 6 months.'
     }).then(function(){ alert('✅ Confirmation sent to '+rec.email); }, function(){ alert('⚠️ Could not send. Check EmailJS dashboard.'); });
-    supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: true })
-      .then(function(){ rfRefresh(); }, function(){});
+    window.rfMarkConfirmed(id);
   };
   // Turkey Burn confirmation — same flow as rfHwAdminConfirm but uses the Turkey
   // Burn template + Turkey session metadata (tb1230/tb130).
@@ -16971,8 +16991,7 @@ document.addEventListener('DOMContentLoaded', function() {
       refund_policy_ack_at: when,
       refund_policy_text: rec.refund_policy_text || window.__RF_REFUND_TEXT || 'All sales are final — no cash refunds. Cancel at least 48 hours before your session start time for a credit valid 6 months.'
     }).then(function(){ alert('✅ Confirmation sent to '+rec.email); }, function(){ alert('⚠️ Could not send. Check EmailJS dashboard.'); });
-    supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: true })
-      .then(function(){ rfRefresh(); }, function(){});
+    window.rfMarkConfirmed(id);
   };
   // Post-Turkey Burn (Nov 28) confirmation — same template as Nov 22, because
   // the date is a variable in it now. Unlike rfTbAdminConfirm this REFUSES on an
@@ -17002,8 +17021,7 @@ document.addEventListener('DOMContentLoaded', function() {
       refund_policy_ack_at: when,
       refund_policy_text: rec.refund_policy_text || window.__RF_REFUND_TEXT || 'All sales are final — no cash refunds. Cancel at least 48 hours before your session start time for a credit valid 6 months.'
     }).then(function(){ alert('✅ Confirmation sent to '+rec.email); }, function(){ alert('⚠️ Could not send. Check EmailJS dashboard.'); });
-    supabase.rpc('reformer_set_paid', { pass: ADMIN_PASSWORD, rid: id, val: true })
-      .then(function(){ rfRefresh(); }, function(){});
+    window.rfMarkConfirmed(id);
   };
   // Admin: POST-EVENT THANK-YOU BLAST — Riddim & Kompa on the Reformer ("Mèsi Anpil").
   // Sends the MÈSI ANPIL template (RIDDIM_KOMPA_MESI_ANPIL_TEMPLATE.html) via Resend to

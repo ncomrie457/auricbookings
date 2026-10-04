@@ -136,11 +136,17 @@
       <label for="reg-event-select">Which event are you attending? <span class="required" aria-hidden="true">*</span></label>
       <select id="reg-event-select" aria-required="true" style="width:100%;padding:.8rem 1rem;border:2px solid var(--border);border-radius:10px;font-size:.95rem;font-family:'Jost',sans-serif;color:var(--text);background:var(--cream-light);">
         <option value="">Select your event…</option>
-        <option value="rk-wh">Riddim &amp; Kompa — West Hempstead · Sun, Sep 13</option>
-        <option value="rk-bk">Riddim &amp; Kompa — Brooklyn · Sat, Sep 26</option>
-        <option value="halloween">Shhh… Quiet on the Creek (Halloween) · Sat, Oct 24</option>
-        <option value="turkey">Pre-Turkey Burn · Sat, Nov 21</option>
-        <option value="turkey28">Post-Turkey Burn · Sat, Nov 28</option>
+        <optgroup label="Upcoming">
+          <option value="rk-bk-1010">Riddim &amp; Kompa — Brooklyn · Sat, Oct 10</option>
+          <option value="halloween">Shhh… Quiet on the Creek (Halloween) · Sat, Oct 24</option>
+          <option value="rk-bk-1121">Riddim &amp; Kompa — Brooklyn · Sat, Nov 21</option>
+          <option value="turkey">Pre-Turkey Burn · Sun, Nov 22</option>
+          <option value="turkey28">Post-Turkey Burn · Sat, Nov 28</option>
+        </optgroup>
+        <optgroup label="Already happened">
+          <option value="rk-wh">Riddim &amp; Kompa — West Hempstead · Sun, Sep 13</option>
+          <option value="rk-bk">Riddim &amp; Kompa — Brooklyn · Sat, Sep 26 (moved to Oct 10)</option>
+        </optgroup>
         <option value="other">Another event / private session</option>
       </select>
       <div id="reg-event-err" class="err-msg" role="alert"></div>
@@ -366,12 +372,21 @@ document.addEventListener('DOMContentLoaded', function() {
     "I understand that Create & Recharge is co-hosted with Georgina Arroyo and includes creative and art-based activities. I acknowledge the inherent risks of using art materials and tools — including cuts, skin irritation, or allergic reactions to paints, adhesives, or other supplies, and staining of clothing or belongings — and I voluntarily assume all such risks. I agree that every release, waiver, and hold-harmless provision in this agreement also protects Auric Movement LLC's collaborators, co-hosts, and guest instructors, including Georgina Arroyo, to the same extent as the Released Parties. I agree to disclose any known allergies or sensitivities to my instructor before participating.";
 
   // Per-event waiver config. extraClauses are appended to the base set above.
+  //
+  // These dates are printed onto a signed waiver, so they have to match the
+  // event cards in /index.html — data-event-date there is the source of truth.
+  // When an event moves, change it in BOTH places.
   var WAIVER_EVENTS = {
+    // ── Upcoming ──
+    'rk-bk-1010': { name: 'Riddim & Kompa on the Reformer — Brooklyn',     date: 'Saturday, October 10, 2026',   extraClauses: [], custom: false },
+    halloween:  { name: 'Shhh… Quiet on the Creek — Halloween Reformer',   date: 'Saturday, October 24, 2026',   extraClauses: [], custom: false },
+    'rk-bk-1121': { name: 'Riddim & Kompa on the Reformer — Brooklyn',     date: 'Saturday, November 21, 2026',  extraClauses: [], custom: false },
+    turkey:     { name: 'Pre-Turkey Burn on the Reformer',                 date: 'Sunday, November 22, 2026',    extraClauses: [], custom: false },
+    turkey28:   { name: 'Post-Turkey Burn on the Reformer',                date: 'Saturday, November 28, 2026',  extraClauses: [], custom: false },
+    // ── Already happened. Kept so older prefilled links (?event=rk-bk) still
+    //    resolve to the right event instead of silently falling back to "other".
     'rk-wh':    { name: 'Riddim & Kompa on the Reformer — West Hempstead', date: 'Sunday, September 13, 2026',   extraClauses: [], custom: false },
     'rk-bk':    { name: 'Riddim & Kompa on the Reformer — Brooklyn',       date: 'Saturday, September 26, 2026', extraClauses: [], custom: false },
-    halloween:  { name: 'Shhh… Quiet on the Creek — Halloween Reformer',   date: 'Saturday, October 24, 2026',   extraClauses: [], custom: false },
-    turkey:     { name: 'Pre-Turkey Burn on the Reformer',                 date: 'Saturday, November 21, 2026',  extraClauses: [], custom: false },
-    turkey28:   { name: 'Post-Turkey Burn on the Reformer',                date: 'Saturday, November 28, 2026',  extraClauses: [], custom: false },
     other:      { name: '',                                                date: '',                             extraClauses: [], custom: true }
   };
   // The clause set currently in play (base by default; swapped when an event is chosen).
