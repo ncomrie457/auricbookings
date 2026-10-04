@@ -97,6 +97,29 @@ const EVENT_DATE: Record<string, string> = {
   "turkey-burn-2026-11-22": "Sunday, November 22nd",
   "turkey-burn-2026-11-28": "Saturday, November 28th",
 };
+// When each event actually happens. Used to ignore rows for events that are
+// already over: a payment landing today is never settling a booking for a class
+// that already ran. Without this, a returning guest — and most of them return —
+// could have a new payment applied to a leftover unpaid row from a past event,
+// and be sent a confirmation for a date that has been and gone.
+const EVENT_ON: Record<string, string> = {
+  "riddim-kompa-reformer-2026-09-13": "2026-09-13",
+  "riddim-kompa-brooklyn-2026-09-26": "2026-09-26",
+  "riddim-kompa-brooklyn-2026-10-10": "2026-10-10",
+  "halloween-creek-2026-10-24": "2026-10-24",
+  "riddim-kompa-brooklyn-2026-11-21": "2026-11-21",
+  "turkey-burn-2026-11-22": "2026-11-22",
+  "turkey-burn-2026-11-28": "2026-11-28",
+};
+// Three days of slack, so a Stripe retry for a payment taken on the day of the
+// event still finds its row. An event NOT in the map is treated as current: a
+// new event whose date nobody added here must not silently stop confirming.
+function eventIsOver(event: string, now: Date): boolean {
+  const on = EVENT_ON[event];
+  if (!on) return false;
+  return new Date(on + "T23:59:59-04:00").getTime() < now.getTime() - 3 * 864e5;
+}
+
 const REFUND_TEXT = "All sales are final — no refunds or credits. Spot transfers to a friend are welcome up to 24 hours before the event — email auricmovement@outlook.com with both names.";
 
 async function sendConfirmation(row: Record<string, unknown>, amountCents: number) {
@@ -195,10 +218,13 @@ Deno.serve(async (req) => {
     .limit(10);
 
   if (error) { console.error("Supabase query error:", error.message); return new Response("db error", { status: 500 }); }
-  const pending = (data ?? []).filter((r) =>
-    String((r as Record<string, unknown>).type ?? "") !== "waitlist" &&
-    !(r as Record<string, unknown>).archived
-  );
+  const now = new Date();
+  const pending = (data ?? []).filter((r) => {
+    const rec = r as Record<string, unknown>;
+    return String(rec.type ?? "") !== "waitlist" &&
+           !rec.archived &&
+           !eventIsOver(String(rec.event ?? ""), now);
+  });
   // An unpaid booking always wins. A payment that just landed is settling a
   // booking that hasn't been paid for, so take the oldest of those first.
   //
