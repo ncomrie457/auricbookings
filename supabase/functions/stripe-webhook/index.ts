@@ -167,29 +167,54 @@ Deno.serve(async (req) => {
   const email = (session.customer_details?.email ?? session.customer_email ?? "").trim();
   if (!email) return new Response("ok (no email)", { status: 200 });
 
-  // Find the most recent reformer registration for this email that still needs
-  // handling — i.e. not yet paid, OR paid but the confirmation email hasn't been
-  // sent yet (emailed_at is null). This is the fix for the retry bug: a booking
-  // that got marked paid on a failed first attempt is still picked up here so the
-  // retry can send the missed email.
+  // Find this payer's registrations that still need handling — not yet paid, OR
+  // paid but the confirmation was never sent (emailed_at is null). That second
+  // case is what lets a Stripe retry deliver an email a failed first attempt lost.
+  //
+  // Several rows can match one person, so this deliberately fetches a handful
+  // rather than one:
+  //
+  //   • A waitlist row is always unpaid, so it always matches. Fetching a single
+  //     row and discarding it if it was a waitlist row meant a waitlist signup
+  //     for ANY date could swallow a real payment's confirmation — the function
+  //     returned early and the paid booking was never seen. Waitlist and archived
+  //     rows are now skipped over rather than being allowed to end the search.
+  //
+  //   • Ordered OLDEST first. Someone who books two sessions pays for them in the
+  //     order they booked far more often than the reverse, and newest-first
+  //     attached the first payment's confirmation to the wrong session.
+  //
+  // The type/archived test stays in code rather than in the query because a
+  // confirmed row may store type as null, and a query-level neq drops nulls.
   const { data, error } = await supabase
     .from("reformer_registrations")
     .select("*")
     .ilike("email", email)
     .or("is_paid.eq.false,emailed_at.is.null")
-    .order("created_at", { ascending: false })
-    .limit(1);
+    .order("created_at", { ascending: true })
+    .limit(10);
 
   if (error) { console.error("Supabase query error:", error.message); return new Response("db error", { status: 500 }); }
-  if (!data || data.length === 0) {
-    // Nothing pending — either a different event's payment, or this booking is
-    // already paid AND already emailed. Either way, done.
+  const pending = (data ?? []).filter((r) =>
+    String((r as Record<string, unknown>).type ?? "") !== "waitlist" &&
+    !(r as Record<string, unknown>).archived
+  );
+  // An unpaid booking always wins. A payment that just landed is settling a
+  // booking that hasn't been paid for, so take the oldest of those first.
+  //
+  // Only when nothing is unpaid is this a retry for a confirmation that failed
+  // to send, and the paid-but-unemailed row is the right target. Checking in
+  // that order matters: a row can sit in paid-but-unemailed indefinitely (a
+  // confirmation sent by hand from the admin panel leaves it that way), and
+  // picking purely by age would let that stale row absorb every future payment
+  // this person makes.
+  const row = pending.find((r) => !(r as Record<string, unknown>).is_paid) ??
+              pending.find((r) => !(r as Record<string, unknown>).emailed_at);
+  if (!row) {
+    // Nothing pending — a different event's payment, a waitlist-only signup, or
+    // this booking is already paid AND already emailed. Either way, done.
     return new Response("ok (no match)", { status: 200 });
   }
-  const row = data[0];
-  // Waitlist rows never pay — filtered here (not in the query) because confirmed
-  // rows may store type as null, which a query-level neq would wrongly exclude.
-  if (row.type === "waitlist") return new Response("ok (waitlist row)", { status: 200 });
 
   // 1) Mark paid immediately (idempotent) so it shows paid in your roster right
   //    away, even if the email step below fails and has to retry.
