@@ -2920,24 +2920,42 @@
      them — about 1.5MB for pictures most people never reached. These three
      each show something the others don't: the room full of people, the
      Riddim & Kompa reformer night, and the goodie bags going out. */
-  .bq-hero-slides{position:absolute;inset:0;z-index:0;background:#ece3d2 url('hero-slide-3.jpg') center 30%/cover no-repeat;}
+  .bq-hero-slides{position:absolute;inset:0;z-index:0;background:#ece3d2 url('hero-slide-6.jpg') center 30%/cover no-repeat;}
   .bq-hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;
-    animation:bqHeroFade 15s linear infinite;will-change:opacity;}
+    animation:bqHeroFade 20s linear infinite;will-change:opacity;}
   .bq-hero-slide:nth-child(1){animation-delay:0s;background-image:url('hero-slide-1.jpg');}
   /* Riddim & Kompa — Valley Studio, the flag and the reformers */
   .bq-hero-slide:nth-child(2){animation-delay:5s;background-image:url('hero-slide-5.jpg');background-position:center 30%;}
   .bq-hero-slide:nth-child(3){animation-delay:10s;background-image:url('hero-slide-3.jpg');background-position:center 30%;}
+  /* Create & Recharge — the full group by the Auric Movement banner */
+  .bq-hero-slide:nth-child(4){animation-delay:15s;background-image:url('hero-slide-6.jpg');background-position:center 35%;}
   /* Each slide holds at full opacity until the NEXT one has completely faded
-     in over it, then drops out behind it. Slides are 5s apart in a 15s cycle
-     (33.3%) and fade in over 1.2s (8%), so the next slide isn't fully opaque
-     until 41.3% — the hold has to run past that. Fading out any earlier
-     leaves a gap where neither slide is opaque and the plate behind shows
-     through — that was the flash between pictures. */
-  @keyframes bqHeroFade{0%{opacity:0}8%{opacity:1}41.4%{opacity:1}41.5%{opacity:0}100%{opacity:0}}
+     in over it, then drops out behind it. Slides are 5s apart in a 20s cycle
+     (25%) and fade in over 1.2s (6%), so the next slide isn't fully opaque
+     until 31% — the hold has to run past that. Fading out any earlier leaves
+     a gap where neither slide is opaque and the plate behind shows through —
+     that was the flash between pictures. Adding a fourth slide changes both
+     numbers: with three it was a 15s cycle, 8% and 41.4%. */
+  @keyframes bqHeroFade{0%{opacity:0}6%{opacity:1}31.4%{opacity:1}31.5%{opacity:0}100%{opacity:0}}
   .bq-hero-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
     background:linear-gradient(180deg, rgba(248,244,236,.9) 0%, rgba(248,244,236,.52) 20%, rgba(248,244,236,.42) 52%, rgba(248,244,236,.78) 100%);}
   .bq-hero-inner{z-index:4 !important;}
   .bq-hero .bq-cta-row{position:relative;z-index:4;}
+  /* Phones are much narrower than these photos are wide. At 393px the hero is
+     about 630px tall, so background-size:cover scales a 1600x900 group shot to
+     roughly 1120px wide and throws away two thirds of it — the people standing
+     at each end simply vanish. These are group photos; losing the ends is the
+     one thing they cannot afford.
+     contain shows the whole frame instead, and the plate behind drops its own
+     photo for a flat tone so the bands read as deliberate rather than as a
+     second picture showing through the gaps. */
+  @media (max-width: 640px){
+    .bq-hero-slides{background-image:none;background-color:#ece3d2;}
+    /* no-repeat matters only here. Under cover the image always filled the box,
+       so the default repeat had nothing to tile into; contain leaves space and
+       the photo starts repeating above and below without it. */
+    .bq-hero-slide{background-size:contain;background-repeat:no-repeat;background-position:center 30%;}
+  }
   @media (prefers-reduced-motion: reduce){
     .bq-hero-slide{animation:none;}
     .bq-hero-slide:nth-child(1){opacity:1;}
@@ -2945,6 +2963,7 @@
 </style>
 <section class="bq-hero hero" role="banner">
   <div class="bq-hero-slides" aria-hidden="true">
+    <div class="bq-hero-slide"></div>
     <div class="bq-hero-slide"></div>
     <div class="bq-hero-slide"></div>
     <div class="bq-hero-slide"></div>
@@ -6348,7 +6367,8 @@ Can't wait to move and connect with you!</textarea>
             <h4>12. How Long We Keep Your Information</h4>
       <p>We keep personal information only as long as there is a reason to, and no longer:</p>
       <ul>
-        <li><strong>Signed waivers and health disclosures</strong> &mdash; four years after the event. New York allows three years to bring a personal injury claim, and the waiver is the record of what you agreed to.</li>
+        <li><strong>Health disclosures</strong> &mdash; kept only to prepare for your class and cleared within 48 hours of it. They are never carried into the long-term record.</li>
+        <li><strong>Signed waivers</strong> &mdash; four years after the event. New York allows three years to bring a personal injury claim, and the waiver is the record of what you agreed to.</li>
         <li><strong>Registration and payment records</strong> &mdash; seven years, to meet tax and accounting requirements.</li>
         <li><strong>Email and text contacts for future events</strong> &mdash; until you unsubscribe or ask to be removed, after which we delete them within 30 days.</li>
         <li><strong>Photographs and video</strong> &mdash; kept until you ask us to remove them, which you may do at any time.</li>
