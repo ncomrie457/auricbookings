@@ -9352,6 +9352,12 @@ document.addEventListener('DOMContentLoaded', function() {
       // Derive eventId from card id: 'event-card-pilates' → 'pilates'
       var slug = card.id.replace(/^event-card-/, '');
       var meta = PAST_EVENT_META[slug] || {};
+      // An event that never ran has no recap coming. September 26 was closed
+      // after the nor'easter and everyone moved to October 10, so a "Recap
+      // Coming Soon" card for it would promise a video of a class that did not
+      // happen — and the archive would carry a date nobody attended.
+      // AURIC_CLOSED_EVENTS is the list of dates that were called off.
+      if ((window.AURIC_CLOSED_EVENTS || {})[card.getAttribute('data-event-id') || '']) return;
       // Show once the event date has passed — or immediately when meta.forcePast is
       // set (e.g. Mat & Chat, whose recap goes up the same evening as the event).
       if (today <= eventDate && !meta.forcePast) return;
