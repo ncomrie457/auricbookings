@@ -10821,11 +10821,23 @@ document.addEventListener('DOMContentLoaded', function() {
   // `pass:` arguments still resolve. There is no admin password anywhere.
   var ADMIN_PASSWORD = '';
   function adminHasSession(cb){
+    // getSession() can hang rather than fail — a dropped signal, a stalled
+    // request, Supabase slow to answer. Without a timeout the callback never
+    // fires, so requireAdmin never reaches the sign-in form and opening
+    // /#admin does nothing at all, with no error and nothing on screen. That
+    // is far likelier on a phone than on a laptop.
+    //
+    // Falling through to "no session" is safe: the worst case is being asked
+    // to sign in when already signed in, and signing in again just works.
+    var done = false;
+    function once(v){ if (done) return; done = true; cb(v); }
+    var bail = setTimeout(function(){ once(false); }, 5000);
+    function settle(v){ clearTimeout(bail); once(v); }
     try {
       var p = supabase.auth.getSession();
-      if (p && p.then){ p.then(function(res){ cb(!!(res && res.data && res.data.session)); }, function(){ cb(false); }); }
-      else { cb(false); }
-    } catch(e){ cb(false); }
+      if (p && p.then){ p.then(function(res){ settle(!!(res && res.data && res.data.session)); }, function(){ settle(false); }); }
+      else { settle(false); }
+    } catch(e){ settle(false); }
   }
   function openAdminLogin(cb){
     if (document.getElementById('auric-login-ov')) return;
