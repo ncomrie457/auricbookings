@@ -2920,26 +2920,29 @@
      them — about 1.5MB for pictures most people never reached. These three
      each show something the others don't: the room full of people, the
      Riddim & Kompa reformer night, and the goodie bags going out. */
-  .bq-hero-slides{position:absolute;inset:0;z-index:0;background:#ece3d2 url('hero-slide-7.jpg') center 30%/cover no-repeat;}
+  .bq-hero-slides{position:absolute;inset:0;z-index:0;background:#ece3d2 url('hero-slide-8.jpg') center 30%/cover no-repeat;}
   .bq-hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;
     animation:bqHeroFade 25s linear infinite;will-change:opacity;}
-  /* The order runs oldest event to newest, so the reel ends on the two most
-     recent rooms rather than opening on them. */
+  /* Oldest event to newest, so the reel ends on the most recent rooms rather
+     than opening on them. The goodie-bag slide came out — both Juneteenth
+     pictures show the bags already. */
   .bq-hero-slide:nth-child(1){animation-delay:0s;background-image:url('hero-slide-1.jpg');}
-  .bq-hero-slide:nth-child(2){animation-delay:5s;background-image:url('hero-slide-3.jpg');background-position:center 30%;}
   /* Riddim & Kompa — Valley Studio, the flag and the reformers */
-  .bq-hero-slide:nth-child(3){animation-delay:10s;background-image:url('hero-slide-5.jpg');background-position:center 30%;}
+  .bq-hero-slide:nth-child(2){animation-delay:5s;background-image:url('hero-slide-5.jpg');background-position:center 30%;}
   /* Create & Recharge — the full group, cropped to the people */
-  .bq-hero-slide:nth-child(4){animation-delay:15s;background-image:url('hero-slide-6.jpg');background-position:center 35%;}
-  /* Juneteenth — the group with their goodie bags */
-  .bq-hero-slide:nth-child(5){animation-delay:20s;background-image:url('hero-slide-7.jpg');background-position:center 35%;}
+  .bq-hero-slide:nth-child(3){animation-delay:10s;background-image:url('hero-slide-6.jpg');background-position:center 35%;}
+  /* Juneteenth, first session — the group by the Pilates x Niara banner */
+  .bq-hero-slide:nth-child(4){animation-delay:15s;background-image:url('hero-slide-7.jpg');background-position:center 35%;}
+  /* Juneteenth, a different session — a different group entirely */
+  .bq-hero-slide:nth-child(5){animation-delay:20s;background-image:url('hero-slide-8.jpg');background-position:center 40%;}
   /* Each slide holds at full opacity until the NEXT one has completely faded
      in over it, then drops out behind it. Slides are 5s apart in a 25s cycle
      (20%) and fade in over 1.2s (4.8%), so the next slide isn't fully opaque
      until 24.8% — the hold has to run past that. Fading out any earlier leaves
      a gap where neither slide is opaque and the plate behind shows through —
-     that was the flash between pictures. Every slide added moves both numbers:
-     three was a 15s cycle at 8% and 41.4%, four was 20s at 6% and 31.4%. */
+     that was the flash between pictures. Every slide added or removed moves
+     both numbers: three was a 15s cycle at 8% and 41.4%, four was 20s at 6%
+     and 31.4%. */
   @keyframes bqHeroFade{0%{opacity:0}4.8%{opacity:1}24.9%{opacity:1}25%{opacity:0}100%{opacity:0}}
   .bq-hero-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
     background:linear-gradient(180deg, rgba(248,244,236,.9) 0%, rgba(248,244,236,.52) 20%, rgba(248,244,236,.42) 52%, rgba(248,244,236,.78) 100%);}
