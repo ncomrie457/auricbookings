@@ -12413,8 +12413,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Oct 10 and Nov 21 are the same room as reformer-bk; Nov 28 is the same
     // room as turkey. Without their own entries all three fell through to the
     // pilates default, which names The Fitin in Manhattan.
-    'reformer-o10': "What to bring: just your good vibes — all equipment is provided. Wear something comfy to move in, plus grip socks (required).\n\nLocation: Maison Luxe Pilates & Wellness · 958 Lafayette Ave, Brooklyn, NY 11221\n\nPlease arrive a few minutes early — class begins promptly and late arrivals can't be admitted.\n\nCan't wait to move with you! 🇯🇲🇭🇹",
-    'reformer-n21': "What to bring: just your good vibes — all equipment is provided. Wear something comfy to move in, plus grip socks (required).\n\nLocation: Maison Luxe Pilates & Wellness · 958 Lafayette Ave, Brooklyn, NY 11221\n\nPlease arrive a few minutes early — class begins promptly and late arrivals can't be admitted.\n\nCan't wait to move with you! 🇯🇲🇭🇹",
+    'reformer-o10': "What to bring: just your good vibes \u2014 all equipment is provided. Wear something comfy to move in.\n\nLocation: Maison Luxe Pilates & Wellness \u00b7 958 Lafayette Ave, Brooklyn, NY 11221\n\nPlease arrive a few minutes early \u2014 class begins promptly with a 5-minute grace period only, and late arrivals can\u2019t be admitted.\n\nCan\u2019t wait to move with you! \uD83C\uDDEF\uD83C\uDDF2\uD83C\uDDED\uD83C\uDDF9",
+    'reformer-n21': "What to bring: just your good vibes \u2014 all equipment is provided. Wear something comfy to move in.\n\nLocation: Maison Luxe Pilates & Wellness \u00b7 958 Lafayette Ave, Brooklyn, NY 11221\n\nPlease arrive a few minutes early \u2014 class begins promptly with a 5-minute grace period only, and late arrivals can\u2019t be admitted.\n\nCan\u2019t wait to move with you! \uD83C\uDDEF\uD83C\uDDF2\uD83C\uDDED\uD83C\uDDF9",
     turkey28: "What to bring: just your good vibes — all equipment is provided. Wear something comfy to move in, plus grip socks (required).\n\nLocation: Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552\n\nPlease arrive a few minutes early — class begins promptly and late arrivals can't be admitted.\n\nCome ready to sweat out the holiday. 🦃",
     halloween: "What to bring: your good vibes and (if you'd like) a costume — costumes are encouraged! 🎃 All equipment is provided. Grip socks are mandatory — if you don't have a pair, you can purchase them at the studio.\n\nLocation: Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552\n\nPlease arrive a few minutes early — class begins promptly and late arrivals can't be admitted.\n\nCan't wait to move (and maybe spook) with you!",
     turkey: "What to bring: just your good vibes — all equipment is provided. Wear something comfy to move in, plus grip socks (required).\n\nLocation: Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552\n\nPlease arrive a few minutes early — class begins promptly and late arrivals can't be admitted.\n\nCome ready to sweat out the holiday. 🦃",
@@ -12538,6 +12538,22 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     function el(id){ return document.getElementById(id); }
     function key(ev){ return 'auric_reminder_draft_' + ev; }
+    // The same settings are kept in two places on purpose. localStorage fills
+    // the fields the instant you switch events, with no wait. The account copy
+    // is the one that matters: it follows you from laptop to phone and it
+    // survives clearing website data, which the browser copy does not.
+    function acctKey(ev){ return 'reminder_draft_' + ev; }
+    function label(){ var o = evSel.options[evSel.selectedIndex]; return o ? o.text : 'this event'; }
+    function status(msg, ms){
+      var st = el('admin-flex-reminder-status'); if (!st) return;
+      st.textContent = msg;
+      if (ms) setTimeout(function(){ if (st.textContent === msg) st.textContent = ''; }, ms);
+    }
+    function applyDraft(d){
+      if (!d) return;
+      Object.keys(F).forEach(function(k){ var e = el(F[k]); if (e && d[k] != null && (k !== 'days' || d[k] !== '')) e.value = d[k]; });
+      var inc = el('admin-flex-reminder-include-q'); if (inc && typeof d.includeQ === 'boolean') inc.checked = d.includeQ;
+    }
     function saveDraft(){
       var ev = evSel.value, inc = el('admin-flex-reminder-include-q');
       var d = {};
@@ -12545,14 +12561,41 @@ document.addEventListener('DOMContentLoaded', function() {
       d.includeQ = inc ? inc.checked : true;
       try { localStorage.setItem(key(ev), JSON.stringify(d)); } catch(e){}
       var tag = el('admin-flex-reminder-saved'); if (tag){ tag.style.opacity='1'; setTimeout(function(){ tag.style.opacity='0'; }, 1400); }
-      var st = el('admin-flex-reminder-status');
-      if (st){ var label = evSel.options[evSel.selectedIndex] ? evSel.options[evSel.selectedIndex].text : 'this event'; st.textContent = '✅ Saved these settings for ' + label + '.'; setTimeout(function(){ if (st.textContent.indexOf('Saved these') >= 0) st.textContent=''; }, 2800); }
+      var who = label();
+      status('Saving to your account…');
+      // A failed account save says so rather than showing a tick. "Saved on this
+      // device only" is the truth in that case, and it tells you to try again
+      // somewhere the settings will actually follow you.
+      function localOnly(why){
+        status('⚠️ Saved on this device only — ' + why + ' Run ADMIN_SETTINGS.sql if you have not yet.', 9000);
+      }
+      try {
+        var p = supabase.rpc('admin_settings_set', { k: acctKey(ev), v: d });
+        if (p && p.then) {
+          p.then(function(res){
+            if (res && res.error) localOnly(res.error.message + '.');
+            else status('✅ Saved to your account for ' + who + '. It will be here on every device.', 3500);
+          }, function(err){ localOnly('could not reach the server (' + (err && err.message ? err.message : 'offline') + ').'); });
+        } else { localOnly('the database client is unavailable.'); }
+      } catch(e){ localOnly('the database client is unavailable.'); }
     }
+    // Guards against a slow reply landing after you have already switched to a
+    // different event and overwriting the fields with the previous one's.
+    var loadToken = 0;
     function loadDraft(ev){
+      var mine = ++loadToken;
       var raw = null; try { raw = localStorage.getItem(key(ev)); } catch(e){}
-      if (!raw) return; var d; try { d = JSON.parse(raw); } catch(e){ return; }
-      Object.keys(F).forEach(function(k){ var e = el(F[k]); if (e && d[k] != null && (k !== 'days' || d[k] !== '')) e.value = d[k]; });
-      var inc = el('admin-flex-reminder-include-q'); if (inc && typeof d.includeQ === 'boolean') inc.checked = d.includeQ;
+      if (raw){ try { applyDraft(JSON.parse(raw)); } catch(e){} }
+      try {
+        var p = supabase.rpc('admin_settings_get', { k: acctKey(ev) });
+        if (p && p.then) p.then(function(res){
+          if (mine !== loadToken) return;
+          if (res && !res.error && res.data){
+            applyDraft(res.data);
+            try { localStorage.setItem(key(ev), JSON.stringify(res.data)); } catch(e){}
+          }
+        }, function(){});
+      } catch(e){}
     }
     var saveBtn = el('admin-flex-reminder-save'); if (saveBtn) saveBtn.addEventListener('click', saveDraft);
     // Reload the saved draft after the preset/message handlers run on event change.
