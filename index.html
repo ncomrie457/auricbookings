@@ -12410,6 +12410,12 @@ document.addEventListener('DOMContentLoaded', function() {
   var REMINDER_MSG_DEFAULTS = {
     reformer: "What to bring: just your good vibes — all equipment is provided. Wear something comfy to move in, plus grip socks (required).\n\nLocation: Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552\n\nPlease arrive a few minutes early — class begins promptly and late arrivals can't be admitted.\n\nCan't wait to move with you! 🇯🇲🇭🇹",
     'reformer-bk': "What to bring: just your good vibes — all equipment is provided. Wear something comfy to move in, plus grip socks (required).\n\nLocation: Maison Luxe Pilates & Wellness · 958 Lafayette Ave, Brooklyn, NY 11221\n\nPlease arrive a few minutes early — class begins promptly and late arrivals can't be admitted.\n\nCan't wait to move with you! 🇯🇲🇭🇹",
+    // Oct 10 and Nov 21 are the same room as reformer-bk; Nov 28 is the same
+    // room as turkey. Without their own entries all three fell through to the
+    // pilates default, which names The Fitin in Manhattan.
+    'reformer-o10': "What to bring: just your good vibes — all equipment is provided. Wear something comfy to move in, plus grip socks (required).\n\nLocation: Maison Luxe Pilates & Wellness · 958 Lafayette Ave, Brooklyn, NY 11221\n\nPlease arrive a few minutes early — class begins promptly and late arrivals can't be admitted.\n\nCan't wait to move with you! 🇯🇲🇭🇹",
+    'reformer-n21': "What to bring: just your good vibes — all equipment is provided. Wear something comfy to move in, plus grip socks (required).\n\nLocation: Maison Luxe Pilates & Wellness · 958 Lafayette Ave, Brooklyn, NY 11221\n\nPlease arrive a few minutes early — class begins promptly and late arrivals can't be admitted.\n\nCan't wait to move with you! 🇯🇲🇭🇹",
+    turkey28: "What to bring: just your good vibes — all equipment is provided. Wear something comfy to move in, plus grip socks (required).\n\nLocation: Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552\n\nPlease arrive a few minutes early — class begins promptly and late arrivals can't be admitted.\n\nCome ready to sweat out the holiday. 🦃",
     halloween: "What to bring: your good vibes and (if you'd like) a costume — costumes are encouraged! 🎃 All equipment is provided. Grip socks are mandatory — if you don't have a pair, you can purchase them at the studio.\n\nLocation: Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552\n\nPlease arrive a few minutes early — class begins promptly and late arrivals can't be admitted.\n\nCan't wait to move (and maybe spook) with you!",
     turkey: "What to bring: just your good vibes — all equipment is provided. Wear something comfy to move in, plus grip socks (required).\n\nLocation: Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552\n\nPlease arrive a few minutes early — class begins promptly and late arrivals can't be admitted.\n\nCome ready to sweat out the holiday. 🦃",
     pilates: "What to bring: just your good vibes — all equipment is provided. Wear something comfy to move in and you're set.\n\nLocation: The Fitin · 297 7th Ave, Floor 3, New York, NY 10001\n\nPlease arrive on time — class begins promptly with a 5-minute grace period only, and late arrivals can't be admitted.\n\nCan't wait to move and connect with you!",
@@ -12424,7 +12430,20 @@ document.addEventListener('DOMContentLoaded', function() {
     var savedTag = document.getElementById('admin-flex-reminder-saved');
     if (!msgEl || !evSel) return;
     function key(ev){ return 'auric_reminder_msg_' + ev; }
-    function def(ev){ return REMINDER_MSG_DEFAULTS[ev] || REMINDER_MSG_DEFAULTS.pilates || ''; }
+    // An event with no entry must NOT inherit another event's text: the old
+    // fallback was the pilates default, which hardcodes The Fitin in Manhattan,
+    // so every event added since quietly offered the wrong venue. Fall back to
+    // the shared wording with no venue line instead, and say so in the console.
+    var REMINDER_MSG_GENERIC = "What to bring: just your good vibes \u2014 all equipment is provided. "
+      + "Wear something comfy to move in and you're set.\n\nPlease arrive on time \u2014 class begins "
+      + "promptly with a 5-minute grace period only, and late arrivals can't be admitted.\n\n"
+      + "Can't wait to move with you!";
+    function def(ev){
+      if (REMINDER_MSG_DEFAULTS[ev]) return REMINDER_MSG_DEFAULTS[ev];
+      console.warn('[reminder] no default message for event "' + ev + '" \u2014 add one to '
+        + 'REMINDER_MSG_DEFAULTS, including its venue.');
+      return REMINDER_MSG_GENERIC;
+    }
     function loadFor(ev){
       var saved = null; try { saved = localStorage.getItem(key(ev)); } catch(e){}
       msgEl.value = (saved !== null && saved !== undefined) ? saved : def(ev);
