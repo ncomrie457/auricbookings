@@ -15510,6 +15510,16 @@ document.addEventListener('DOMContentLoaded', function() {
       if(winner) _foundingFirstMap[String(winner.id)] = true;
     });
   }
+  // A comped seat is marked is_paid so it holds a seat and behaves like any
+  // other booking — which meant the roster called it "paid", and the one row
+  // you most need to recognise looked exactly like the ones that brought money
+  // in. Say what it actually is.
+  function rfPaidBadge(rec){
+    if (rec && rec.comp) return '<span class="atype au-chip" style="background:#f3eee6;color:#7a6e63;">\u{1F381} comp attendee</span>';
+    return rec && rec.is_paid
+      ? '<span class="atype au-chip is-paid">paid</span>'
+      : '<span class="atype au-chip is-pending">pending</span>';
+  }
   function fbBadge(rec){
     if(_foundingSent[foundingKey(rec.email, rec.event, rec.session)]) return ' <span class="atype" style="background:#eef3e8;color:#3b6b3f;">🎁 Founding One</span>';
     if(_foundingFirstMap[String(rec.id)]) return ' <span class="atype" style="background:#f6efe0;color:#9a6535;">✦ Founding One</span>';
@@ -15907,9 +15917,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.72rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); var _sAtt=display.filter(function(r){return r.session===_curSess&&r.attendance==='attended';}).length; if(_sAtt){ var _tb=document.createElement('button'); _tb.type='button'; _tb.style.cssText='margin:.15rem 0 .35rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.3rem .7rem;font-size:.72rem;cursor:pointer;font-family:Jost,sans-serif;'; _tb.textContent='\u{1F33A} Thank this session (' + _sAtt + ' attended)'; (function(sk,bt){ bt.onclick=function(){ window.rfSendThankYou('valley', bt, null, sk); }; })(_curSess,_tb); _curSessBlock.appendChild(_tb); } block.appendChild(_curSessBlock); }
         var id = rec.id;
         var item=document.createElement('div'); item.className='admin-sub-item';
-        var badge = rec.is_paid
-          ? '<span class="atype au-chip is-paid">paid</span>'
-          : '<span class="atype au-chip is-pending">pending</span>';
+        var badge = rfPaidBadge(rec);
         var ref = rec.referred_by ? '<br><span style="font-size:.72rem;color:#8a5a2a;">\u{1F91D} Referred by '+escapeHTML(rec.referred_by)+'</span>' : '';
         var health = rec.health ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.82rem;color:#3d322a;white-space:pre-line;"><strong style="color:var(--gold-text);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;">\u{1FA79} Health disclosure:</strong><br>'+escapeHTML(rec.health)+'</div>' : '';
         var sig = rec.signature ? '<br><span class="au-meta">\u{270D}\u{FE0F} Signed: '+escapeHTML(rec.signature)+'</span>' : '';
@@ -15994,7 +16002,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.72rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); var _sAtt=display.filter(function(r){return r.session===_curSess&&r.attendance==='attended';}).length; if(_sAtt){ var _tb=document.createElement('button'); _tb.type='button'; _tb.style.cssText='margin:.15rem 0 .35rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.3rem .7rem;font-size:.72rem;cursor:pointer;font-family:Jost,sans-serif;'; _tb.textContent='\u{1F33A} Thank this session (' + _sAtt + ' attended)'; (function(sk,bt){ bt.onclick=function(){ window.rfSendThankYou('bk', bt, null, sk); }; })(_curSess,_tb); _curSessBlock.appendChild(_tb); } block.appendChild(_curSessBlock); }
         var id = rec.id;
         var item=document.createElement('div'); item.className='admin-sub-item';
-        var badge = rec.is_paid ? '<span class="atype au-chip is-paid">paid</span>' : '<span class="atype au-chip is-pending">pending</span>';
+        var badge = rfPaidBadge(rec);
         var ref = rec.referred_by ? '<br><span style="font-size:.72rem;color:#8a5a2a;">\u{1F91D} Referred by '+escapeHTML(rec.referred_by)+'</span>' : '';
         var health = rec.health ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.82rem;color:#3d322a;white-space:pre-line;"><strong style="color:var(--gold-text);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;">\u{1FA79} Health disclosure:</strong><br>'+escapeHTML(rec.health)+'</div>' : '';
         var sig = rec.signature ? '<br><span class="au-meta">\u{270D}\u{FE0F} Signed: '+escapeHTML(rec.signature)+'</span>' : '';
@@ -16071,7 +16079,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.72rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); var _sAtt=display.filter(function(r){return r.session===_curSess&&r.attendance==='attended';}).length; if(_sAtt){ var _tb=document.createElement('button'); _tb.type='button'; _tb.style.cssText='margin:.15rem 0 .35rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.3rem .7rem;font-size:.72rem;cursor:pointer;font-family:Jost,sans-serif;'; _tb.textContent='\u{1F33A} Thank this session (' + _sAtt + ' attended)'; (function(sk,bt){ bt.onclick=function(){ window.rfSendThankYou('o10', bt, null, sk); }; })(_curSess,_tb); _curSessBlock.appendChild(_tb); } block.appendChild(_curSessBlock); }
         var id = rec.id;
         var item=document.createElement('div'); item.className='admin-sub-item';
-        var badge = rec.is_paid ? '<span class="atype au-chip is-paid">paid</span>' : '<span class="atype au-chip is-pending">pending</span>';
+        var badge = rfPaidBadge(rec);
         var ref = rec.referred_by ? '<br><span style="font-size:.72rem;color:#8a5a2a;">\u{1F91D} Referred by '+escapeHTML(rec.referred_by)+'</span>' : '';
         var health = rec.health ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.82rem;color:#3d322a;white-space:pre-line;"><strong style="color:var(--gold-text);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;">\u{1FA79} Health disclosure:</strong><br>'+escapeHTML(rec.health)+'</div>' : '';
         var sig = rec.signature ? '<br><span class="au-meta">\u{270D}\u{FE0F} Signed: '+escapeHTML(rec.signature)+'</span>' : '';
@@ -16148,7 +16156,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.72rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); var _sAtt=display.filter(function(r){return r.session===_curSess&&r.attendance==='attended';}).length; if(_sAtt){ var _tb=document.createElement('button'); _tb.type='button'; _tb.style.cssText='margin:.15rem 0 .35rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.3rem .7rem;font-size:.72rem;cursor:pointer;font-family:Jost,sans-serif;'; _tb.textContent='\u{1F33A} Thank this session (' + _sAtt + ' attended)'; (function(sk,bt){ bt.onclick=function(){ window.rfSendThankYou('n21', bt, null, sk); }; })(_curSess,_tb); _curSessBlock.appendChild(_tb); } block.appendChild(_curSessBlock); }
         var id = rec.id;
         var item=document.createElement('div'); item.className='admin-sub-item';
-        var badge = rec.is_paid ? '<span class="atype au-chip is-paid">paid</span>' : '<span class="atype au-chip is-pending">pending</span>';
+        var badge = rfPaidBadge(rec);
         var ref = rec.referred_by ? '<br><span style="font-size:.72rem;color:#8a5a2a;">\u{1F91D} Referred by '+escapeHTML(rec.referred_by)+'</span>' : '';
         var health = rec.health ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.82rem;color:#3d322a;white-space:pre-line;"><strong style="color:var(--gold-text);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;">\u{1FA79} Health disclosure:</strong><br>'+escapeHTML(rec.health)+'</div>' : '';
         var sig = rec.signature ? '<br><span class="au-meta">\u{270D}\u{FE0F} Signed: '+escapeHTML(rec.signature)+'</span>' : '';
@@ -16226,7 +16234,7 @@ document.addEventListener('DOMContentLoaded', function() {
         rfRosterById[rec.id] = rec;
         var id = rec.id;
         var item=document.createElement('div'); item.className='admin-sub-item';
-        var badge = rec.is_paid ? '<span class="atype au-chip is-paid">paid</span>' : '<span class="atype au-chip is-pending">pending</span>';
+        var badge = rfPaidBadge(rec);
         var ref = rec.referred_by ? '<br><span style="font-size:.72rem;color:#8a5a2a;">\u{1F91D} Referred by '+escapeHTML(rec.referred_by)+'</span>' : '';
         var health = rec.health ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.82rem;color:#3d322a;white-space:pre-line;"><strong style="color:var(--gold-text);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;">\u{1FA79} Health disclosure:</strong><br>'+escapeHTML(rec.health)+'</div>' : '';
         var sig = rec.signature ? '<br><span class="au-meta">\u{270D}\u{FE0F} Signed: '+escapeHTML(rec.signature)+'</span>' : '';
@@ -16303,7 +16311,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.72rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); var _sAtt=display.filter(function(r){return r.session===_curSess&&r.attendance==='attended';}).length; if(_sAtt){ var _tb=document.createElement('button'); _tb.type='button'; _tb.style.cssText='margin:.15rem 0 .35rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.3rem .7rem;font-size:.72rem;cursor:pointer;font-family:Jost,sans-serif;'; _tb.textContent='\u{1F33A} Thank this session (' + _sAtt + ' attended)'; (function(sk,bt){ bt.onclick=function(){ window.rfSendThankYou('turkey', bt, null, sk); }; })(_curSess,_tb); _curSessBlock.appendChild(_tb); } block.appendChild(_curSessBlock); }
         var id = rec.id;
         var item=document.createElement('div'); item.className='admin-sub-item';
-        var badge = rec.is_paid ? '<span class="atype au-chip is-paid">paid</span>' : '<span class="atype au-chip is-pending">pending</span>';
+        var badge = rfPaidBadge(rec);
         var ref = rec.referred_by ? '<br><span style="font-size:.72rem;color:#8a5a2a;">\u{1F91D} Referred by '+escapeHTML(rec.referred_by)+'</span>' : '';
         var health = rec.health ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.82rem;color:#3d322a;white-space:pre-line;"><strong style="color:var(--gold-text);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;">\u{1FA79} Health disclosure:</strong><br>'+escapeHTML(rec.health)+'</div>' : '';
         var sig = rec.signature ? '<br><span class="au-meta">\u{270D}\u{FE0F} Signed: '+escapeHTML(rec.signature)+'</span>' : '';
@@ -16381,7 +16389,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if(rec.session!==_curSess){ _curSess=rec.session; var _tot=display.filter(function(r){return r.session===_curSess;}).length, _pd=display.filter(function(r){return r.session===_curSess&&r.is_paid;}).length; _curSessBlock=document.createElement('div'); _curSessBlock.className='admin-session-block'; _curSessBlock.style.cssText='margin:.5rem 0 .4rem;'; var _sh=document.createElement('h3'); _sh.style.cssText='font-size:.72rem;color:var(--gold-text);'; _sh.textContent='\u{1F551} '+(SLAB[_curSess]||_curSess)+' · '+_pd+' paid / '+_tot+' registered'; _curSessBlock.appendChild(_sh); var _sAtt=display.filter(function(r){return r.session===_curSess&&r.attendance==='attended';}).length; if(_sAtt){ var _tb=document.createElement('button'); _tb.type='button'; _tb.style.cssText='margin:.15rem 0 .35rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.3rem .7rem;font-size:.72rem;cursor:pointer;font-family:Jost,sans-serif;'; _tb.textContent='\u{1F33A} Thank this session (' + _sAtt + ' attended)'; (function(sk,bt){ bt.onclick=function(){ window.rfSendThankYou('halloween', bt, null, sk); }; })(_curSess,_tb); _curSessBlock.appendChild(_tb); } block.appendChild(_curSessBlock); }
         var id = rec.id;
         var item=document.createElement('div'); item.className='admin-sub-item';
-        var badge = rec.is_paid ? '<span class="atype au-chip is-paid">paid</span>' : '<span class="atype au-chip is-pending">pending</span>';
+        var badge = rfPaidBadge(rec);
         var ref = rec.referred_by ? '<br><span style="font-size:.72rem;color:#8a5a2a;">\u{1F91D} Referred by '+escapeHTML(rec.referred_by)+'</span>' : '';
         var shirt = rec.shirt_size ? '<br><span style="font-size:.72rem;color:#5b3a8a;font-weight:600;">\u{1F455} Long sleeve: '+escapeHTML(rec.shirt_size)+'</span>' : '';
         var health = rec.health ? '<div style="margin-top:.4rem;padding:.4rem .6rem;background:#fef9e7;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:.82rem;color:#3d322a;white-space:pre-line;"><strong style="color:var(--gold-text);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;">\u{1FA79} Health disclosure:</strong><br>'+escapeHTML(rec.health)+'</div>' : '';
@@ -16490,9 +16498,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (rec.comp) {
           var _sw = window.__auricWaiverEmails;
           var _em = rec.email ? String(rec.email).trim().toLowerCase() : '';
-          if (!_sw)            compBadge = ' <span class="atype" style="background:#f3eee6;color:#7a6e63;">\u{1F381} Comp</span>';
-          else if (_em && _sw[_em]) compBadge = ' <span class="atype" style="background:#eef3e8;color:#3b6b3f;">\u{1F381} Comp \u00b7 waiver signed</span>';
-          else                 compBadge = ' <span class="atype" style="background:#fdecea;color:var(--red);">\u{1F381} Comp \u00b7 waiver outstanding</span>';
+          if (!_sw)            compBadge = '';
+          else if (_em && _sw[_em]) compBadge = ' <span class="atype" style="background:#eef3e8;color:#3b6b3f;">\u2713 waiver signed</span>';
+          else                 compBadge = ' <span class="atype" style="background:#fdecea;color:var(--red);">\u26a0 waiver outstanding</span>';
         }
         // A waitlister never owed anything, so "never paid" would be a slur on
         // them. Say what they actually were.
