@@ -5634,8 +5634,31 @@
             <option value="comp">Comp &mdash; free seat</option>
             <option value="waitlist">Waitlist</option>
           </select>
+          <!-- Picking Comp raises a question the form never answered: what
+               about their waiver? The link can only be built once there is a
+               name and an email, so it appears after adding — say so here
+               rather than leaving it to be discovered. -->
+          <div id="admin-add-comp-note" hidden style="margin-top:.4rem;padding:.5rem .7rem;background:#faf5ee;border-left:3px solid var(--gold);border-radius:0 8px 8px 0;font-size:.75rem;line-height:1.5;color:#5a4a3a;">
+            A comp still needs a waiver, and they sign the <strong>standalone</strong> one.
+            Their link, already filled in, appears here once you add them &mdash; and the roster
+            will say <em>waiver outstanding</em> until it comes back signed.
+          </div>
         </div>
       </div>
+      <!-- Its own script on purpose. The admin block below is one very long
+           script, and a single throw anywhere in it — a blocked CDN, a failed
+           client — stops everything after that point. A note that only shows
+           and hides itself has no business depending on any of that. -->
+      <script>
+        (function(){
+          var t = document.getElementById('admin-add-type'),
+              n = document.getElementById('admin-add-comp-note');
+          if (!t || !n) return;
+          function sync(){ n.hidden = (t.value !== 'comp'); }
+          t.addEventListener('change', sync);
+          sync();
+        })();
+      </script>
       <button type="button" id="admin-add-btn" class="btn btn-primary" style="font-size:.82rem;">&#10133; Add Registration</button>
       <div id="admin-add-status" style="margin-top:.5rem;font-size:.82rem;"></div>
     </div>
