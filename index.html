@@ -3460,18 +3460,65 @@
   .bq-event-cardstatus.sold{background:#fce8e6;color:#b0271f;}
 </style>
 <script>
+  /* ── One status pill, two places ─────────────────────────────────────────
+     The Events tab worked this out live from paid seat counts, while the home
+     page's All Events grid carried the answer hand-written in a list. They
+     disagreed the moment a seat sold: Oct 10 read "Almost sold out" on the
+     events page and "Now booking" on the home page, which is the worse of the
+     two to get wrong — it is the one most people see first.
+
+     Both now call auricStatusFor with the same counts, so there is one rule
+     and one set of capacities. auricSpotCounts memoises the request, so the
+     two readers share a single round trip rather than asking twice. */
+  window.AURIC_EVENT_CAPS = {
+    'event-card-reformer':    { cap:6, sessions:['1pm','2pm','3pm'] },
+    'event-card-reformer-bk': { cap:5, sessions:['bk12','bk1','bk2'] },
+    'event-card-reformer-o10':{ cap:5, sessions:['o12','o1','o2','o3'] },
+    'event-card-reformer-n21':{ cap:5, sessions:['n12','n1','n2','n3'] },
+    'event-card-halloween':   { cap:6, sessions:['hw1130','hw1230','hw130'] },
+    'event-card-turkey':      { cap:6, sessions:['tb1130','tb1230','tb130'] },
+    'event-card-turkey28':    { cap:6, sessions:['tb28_1130','tb28_1230','tb28_130'] }
+  };
+  // null means "no opinion" — the caller keeps whatever it already shows.
+  window.auricStatusFor = function(cardId, paid){
+    var cfg = window.AURIC_EVENT_CAPS[cardId];
+    var card = document.getElementById(cardId);
+    if (!cfg || !card) return null;
+    // A finished event stays Sold out. Its seat counts keep moving after the
+    // fact — moving an attendee to a credit frees their seat — which would
+    // otherwise flip the pill back to "Now booking" on a date already run.
+    if (window.auricEventOver && window.auricEventOver(card.getAttribute('data-event-date')))
+      return { text:'Sold out', cls:'sold' };
+    // Same for a date closed by hand: the live count must not undo it.
+    if (window.auricIsClosed && window.auricIsClosed(card.getAttribute('data-event-id')))
+      return { text:'Sold out', cls:'sold' };
+    if (!paid) return null;
+    var rem = 0;
+    cfg.sessions.forEach(function(s){ var r = cfg.cap - (paid[s] || 0); rem += (r > 0 ? r : 0); });
+    if (rem <= 0) return { text:'Sold out',        cls:'sold' };
+    if (rem <= 3) return { text:'Almost sold out', cls:'warn' };
+    return            { text:'Now booking',     cls:'ok'   };
+  };
+  window.auricSpotCounts = function(){
+    if (window.__auricSpotsP) return window.__auricSpotsP;
+    window.__auricSpotsP = new Promise(function(resolve){
+      try {
+        if (!(window.supabase && window.supabase.createClient)) { resolve(null); return; }
+        var _sb = window.supabase.createClient('https://qvmiwyxerotkqpbuhpun.supabase.co','sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ');
+        _sb.rpc('reformer_spot_counts').then(function(res){
+          if (!res || res.error || !res.data) { resolve(null); return; }
+          var paid = {}; res.data.forEach(function(r){ paid[r.session] = Number(r.paid) || 0; });
+          resolve(paid);
+        }, function(){ resolve(null); });
+      } catch(e){ resolve(null); }
+    });
+    return window.__auricSpotsP;
+  };
+
   /* Show a live status pill (Now booking / Almost sold out / Sold out) on each
      upcoming reformer event card in the Events tab, from real paid counts. */
   document.addEventListener('DOMContentLoaded', function(){
-    var CFG={
-      'event-card-reformer':    { cap:6, sessions:['1pm','2pm','3pm'] },
-      'event-card-reformer-bk': { cap:5, sessions:['bk12','bk1','bk2'] },
-      'event-card-reformer-o10':{ cap:5, sessions:['o12','o1','o2','o3'] },
-      'event-card-reformer-n21':{ cap:5, sessions:['n12','n1','n2','n3'] },
-      'event-card-halloween':   { cap:6, sessions:['hw1130','hw1230','hw130'] },
-      'event-card-turkey':      { cap:6, sessions:['tb1130','tb1230','tb130'] },
-      'event-card-turkey28':    { cap:6, sessions:['tb28_1130','tb28_1230','tb28_130'] }
-    };
+    var CFG = window.AURIC_EVENT_CAPS;
     var pills={};
     Object.keys(CFG).forEach(function(id){
       var card=document.getElementById(id); if(!card) return;
@@ -3489,33 +3536,12 @@
       pills[id]=pill;
     });
     function set(id,text,cls){ var p=pills[id]; if(p){ p.textContent=text; p.className='bq-event-cardstatus '+cls; } }
-    try{
-      if(window.supabase && window.supabase.createClient){
-        var _sb=window.supabase.createClient('https://qvmiwyxerotkqpbuhpun.supabase.co','sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ');
-        _sb.rpc('reformer_spot_counts').then(function(res){
-          if(!res||res.error||!res.data) return;
-          var paid={}; res.data.forEach(function(r){ paid[r.session]=Number(r.paid)||0; });
-          Object.keys(CFG).forEach(function(id){
-            var cfg=CFG[id], rem=0;
-            // A finished event stays Sold out. Its seat counts keep moving after
-            // the fact (moving an attendee to a credit frees their seat), which
-            // would otherwise flip the pill back to "Now booking".
-            var cardEl=document.getElementById(id);
-            if(cardEl && window.auricEventOver && window.auricEventOver(cardEl.getAttribute('data-event-date'))){
-              set(id,'Sold out','sold'); return;
-            }
-            // Same for a date closed by hand — the live count must not undo it.
-            if(cardEl && window.auricIsClosed && window.auricIsClosed(cardEl.getAttribute('data-event-id'))){
-              set(id,'Sold out','sold'); return;
-            }
-            cfg.sessions.forEach(function(s){ var r=cfg.cap-(paid[s]||0); rem+=(r>0?r:0); });
-            if(rem<=0) set(id,'Sold out','sold');
-            else if(rem<=3) set(id,'Almost sold out','warn');
-            else set(id,'Now booking','ok');
-          });
-        }, function(){});
-      }
-    }catch(e){}
+    window.auricSpotCounts().then(function(paid){
+      Object.keys(CFG).forEach(function(id){
+        var st = window.auricStatusFor(id, paid);
+        if (st) set(id, st.text, st.cls);
+      });
+    });
   });
 </script>
 </div><!-- /tab-events -->
@@ -3747,37 +3773,27 @@
           b.addEventListener('click', function(){ var t=document.getElementById(b.getAttribute('data-target')); if(t){ t.click(); window.scrollTo({top:0,behavior:'smooth'}); } });
         });
 
-        // Refine the Riddim & Kompa status pills from real paid counts so they
-        // stay accurate on their own: West Hempstead reads "New 3 PM added"
-        // until all three sessions fill (then "Sold out"); Brooklyn reads
-        // "Almost sold out" until it fills. Fails silently → keeps defaults.
-        try {
-          if(window.supabase && window.supabase.createClient){
-            var _sb=window.supabase.createClient('https://qvmiwyxerotkqpbuhpun.supabase.co','sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ');
-            _sb.rpc('reformer_spot_counts').then(function(res){
-              if(!res||res.error||!res.data) return;
-              var paid={}; res.data.forEach(function(r){ paid[r.session]=Number(r.paid)||0; });
-              function setTag(id,text,cls){
-                // A closed date's seats keep freeing up as people are moved off
-                // it, so the emptier it gets the more this would insist it is
-                // "Now booking". It stays Sold out however empty the room is.
-                var card=document.getElementById(id);
-                if(card && window.auricIsClosed && window.auricIsClosed(card.getAttribute('data-event-id'))) return;
-                var el=document.getElementById('aestatus-'+id); if(el){ el.textContent=text; el.className='bq-ae-status '+(cls||''); } }
-              // West Hempstead · Sep 13 — cap 6 per session
-              var CW=6, w1=paid['1pm']||0, w2=paid['2pm']||0, w3=paid['3pm']||0;
-              var remW=(CW-w1)+(CW-w2)+(CW-w3); if(remW<0) remW=0;
-              if(remW<=0) setTag('event-card-reformer','Sold out','');
-              else if(remW<=3) setTag('event-card-reformer','Almost sold out','warn');
-              else setTag('event-card-reformer','Now booking','ok');
-              // Brooklyn · Sep 26 — cap 5 per session
-              var CB=5, rem=(CB-(paid['bk12']||0))+(CB-(paid['bk1']||0))+(CB-(paid['bk2']||0)); if(rem<0) rem=0;
-              if(rem<=0) setTag('event-card-reformer-bk','Sold out','');
-              else if(rem<=3) setTag('event-card-reformer-bk','Almost sold out','warn');
-              else setTag('event-card-reformer-bk','Now booking','ok');
-            }, function(){});
-          }
-        } catch(e){}
+        // Every pill, not just two. This used to refine only the two September
+        // dates, so Oct 10 onward kept whatever was hand-written in the list
+        // above — which is how the home page came to say "Now booking" for a
+        // date the events page already called "Almost sold out". Same rule now,
+        // same capacities, and auricSpotCounts means one request serves both.
+        window.auricSpotCounts().then(function(paid){
+          items.forEach(function(it){
+            // A closed date's seats keep freeing up as people are moved off it,
+            // so the emptier the room gets the louder a seat count would insist
+            // it is "Now booking". The card already renders Sold out for those;
+            // leave it be.
+            var card = document.getElementById(it.id);
+            if (card && window.auricIsClosed && window.auricIsClosed(card.getAttribute('data-event-id'))) return;
+            var st = window.auricStatusFor(it.id, paid); if (!st) return;
+            var el = document.getElementById('aestatus-' + it.id); if (!el) return;
+            el.textContent = st.text;
+            // This component only styles ok and warn — Sold out wears the base
+            // class, so the shared "sold" has to translate to nothing here.
+            el.className = 'bq-ae-status ' + (st.cls === 'sold' ? '' : st.cls);
+          });
+        });
       });
     </script>
 
