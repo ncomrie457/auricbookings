@@ -9686,10 +9686,51 @@ document.addEventListener('DOMContentLoaded', function() {
   var lastSubmission  = null;
 
   // \u2500\u2500 Supabase client \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-  var supabase = window.supabase.createClient(
-    'https://qvmiwyxerotkqpbuhpun.supabase.co',
-    'sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ'
-  );
+  // If the Supabase library did not load — a blocked CDN, a content blocker,
+  // tracking protection, a dropped connection — this used to throw here, at the
+  // top of the longest script on the page. Everything below it then never ran:
+  // the admin panel would not open, forms lost their handlers, buttons did
+  // nothing. No error on screen, because the page itself looked fine. That is
+  // what made /#admin go quiet on a phone and what stopped the comp note
+  // appearing, and it will do it again to whatever is written here next.
+  //
+  // So construction cannot throw. When the library is missing we build a stand-in
+  // with the same shape that answers every call with an error instead. The rest
+  // of the script runs, the page works, and each thing that genuinely needs the
+  // database fails on its own and says so — which is a bug you can see.
+  var supabase = (function(){
+    try {
+      if (window.supabase && window.supabase.createClient) {
+        return window.supabase.createClient(
+          'https://qvmiwyxerotkqpbuhpun.supabase.co',
+          'sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ'
+        );
+      }
+    } catch(e){}
+    console.error('[auric] Supabase did not load — running without the database. '
+      + 'Usually a content blocker or tracking protection stopping cdn.jsdelivr.net.');
+    var ERR = { message: 'Database unavailable \u2014 something is blocking it. Check content blockers, then reload.' };
+    var settled = function(){ return Promise.resolve({ data: null, error: ERR }); };
+    // Chainable like a real query, and thenable, so .from(x).select().eq().order()
+    // .then(...) resolves with an error rather than blowing up mid-chain.
+    var q = {};
+    ['select','insert','update','upsert','delete','eq','neq','in','is','ilike','like','or','filter',
+     'order','limit','range','single','maybeSingle','gte','lte','gt','lt','not','match']
+      .forEach(function(m){ q[m] = function(){ return q; }; });
+    q.then  = function(ok, bad){ return settled().then(ok, bad); };
+    q.catch = function(f){ return settled().catch(f); };
+    return {
+      from: function(){ return q; },
+      rpc:  settled,
+      auth: {
+        getSession:         function(){ return Promise.resolve({ data: { session: null }, error: null }); },
+        getUser:            function(){ return Promise.resolve({ data: { user: null }, error: null }); },
+        signInWithPassword: settled,
+        signOut:            function(){ return Promise.resolve({ error: null }); },
+        onAuthStateChange:  function(){ return { data: { subscription: { unsubscribe: function(){} } } }; }
+      }
+    };
+  })();
 
   // Pilates: pair functions that match old JSONBin API
   // saveData() diffs vs last-loaded snapshot \u2014 atomic per-row inserts/deletes via Supabase
