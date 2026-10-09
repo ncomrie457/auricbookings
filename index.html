@@ -6523,6 +6523,15 @@ Can't wait to move and connect with you!</textarea>
   :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-ack label{font-size:.82rem;color:#3d322a;line-height:1.45;}
   :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-ack a{color:#9a6535;font-weight:600;text-decoration:underline;cursor:pointer;}
   :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-policy{font-size:.72rem;color:var(--text-muted);line-height:1.5;margin:.35rem 0 0;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-refundbox{text-align:left;background:#faf5ee;border:2px solid var(--gold);border-radius:10px;padding:.9rem 1rem;margin:0 0 .8rem;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-refundbox h4{font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--brown);margin:0 0 .5rem;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-refund-lead{font-size:.86rem;color:#3d322a;line-height:1.55;margin:0 0 .5rem;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-refund-body{font-size:.72rem;color:var(--text-muted);line-height:1.5;margin:0 0 .7rem;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-refund-confirm{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;background:#fff;border:1px solid var(--gold);border-radius:8px;padding:.6rem .7rem;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-refund-check{display:flex;gap:.55rem;align-items:flex-start;font-size:.82rem;color:#3d322a;line-height:1.4;cursor:pointer;flex:1 1 230px;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-refund-check input{margin-top:.1rem;accent-color:var(--gold);width:18px;height:18px;flex-shrink:0;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-refund-init{display:flex;gap:.45rem;align-items:center;font-size:.78rem;font-weight:600;color:var(--brown);white-space:nowrap;}
+  :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-refund-init input{width:4.2rem;padding:.35rem .45rem;border:1px solid var(--gold);border-radius:6px;font-family:inherit;font-size:.86rem;text-transform:uppercase;text-align:center;letter-spacing:.06em;}
   :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-btn{display:block;width:100%;margin-top:.4rem;padding:.8rem 1rem;border:none;border-radius:999px;background:var(--brown);color:#fff;font-family:'Jost',sans-serif;font-size:1rem;font-weight:600;letter-spacing:0;cursor:pointer;}
   :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-btn:disabled{opacity:.45;cursor:not-allowed;}
   :is(#reformer-overlay, #reformer-bk-overlay, #reformer-o10-overlay, #reformer-n21-overlay, #turkey-overlay, #halloween-overlay, #turkey28-overlay) .rf-err{color:#b03636;font-size:.82rem;text-align:left;margin:.15rem 0 .6rem;min-height:1em;}
@@ -6623,9 +6632,14 @@ Can't wait to move and connect with you!</textarea>
       <div class="rf-ack"><input type="checkbox" id="rf-sms"><label for="rf-sms">Text me about future Auric Movement events.<span class="rf-policy">Separate from the above, and entirely optional &mdash; leave it unticked and you&rsquo;ll only ever hear from us about a class you booked. Reply STOP at any time.</span></label></div>
       <div class="rf-field"><label for="rf-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="rf-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
       <div class="rf-field"><label for="rf-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="rf-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
-      <div class="rf-ack">
-        <input type="checkbox" id="rf-refund">
-        <label for="rf-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">As of October 9, 2026, all purchases are final and nonrefundable. No refunds or credits are issued for cancellations, missed sessions, or no-shows, regardless of how much notice is given. Bookings made before October 9, 2026 are governed by the policy agreed to at the time of that booking, and credits already issued remain valid until they expire. Can&rsquo;t make it on short notice? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</span></label>
+      <div class="rf-refundbox">
+        <h4>&#9888; Refund policy</h4>
+        <p class="rf-refund-lead">As of October 9, 2026, all purchases are <strong>final and nonrefundable</strong>. No refunds or credits are issued for cancellations, missed sessions, or no-shows &mdash; <strong>regardless of how much notice is given</strong>.</p>
+        <p class="rf-refund-body">Can&rsquo;t make it? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. Bookings made before October 9, 2026 are governed by the policy agreed to at the time of that booking, and credits already issued remain valid until they expire. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</p>
+        <div class="rf-refund-confirm">
+          <label class="rf-refund-check"><input type="checkbox" id="rf-refund"><span>I have read and agree to the refund policy above.</span></label>
+          <label class="rf-refund-init">Your initials <input type="text" id="rf-initials" maxlength="4" autocomplete="off" spellcheck="false" aria-label="Type your initials to confirm you have read the refund policy"></label>
+        </div>
       </div>
       <div class="rf-ack">
         <input type="checkbox" id="rf-waiver" disabled>
@@ -7132,9 +7146,14 @@ Can't wait to move and connect with you!</textarea>
       <div class="rf-ack"><input type="checkbox" id="rfbk-sms"><label for="rfbk-sms">Text me about future Auric Movement events.<span class="rf-policy">Separate from the above, and entirely optional &mdash; leave it unticked and you&rsquo;ll only ever hear from us about a class you booked. Reply STOP at any time.</span></label></div>
       <div class="rf-field"><label for="rfbk-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="rfbk-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
       <div class="rf-field"><label for="rfbk-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="rfbk-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
-      <div class="rf-ack">
-        <input type="checkbox" id="rfbk-refund">
-        <label for="rfbk-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">As of October 9, 2026, all purchases are final and nonrefundable. No refunds or credits are issued for cancellations, missed sessions, or no-shows, regardless of how much notice is given. Bookings made before October 9, 2026 are governed by the policy agreed to at the time of that booking, and credits already issued remain valid until they expire. Can&rsquo;t make it on short notice? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</span></label>
+      <div class="rf-refundbox">
+        <h4>&#9888; Refund policy</h4>
+        <p class="rf-refund-lead">As of October 9, 2026, all purchases are <strong>final and nonrefundable</strong>. No refunds or credits are issued for cancellations, missed sessions, or no-shows &mdash; <strong>regardless of how much notice is given</strong>.</p>
+        <p class="rf-refund-body">Can&rsquo;t make it? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. Bookings made before October 9, 2026 are governed by the policy agreed to at the time of that booking, and credits already issued remain valid until they expire. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</p>
+        <div class="rf-refund-confirm">
+          <label class="rf-refund-check"><input type="checkbox" id="rfbk-refund"><span>I have read and agree to the refund policy above.</span></label>
+          <label class="rf-refund-init">Your initials <input type="text" id="rfbk-initials" maxlength="4" autocomplete="off" spellcheck="false" aria-label="Type your initials to confirm you have read the refund policy"></label>
+        </div>
       </div>
       <div class="rf-ack">
         <input type="checkbox" id="rfbk-waiver" disabled>
@@ -7216,7 +7235,7 @@ document.addEventListener('DOMContentLoaded', function(){
       chosenLabelEl=document.getElementById('rfbk-chosen-label'),
       nameEl=document.getElementById('rfbk-name'), emailEl=document.getElementById('rfbk-email'),
       refEl=document.getElementById('rfbk-referral'), healthEl=document.getElementById('rfbk-health'),
-      refundEl=document.getElementById('rfbk-refund'), waiverEl=document.getElementById('rfbk-waiver'),
+      refundEl=document.getElementById('rfbk-refund'), initialsEl=document.getElementById('rfbk-initials'), waiverEl=document.getElementById('rfbk-waiver'),
       signEl=document.getElementById('rfbk-sign'), formErr=document.getElementById('rfbk-form-err'),
       continueBtn=document.getElementById('rfbk-continue'),
       waiverBox=document.getElementById('rfbk-waiver-box');
@@ -7253,8 +7272,9 @@ document.addEventListener('DOMContentLoaded', function(){
     waiverBox.style.display = showing ? 'none' : 'block';
     waiverEl.disabled=false;
   });
-  function syncContinue(){ continueBtn.disabled = !(refundEl.checked && waiverEl.checked); }
+  function syncContinue(){ continueBtn.disabled = !(refundEl.checked && waiverEl.checked && initialsEl && initialsEl.value.trim().length >= 2); }
   refundEl.addEventListener('change', syncContinue);
+  if(initialsEl) initialsEl.addEventListener('input', syncContinue);
   waiverEl.addEventListener('change', syncContinue);
 
   function applyCap(){
@@ -7307,7 +7327,7 @@ sms_events: !!(document.getElementById('rfbk-sms')||{}).checked,
 session:chosen, session_label:chosenLabel,
       referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
       signature:sign, signature_data:bkSig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:19),
-      refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
+      refund_ack:true, refund_policy_text:(initialsEl && initialsEl.value.trim() ? '[Initialed "' + initialsEl.value.trim().toUpperCase() + '" at checkout] ' : '') + (window.__RF_REFUND_TEXT||''),
       waiver_agreed:true, is_paid:false, created_at:nowIso, event:RKBK_EVENT
     };
     try { var k='auric_reformer_bk'; var a=JSON.parse(localStorage.getItem(k)||'[]'); a.push(rec); localStorage.setItem(k,JSON.stringify(a)); } catch(e){}
@@ -7373,9 +7393,14 @@ session:chosen, session_label:chosenLabel,
       <div class="rf-ack"><input type="checkbox" id="rfo10-sms"><label for="rfo10-sms">Text me about future Auric Movement events.<span class="rf-policy">Separate from the above, and entirely optional &mdash; leave it unticked and you&rsquo;ll only ever hear from us about a class you booked. Reply STOP at any time.</span></label></div>
       <div class="rf-field"><label for="rfo10-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="rfo10-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
       <div class="rf-field"><label for="rfo10-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="rfo10-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
-      <div class="rf-ack">
-        <input type="checkbox" id="rfo10-refund">
-        <label for="rfo10-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">As of October 9, 2026, all purchases are final and nonrefundable. No refunds or credits are issued for cancellations, missed sessions, or no-shows, regardless of how much notice is given. Bookings made before October 9, 2026 are governed by the policy agreed to at the time of that booking, and credits already issued remain valid until they expire. Can&rsquo;t make it on short notice? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</span></label>
+      <div class="rf-refundbox">
+        <h4>&#9888; Refund policy</h4>
+        <p class="rf-refund-lead">As of October 9, 2026, all purchases are <strong>final and nonrefundable</strong>. No refunds or credits are issued for cancellations, missed sessions, or no-shows &mdash; <strong>regardless of how much notice is given</strong>.</p>
+        <p class="rf-refund-body">Can&rsquo;t make it? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. Bookings made before October 9, 2026 are governed by the policy agreed to at the time of that booking, and credits already issued remain valid until they expire. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</p>
+        <div class="rf-refund-confirm">
+          <label class="rf-refund-check"><input type="checkbox" id="rfo10-refund"><span>I have read and agree to the refund policy above.</span></label>
+          <label class="rf-refund-init">Your initials <input type="text" id="rfo10-initials" maxlength="4" autocomplete="off" spellcheck="false" aria-label="Type your initials to confirm you have read the refund policy"></label>
+        </div>
       </div>
       <div class="rf-ack">
         <input type="checkbox" id="rfo10-waiver" disabled>
@@ -7458,7 +7483,7 @@ document.addEventListener('DOMContentLoaded', function(){
       chosenLabelEl=document.getElementById('rfo10-chosen-label'),
       nameEl=document.getElementById('rfo10-name'), emailEl=document.getElementById('rfo10-email'),
       refEl=document.getElementById('rfo10-referral'), healthEl=document.getElementById('rfo10-health'),
-      refundEl=document.getElementById('rfo10-refund'), waiverEl=document.getElementById('rfo10-waiver'),
+      refundEl=document.getElementById('rfo10-refund'), initialsEl=document.getElementById('rfo10-initials'), waiverEl=document.getElementById('rfo10-waiver'),
       signEl=document.getElementById('rfo10-sign'), formErr=document.getElementById('rfo10-form-err'),
       continueBtn=document.getElementById('rfo10-continue'),
       waiverBox=document.getElementById('rfo10-waiver-box');
@@ -7501,8 +7526,9 @@ document.addEventListener('DOMContentLoaded', function(){
     waiverBox.style.display = showing ? 'none' : 'block';
     waiverEl.disabled=false;
   });
-  function syncContinue(){ continueBtn.disabled = !(refundEl.checked && waiverEl.checked); }
+  function syncContinue(){ continueBtn.disabled = !(refundEl.checked && waiverEl.checked && initialsEl && initialsEl.value.trim().length >= 2); }
   refundEl.addEventListener('change', syncContinue);
+  if(initialsEl) initialsEl.addEventListener('input', syncContinue);
   waiverEl.addEventListener('change', syncContinue);
 
   function applyCap(){
@@ -7555,7 +7581,7 @@ sms_events: !!(document.getElementById('rfo10-sms')||{}).checked,
 session:chosen, session_label:chosenLabel,
       referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
       signature:sign, signature_data:o10Sig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:19),
-      refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
+      refund_ack:true, refund_policy_text:(initialsEl && initialsEl.value.trim() ? '[Initialed "' + initialsEl.value.trim().toUpperCase() + '" at checkout] ' : '') + (window.__RF_REFUND_TEXT||''),
       waiver_agreed:true, is_paid:false, created_at:nowIso, event:RKO10_EVENT
     };
     try { var k='auric_reformer_o10'; var a=JSON.parse(localStorage.getItem(k)||'[]'); a.push(rec); localStorage.setItem(k,JSON.stringify(a)); } catch(e){}
@@ -7645,9 +7671,14 @@ session:chosen, session_label:chosenLabel,
       <div class="rf-ack"><input type="checkbox" id="rfn21-sms"><label for="rfn21-sms">Text me about future Auric Movement events.<span class="rf-policy">Separate from the above, and entirely optional &mdash; leave it unticked and you&rsquo;ll only ever hear from us about a class you booked. Reply STOP at any time.</span></label></div>
       <div class="rf-field"><label for="rfn21-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="rfn21-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
       <div class="rf-field"><label for="rfn21-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="rfn21-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
-      <div class="rf-ack">
-        <input type="checkbox" id="rfn21-refund">
-        <label for="rfn21-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">As of October 9, 2026, all purchases are final and nonrefundable. No refunds or credits are issued for cancellations, missed sessions, or no-shows, regardless of how much notice is given. Bookings made before October 9, 2026 are governed by the policy agreed to at the time of that booking, and credits already issued remain valid until they expire. Can&rsquo;t make it on short notice? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</span></label>
+      <div class="rf-refundbox">
+        <h4>&#9888; Refund policy</h4>
+        <p class="rf-refund-lead">As of October 9, 2026, all purchases are <strong>final and nonrefundable</strong>. No refunds or credits are issued for cancellations, missed sessions, or no-shows &mdash; <strong>regardless of how much notice is given</strong>.</p>
+        <p class="rf-refund-body">Can&rsquo;t make it? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. Bookings made before October 9, 2026 are governed by the policy agreed to at the time of that booking, and credits already issued remain valid until they expire. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</p>
+        <div class="rf-refund-confirm">
+          <label class="rf-refund-check"><input type="checkbox" id="rfn21-refund"><span>I have read and agree to the refund policy above.</span></label>
+          <label class="rf-refund-init">Your initials <input type="text" id="rfn21-initials" maxlength="4" autocomplete="off" spellcheck="false" aria-label="Type your initials to confirm you have read the refund policy"></label>
+        </div>
       </div>
       <div class="rf-ack">
         <input type="checkbox" id="rfn21-waiver" disabled>
@@ -7730,7 +7761,7 @@ document.addEventListener('DOMContentLoaded', function(){
       chosenLabelEl=document.getElementById('rfn21-chosen-label'),
       nameEl=document.getElementById('rfn21-name'), emailEl=document.getElementById('rfn21-email'),
       refEl=document.getElementById('rfn21-referral'), healthEl=document.getElementById('rfn21-health'),
-      refundEl=document.getElementById('rfn21-refund'), waiverEl=document.getElementById('rfn21-waiver'),
+      refundEl=document.getElementById('rfn21-refund'), initialsEl=document.getElementById('rfn21-initials'), waiverEl=document.getElementById('rfn21-waiver'),
       signEl=document.getElementById('rfn21-sign'), formErr=document.getElementById('rfn21-form-err'),
       continueBtn=document.getElementById('rfn21-continue'),
       waiverBox=document.getElementById('rfn21-waiver-box');
@@ -7773,8 +7804,9 @@ document.addEventListener('DOMContentLoaded', function(){
     waiverBox.style.display = showing ? 'none' : 'block';
     waiverEl.disabled=false;
   });
-  function syncContinue(){ continueBtn.disabled = !(refundEl.checked && waiverEl.checked); }
+  function syncContinue(){ continueBtn.disabled = !(refundEl.checked && waiverEl.checked && initialsEl && initialsEl.value.trim().length >= 2); }
   refundEl.addEventListener('change', syncContinue);
+  if(initialsEl) initialsEl.addEventListener('input', syncContinue);
   waiverEl.addEventListener('change', syncContinue);
 
   function applyCap(){
@@ -7827,7 +7859,7 @@ sms_events: !!(document.getElementById('rfn21-sms')||{}).checked,
 session:chosen, session_label:chosenLabel,
       referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
       signature:sign, signature_data:n21Sig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:19),
-      refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
+      refund_ack:true, refund_policy_text:(initialsEl && initialsEl.value.trim() ? '[Initialed "' + initialsEl.value.trim().toUpperCase() + '" at checkout] ' : '') + (window.__RF_REFUND_TEXT||''),
       waiver_agreed:true, is_paid:false, created_at:nowIso, event:RKN21_EVENT
     };
     try { var k='auric_reformer_n21'; var a=JSON.parse(localStorage.getItem(k)||'[]'); a.push(rec); localStorage.setItem(k,JSON.stringify(a)); } catch(e){}
@@ -7921,9 +7953,14 @@ session:chosen, session_label:chosenLabel,
       <div class="rf-ack"><input type="checkbox" id="tb-sms"><label for="tb-sms">Text me about future Auric Movement events.<span class="rf-policy">Separate from the above, and entirely optional &mdash; leave it unticked and you&rsquo;ll only ever hear from us about a class you booked. Reply STOP at any time.</span></label></div>
       <div class="rf-field"><label for="tb-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="tb-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
       <div class="rf-field"><label for="tb-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="tb-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
-      <div class="rf-ack">
-        <input type="checkbox" id="tb-refund">
-        <label for="tb-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">As of October 9, 2026, all purchases are final and nonrefundable. No refunds or credits are issued for cancellations, missed sessions, or no-shows, regardless of how much notice is given. Bookings made before October 9, 2026 are governed by the policy agreed to at the time of that booking, and credits already issued remain valid until they expire. Can&rsquo;t make it on short notice? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</span></label>
+      <div class="rf-refundbox">
+        <h4>&#9888; Refund policy</h4>
+        <p class="rf-refund-lead">As of October 9, 2026, all purchases are <strong>final and nonrefundable</strong>. No refunds or credits are issued for cancellations, missed sessions, or no-shows &mdash; <strong>regardless of how much notice is given</strong>.</p>
+        <p class="rf-refund-body">Can&rsquo;t make it? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. Bookings made before October 9, 2026 are governed by the policy agreed to at the time of that booking, and credits already issued remain valid until they expire. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</p>
+        <div class="rf-refund-confirm">
+          <label class="rf-refund-check"><input type="checkbox" id="tb-refund"><span>I have read and agree to the refund policy above.</span></label>
+          <label class="rf-refund-init">Your initials <input type="text" id="tb-initials" maxlength="4" autocomplete="off" spellcheck="false" aria-label="Type your initials to confirm you have read the refund policy"></label>
+        </div>
       </div>
       <div class="rf-ack">
         <input type="checkbox" id="tb-waiver" disabled>
@@ -8022,7 +8059,7 @@ document.addEventListener('DOMContentLoaded', function(){
       chosenLabelEl=document.getElementById('tb-chosen-label'),
       nameEl=document.getElementById('tb-name'), emailEl=document.getElementById('tb-email'),
       refEl=document.getElementById('tb-referral'), healthEl=document.getElementById('tb-health'),
-      refundEl=document.getElementById('tb-refund'), waiverEl=document.getElementById('tb-waiver'),
+      refundEl=document.getElementById('tb-refund'), initialsEl=document.getElementById('tb-initials'), waiverEl=document.getElementById('tb-waiver'),
       signEl=document.getElementById('tb-sign'), formErr=document.getElementById('tb-form-err'),
       continueBtn=document.getElementById('tb-continue'),
       waiverBox=document.getElementById('tb-waiver-box');
@@ -8065,8 +8102,9 @@ document.addEventListener('DOMContentLoaded', function(){
     waiverBox.style.display = showing ? 'none' : 'block';
     waiverEl.disabled=false;
   });
-  function syncContinue(){ continueBtn.disabled = !(refundEl.checked && waiverEl.checked); }
+  function syncContinue(){ continueBtn.disabled = !(refundEl.checked && waiverEl.checked && initialsEl && initialsEl.value.trim().length >= 2); }
   refundEl.addEventListener('change', syncContinue);
+  if(initialsEl) initialsEl.addEventListener('input', syncContinue);
   waiverEl.addEventListener('change', syncContinue);
 
   function applyCap(){
@@ -8122,7 +8160,7 @@ sms_events: !!(document.getElementById('tb-sms')||{}).checked,
 session:chosen, session_label:chosenLabel,
       referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
       signature:sign, signature_data:tbSig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:19),
-      refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
+      refund_ack:true, refund_policy_text:(initialsEl && initialsEl.value.trim() ? '[Initialed "' + initialsEl.value.trim().toUpperCase() + '" at checkout] ' : '') + (window.__RF_REFUND_TEXT||''),
       waiver_agreed:true, is_paid:false, created_at:nowIso, event:TB_EVENT
     };
     try { var k='auric_turkey_burn'; var a=JSON.parse(localStorage.getItem(k)||'[]'); a.push(rec); localStorage.setItem(k,JSON.stringify(a)); } catch(e){}
@@ -8194,9 +8232,14 @@ session:chosen, session_label:chosenLabel,
       <div class="rf-ack"><input type="checkbox" id="tb28-sms"><label for="tb28-sms">Text me about future Auric Movement events.<span class="rf-policy">Separate from the above, and entirely optional &mdash; leave it unticked and you&rsquo;ll only ever hear from us about a class you booked. Reply STOP at any time.</span></label></div>
       <div class="rf-field"><label for="tb28-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="tb28-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
       <div class="rf-field"><label for="tb28-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="tb28-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
-      <div class="rf-ack">
-        <input type="checkbox" id="tb28-refund">
-        <label for="tb28-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">As of October 9, 2026, all purchases are final and nonrefundable. No refunds or credits are issued for cancellations, missed sessions, or no-shows, regardless of how much notice is given. Bookings made before October 9, 2026 are governed by the policy agreed to at the time of that booking, and credits already issued remain valid until they expire. Can&rsquo;t make it on short notice? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</span></label>
+      <div class="rf-refundbox">
+        <h4>&#9888; Refund policy</h4>
+        <p class="rf-refund-lead">As of October 9, 2026, all purchases are <strong>final and nonrefundable</strong>. No refunds or credits are issued for cancellations, missed sessions, or no-shows &mdash; <strong>regardless of how much notice is given</strong>.</p>
+        <p class="rf-refund-body">Can&rsquo;t make it? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. Bookings made before October 9, 2026 are governed by the policy agreed to at the time of that booking, and credits already issued remain valid until they expire. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</p>
+        <div class="rf-refund-confirm">
+          <label class="rf-refund-check"><input type="checkbox" id="tb28-refund"><span>I have read and agree to the refund policy above.</span></label>
+          <label class="rf-refund-init">Your initials <input type="text" id="tb28-initials" maxlength="4" autocomplete="off" spellcheck="false" aria-label="Type your initials to confirm you have read the refund policy"></label>
+        </div>
       </div>
       <div class="rf-ack">
         <input type="checkbox" id="tb28-waiver" disabled>
@@ -8290,7 +8333,7 @@ document.addEventListener('DOMContentLoaded', function(){
       stepPay =document.getElementById('tb28-step-pay'),
       nameEl=document.getElementById('tb28-name'), emailEl=document.getElementById('tb28-email'),
       refEl=document.getElementById('tb28-referral'), healthEl=document.getElementById('tb28-health'),
-      refundEl=document.getElementById('tb28-refund'), waiverEl=document.getElementById('tb28-waiver'),
+      refundEl=document.getElementById('tb28-refund'), initialsEl=document.getElementById('tb28-initials'), waiverEl=document.getElementById('tb28-waiver'),
       signEl=document.getElementById('tb28-sign'), formErr=document.getElementById('tb28-form-err'),
       continueBtn=document.getElementById('tb28-continue'),
       waiverBox=document.getElementById('tb28-waiver-box');
@@ -8354,8 +8397,9 @@ document.addEventListener('DOMContentLoaded', function(){
     waiverBox.style.display = showing ? 'none' : 'block';
     waiverEl.disabled=false;
   });
-  function syncContinue(){ continueBtn.disabled = !(refundEl.checked && waiverEl.checked); }
+  function syncContinue(){ continueBtn.disabled = !(refundEl.checked && waiverEl.checked && initialsEl && initialsEl.value.trim().length >= 2); }
   refundEl.addEventListener('change', syncContinue);
+  if(initialsEl) initialsEl.addEventListener('input', syncContinue);
   waiverEl.addEventListener('change', syncContinue);
 
   stepForm.addEventListener('submit', function(e){
@@ -8377,7 +8421,7 @@ sms_events: !!(document.getElementById('tb28-sms')||{}).checked,
 session:chosen, session_label:chosenLabel,
       referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
       signature:sign, signature_data:tbSig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:19),
-      refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
+      refund_ack:true, refund_policy_text:(initialsEl && initialsEl.value.trim() ? '[Initialed "' + initialsEl.value.trim().toUpperCase() + '" at checkout] ' : '') + (window.__RF_REFUND_TEXT||''),
       waiver_agreed:true, is_paid:false, created_at:new Date().toISOString(), event:TB28_EVENT
     };
     try { var k='auric_turkey28'; var a=JSON.parse(localStorage.getItem(k)||'[]'); a.push(rec); localStorage.setItem(k,JSON.stringify(a)); } catch(e){}
@@ -8456,9 +8500,14 @@ session:chosen, session_label:chosenLabel,
       <div class="rf-field"><label for="hw-shirt">What size shirt are you in a long sleeve?</label><select id="hw-shirt" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;background:#fff;color:#2c1a0e;"><option value="">Select a size&hellip;</option><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>2XL</option><option>3XL</option></select></div>
       <div class="rf-field"><label for="hw-referral">Did someone refer you? <span class="rf-opt">(optional)</span></label><input type="text" id="hw-referral" autocomplete="off" placeholder="Their name (so we can thank them &#129293;)"></div>
       <div class="rf-field"><label for="hw-health">Anything we should know before class? <span class="rf-opt">(optional)</span></label><textarea id="hw-health" rows="2" style="width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:1rem;background:#fff;color:#2c1a0e;resize:vertical;" placeholder="Injuries, health conditions, pregnancy, allergies&hellip;"></textarea></div>
-      <div class="rf-ack">
-        <input type="checkbox" id="hw-refund">
-        <label for="hw-refund">I understand the <strong>refund policy</strong>.<span class="rf-policy">As of October 9, 2026, all purchases are final and nonrefundable. No refunds or credits are issued for cancellations, missed sessions, or no-shows, regardless of how much notice is given. Bookings made before October 9, 2026 are governed by the policy agreed to at the time of that booking, and credits already issued remain valid until they expire. Can&rsquo;t make it on short notice? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</span></label>
+      <div class="rf-refundbox">
+        <h4>&#9888; Refund policy</h4>
+        <p class="rf-refund-lead">As of October 9, 2026, all purchases are <strong>final and nonrefundable</strong>. No refunds or credits are issued for cancellations, missed sessions, or no-shows &mdash; <strong>regardless of how much notice is given</strong>.</p>
+        <p class="rf-refund-body">Can&rsquo;t make it? Spot transfers to a friend are welcome up to 24 hours before &mdash; email auricmovement@outlook.com with both names. Bookings made before October 9, 2026 are governed by the policy agreed to at the time of that booking, and credits already issued remain valid until they expire. If you initiate a chargeback or payment dispute after agreeing to this policy, that is a breach of these terms, and Auric Movement LLC reserves the right to decline your registration for any future events.</p>
+        <div class="rf-refund-confirm">
+          <label class="rf-refund-check"><input type="checkbox" id="hw-refund"><span>I have read and agree to the refund policy above.</span></label>
+          <label class="rf-refund-init">Your initials <input type="text" id="hw-initials" maxlength="4" autocomplete="off" spellcheck="false" aria-label="Type your initials to confirm you have read the refund policy"></label>
+        </div>
       </div>
       <div class="rf-ack">
         <input type="checkbox" id="hw-waiver" disabled>
@@ -8558,7 +8607,7 @@ document.addEventListener('DOMContentLoaded', function(){
       nameEl=document.getElementById('hw-name'), emailEl=document.getElementById('hw-email'),
       refEl=document.getElementById('hw-referral'), healthEl=document.getElementById('hw-health'),
       shirtEl=document.getElementById('hw-shirt'),
-      refundEl=document.getElementById('hw-refund'), waiverEl=document.getElementById('hw-waiver'),
+      refundEl=document.getElementById('hw-refund'), initialsEl=document.getElementById('hw-initials'), waiverEl=document.getElementById('hw-waiver'),
       signEl=document.getElementById('hw-sign'), formErr=document.getElementById('hw-form-err'),
       continueBtn=document.getElementById('hw-continue'),
       waiverBox=document.getElementById('hw-waiver-box');
@@ -8595,8 +8644,9 @@ document.addEventListener('DOMContentLoaded', function(){
     waiverBox.style.display = showing ? 'none' : 'block';
     waiverEl.disabled=false;
   });
-  function syncContinue(){ continueBtn.disabled = !(refundEl.checked && waiverEl.checked); }
+  function syncContinue(){ continueBtn.disabled = !(refundEl.checked && waiverEl.checked && initialsEl && initialsEl.value.trim().length >= 2); }
   refundEl.addEventListener('change', syncContinue);
+  if(initialsEl) initialsEl.addEventListener('input', syncContinue);
   waiverEl.addEventListener('change', syncContinue);
 
   function applyCap(){
@@ -8653,7 +8703,7 @@ session:chosen, session_label:chosenLabel,
       referred_by: refEl.value.trim()||null, health:(healthEl.value.trim())||null,
       signature:sign, signature_data:hwSig.toDataURL(), clauses_agreed:(window.__RF_CLAUSES?window.__RF_CLAUSES.length:19),
       shirt_size:(shirtEl && shirtEl.value)||null,
-      refund_ack:true, refund_policy_text:(window.__RF_REFUND_TEXT||null),
+      refund_ack:true, refund_policy_text:(initialsEl && initialsEl.value.trim() ? '[Initialed "' + initialsEl.value.trim().toUpperCase() + '" at checkout] ' : '') + (window.__RF_REFUND_TEXT||''),
       waiver_agreed:true, is_paid:false, created_at:nowIso, event:HW_EVENT
     };
     try { var k='auric_halloween'; var a=JSON.parse(localStorage.getItem(k)||'[]'); a.push(rec); localStorage.setItem(k,JSON.stringify(a)); } catch(e){}
@@ -8737,6 +8787,7 @@ session:chosen, session_label:chosenLabel,
     var refEl    = document.getElementById('rf-referral');
     var healthEl = document.getElementById('rf-health');
     var refundEl = document.getElementById('rf-refund');
+    var initialsEl = document.getElementById('rf-initials');
     var waiverEl = document.getElementById('rf-waiver');
     var signEl   = document.getElementById('rf-sign');
     var rfSig    = window.AuricSigPad(document.getElementById('rf-sigpad'), document.getElementById('rf-sig-clear'));
@@ -8751,6 +8802,7 @@ session:chosen, session_label:chosenLabel,
       var cf=document.getElementById('rf-step-confirmed'); if(cf) cf.style.display='none';
       if(stepForm.reset) stepForm.reset();
       waiverEl.checked=false; waiverEl.disabled=true; refundEl.checked=false;
+      if(initialsEl) initialsEl.value='';
       formErr.textContent=''; syncContinue(); applyCap();
     }
     card.addEventListener('click', function(e){ e.preventDefault(); resetFlow(); openOverlay(); });
@@ -8782,11 +8834,13 @@ session:chosen, session_label:chosenLabel,
       var ok = nameEl.value.trim().length>1 &&
                /.+@.+\..+/.test(emailEl.value.trim()) &&
                refundEl.checked && waiverEl.checked &&
+               initialsEl && initialsEl.value.trim().length >= 2 &&
                signEl.value.trim().length>1;
       contBtn.disabled = !ok;
     }
     [nameEl,emailEl,signEl].forEach(function(el){ el.addEventListener('input', syncContinue); });
     refundEl.addEventListener('change', syncContinue);
+  if(initialsEl) initialsEl.addEventListener('input', syncContinue);
     waiverEl.addEventListener('change', syncContinue);
 
     // Waiver sub-modal
@@ -8890,7 +8944,7 @@ session:chosen, session_label:chosenLabel,
         referred_by: refEl.value.trim() || null,
         health: (healthEl && healthEl.value.trim()) || null,
         signature:sign, signature_data:rfSig.toDataURL(), clauses_agreed: RF_CLAUSES.length,
-        refund_ack:true, refund_policy_text:RF_REFUND_TEXT,
+        refund_ack:true, refund_policy_text:(initialsEl && initialsEl.value.trim() ? '[Initialed "' + initialsEl.value.trim().toUpperCase() + '" at checkout] ' : '') + RF_REFUND_TEXT,
         waiver_agreed:true, is_paid:false, created_at:nowIso, event:'riddim-kompa-reformer-2026-09-13'
       });
 
