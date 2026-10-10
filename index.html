@@ -3617,6 +3617,11 @@
           var _dev=c.getAttribute('data-draft-event');       // not announced → not "next up"
           if(_dev && window.auricDraftHidden && window.auricDraftHidden(_dev)) return;
           if(c.getAttribute('data-soldout')==='true') return; // sold out → feature the next bookable one
+          // Registration closed by hand → skip. This block's call to action is
+          // "Reserve your spot", and a closed date has no spot to reserve, so
+          // featuring one sends people to a form that cannot take them.
+          var _cev=c.getAttribute('data-event-id');
+          if(_cev && window.auricIsClosed && window.auricIsClosed(_cev)) return;
           var ds=c.getAttribute('data-event-date'); if(!ds) return;
           var dt=new Date(ds+'T00:00:00'); if(isNaN(dt.getTime())) return;
           if(dt<today) return;                              // already past
