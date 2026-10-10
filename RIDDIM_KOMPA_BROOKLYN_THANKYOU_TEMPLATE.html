@@ -19,7 +19,8 @@
      2. photos + recap coming — post, tag us, we repost
      3. Google review
      4. every upcoming date, grouped by location
-     5. Auric Club
+     5. refer a friend ($5 off, honoured by hand — see below)
+     6. Auric Club
 
    Date-neutral on purpose: RF_BK_TMPL_THANKYOU is sent for every
    Maison Luxe date, so no date is written into this file.
@@ -33,6 +34,12 @@
      Mèsi anpil, Brooklyn ✦ Auric Movement
 
    EmailJS variable used:  {{from_name}}
+
+   THE $5 REFERRAL IS NOT AUTOMATED. Nothing in Stripe discounts it.
+   The booking form already asks "Did someone refer you?", saves it as
+   referred_by, and every roster row shows "🤝 Referred by <name>" — so
+   the way to honour it is to issue that person a $5 credit from the
+   admin panel's Credits tab when you see their name on a new booking.
 
    WHEN A DATE CHANGES: the "What's next" rows are hand-written.
    Update them when an event is added, sells out, or passes — this
@@ -228,6 +235,25 @@
                   <div style="padding-top:9px;">
                     <a href="https://book.auricmovement.com/blooming" style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:#b8302a;text-decoration:none;border-bottom:2px solid #b8302a;padding-bottom:2px;">Join the list &rarr;</a>
                   </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- ── Refer a friend. Sits right under the dates on purpose:
+             they have just read where the next classes are, which is the
+             moment someone thinks of who to bring. Lighter treatment than
+             the boxes above so three bordered blocks don't stack up. ── -->
+        <tr>
+          <td style="padding:26px 36px 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="border-left:4px solid #b8302a;padding:4px 0 4px 16px;">
+                  <div style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#b8302a;padding-bottom:7px;">&#129309; Refer a friend</div>
+                  <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:1.6;color:#2a2219;margin:0;">
+                    Send someone our way. When they book, they put your name in <em>&ldquo;Did someone refer you?&rdquo;</em> at checkout &mdash; and <strong style="color:#b8302a;">you get $5 off your next class</strong>.
+                  </p>
                 </td>
               </tr>
             </table>
