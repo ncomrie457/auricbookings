@@ -6945,7 +6945,10 @@ Can't wait to move and connect with you!</textarea>
       // Not 'Rescheduled' (the default): this one ran.
       past: 'Completed',
       // Button and status pill carry it; don't bury the flyer.
-      notice: false
+      notice: false,
+      // It ran. Closed only means bookings are shut, so it still belongs in
+      // the archive with a recap on the way.
+      ran: true
     },
     'riddim-kompa-brooklyn-2026-09-26': {
       why:  'nor’easter on the day, plus multiple cancellations — moved to Oct 10',
@@ -7034,6 +7037,11 @@ Can't wait to move and connect with you!</textarea>
         // overlay buries artwork that is doing its own work. `say` is left
         // alone: the booking form still explains why there are no times.
         notice: c.notice !== false,
+        // Did the class actually happen? Closing registration and calling a
+        // date off both land in this list, but only one of them produces a
+        // recap. Defaults to false, so a cancelled date stays out of the
+        // archive exactly as it did before.
+        ran: c.ran === true,
       say:  c.say  || '<strong>Registration is closed for this date.</strong><br>'
                     + 'Already booked? You’re all set — check your confirmation email for '
                     + 'your arrival time. Hoping to join us? Have a look at the other dates below.'
@@ -9268,6 +9276,14 @@ document.addEventListener('DOMContentLoaded', function() {
       videoPending: true,
       description: 'Our sold-out Riddim &amp; Kompa on the Reformer at Valley Studio in West Hempstead &mdash; three back-to-back sessions of reformer Pilates moving to the riddim, with a complimentary goodie bag and a prize drawing for a 4-class package.'
     },
+    'reformer-o10': {
+      title:   'Riddim &times; Kompa on the Reformer',
+      soldOut: true,
+      forcePast: true,   // recap goes up over the coming days, not next week
+      pendingText: 'Recap Coming Soon',
+      pendingSub:  'Photos and a video from this event are on the way.',
+      description: 'Riddim &times; Kompa on the Reformer at Maison Luxe Pilates &amp; Wellness in Brooklyn &mdash; four back-to-back sessions of reformer Pilates moving to dancehall, reggae and kompa.'
+    },
     recharge: {
       forcePast: true,  // show in Past Events the same day; photos go up over the coming days
       pendingText: 'Photos Coming Soon',
@@ -9537,7 +9553,8 @@ document.addEventListener('DOMContentLoaded', function() {
       // Coming Soon" card for it would promise a video of a class that did not
       // happen — and the archive would carry a date nobody attended.
       // AURIC_CLOSED_EVENTS is the list of dates that were called off.
-      if ((window.AURIC_CLOSED_EVENTS || {})[card.getAttribute('data-event-id') || '']) return;
+      var _cc = window.auricClosedCopy ? window.auricClosedCopy(card.getAttribute('data-event-id') || '') : null;
+      if (_cc && !_cc.ran) return;
       // Show once the event date has passed — or immediately when meta.forcePast is
       // set (e.g. Mat & Chat, whose recap goes up the same evening as the event).
       if (today <= eventDate && !meta.forcePast) return;
