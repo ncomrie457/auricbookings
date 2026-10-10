@@ -3617,6 +3617,11 @@
           var _dev=c.getAttribute('data-draft-event');       // not announced → not "next up"
           if(_dev && window.auricDraftHidden && window.auricDraftHidden(_dev)) return;
           if(c.getAttribute('data-soldout')==='true') return; // sold out → feature the next bookable one
+          // Registration closed by hand → skip. This block's call to action is
+          // "Reserve your spot", and a closed date has no spot to reserve, so
+          // featuring one sends people to a form that cannot take them.
+          var _cev=c.getAttribute('data-event-id');
+          if(_cev && window.auricIsClosed && window.auricIsClosed(_cev)) return;
           var ds=c.getAttribute('data-event-date'); if(!ds) return;
           var dt=new Date(ds+'T00:00:00'); if(isNaN(dt.getTime())) return;
           if(dt<today) return;                              // already past
@@ -6827,7 +6832,7 @@ Can't wait to move and connect with you!</textarea>
     + 'full of laughter, community and the reminder that taking care of yourself is something '
     + 'to celebrate. Every guest leaves with a curated goodie bag, new friends, and a feeling '
     + 'that wellness belongs to them.</p>'
-    + '<p><strong>$45 &middot; 45 minutes &middot; all levels &middot; goodie bag included</strong><br>'
+    + '<p><strong>$45 &middot; 45 minutes &middot; all levels</strong><br>'
     + 'Brooklyn &mdash; Maison Luxe Pilates &amp; Wellness, 958 Lafayette Ave<br>'
     + 'Long Island &mdash; Valley Studio, inside Cherry Valley Sports, West Hempstead</p>';
 
@@ -6930,6 +6935,16 @@ Can't wait to move and connect with you!</textarea>
      grid; `say` is what the booking popup tells someone who opens it anyway.
      Give it a plain string instead of an object and it just reads closed.    */
   window.AURIC_CLOSED_EVENTS = {
+    // Event day. Bookings off so nobody pays for a class starting in hours.
+    // `say` is left to the default, which already tells a booked guest to check
+    // their confirmation and points everyone else at the other dates.
+    'riddim-kompa-brooklyn-2026-10-10': {
+      why:  'event day \u2014 registration closed',
+      card: 'Registration closed',
+      tag:  'Registration closed',
+      // Not 'Rescheduled' (the default): this one ran.
+      past: 'Completed'
+    },
     'riddim-kompa-brooklyn-2026-09-26': {
       why:  'nor’easter on the day, plus multiple cancellations — moved to Oct 10',
       // The button says where the date went; the status pill says Sold out so
