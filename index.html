@@ -3749,7 +3749,7 @@
           out+='<article class="bq-ae-card'+(shut?' is-closed':'')+'">'
             +'<div class="bq-ae-photo" style="background-image:url(\''+src+'\')">'
             +'<span class="bq-ae-status '+(shut?'':it.cls)+'" id="aestatus-'+it.id+'">'+(shut?'Sold out':it.tag)+'</span>'
-            +(shut && shut.say ? '<div class="bq-ae-notice"><div>'+shut.say+'</div></div>' : '')
+            +(shut && shut.notice && shut.say ? '<div class="bq-ae-notice"><div>'+shut.say+'</div></div>' : '')
             +'</div>'
             +'<div class="bq-ae-body">'
             +(dateEl?'<div class="bq-ae-date">'+dateEl.innerHTML+'</div>':'')
@@ -6943,7 +6943,9 @@ Can't wait to move and connect with you!</textarea>
       card: 'Registration closed',
       tag:  'Registration closed',
       // Not 'Rescheduled' (the default): this one ran.
-      past: 'Completed'
+      past: 'Completed',
+      // Button and status pill carry it; don't bury the flyer.
+      notice: false
     },
     'riddim-kompa-brooklyn-2026-09-26': {
       why:  'nor’easter on the day, plus multiple cancellations — moved to Oct 10',
@@ -7027,6 +7029,11 @@ Can't wait to move and connect with you!</textarea>
       tag:  c.tag || (c.card === false ? 'Sold out' : c.card) || 'Registration closed',
       // How the archive labels it once the date drops out of Upcoming.
       past: c.past || 'Rescheduled',
+        // notice:false keeps the flyer visible on the cards. The button and
+        // the status pill already say the date is closed, and a full-bleed
+        // overlay buries artwork that is doing its own work. `say` is left
+        // alone: the booking form still explains why there are no times.
+        notice: c.notice !== false,
       say:  c.say  || '<strong>Registration is closed for this date.</strong><br>'
                     + 'Already booked? You’re all set — check your confirmation email for '
                     + 'your arrival time. Hoping to join us? Have a look at the other dates below.'
@@ -7057,7 +7064,7 @@ Can't wait to move and connect with you!</textarea>
     if(!stepTimeEl || !window.auricIsClosed(ev)) return false;
     var copy = window.auricClosedCopy(ev);
     _rfLockTimes(stepTimeEl, copy.tag);
-    if(!stepTimeEl.querySelector('.rf-closed-note')){
+    if(copy.say && !stepTimeEl.querySelector('.rf-closed-note')){
       var n=document.createElement('p'); n.className='rf-closed-note';
       n.style.cssText='font-size:.82rem;line-height:1.55;color:#8a5a2a;background:#fdf4e7;border:1px solid #f0d9b5;border-radius:10px;padding:.8rem .9rem;margin:0 0 .9rem;text-align:left;';
       n.innerHTML=copy.say;
@@ -7079,7 +7086,7 @@ Can't wait to move and connect with you!</textarea>
       // a second copy — a notice that drifts out of step with the popup is
       // worse than no notice at all.
       var photo = card.querySelector('.bq-event-photo');
-      if(photo && copy.say && !photo.querySelector('.bq-event-notice')){
+      if(photo && copy.notice && copy.say && !photo.querySelector('.bq-event-notice')){
         var box = document.createElement('div');
         box.className = 'bq-event-notice';
         box.innerHTML = '<div>' + copy.say + '</div>';
