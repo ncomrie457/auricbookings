@@ -1,30 +1,41 @@
 <!--
   ════════════════════════════════════════════════════════════
-   Riddim & Kompa on the Reformer — BROOKLYN Thank-You Email
-   (Maison Luxe Pilates &amp; Wellness · Saturday, September 26)
+   Riddim × Kompa on the Reformer — BROOKLYN Thank-You Email
+   (Maison Luxe Pilates & Wellness · 958 Lafayette Ave)
 
-   This is the Brooklyn twin of RIDDIM_KOMPA_MESI_ANPIL_TEMPLATE.html.
-   Same look; different room, different studio tag, and it leads with
-   the news that another Brooklyn date is coming.
+   DESIGNED TO MATCH THE FLYER, not the old Mèsi Anpil layout:
+     · parchment card on a dark ground, the way the flyer sits
+     · the round Riddim × Kompa badge as the header, matted onto the
+       card colour (see the note beside it)
+     · dark swash bars for section headings (the "OCTOBER 10TH" bar)
+     · times split by thin red rules (the "12PM | 1PM | 2PM" row)
+     · red banner for the call to action
+     · flyer palette: parchment, ink, brick red, Jamaica green + gold
+
+   Colours are solid, never background images — Outlook drops those.
+
+   FOUR THINGS, IN ORDER:
+     1. a short thank-you
+     2. photos + recap coming — post, tag us, we repost
+     3. Google review
+     4. every upcoming date, grouped by location
+
+   Date-neutral on purpose: RF_BK_TMPL_THANKYOU is sent for every
+   Maison Luxe date, so no date is written into this file.
+
    ────────────────────────────────────────────────────────────
    COPY THIS ENTIRE FILE (Cmd+A → Cmd+C) and paste into:
-     EmailJS → Email Templates → New Template →
+     EmailJS → Email Templates → template_p5n3p19 →
      switch to the "Code"/HTML view → paste over everything → Save.
 
-   Then send me the template id and I will point
-   RF_BK_TMPL_THANKYOU at it in index.html. Until then Brooklyn
-   sends still go out on the shared Mèsi Anpil template.
-
    Suggested EmailJS Subject:
-     Mèsi anpil, Brooklyn — and we're coming back ✦ Auric Movement
+     Mèsi anpil, Brooklyn ✦ Auric Movement
 
    EmailJS variable used:  {{from_name}}
-   (Web fonts load in Apple Mail/iOS; other clients fall back to
-    Georgia / Arial gracefully.)
 
-   NOTE: there is no "Moments from the day" photo row yet, because
-   no Brooklyn photos exist. Once they do, that block can be lifted
-   straight from the Mèsi Anpil template.
+   WHEN A DATE CHANGES: the "What's next" rows are hand-written.
+   Update them when an event is added, sells out, or passes — this
+   file has no way to know. Oct 24 is the next one to come off.
   ════════════════════════════════════════════════════════════
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -32,154 +43,211 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>M&egrave;si anpil, Brooklyn &mdash; Riddim &amp; Kompa on the Reformer</title>
+  <title>M&egrave;si anpil, Brooklyn</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
-<body style="margin:0;padding:0;background-color:#e9e2d5;font-family:Georgia,'Times New Roman',serif;color:#1c1c1c;">
+<body style="margin:0;padding:0;background-color:#17130e;font-family:Georgia,'Times New Roman',serif;color:#1a1510;">
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#e9e2d5;padding:28px 14px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#17130e;padding:26px 14px;">
   <tr>
     <td align="center">
 
-      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#f2ede3;border-radius:6px;overflow:hidden;box-shadow:0 6px 30px rgba(60,45,30,0.14);max-width:600px;width:100%;">
+      <!-- The parchment card, the way the flyer sits on a dark ground -->
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#e7dbbf;max-width:600px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,0.45);">
 
-        <!-- Header -->
+        <!-- ── The badge. It already carries AURICMVMT, the lockup and
+             "On the Reformer", so none of that is repeated in text.
+             Matted onto the card colour rather than shipped with alpha:
+             a transparent PNG of this artwork is 1.2MB, this is 142KB,
+             and the corners match because the card colour is fixed. ── -->
         <tr>
-          <td style="padding:32px 40px 0;">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-              <tr>
-                <td style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:3px;text-transform:uppercase;color:#1c1c1c;">Auric Movement</td>
-                <td align="right" style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;color:#8a8175;">Brooklyn, NY</td>
-              </tr>
-            </table>
-            <div style="border-bottom:1.5px solid #1c1c1c;margin-top:12px;"></div>
+          <td align="center" style="padding:26px 30px 0;">
+            <img src="https://book.auricmovement.com/riddim-kompa-badge.jpg"
+                 alt="Riddim &times; Kompa on the Reformer &mdash; Auric Movement"
+                 width="430"
+                 style="display:block;margin:0 auto;max-width:430px;width:100%;height:auto;border:0;outline:none;">
           </td>
         </tr>
 
-        <!-- Title + flags -->
+        <!-- ── The dark swash bar, like "OCTOBER 10TH" ────────── -->
         <tr>
-          <td style="padding:26px 40px 6px;">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+          <td align="center" style="padding:20px 36px 0;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
               <tr>
-                <td valign="top" style="width:58%;">
-                  <div style="font-family:'Playfair Display',Georgia,serif;font-weight:800;font-size:62px;line-height:0.92;color:#1c1c1c;letter-spacing:1px;">M&Egrave;SI<br>ANPIL</div>
-                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:15px;font-weight:bold;letter-spacing:3px;text-transform:uppercase;color:#b23a2e;margin-top:16px;">Brooklyn, You Moved</div>
-                </td>
-                <td valign="top" align="right" style="width:42%;">
-                  <img src="https://book.auricmovement.com/riddim-kompa-flags.png" alt="Haiti and Jamaica flags" width="190" style="display:block;margin:0 0 6px auto;max-width:190px;width:100%;height:auto;border:0;outline:none;">
-                  <div style="font-family:'Dancing Script',cursive;font-size:32px;line-height:1.05;color:#b23a2e;font-weight:700;">Riddim<br>&amp; Kompa</div>
-                </td>
+                <td style="background-color:#1a1510;border-radius:3px;padding:11px 30px;font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:27px;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:#e7dbbf;white-space:nowrap;">M&Egrave;SI ANPIL</td>
               </tr>
             </table>
           </td>
         </tr>
 
-        <!-- Intro -->
+        <!-- ── 1. The thank-you ──────────────────────────────── -->
         <tr>
-          <td style="padding:22px 40px 0;">
-            <p style="font-family:Georgia,serif;font-size:21px;line-height:1.5;color:#1c1c1c;margin:0;">
-              Thank you for vibing with us at <span style="color:#b23a2e;">Riddim &amp; Kompa</span> on the Reformer.
-            </p>
-            <div style="width:60px;border-bottom:1.5px solid #1c1c1c;margin:18px 0 0;"></div>
-          </td>
-        </tr>
-
-        <!-- Body -->
-        <tr>
-          <td style="padding:20px 40px 0;">
-            <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:1.65;color:#2a2a2a;margin:0 0 16px 0;">
-              Big up yuhself, {{from_name}} &mdash; you brought the rhythm to the reformer today.
-            </p>
-            <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:1.65;color:#b23a2e;margin:0 0 20px 0;">
-              Brooklyn showed all the way up. Thank you for trusting me to guide you through it. &#129293;
+          <td align="center" style="padding:18px 46px 0;">
+            <p style="font-family:Georgia,serif;font-size:19px;line-height:1.55;color:#1a1510;margin:0;">
+              Big up yuhself, {{from_name}} &mdash; you brought the rhythm to the reformer.
             </p>
           </td>
         </tr>
 
-        <!-- The news — another Brooklyn date -->
+        <!-- The flyer's thin red rule divider -->
         <tr>
-          <td style="padding:2px 40px 0;">
-            <div style="background-color:#f7efe0;border:1.5px solid #b23a2e;border-radius:6px;padding:18px 20px;">
-              <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;color:#b23a2e;margin-bottom:8px;">&#127881; We&rsquo;re coming back</div>
-              <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:1.6;color:#2a2a2a;margin:0 0 12px 0;">
-                There&rsquo;s <strong>another Riddim &amp; Kompa coming to Brooklyn.</strong>
-              </p>
-              <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;line-height:1.65;color:#5a5248;margin:0 0 10px 0;">
-                Follow <strong style="color:#b23a2e;">@auricmovement</strong> on Instagram and TikTok for new date drops &mdash; or <a href="https://book.auricmovement.com/riddim-interest" style="color:#b23a2e;font-weight:bold;text-decoration:underline;">join the Riddim &times; Kompa list</a> and we&rsquo;ll email you the moment a date is set.
-              </p>
-              <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;line-height:1.6;color:#8a8175;margin:0;">
-                Either way, you&rsquo;ll hear before it goes public. These sell out.
-              </p>
-            </div>
+          <td align="center" style="padding:20px 36px 0;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
+              <tr><td style="width:60px;border-top:2px solid #b8302a;font-size:0;line-height:0;">&nbsp;</td></tr>
+            </table>
           </td>
         </tr>
 
-        <!-- Ask them what to run next -->
+        <!-- ── 2. Photos + recap, and the tag ask ────────────── -->
         <tr>
-          <td style="padding:16px 40px 0;">
-            <div style="background-color:#efe7d8;border-left:3px solid #b23a2e;border-radius:0 6px 6px 0;padding:16px 18px;">
-              <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:1.65;color:#2a2a2a;margin:0;">
-                <strong>Want a different theme?</strong> Afrobeats, soca, R&amp;B, 90s &mdash; tell me what you&rsquo;d move to and we&rsquo;ll make it happen. Just hit reply, I read every one.
-              </p>
-            </div>
-          </td>
-        </tr>
-
-        <!-- Keep moving with us -->
-        <tr>
-          <td style="padding:24px 40px 0;">
-            <div style="border-top:1.5px solid #1c1c1c;padding-top:22px;">
-              <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:3px;text-transform:uppercase;color:#b23a2e;margin-bottom:16px;">Keep moving with us</div>
-
-              <!-- Review -->
-              <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:1.6;color:#2a2a2a;margin:0 0 8px 0;"><strong>Loved the class?</strong> Your words mean the world &mdash; and they&rsquo;re how the next person finds us.</p>
-              <p style="margin:0 0 14px 0;"><a href="https://g.page/r/CUDyTE7xa-SuEAE/review" style="display:inline-block;background-color:#b23a2e;color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;padding:11px 22px;border-radius:6px;">&#9733; Leave a Google Review</a></p>
-              <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;line-height:1.6;color:#5a5248;margin:0 0 20px 0;">Posting your experience? We&rsquo;d love a tag &mdash; <strong style="color:#b23a2e;">@auricmovement</strong> &amp; <strong style="color:#b23a2e;">@maisonluxepilatesandwellness</strong> &mdash; so we can reshare! &#129293;</p>
-
-              <!-- Calendar + merch -->
-              <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:1.6;color:#2a2a2a;margin:0 0 12px 0;">See everything on the calendar &mdash; <a href="https://linktr.ee/AURICMVMT" style="color:#b23a2e;font-weight:bold;text-decoration:underline;">all our links &amp; upcoming events &rarr;</a></p>
-              <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:1.6;color:#2a2a2a;margin:0 0 20px 0;">Want the Auric look? <a href="https://auric-movement.printify.me/" style="color:#b23a2e;font-weight:bold;text-decoration:underline;">Shop the merch &rarr;</a></p>
-
-              <!-- Auric Club -->
-              <div style="background-color:#efe7d8;border-left:3px solid #b23a2e;border-radius:0 6px 6px 0;padding:16px 18px;margin:2px 0 0;">
-                <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;color:#b23a2e;margin-bottom:8px;">&#127775; You&rsquo;re in Auric Club</div>
-                <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;line-height:1.65;color:#2a2a2a;margin:0 0 10px 0;">By moving with us today you&rsquo;re part of <strong>Auric Club</strong> &mdash; our free rewards tracker. <strong>Attend 4 events and bring a friend to your 5th for free.</strong></p>
-                <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;line-height:1.7;color:#5a5248;margin:0;">To check your rewards: go to <a href="https://book.auricmovement.com" style="color:#b23a2e;font-weight:bold;text-decoration:underline;">book.auricmovement.com</a>, tap <strong>Auric Club</strong>, and enter your email.</p>
-              </div>
-            </div>
-          </td>
-        </tr>
-
-        <!-- Sign-off -->
-        <tr>
-          <td style="padding:24px 40px 0;">
-            <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:1.6;color:#2a2a2a;margin:0;">
-              With gratitude,<br><strong style="color:#1c1c1c;">Auric Movement</strong>
-            </p>
-          </td>
-        </tr>
-
-        <!-- Pillars + sign-off script -->
-        <tr>
-          <td style="padding:26px 40px 30px;">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+          <td style="padding:22px 36px 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:2px solid #1a1510;">
               <tr>
-                <td valign="bottom" style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;color:#8a8175;line-height:1.9;">
-                  Align &nbsp;&bull;&nbsp; Unwind &nbsp;&bull;&nbsp; Recharge<br>Intend &nbsp;&bull;&nbsp; Connect
-                </td>
-                <td valign="bottom" align="right" style="font-family:'Dancing Script',cursive;font-size:30px;font-weight:700;color:#b23a2e;">
-                  See you soon, BK. <span style="color:#b23a2e;">&#9829;</span>
+                <td style="background-color:#1a1510;padding:8px 16px;font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#e7dbbf;">Photos &amp; Recap</td>
+              </tr>
+              <tr>
+                <td style="padding:16px 18px;">
+                  <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:1.6;color:#2a2219;margin:0 0 10px 0;">
+                    Photos and the recap video go up soon.
+                  </p>
+                  <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:1.6;color:#2a2219;margin:0;">
+                    Posting yours? Tag <strong style="color:#b8302a;">@auricmovement</strong> and <strong style="color:#b8302a;">@maisonluxepilatesandwellness</strong> &mdash; we&rsquo;ll repost.
+                  </p>
                 </td>
               </tr>
             </table>
           </td>
         </tr>
 
-        <!-- Footer bar -->
+        <!-- ── 3. Review, on the flyer's red banner ──────────── -->
         <tr>
-          <td align="center" style="background-color:#b23a2e;padding:16px 20px;">
-            <a href="https://book.auricmovement.com" style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;font-weight:bold;letter-spacing:3px;text-transform:uppercase;color:#ffffff;text-decoration:none;">book.auricmovement.com</a>
+          <td align="center" style="padding:22px 36px 0;">
+            <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:1.6;color:#2a2219;margin:0 0 14px 0;">
+              Loved it? A review is how the next person finds us.
+            </p>
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
+              <tr>
+                <td style="background-color:#b8302a;border-radius:4px;">
+                  <a href="https://g.page/r/CUDyTE7xa-SuEAE/review" style="display:block;font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:15px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#ffffff;text-decoration:none;padding:13px 30px;">&#9733; Leave a Google Review</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- ── 4. What's next, by location ───────────────────── -->
+        <tr>
+          <td align="center" style="padding:32px 36px 0;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
+              <tr>
+                <td style="background-color:#1a1510;border-radius:3px;padding:9px 26px;font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:19px;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:#e7dbbf;white-space:nowrap;">What&rsquo;s Next</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- BROOKLYN -->
+        <tr>
+          <td style="padding:24px 36px 0;">
+            <div style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:17px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#1f6b3a;">Brooklyn</div>
+            <div style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:#7a6a4e;padding-top:3px;">Maison Luxe Pilates &amp; Wellness &middot; 958 Lafayette Ave</div>
+            <div style="border-top:2px solid #b8302a;margin-top:10px;"></div>
+
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="padding:14px 0 14px;border-bottom:1px solid #cdbf9e;">
+                  <div style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:19px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#1a1510;line-height:1.25;">Sat Nov 21</div>
+                  <div style="font-family:Georgia,serif;font-size:16px;color:#2a2219;line-height:1.4;padding-top:2px;">Riddim &times; Kompa on the Reformer</div>
+                  <!-- times split by thin red rules, as on the flyer -->
+                  <div style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:15px;font-weight:500;color:#2a2219;letter-spacing:1px;padding-top:8px;">
+                    12PM <span style="color:#b8302a;">&#124;</span> 1PM <span style="color:#b8302a;">&#124;</span> 2PM <span style="color:#b8302a;">&#124;</span> 3PM
+                    <span style="color:#b8302a;">&#124;</span> <strong style="color:#b8302a;">$45</strong>
+                  </div>
+                  <div style="padding-top:9px;">
+                    <a href="https://book.auricmovement.com/?book=reformer-n21" style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:#b8302a;text-decoration:none;border-bottom:2px solid #b8302a;padding-bottom:2px;">Book &rarr;</a>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- LONG ISLAND -->
+        <tr>
+          <td style="padding:28px 36px 0;">
+            <div style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:17px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#1f6b3a;">Long Island</div>
+            <div style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:#7a6a4e;padding-top:3px;">Valley Studio &middot; inside Cherry Valley Sports, West Hempstead</div>
+            <div style="border-top:2px solid #b8302a;margin-top:10px;"></div>
+
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="padding:14px 0;border-bottom:1px solid #cdbf9e;">
+                  <div style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:19px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#1a1510;line-height:1.25;">Sat Oct 24</div>
+                  <div style="font-family:Georgia,serif;font-size:16px;color:#2a2219;line-height:1.4;padding-top:2px;">Halloween Reformer Pilates &mdash; costumes encouraged &#127875;</div>
+                  <div style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:15px;font-weight:500;color:#2a2219;letter-spacing:1px;padding-top:8px;">
+                    11:30AM <span style="color:#b8302a;">&#124;</span> 12:30PM <span style="color:#b8302a;">&#124;</span> 1:30PM
+                    <span style="color:#b8302a;">&#124;</span> <strong style="color:#b8302a;">$45</strong>
+                  </div>
+                  <div style="padding-top:9px;">
+                    <a href="https://book.auricmovement.com/?book=halloween" style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:#b8302a;text-decoration:none;border-bottom:2px solid #b8302a;padding-bottom:2px;">Book &rarr;</a>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:14px 0;border-bottom:1px solid #cdbf9e;">
+                  <div style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:19px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#1a1510;line-height:1.25;">Sun Nov 22</div>
+                  <div style="font-family:Georgia,serif;font-size:16px;color:#2a2219;line-height:1.4;padding-top:2px;">Pre-Turkey Burn</div>
+                  <div style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:15px;font-weight:500;color:#2a2219;letter-spacing:1px;padding-top:8px;">
+                    11:30AM <span style="color:#b8302a;">&#124;</span> 12:30PM <span style="color:#b8302a;">&#124;</span> 1:30PM
+                    <span style="color:#b8302a;">&#124;</span> <strong style="color:#b8302a;">$45</strong>
+                  </div>
+                  <div style="padding-top:9px;">
+                    <a href="https://book.auricmovement.com/?book=turkey" style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:#b8302a;text-decoration:none;border-bottom:2px solid #b8302a;padding-bottom:2px;">Book &rarr;</a>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:14px 0;border-bottom:1px solid #cdbf9e;">
+                  <div style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:19px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#1a1510;line-height:1.25;">Sat Nov 28</div>
+                  <div style="font-family:Georgia,serif;font-size:16px;color:#2a2219;line-height:1.4;padding-top:2px;">Post-Turkey Burn</div>
+                  <div style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:15px;font-weight:500;color:#2a2219;letter-spacing:1px;padding-top:8px;">
+                    11:30AM <span style="color:#b8302a;">&#124;</span> 12:30PM <span style="color:#b8302a;">&#124;</span> 1:30PM
+                    <span style="color:#b8302a;">&#124;</span> <strong style="color:#b8302a;">$45</strong>
+                  </div>
+                  <div style="padding-top:9px;">
+                    <a href="https://book.auricmovement.com/?book=turkey28" style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:#b8302a;text-decoration:none;border-bottom:2px solid #b8302a;padding-bottom:2px;">Book &rarr;</a>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:14px 0;">
+                  <div style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:19px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#1a1510;line-height:1.25;">Sun Dec 13</div>
+                  <div style="font-family:Georgia,serif;font-size:16px;color:#2a2219;line-height:1.4;padding-top:2px;">Something&rsquo;s Blooming &mdash; mat &middot; flower bar</div>
+                  <div style="padding-top:9px;">
+                    <a href="https://book.auricmovement.com/blooming" style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:#b8302a;text-decoration:none;border-bottom:2px solid #b8302a;padding-bottom:2px;">Join the list &rarr;</a>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- ── Sign-off ──────────────────────────────────────── -->
+        <tr>
+          <td align="center" style="padding:30px 36px 26px;">
+            <div style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:#7a6a4e;line-height:2;">
+              Align &nbsp;&bull;&nbsp; Unwind &nbsp;&bull;&nbsp; Recharge<br>Intend &nbsp;&bull;&nbsp; Connect
+            </div>
+            <div style="font-family:'Playfair Display',Georgia,serif;font-weight:700;font-style:italic;font-size:25px;color:#b8302a;padding-top:14px;">See you soon, BK.</div>
+          </td>
+        </tr>
+
+        <!-- ── The flyer's red "BOOK AT" banner ──────────────── -->
+        <tr>
+          <td align="center" style="background-color:#b8302a;padding:15px 20px;">
+            <div style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:500;letter-spacing:5px;text-transform:uppercase;color:#f0d9b5;padding-bottom:3px;">Book at</div>
+            <a href="https://book.auricmovement.com" style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:18px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#ffffff;text-decoration:none;">auricmovement.com</a>
           </td>
         </tr>
 
@@ -189,12 +257,11 @@
   </tr>
 </table>
 
-
 <!-- CAN-SPAM footer: opt-out + physical address (required on promotional email) -->
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#efe9dc;">
-  <tr><td align="center" style="padding:16px 24px;font-family:Georgia,'Times New Roman',serif;font-size:11px;line-height:1.7;color:#8a8172;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#17130e;">
+  <tr><td align="center" style="padding:18px 24px 26px;font-family:Georgia,'Times New Roman',serif;font-size:11px;line-height:1.7;color:#8a7c62;">
     You&rsquo;re receiving this because you attended an Auric Movement event or joined one of our lists.<br>
-    Prefer not to get event updates? <a href="mailto:auricmovement@outlook.com?subject=Unsubscribe" style="color:#8a8172;text-decoration:underline;">Unsubscribe</a> and we&rsquo;ll take you off.<br>
+    Prefer not to get event updates? <a href="mailto:auricmovement@outlook.com?subject=Unsubscribe" style="color:#8a7c62;text-decoration:underline;">Unsubscribe</a> and we&rsquo;ll take you off.<br>
     Auric Movement LLC &middot; New York, NY
   </td></tr>
 </table>
