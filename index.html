@@ -11914,6 +11914,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // moved off it.
     reformerBkContainer.setAttribute('data-past', 'true');
     reformerO10Container.setAttribute('data-event-date', '2026-10-10');
+    // Ran on the 10th, and registration closed that morning. isEventPast is
+    // strictly before-today, so without this the section sits under Recent
+    // for all of event day, above dates that are still selling.
+    reformerO10Container.setAttribute('data-past', 'true');
     reformerN21Container.setAttribute('data-event-date', '2026-11-21');
     reformerContainer.setAttribute('data-event-date', '2026-09-13');
     crContainer.setAttribute('data-event-date', '2026-08-15');
