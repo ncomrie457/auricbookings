@@ -19,6 +19,8 @@
      2. photos + recap coming — post, tag us, we repost
      3. Google review
      4. every upcoming date, grouped by location
+     5. refer a friend ($5 off, honoured by hand — see below)
+     6. Auric Club
 
    Date-neutral on purpose: RF_BK_TMPL_THANKYOU is sent for every
    Maison Luxe date, so no date is written into this file.
@@ -32,6 +34,12 @@
      Mèsi anpil, Brooklyn ✦ Auric Movement
 
    EmailJS variable used:  {{from_name}}
+
+   THE $5 REFERRAL IS NOT AUTOMATED. Nothing in Stripe discounts it.
+   The booking form already asks "Did someone refer you?", saves it as
+   referred_by, and every roster row shows "🤝 Referred by <name>" — so
+   the way to honour it is to issue that person a $5 credit from the
+   admin panel's Credits tab when you see their name on a new booking.
 
    WHEN A DATE CHANGES: the "What's next" rows are hand-written.
    Update them when an event is added, sells out, or passes — this
@@ -227,6 +235,47 @@
                   <div style="padding-top:9px;">
                     <a href="https://book.auricmovement.com/blooming" style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:#b8302a;text-decoration:none;border-bottom:2px solid #b8302a;padding-bottom:2px;">Join the list &rarr;</a>
                   </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- ── Refer a friend. Sits right under the dates on purpose:
+             they have just read where the next classes are, which is the
+             moment someone thinks of who to bring. Lighter treatment than
+             the boxes above so three bordered blocks don't stack up. ── -->
+        <tr>
+          <td style="padding:26px 36px 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="border-left:4px solid #b8302a;padding:4px 0 4px 16px;">
+                  <div style="font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#b8302a;padding-bottom:7px;">&#129309; Refer a friend</div>
+                  <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:1.6;color:#2a2219;margin:0;">
+                    Send someone our way. When they book, they put your name in <em>&ldquo;Did someone refer you?&rdquo;</em> at checkout &mdash; and <strong style="color:#b8302a;">you get $5 off your next class</strong>.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- ── Auric Club. Last, because it is the one thing here that
+             is about the next five classes rather than this one. ── -->
+        <tr>
+          <td style="padding:28px 36px 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:2px solid #1a1510;">
+              <tr>
+                <td style="background-color:#1a1510;padding:8px 16px;font-family:'Oswald','Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#e7dbbf;">&#127775; You&rsquo;re in Auric Club</td>
+              </tr>
+              <tr>
+                <td style="padding:16px 18px;">
+                  <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:1.6;color:#2a2219;margin:0 0 10px 0;">
+                    Four events, and your fifth <strong>brings a friend free</strong>.
+                  </p>
+                  <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;line-height:1.6;color:#5a4e38;margin:0;">
+                    Check your count at <a href="https://book.auricmovement.com" style="color:#b8302a;font-weight:bold;text-decoration:underline;">book.auricmovement.com</a> &rarr; tap <strong>Auric Club</strong> &rarr; enter your email.
+                  </p>
                 </td>
               </tr>
             </table>

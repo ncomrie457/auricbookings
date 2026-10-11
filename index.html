@@ -6985,9 +6985,10 @@ Can't wait to move and connect with you!</textarea>
                    should say.
      TO RELEASE:   delete the line and it goes straight back on sale at
                    whatever the live count says.                          */
-  window.AURIC_CLOSED_SESSIONS = {
-    'riddim-kompa-brooklyn-2026-11-21': { 'n3': 'Registration closed' }   // held for a birthday
-  };
+  // Nothing held right now. The Nov 21 3 PM slot was reserved for a birthday
+  // and has been released. Shape kept for the next one:
+  //   'event-id': { 'session-key': 'Registration closed' }
+  window.AURIC_CLOSED_SESSIONS = {};
   // Lock every held slot on a screen, without asking the database anything.
   // This runs before the seat count, so a hold survives Supabase being slow,
   // blocked or down — the count re-enables buttons when it arrives, and if it
@@ -9103,6 +9104,17 @@ document.addEventListener('DOMContentLoaded', function() {
   // ============================================================
   var PAST_EVENT_VIDEOS = [
     {
+      file:     'riddim-oct10-recap.mp4',   // self-hosted video in the repo
+      title:    'Riddim × Kompa Recap',
+      date:     'October 10, 2026',
+      subtitle: 'Riddim × Kompa · Brooklyn',
+      // No flyer key here. "View The Flyer" belongs to the photo card
+      // beside this one, never the video — same as every other past event.
+      sortDate: '2026-10-10'
+      // eventId omitted on purpose, so the "Photos Coming Soon" card still
+      // shows next to this video instead of being replaced by it.
+    },
+    {
       file:     'create-recharge-recap.mp4', // self-hosted video in the repo
       title:    'Create + Recharge Recap',
       date:     'August 15, 2026',
@@ -9279,9 +9291,9 @@ document.addEventListener('DOMContentLoaded', function() {
     'reformer-o10': {
       title:   'Riddim &times; Kompa on the Reformer',
       soldOut: true,
-      forcePast: true,   // recap goes up over the coming days, not next week
-      pendingText: 'Recap Coming Soon',
-      pendingSub:  'Photos and a video from this event are on the way.',
+      forcePast: true,   // the video is up; photos follow over the week
+      pendingText: 'Photos Coming Soon',
+      pendingSub:  'Photos from this event are on the way.',
       description: 'Riddim &times; Kompa on the Reformer at Maison Luxe Pilates &amp; Wellness in Brooklyn &mdash; four back-to-back sessions of reformer Pilates moving to dancehall, reggae and kompa.'
     },
     recharge: {
@@ -9364,7 +9376,13 @@ document.addEventListener('DOMContentLoaded', function() {
     btn.setAttribute('aria-label', 'Play video: ' + (v.title || 'Past event'));
     btn.innerHTML =
       '<div class="bq-video-poster">' +
-        '<video class="bq-local-thumb" muted playsinline preload="metadata" src="' + v.file + '#t=0.1" style="' + vidStyle + '"></video>' +
+        // The thumbnail is a still, not the video. It used to be a <video>
+        // with preload="metadata" pointed at #t=0.1, which made the browser
+        // pull most of every recap just to paint one frame — measured at 68MB
+        // of video on a single page load across four cards, before anyone
+        // pressed play. A ~40KB poster does the same job, and the mp4 is not
+        // touched until the click handler below swaps in a real <video>.
+        '<img class="bq-local-thumb" src="' + (v.poster || v.file.replace(/\.mp4$/i, '-poster.jpg')) + '" alt="" loading="lazy" decoding="async" style="' + vidStyle + '">' +
         '<div class="bq-video-play" aria-hidden="true">' +
           '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>' +
         '</div>' +

@@ -562,8 +562,17 @@
       var chosen = expenseEventIds();                       // keep ticks across a reload
       box.innerHTML = pnlRows.length
         ? pnlRows.map(function(r){
+            // flex:0 0 auto matters here. .cat-pill is white-space:nowrap and a
+            // flex item shrinks by default — and a shrunk chip does not clip its
+            // text, it spills it to the right, where the next chip's background
+            // paints over it. That is why a tight row reads as 'PC', 'TU', 'RI'
+            // with only the last chip on each line legible. Not shrinking means
+            // it wraps to the next line instead. max-width and normal wrapping
+            // cover the other end: an event name longer than the row wraps inside
+            // its own pill rather than escaping it.
             return '<label class="cat-pill" style="cursor:pointer;display:inline-flex;align-items:center;'
-              + 'gap:.4rem;padding:.3rem .6rem;"><input type="checkbox" class="f-ev" value="'+esc(r.id)+'"'
+              + 'gap:.4rem;padding:.3rem .6rem;flex:0 0 auto;max-width:100%;white-space:normal;"'
+              + '><input type="checkbox" class="f-ev" value="'+esc(r.id)+'"'
               + (chosen.indexOf(r.id) >= 0 ? ' checked' : '') + '> ' + esc(r.event_name)
               + (r.event_date ? ' <span class="muted">' + esc(fmtDate(r.event_date)) + '</span>' : '')
               + '</label>';
