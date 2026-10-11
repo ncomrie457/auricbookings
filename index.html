@@ -3487,8 +3487,8 @@
     // A finished event stays Sold out. Its seat counts keep moving after the
     // fact — moving an attendee to a credit frees their seat — which would
     // otherwise flip the pill back to "Now booking" on a date already run.
-    if (window.auricEventOver && window.auricEventOver(card.getAttribute('data-event-date')))
-      return { text:'Sold out', cls:'sold' };
+    if (window.auricBookingsClosed && window.auricBookingsClosed(card.getAttribute('data-event-date')))
+      return { text:'Registration closed', cls:'sold' };
     // Same for a date closed by hand: the live count must not undo it.
     if (window.auricIsClosed && window.auricIsClosed(card.getAttribute('data-event-id')))
       return { text:'Sold out', cls:'sold' };
@@ -3624,7 +3624,9 @@
           if(_cev && window.auricIsClosed && window.auricIsClosed(_cev)) return;
           var ds=c.getAttribute('data-event-date'); if(!ds) return;
           var dt=new Date(ds+'T00:00:00'); if(isNaN(dt.getTime())) return;
-          if(dt<today) return;                              // already past
+          // Bookings shut at midnight on the day, so a same-day event is no
+          // longer something to put under a "Reserve your spot" button.
+          if(window.auricBookingsClosed && window.auricBookingsClosed(ds)) return;
           var opens=c.getAttribute('data-reg-opens');       // registration not open yet → skip
           if(opens){ var od=new Date(opens+'T00:00:00'); if(!isNaN(od.getTime()) && od>today) return; }
           if(!bestDate || dt<bestDate){ best=c; bestDate=dt; }
@@ -6903,18 +6905,27 @@ Can't wait to move and connect with you!</textarea>
     return window.auricIsDraft(ev) && !window.auricPreview();
   };
 
-  // Has an event's day already gone by? (Eastern/local midnight, not UTC — a
-  // date-only string parsed bare lands on UTC midnight and reads a day early.)
-  // Used to keep a finished event's booking overlay closed: seat counts keep
-  // moving after the fact (a credit releases a seat), and without this the
+  // Are bookings closed for this date? True from midnight on the day of the
+  // event onward — nobody should be able to pay for a class starting in a few
+  // hours, and this is what makes that automatic rather than a hand edit to
+  // AURIC_CLOSED_EVENTS every event morning.
+  //
+  // Eastern/local midnight, not UTC: a date-only string parsed bare lands on
+  // UTC midnight and reads a day early.
+  //
+  // It also keeps a finished event shut. Seat counts keep moving after the
+  // fact — crediting an attendee frees their seat — and without this the
   // overlay would quietly re-open a past session as "a spot left".
-  window.auricEventOver = function(dateISO){
+  window.auricBookingsClosed = function(dateISO){
     if(!dateISO) return false;
     var d = new Date(dateISO + 'T00:00:00');
     if(isNaN(d.getTime())) return false;
     var today = new Date(); today.setHours(0,0,0,0);
-    return d < today;
+    return d <= today;      // <= not < : the day of the event counts
   };
+  // Kept under the old name as well. "Over" reads wrong on the day an event
+  // is actually happening, so new code should use auricBookingsClosed.
+  window.auricEventOver = window.auricBookingsClosed;
   /* ── Registration closed by hand ───────────────────────────────────────
      Different from both of its neighbours. A DRAFT event is hidden because
      it hasn't been announced. A SOLD OUT session is full, so it offers a
@@ -6935,21 +6946,6 @@ Can't wait to move and connect with you!</textarea>
      grid; `say` is what the booking popup tells someone who opens it anyway.
      Give it a plain string instead of an object and it just reads closed.    */
   window.AURIC_CLOSED_EVENTS = {
-    // Event day. Bookings off so nobody pays for a class starting in hours.
-    // `say` is left to the default, which already tells a booked guest to check
-    // their confirmation and points everyone else at the other dates.
-    'riddim-kompa-brooklyn-2026-10-10': {
-      why:  'event day \u2014 registration closed',
-      card: 'Registration closed',
-      tag:  'Registration closed',
-      // Not 'Rescheduled' (the default): this one ran.
-      past: 'Completed',
-      // Button and status pill carry it; don't bury the flyer.
-      notice: false,
-      // It ran. Closed only means bookings are shut, so it still belongs in
-      // the archive with a recap on the way.
-      ran: true
-    },
     'riddim-kompa-brooklyn-2026-09-26': {
       why:  'nor’easter on the day, plus multiple cancellations — moved to Oct 10',
       // The button says where the date went; the status pill says Sold out so
@@ -7062,9 +7058,11 @@ Can't wait to move and connect with you!</textarea>
   // If the event day has passed, stamp every time button Sold out and disable it,
   // and drop any waitlist link — nobody books, or waits for, a class that's over.
   // Returns true when it locked, so applyCap can skip the live count entirely.
+  // Locks every session on a date whose bookings have closed, which now
+  // includes the day of the event and not only dates already gone.
   window.auricLockIfPast = function(dateISO, stepTimeEl){
-    if(!stepTimeEl || !window.auricEventOver(dateISO)) return false;
-    _rfLockTimes(stepTimeEl, 'Sold out');
+    if(!stepTimeEl || !window.auricBookingsClosed(dateISO)) return false;
+    _rfLockTimes(stepTimeEl, 'Registration closed');
     return true;
   };
   // Same, for an event closed by hand. Never says "Sold out" — a date that
