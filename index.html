@@ -6985,9 +6985,10 @@ Can't wait to move and connect with you!</textarea>
                    should say.
      TO RELEASE:   delete the line and it goes straight back on sale at
                    whatever the live count says.                          */
-  window.AURIC_CLOSED_SESSIONS = {
-    'riddim-kompa-brooklyn-2026-11-21': { 'n3': 'Registration closed' }   // held for a birthday
-  };
+  // Nothing held right now. The Nov 21 3 PM slot was reserved for a birthday
+  // and has been released. Shape kept for the next one:
+  //   'event-id': { 'session-key': 'Registration closed' }
+  window.AURIC_CLOSED_SESSIONS = {};
   // Lock every held slot on a screen, without asking the database anything.
   // This runs before the seat count, so a hold survives Supabase being slow,
   // blocked or down — the count re-enables buttons when it arrives, and if it
