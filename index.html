@@ -14440,6 +14440,16 @@ document.addEventListener('DOMContentLoaded', function() {
   var corpPrivacyBtn = document.getElementById('corp-open-privacy-btn');
   if (corpPrivacyBtn) corpPrivacyBtn.addEventListener('click', function(){ openModal('privacy-modal'); });
 
+  // EmailJS rejects with {status, text}; a dropped connection rejects with an
+  // Error instead. Either shape, say what went wrong. The old handler threw
+  // the error away, so "Could not submit" was all anyone ever had to go on.
+  function corpMailReason(err){
+    if (!err) return 'no reason given';
+    var txt = err.text || err.message || (typeof err === 'string' ? err : '');
+    var st  = err.status ? 'status ' + err.status : '';
+    return (st && txt) ? st + ': ' + txt : (txt || st || 'unknown error');
+  }
+
   // Corporate inquiry submit
   document.getElementById('corp-inquiry-submit-btn').addEventListener('click', function(){
     var companyName  = document.getElementById('corp-company-name').value.trim();
@@ -14497,21 +14507,32 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     if (typeof emailjs !== 'undefined') {
+      // Two emails go out: the inquiry to Niara, and a courtesy copy to the
+      // person who filled the form. Only the first decides whether this
+      // submission worked. They used to be chained, so a failed courtesy copy
+      // reported the whole thing as failed and sent the visitor away even
+      // though the inquiry had landed.
       emailjs.send(EMAILJS_SERVICE_RESEND, TMPL_CORP_INQUIRY, params)
-        .then(function(){
-          return emailjs.send(EMAILJS_SERVICE_RESEND, TMPL_CORP_CONFIRM, {
-            contact_name: contactName, to_email: contactEmail, company_name: companyName
-          });
-        })
         .then(function(){
           btn.disabled=false; btn.textContent = 'Submit Inquiry \u2192';
           document.getElementById('corp-step-inquiry').classList.add('hidden');
           document.getElementById('corp-step-inquiry-done').classList.remove('hidden');
           announce('Inquiry submitted!');
+          emailjs.send(EMAILJS_SERVICE_RESEND, TMPL_CORP_CONFIRM, {
+            contact_name: contactName, to_email: contactEmail, company_name: companyName
+          }).catch(function(err){
+            console.error('Corporate confirmation email failed:', corpMailReason(err), err);
+          });
         })
-        .catch(function(){
+        .catch(function(err){
           btn.disabled=false; btn.textContent = 'Submit Inquiry \u2192';
-          document.getElementById('corp-inquiry-status').innerHTML='<span style="color:var(--red);">\u26a0\ufe0f Could not submit. Please email auricmovement@outlook.com directly.</span>';
+          console.error('Corporate inquiry email failed:', corpMailReason(err), err);
+          var st = document.getElementById('corp-inquiry-status');
+          st.innerHTML = '<span style="color:var(--red);">\u26a0\ufe0f Could not submit. Please email auricmovement@outlook.com directly.</span><br>';
+          var why = document.createElement('span');
+          why.style.cssText = 'color:var(--text-muted);font-size:.75rem;';
+          why.textContent = '(' + corpMailReason(err) + ')';
+          st.appendChild(why);
         });
     } else {
       btn.disabled=false; btn.textContent = 'Submit Inquiry \u2192';
