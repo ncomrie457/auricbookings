@@ -5548,6 +5548,31 @@
          from vendor/status.json; hidden entirely until that file exists. -->
     <div id="admin-vendor-status" style="display:none;margin-top:.75rem;padding:.6rem .9rem;
          border-radius:8px;font-family:'Jost',sans-serif;font-size:.78rem;line-height:1.55;"></div>
+
+    <!-- Campaigns that go to people across every event rather than to one
+         roster. This lives up here, outside any event block, because the
+         AURICFAM promo first needed sending while nobody had booked
+         Halloween at all — and a button on an empty roster is a button
+         nobody can reach. -->
+    <div id="admin-campaign-section" style="margin-top:.75rem;padding:.8rem 1rem;background:#fdf1e6;
+         border:1px solid #e8b887;border-radius:10px;font-family:'Jost',sans-serif;">
+      <div style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+           color:#8a3a1e;margin-bottom:.5rem;">&#127875; Halloween promo</div>
+      <div style="font-size:.78rem;color:#6b5847;line-height:1.6;margin-bottom:.6rem;">
+        Sends the AURICFAM email &mdash; $10 off Oct 24, code ends Fri Oct 16 &mdash; to
+        everyone marked <strong>&#10003; Attended</strong> at any Auric event, across all four
+        rosters. Anyone already booked for Halloween, or already sent it, is left out.
+        You see the full list and can untick anyone before it goes.
+      </div>
+      <button type="button" onclick="rfSendHalloweenPromo(this)"
+              style="background:#8a3a1e;border:1px solid #8a3a1e;color:#fff;border-radius:6px;
+                     padding:.45rem .9rem;font-size:.82rem;cursor:pointer;font-family:'Jost',sans-serif;
+                     font-weight:600;">&#127875; Send AURICFAM promo to past attendees</button>
+      <button type="button" onclick="rfHwPromoForget()" title="Allow everyone to be sent it again"
+              style="margin-left:.4rem;background:#fff;border:1px solid #e8b887;color:#8a3a1e;
+                     border-radius:6px;padding:.45rem .8rem;font-size:.78rem;cursor:pointer;
+                     font-family:'Jost',sans-serif;">Reset sent memory</button>
+    </div>
     <style>
       #admin-panel .admin-tabnav{display:flex;gap:.1rem;border-bottom:1px solid var(--border);margin:.2rem 0 1.2rem;overflow-x:auto;-webkit-overflow-scrolling:touch;}
       #admin-panel .admin-tab{font-family:'Jost',sans-serif;font-size:.82rem;font-weight:600;color:var(--text-muted);background:none;border:none;border-bottom:3px solid transparent;padding:.7rem .95rem;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:.4rem;}
@@ -15515,7 +15540,7 @@ document.addEventListener('DOMContentLoaded', function() {
   };
   var RF_HW_TMPL_CONFIRM  = 'template_hhjwepr';   // Halloween "Shhh… Quiet on the Creek" payment confirmation (HALLOWEEN_CREEK_CONFIRMATION_TEMPLATE.html) — sent via Resend
   var RF_HW_TMPL_THANKYOU = 'template_g125fph';  // Halloween "Shhh… Quiet on the Creek" post-event thank-you (HALLOWEEN_CREEK_THANKYOU_TEMPLATE.html) — sent via Resend
-  var RF_HW_TMPL_PROMO    = 'REPLACE_HW_PROMO';  // AURICFAM $10-off win-back for past attendees (HALLOWEEN_AURICFAM_PROMO_TEMPLATE.html) — sent via Resend
+  var RF_HW_TMPL_PROMO    = 'template_cnxgnd5';  // AURICFAM $10-off win-back for past attendees (HALLOWEEN_AURICFAM_PROMO_TEMPLATE.html) — sent via Resend
   var RF_TB_TMPL_CONFIRM  = 'template_96eon3x';   // Turkey Burn! payment confirmation (TURKEY_BURN_CONFIRMATION_TEMPLATE.html) — sent via Resend
   var RF_TB_TMPL_THANKYOU = 'template_cnl8smi';  // Turkey Burn! post-event thank-you (TURKEY_BURN_THANKYOU_TEMPLATE.html) — sent via Resend
   // ONE generic payment-pending reminder for ALL reformer-style events (GENERIC_PAYMENT_PENDING_TEMPLATE.html).
@@ -17217,9 +17242,6 @@ document.addEventListener('DOMContentLoaded', function() {
       block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F383} Shhh… Quiet on the Creek · Oct 24th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(11:30 AM '+pd.hw1130+'/'+CAP+' · 12:30 PM '+pd.hw1230+'/'+CAP+' · 1:30 PM '+pd.hw130+'/'+CAP+')</span></h3>';
       block.innerHTML += '<button onclick="rfSendWinnerEmail(\'halloween\', this)" style="margin:.1rem .35rem .7rem 0;background:#fbf3e2;border:1px solid #e6d3a8;color:#9a6535;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F39F}\u{FE0F} Send 4-class winner email ('+win+')</button>';
       block.innerHTML += '<button onclick="rfSendThankYou(\'halloween\', this)" style="margin:.1rem 0 .7rem;background:#f3ecff;border:1px solid #cbb6f0;color:#5b3a8a;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F383} Send Halloween thank-you ('+att+' attended) — after the event</button>';
-      // The AURICFAM win-back goes out BEFORE the event, to past attendees of
-      // any event, so it sits on this roster but is not scoped to it.
-      block.innerHTML += '<button onclick="rfSendHalloweenPromo(this)" style="margin:.1rem 0 .7rem .4rem;background:#fdf1e6;border:1px solid #e8b887;color:#8a3a1e;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;font-weight:600;">\u{1F383} Send AURICFAM promo to past attendees — $10 off, ends Oct 16</button>';
       block.innerHTML += '<button type="button" onclick="rfTyForget()" title="Allow everyone to be thanked again" style="margin:.1rem 0 .7rem .35rem;background:none;border:none;color:#8a7d6b;font-size:.72rem;text-decoration:underline;cursor:pointer;font-family:Jost,sans-serif;">Reset thank-you memory</button>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
@@ -18482,41 +18504,96 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
-    var all = Object.keys(rfRosterById).map(function(k){ return rfRosterById[k]; });
+    // "Everyone who has come to an Auric Movement event" spans four tables,
+    // not one. The reformer roster holds Riddim & Kompa, Halloween and Turkey
+    // Burn; Pilates x Niara, Mat & Chat and Create & Recharge live elsewhere
+    // and are already aggregated by getClubData, which also handles the
+    // #alias tag for someone who booked under a second address.
+    //
+    // The roster is fetched here rather than read from rfRosterById, because
+    // that map is a side effect of whichever admin block rendered last — with
+    // no Halloween bookings yet, relying on it would silently miss people.
+    var btn0 = triggerBtn, label0 = btn0 ? btn0.textContent : '';
+    if (btn0){ btn0.disabled = true; btn0.textContent = 'Gathering…'; }
+    function restore(){ if (btn0){ btn0.disabled = false; btn0.textContent = label0; } }
+
+    supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(res){
+      if (res && res.error) throw res.error;
+      var rfRows = (res && res.data) ? res.data : [];
+      getClubData(function(marks){
+        restore();
+        hwPromoBuild(triggerBtn, rfRows, marks);
+      });
+    }).catch(function(err){
+      restore();
+      console.error('[hw promo] could not gather the lists:', err);
+      alert('Could not load the rosters, so nothing was sent.\n\n' +
+            ((err && (err.message || err.hint)) || 'unknown error'));
+    });
+  };
+
+  function hwPromoBuild(triggerBtn, rfRows, marks){
+    var RF_LABELS = {
+      'riddim-kompa-reformer-2026-09-13': 'Riddim & Kompa · Sep 13',
+      'riddim-kompa-brooklyn-2026-09-26': 'Riddim & Kompa · Sep 26',
+      'riddim-kompa-brooklyn-2026-10-10': 'Riddim & Kompa · Oct 10',
+      'riddim-kompa-brooklyn-2026-11-21': 'Riddim & Kompa · Nov 21',
+      'halloween-creek-2026-10-24':       'Halloween · Oct 24',
+      'turkey-burn-2026-11-22':           'Turkey Burn · Nov 22',
+      'turkey-burn-2026-11-28':           'Turkey Burn · Nov 28'
+    };
 
     // Everyone already on the Halloween list, whatever their status.
     var alreadyBooked = {};
-    all.forEach(function(r){
+    rfRows.forEach(function(r){
       if (r && r.event === HW_PROMO_EVENT && r.email) alreadyBooked[String(r.email).trim().toLowerCase()] = true;
     });
 
     var sent = hwPromoSent();
-    var seen = {}, recips = [], skippedBooked = 0, skippedSent = 0;
+    var byKey = {};
 
-    all.forEach(function(r){
+    function add(email, name, where){
+      if (!(email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).trim()))) return;
+      var key = String(email).trim().toLowerCase();
+      if (!byKey[key]) byKey[key] = { name: (name || '').trim(), email: String(email).trim(), where: [] };
+      if (!byKey[key].name && name) byKey[key].name = String(name).trim();
+      if (where && byKey[key].where.indexOf(where) < 0) byKey[key].where.push(where);
+    }
+
+    rfRows.forEach(function(r){
       if (!r || r.attendance !== 'attended' || r.archived || r.type === 'waitlist') return;
-      if (!(r.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(r.email))) return;
-      var key = String(r.email).trim().toLowerCase();
-      if (seen[key]) return;                       // one email, one person
-      seen[key] = true;
+      add(r.email, r.name, RF_LABELS[r.event] || 'Auric event');
+    });
+    Object.keys(marks || {}).forEach(function(k){
+      var m = marks[k];
+      // getClubData also counts referrals; only an actual attendance belongs here.
+      if (!m || !m.attendedAt || !m.attendedAt.length) return;
+      m.attendedAt.forEach(function(ev){ add(m.email, m.name, ev); });
+    });
+
+    var recips = [], skippedBooked = 0, skippedSent = 0;
+    Object.keys(byKey).forEach(function(key){
       if (alreadyBooked[key]) { skippedBooked++; return; }
       if (sent.indexOf(key) >= 0) { skippedSent++; return; }
-      recips.push({ id: r.id, name: r.name, email: r.email, __sessLabel: 'past attendee' });
+      var p = byKey[key];
+      recips.push({ name: p.name || '(no name)', email: p.email, __sessLabel: p.where.join(', ') });
     });
+    recips.sort(function(a, b){ return (a.name || '').localeCompare(b.name || ''); });
 
     if (!recips.length){
       alert('Nobody to send to.\n\n' +
             skippedBooked + ' past attendee(s) are already booked for Halloween, and ' +
             skippedSent + ' have already had this promo.\n\n' +
             'If nothing is listed at all, mark people "✓ Attended" on their rosters first — ' +
-            'that is who this reaches.');
+            'that is who this reaches, across every event.');
       return;
     }
 
     var note = [];
     if (skippedBooked) note.push(skippedBooked + ' already booked for Halloween');
     if (skippedSent)   note.push(skippedSent + ' already had it');
-    note = note.length ? note.join(', ') + ', so they are not listed.' : 'Everyone marked ✓ Attended, at any event.';
+    note = note.length ? note.join(', ') + ', so they are not listed.'
+                       : 'Everyone marked ✓ Attended, across every Auric event.';
 
     window.rfPickRecipients(
       triggerBtn,
@@ -18546,7 +18623,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         next(0);
       });
-  };
+  }
   // ── Credits ──────────────────────────────────────────────────────────
   // Someone who cancels inside the 48-hour policy is owed a credit toward a
   // future event. That is money you owe, so it is stored in Supabase
