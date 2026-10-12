@@ -5543,6 +5543,11 @@
         <button type="button" id="admin-close-btn" class="btn btn-secondary">&#10005; Close</button>
       </div>
     </div>
+
+    <!-- Result of the monthly library check. Filled in by renderVendorStatus()
+         from vendor/status.json; hidden entirely until that file exists. -->
+    <div id="admin-vendor-status" style="display:none;margin-top:.75rem;padding:.6rem .9rem;
+         border-radius:8px;font-family:'Jost',sans-serif;font-size:.78rem;line-height:1.55;"></div>
     <style>
       #admin-panel .admin-tabnav{display:flex;gap:.1rem;border-bottom:1px solid var(--border);margin:.2rem 0 1.2rem;overflow-x:auto;-webkit-overflow-scrolling:touch;}
       #admin-panel .admin-tab{font-family:'Jost',sans-serif;font-size:.82rem;font-weight:600;color:var(--text-muted);background:none;border:none;border-bottom:3px solid transparent;padding:.7rem .95rem;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:.4rem;}
@@ -12059,7 +12064,78 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   var adminEventFilterValue = 'all'; // admin panel event filter: 'all' | 'recent' | 'past'
+  // ── Result of the monthly library check ──────────────────────────────
+  //
+  // Reads both files rather than trusting status.json's own tally: that tally
+  // was written when the check ran, so after a library pull request is merged
+  // it would still claim things are waiting. Comparing the versions actually
+  // in use against the newest the check saw stays right at every point.
+  var _vendorStatusDone = false;
+  function renderVendorStatus(){
+    if (_vendorStatusDone) return;          // static files; once a session is plenty
+    _vendorStatusDone = true;
+    var el = document.getElementById('admin-vendor-status');
+    if (!el) return;
+
+    Promise.all([
+      fetch('/vendor/status.json', { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }),
+      fetch('/vendor/vendor.json', { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; })
+    ]).then(function(res){
+      var status = res[0], manifest = res[1];
+      if (!status || !manifest) return;     // check has never run; say nothing
+
+      var inUse = {};
+      (manifest.libraries || []).forEach(function(l){ inUse[l.name] = l.current; });
+
+      function newer(a, b){                 // is a > b, release versions only
+        var x = /^(\d+)\.(\d+)\.(\d+)$/.exec(a || ''), y = /^(\d+)\.(\d+)\.(\d+)$/.exec(b || '');
+        if (!x || !y) return false;
+        for (var i = 1; i <= 3; i++){ if (+x[i] !== +y[i]) return +x[i] > +y[i]; }
+        return false;
+      }
+
+      var waiting = (status.libraries || []).filter(function(l){
+        return newer(l.latest, inUse[l.name]);
+      });
+      var broken = (status.libraries || []).filter(function(l){ return l.error; });
+
+      var when = new Date(status.checkedAt);
+      var days = Math.floor((Date.now() - when.getTime()) / 86400000);
+      var ago = days <= 0 ? 'today' : days === 1 ? 'yesterday' : days + ' days ago';
+
+      var tone, text;
+      if (broken.length) {
+        tone = { bg:'#fdecea', bd:'#f5c6c2', fg:'#c0392b' };
+        text = '&#9888; The library check hit a problem on ' + broken.length + ' of them (' + ago + ').';
+      } else if (waiting.length) {
+        tone = { bg:'#fef9e7', bd:'#e6d3a8', fg:'#8a6d3b' };
+        text = '&#8635; ' + waiting.length + ' site librar' + (waiting.length === 1 ? 'y has' : 'ies have') +
+               ' an update waiting &mdash; there should be a pull request to review. Checked ' + ago + '.';
+      } else {
+        tone = { bg:'#e8f5e9', bd:'#a5d6a7', fg:'#2e7d32' };
+        text = '&#10003; Site libraries are up to date. Checked ' + ago + '.';
+      }
+
+      var detail = (status.libraries || []).map(function(l){
+        var cur = inUse[l.name] || '?';
+        return l.name + ' ' + cur + (newer(l.latest, cur) ? ' → ' + l.latest + ' available' :
+               (l.error ? ' — check failed' : ''));
+      }).join('<br>');
+
+      el.style.background = tone.bg;
+      el.style.border = '1px solid ' + tone.bd;
+      el.style.color = tone.fg;
+      el.innerHTML = text +
+        ' <a href="https://github.com/ncomrie457/auricbookings/pulls" target="_blank" rel="noopener noreferrer" ' +
+        'style="color:inherit;text-decoration:underline;">Open pull requests &#8599;</a>' +
+        '<details style="margin-top:.35rem;"><summary style="cursor:pointer;">Versions</summary>' +
+        '<div style="margin-top:.3rem;font-size:.75rem;opacity:.9;">' + detail + '</div></details>';
+      el.style.display = '';
+    }).catch(function(){ /* a missing status file is not a problem worth showing */ });
+  }
+
   function renderAdmin(){
+    renderVendorStatus();
     var body=document.getElementById('admin-body');
     body.innerHTML='';
     document.getElementById('admin-notify-list-body').innerHTML='<div style="text-align:center;padding:.5rem;color:var(--text-muted);font-size:.82rem;">Loading...</div>';

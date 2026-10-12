@@ -1,0 +1,80 @@
+{
+  "_comment": [
+    "The libraries served from /vendor/, and which version of each is in use.",
+    "scripts/update-vendor.mjs reads this, asks npm whether anything newer",
+    "exists inside the same major version, and if so swaps the file, repoints",
+    "every <script src> in the site, and updates this file and the README.",
+    "",
+    "'major' is a deliberate ceiling. A new major version means the library",
+    "changed in ways that break callers, so those never arrive by robot \u2014 ",
+    "raise the number here by hand when you have time to test it."
+  ],
+  "libraries": [
+    {
+      "name": "supabase-js",
+      "package": "@supabase/supabase-js",
+      "major": 2,
+      "tarballPath": "dist/umd/supabase.js",
+      "localPattern": "supabase-js-{version}.min.js",
+      "current": "2.117.3",
+      "role": "Talks to the database. Every page uses it.",
+      "expect": "createClient",
+      "global": "window.supabase.createClient"
+    },
+    {
+      "name": "emailjs-browser",
+      "package": "@emailjs/browser",
+      "major": 4,
+      "tarballPath": "dist/email.min.js",
+      "localPattern": "emailjs-browser-{version}.min.js",
+      "current": "4.4.1",
+      "role": "Sends the confirmation and thank-you emails.",
+      "expect": "init",
+      "global": "window.emailjs.send"
+    },
+    {
+      "name": "jspdf",
+      "package": "jspdf",
+      "major": 2,
+      "tarballPath": "dist/jspdf.umd.min.js",
+      "localPattern": "jspdf-{version}.umd.min.js",
+      "current": "2.5.1",
+      "role": "Builds the downloadable waiver PDF.",
+      "expect": "jsPDF",
+      "global": "window.jspdf.jsPDF"
+    },
+    {
+      "name": "gsap",
+      "package": "gsap",
+      "major": 3,
+      "tarballPath": "dist/gsap.min.js",
+      "localPattern": "gsap-{version}.min.js",
+      "current": "3.12.5",
+      "role": "Animation on the home page.",
+      "expect": "gsap",
+      "global": "window.gsap"
+    },
+    {
+      "name": "gsap-scrolltrigger",
+      "package": "gsap",
+      "major": 3,
+      "tarballPath": "dist/ScrollTrigger.min.js",
+      "localPattern": "gsap-scrolltrigger-{version}.min.js",
+      "current": "3.12.5",
+      "role": "Scroll-driven animation. Must match gsap exactly.",
+      "expect": "ScrollTrigger",
+      "global": "window.ScrollTrigger"
+    },
+    {
+      "name": "lenis",
+      "package": "lenis",
+      "major": 1,
+      "tarballPath": "dist/lenis.min.js",
+      "localPattern": "lenis-{version}.min.js",
+      "current": "1.1.13",
+      "role": "Smooth scrolling.",
+      "expect": "Lenis",
+      "global": "window.Lenis"
+    }
+  ]
+}
