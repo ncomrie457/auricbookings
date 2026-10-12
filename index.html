@@ -15515,6 +15515,7 @@ document.addEventListener('DOMContentLoaded', function() {
   };
   var RF_HW_TMPL_CONFIRM  = 'template_hhjwepr';   // Halloween "Shhh… Quiet on the Creek" payment confirmation (HALLOWEEN_CREEK_CONFIRMATION_TEMPLATE.html) — sent via Resend
   var RF_HW_TMPL_THANKYOU = 'template_g125fph';  // Halloween "Shhh… Quiet on the Creek" post-event thank-you (HALLOWEEN_CREEK_THANKYOU_TEMPLATE.html) — sent via Resend
+  var RF_HW_TMPL_PROMO    = 'REPLACE_HW_PROMO';  // AURICFAM $10-off win-back for past attendees (HALLOWEEN_AURICFAM_PROMO_TEMPLATE.html) — sent via Resend
   var RF_TB_TMPL_CONFIRM  = 'template_96eon3x';   // Turkey Burn! payment confirmation (TURKEY_BURN_CONFIRMATION_TEMPLATE.html) — sent via Resend
   var RF_TB_TMPL_THANKYOU = 'template_cnl8smi';  // Turkey Burn! post-event thank-you (TURKEY_BURN_THANKYOU_TEMPLATE.html) — sent via Resend
   // ONE generic payment-pending reminder for ALL reformer-style events (GENERIC_PAYMENT_PENDING_TEMPLATE.html).
@@ -17216,6 +17217,9 @@ document.addEventListener('DOMContentLoaded', function() {
       block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F383} Shhh… Quiet on the Creek · Oct 24th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(11:30 AM '+pd.hw1130+'/'+CAP+' · 12:30 PM '+pd.hw1230+'/'+CAP+' · 1:30 PM '+pd.hw130+'/'+CAP+')</span></h3>';
       block.innerHTML += '<button onclick="rfSendWinnerEmail(\'halloween\', this)" style="margin:.1rem .35rem .7rem 0;background:#fbf3e2;border:1px solid #e6d3a8;color:#9a6535;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F39F}\u{FE0F} Send 4-class winner email ('+win+')</button>';
       block.innerHTML += '<button onclick="rfSendThankYou(\'halloween\', this)" style="margin:.1rem 0 .7rem;background:#f3ecff;border:1px solid #cbb6f0;color:#5b3a8a;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F383} Send Halloween thank-you ('+att+' attended) — after the event</button>';
+      // The AURICFAM win-back goes out BEFORE the event, to past attendees of
+      // any event, so it sits on this roster but is not scoped to it.
+      block.innerHTML += '<button onclick="rfSendHalloweenPromo(this)" style="margin:.1rem 0 .7rem .4rem;background:#fdf1e6;border:1px solid #e8b887;color:#8a3a1e;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;font-weight:600;">\u{1F383} Send AURICFAM promo to past attendees — $10 off, ends Oct 16</button>';
       block.innerHTML += '<button type="button" onclick="rfTyForget()" title="Allow everyone to be thanked again" style="margin:.1rem 0 .7rem .35rem;background:none;border:none;color:#8a7d6b;font-size:.72rem;text-decoration:underline;cursor:pointer;font-family:Jost,sans-serif;">Reset thank-you memory</button>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
@@ -18440,6 +18444,109 @@ document.addEventListener('DOMContentLoaded', function() {
   // Sep 13 follow-up: the reminders email (Google review, Wellhub, prize
   // winners). Same attended list as the thank-you, different template.
   window.rfSendFollowUp = function(triggerBtn){ window.rfSendThankYou('valley', triggerBtn, 'followup'); };
+
+  // ── AURICFAM: win back past attendees for the Halloween event ────────
+  //
+  // Unlike the thank-you blasts, this one is not scoped to a single date.
+  // It goes to everyone who has ever been marked ✓ Attended at any Auric
+  // event — the whole family — minus two groups:
+  //
+  //   · anyone already registered for Halloween, because selling someone
+  //     a ticket they have bought is the fastest way to look careless;
+  //   · anyone who has already had this email, remembered by address
+  //     rather than by registration id, since the same person shows up
+  //     under several ids once they have come to more than one event.
+  //
+  var HW_PROMO_SENT_KEY = 'auric_hw_promo_sent';
+  var HW_PROMO_EVENT    = 'halloween-creek-2026-10-24';
+
+  function hwPromoSent(){
+    try { return JSON.parse(localStorage.getItem(HW_PROMO_SENT_KEY) || '[]') || []; }
+    catch(e){ return []; }
+  }
+  function hwPromoRemember(email){
+    try {
+      var a = hwPromoSent(), k = String(email || '').trim().toLowerCase();
+      if (k && a.indexOf(k) < 0) { a.push(k); localStorage.setItem(HW_PROMO_SENT_KEY, JSON.stringify(a)); }
+    } catch(e){}
+  }
+  window.rfHwPromoForget = function(){
+    if(!confirm('Forget who has already had the AURICFAM promo?\n\nThey could then be sent it a second time.')) return;
+    try { localStorage.removeItem(HW_PROMO_SENT_KEY); alert('Cleared.'); } catch(e){ alert('Could not clear.'); }
+  };
+
+  window.rfSendHalloweenPromo = function(triggerBtn){
+    if (typeof emailjs === 'undefined'){ alert('EmailJS not loaded.'); return; }
+    if (RF_HW_TMPL_PROMO.indexOf('REPLACE') !== -1){
+      alert('Set RF_HW_TMPL_PROMO to your real EmailJS template id first.\n\nCreate the template from HALLOWEEN_AURICFAM_PROMO_TEMPLATE.html.');
+      return;
+    }
+
+    var all = Object.keys(rfRosterById).map(function(k){ return rfRosterById[k]; });
+
+    // Everyone already on the Halloween list, whatever their status.
+    var alreadyBooked = {};
+    all.forEach(function(r){
+      if (r && r.event === HW_PROMO_EVENT && r.email) alreadyBooked[String(r.email).trim().toLowerCase()] = true;
+    });
+
+    var sent = hwPromoSent();
+    var seen = {}, recips = [], skippedBooked = 0, skippedSent = 0;
+
+    all.forEach(function(r){
+      if (!r || r.attendance !== 'attended' || r.archived || r.type === 'waitlist') return;
+      if (!(r.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(r.email))) return;
+      var key = String(r.email).trim().toLowerCase();
+      if (seen[key]) return;                       // one email, one person
+      seen[key] = true;
+      if (alreadyBooked[key]) { skippedBooked++; return; }
+      if (sent.indexOf(key) >= 0) { skippedSent++; return; }
+      recips.push({ id: r.id, name: r.name, email: r.email, __sessLabel: 'past attendee' });
+    });
+
+    if (!recips.length){
+      alert('Nobody to send to.\n\n' +
+            skippedBooked + ' past attendee(s) are already booked for Halloween, and ' +
+            skippedSent + ' have already had this promo.\n\n' +
+            'If nothing is listed at all, mark people "✓ Attended" on their rosters first — ' +
+            'that is who this reaches.');
+      return;
+    }
+
+    var note = [];
+    if (skippedBooked) note.push(skippedBooked + ' already booked for Halloween');
+    if (skippedSent)   note.push(skippedSent + ' already had it');
+    note = note.length ? note.join(', ') + ', so they are not listed.' : 'Everyone marked ✓ Attended, at any event.';
+
+    window.rfPickRecipients(
+      triggerBtn,
+      'AURICFAM promo — $10 off Halloween, ends Fri Oct 16',
+      note,
+      recips, 'Send',
+      function(list){
+        var btn = triggerBtn, originalText = btn ? btn.textContent : '';
+        if (btn) btn.disabled = true;
+        var ok = 0, failed = 0, failedTo = [];
+        function next(i){
+          if (i >= list.length){
+            if (btn){ btn.disabled = false; btn.textContent = originalText; }
+            var msg = '✅ Sent the AURICFAM promo to ' + ok + ' past attendee(s).';
+            if (failed) msg += '\n\n⚠️ ' + failed + ' failed: ' + failedTo.join(', ') +
+                               '\n\nCheck EmailJS Dashboard → History.';
+            alert(msg);
+            return;
+          }
+          var rec = list[i];
+          if (btn) btn.textContent = 'Sending... (' + (ok + failed) + '/' + list.length + ')';
+          emailjs.send(EMAILJS_SERVICE_RESEND, RF_HW_TMPL_PROMO, {
+            from_name: rec.name, to_email: rec.email
+          }).then(function(){ ok++; hwPromoRemember(rec.email); })
+            .catch(function(err){ failed++; failedTo.push(rec.email); console.error('[hw promo] FAILED for ' + rec.email, err); })
+            .then(function(){ setTimeout(function(){ next(i + 1); }, 600); });
+        }
+        next(0);
+      });
+  };
   // ── Credits ──────────────────────────────────────────────────────────
   // Someone who cancels inside the 48-hour policy is owed a credit toward a
   // future event. That is money you owe, so it is stored in Supabase
