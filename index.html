@@ -18359,8 +18359,11 @@ document.addEventListener('DOMContentLoaded', function() {
     box.innerHTML =
       '<div style="font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-text);margin-bottom:.3rem;">' + escapeHTML(title) + '</div>'
       + (note ? '<div style="font-size:.72rem;color:#8a7d6b;margin-bottom:.4rem;">' + escapeHTML(note) + '</div>' : '')
-      + '<label style="display:flex;gap:.4rem;align-items:center;font-size:.72rem;color:#8a7d6b;margin-bottom:.3rem;cursor:pointer;"><input type="checkbox" checked data-rf-pick-all> Everyone</label>'
-      + '<div style="max-height:190px;overflow-y:auto;border-top:1px solid var(--border);padding-top:.3rem;">'
+      + '<label style="display:flex;gap:.4rem;align-items:center;font-size:.72rem;color:#8a7d6b;margin-bottom:.3rem;cursor:pointer;"><input type="checkbox" checked data-rf-pick-all> Everyone <strong style="color:#3d322a;">(' + rows.length + ')</strong></label>'
+      // Tall enough to read a real list. This was 190px — about seven names —
+      // so on any blast bigger than that most recipients sat behind a scroll
+      // that did not look like one, and the list could not be reviewed.
+      + '<div data-rf-pick-list style="max-height:min(60vh,520px);overflow-y:auto;border-top:1px solid var(--border);padding-top:.3rem;">'
       + rows.map(function(r,i){
           return '<label style="display:flex;gap:.45rem;align-items:baseline;padding:.18rem 0;font-size:.8rem;color:#3d322a;cursor:pointer;">'
             + '<input type="checkbox" checked data-rf-pick-row="'+i+'">'
@@ -18375,6 +18378,29 @@ document.addEventListener('DOMContentLoaded', function() {
       + '<button type="button" data-rf-pick-cancel style="background:none;border:none;color:#8a7d6b;font-size:.72rem;text-decoration:underline;cursor:pointer;font-family:Jost,sans-serif;">Cancel</button>'
       + '</div>';
     anchorBtn.parentNode.insertBefore(box, anchorBtn.nextSibling);
+    // When the list is longer than the box, say so and offer to drop the cap
+    // entirely — reviewing who gets a marketing email should never require
+    // trusting a scrollbar you did not notice.
+    (function(){
+      var list = box.querySelector('[data-rf-pick-list]');
+      if (!list || list.scrollHeight <= list.clientHeight + 2) return;
+      var hint = document.createElement('div');
+      hint.style.cssText = 'font-size:.7rem;color:#8a7d6b;margin-top:.25rem;text-align:center;';
+      var label = document.createElement('span');
+      label.textContent = rows.length + ' in the list. ';
+      var toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.style.cssText = 'background:none;border:none;color:var(--gold-text);font-size:.7rem;' +
+        'text-decoration:underline;cursor:pointer;font-family:Jost,sans-serif;padding:0;';
+      toggle.textContent = 'Show all ' + rows.length;
+      toggle.addEventListener('click', function(){
+        var open = list.style.maxHeight === 'none';
+        list.style.maxHeight = open ? 'min(60vh,520px)' : 'none';
+        toggle.textContent = open ? ('Show all ' + rows.length) : 'Collapse the list';
+      });
+      hint.appendChild(label); hint.appendChild(toggle);
+      list.parentNode.insertBefore(hint, list.nextSibling);
+    })();
     function chosen(){
       return rows.filter(function(r,i){
         var cb = box.querySelector('[data-rf-pick-row="'+i+'"]');
