@@ -4917,6 +4917,94 @@
   </div>
 </div><!-- /tab-corporate -->
 
+<!-- ────────────────────────────────────────────────────────
+     Private Event Agreement — opened by the client from the
+     link in ?contract=CTR-XXXX. Not reachable from the nav:
+     holding the link is what gets you in.
+──────────────────────────────────────────────────────── -->
+<div id="tab-contract" class="tab-panel" role="tabpanel" aria-label="Private event agreement">
+  <style>
+    #tab-contract .ctr-wrap{max-width:760px;margin:0 auto;padding:2rem 1.25rem 4rem;}
+    #tab-contract .ctr-sheet{background:#fff;border:1px solid var(--border);border-radius:14px;
+      padding:2.25rem 2.25rem 2rem;box-shadow:0 6px 28px rgba(90,58,26,.07);}
+    #tab-contract .ctr-head{text-align:center;border-bottom:2px solid var(--gold);padding-bottom:1.25rem;margin-bottom:1.5rem;}
+    #tab-contract .ctr-brand{font-family:var(--font-display);font-size:1.5rem;color:var(--brown);letter-spacing:.04em;}
+    #tab-contract .ctr-doctype{font-family:'Jost',sans-serif;font-size:.72rem;font-weight:700;
+      letter-spacing:.22em;text-transform:uppercase;color:var(--gold-text);margin-top:.5rem;}
+    #tab-contract .ctr-ref{font-family:'Jost',sans-serif;font-size:.72rem;color:var(--text-muted);margin-top:.4rem;}
+    /* The terms are stored as plain text and shown as plain text. Headings are
+       styled by shape, never by re-writing the words. */
+    #tab-contract .ctr-terms{font-family:'Jost',sans-serif;font-size:.86rem;line-height:1.8;color:#3d322a;}
+    #tab-contract .ctr-h{font-weight:700;color:var(--brown);letter-spacing:.04em;margin:1.4rem 0 .35rem;}
+    #tab-contract .ctr-h:first-child{margin-top:0;}
+    #tab-contract .ctr-line{white-space:pre-wrap;}
+    #tab-contract .ctr-blank{height:.55rem;}
+    #tab-contract .ctr-signed{background:#e8f5e9;border:1px solid #a5d6a7;border-radius:10px;
+      padding:1.1rem 1.3rem;margin-top:1.75rem;}
+    #tab-contract .ctr-signed strong{color:#2e7d32;}
+    #tab-contract .ctr-signbox{border-top:2px solid var(--gold);margin-top:1.75rem;padding-top:1.5rem;}
+    @media print{
+      .bq-topnav,.tab-nav,#tab-contract .ctr-signbox button,#tab-contract .ctr-print{display:none !important;}
+      #tab-contract .ctr-sheet{box-shadow:none;border:none;padding:0;}
+    }
+    @media(max-width:600px){ #tab-contract .ctr-sheet{padding:1.5rem 1.25rem;} }
+  </style>
+
+  <div class="ctr-wrap">
+    <div id="ctr-loading" class="card" style="text-align:center;">Loading your agreement&hellip;</div>
+
+    <div id="ctr-missing" class="card hidden" style="text-align:center;">
+      <h2 style="color:var(--brown);">We couldn&rsquo;t find that agreement</h2>
+      <p style="color:var(--text-muted);font-size:.86rem;line-height:1.7;margin-top:.5rem;">
+        The link may be incomplete, or the agreement may have been withdrawn.
+        Email <a href="mailto:auricmovement@outlook.com" style="color:var(--gold-text);">auricmovement@outlook.com</a>
+        and we&rsquo;ll send you a fresh one.
+      </p>
+    </div>
+
+    <div id="ctr-doc" class="ctr-sheet hidden">
+      <div class="ctr-head">
+        <div class="ctr-brand">Auric Movement</div>
+        <div class="ctr-doctype">Private Event Agreement</div>
+        <div class="ctr-ref">Reference <span id="ctr-ref-code"></span> &middot; prepared <span id="ctr-ref-date"></span></div>
+      </div>
+
+      <div id="ctr-terms" class="ctr-terms"></div>
+
+      <!-- Already signed: show the record instead of the form. -->
+      <div id="ctr-signed-block" class="ctr-signed hidden">
+        <strong>&#10003; Signed</strong>
+        <div style="font-size:.86rem;color:#3d322a;line-height:1.7;margin-top:.4rem;">
+          Signed by <strong id="ctr-signed-name"></strong> on <span id="ctr-signed-when"></span>.
+          <br>Keep this link &mdash; it is your copy of the agreement.
+        </div>
+        <button type="button" class="btn btn-secondary ctr-print" style="margin-top:.9rem;font-size:.82rem;"
+                onclick="window.print()">&#128424; Print or save as PDF</button>
+      </div>
+
+      <!-- Not yet signed. -->
+      <div id="ctr-sign-block" class="ctr-signbox hidden">
+        <div class="final-check" style="margin-bottom:1rem;">
+          <input type="checkbox" id="ctr-agree">
+          <label for="ctr-agree">I have read and agree to this agreement on behalf of
+            <strong id="ctr-agree-company"></strong>, and I am authorised to sign for them.</label>
+        </div>
+        <p style="font-size:.78rem;color:var(--text-muted);line-height:1.6;margin-bottom:.75rem;">
+          By typing your name you are signing this agreement electronically. An electronic
+          signature is binding under the E-SIGN Act, 15 U.S.C. &#167; 7001.
+        </p>
+        <div class="field">
+          <label for="ctr-sig">Signature &mdash; type your full legal name <span class="required" aria-hidden="true">*</span></label>
+          <input type="text" id="ctr-sig" placeholder="Type your full legal name" autocomplete="off" disabled>
+          <div id="ctr-sig-err" class="err-msg" role="alert"></div>
+        </div>
+        <button type="button" id="ctr-sign-btn" class="btn btn-primary btn-full" disabled>Sign Agreement &#10022;</button>
+        <div id="ctr-sign-status" style="margin-top:.75rem;font-size:.82rem;"></div>
+      </div>
+    </div>
+  </div>
+</div><!-- /tab-contract -->
+
 <!-- TAB 3: Mat & Chat -->
 <div id="tab-matchat" class="tab-panel" role="tabpanel" aria-labelledby="btn-events">
   <div style="max-width:1100px;margin:2rem auto 0;padding:0 1.25rem;">
@@ -12206,6 +12294,7 @@ document.addEventListener('DOMContentLoaded', function() {
             '<strong>Notes:</strong> ' + escapeHTML(rec.additional_notes || 'None') +
             '</div></details>';
           var removeBtn = '<button onclick="corpRemoveInquiry(\''+rec.code+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128465; Remove</button>';
+          var contractBtn = '<button onclick="corpDraftContract(\''+rec.code+'\')" style="background:var(--brown);border:1px solid var(--brown);color:#fff;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;font-weight:600;">&#128196; Draft Contract</button>';
           // Show Clear Health button only if there's actual sensitive data
           var hasInjuryData = (rec.injuries && rec.injuries !== 'None' && rec.injuries !== 'None provided' && rec.injuries.trim() !== '');
           var hasNotesData  = (rec.additional_notes && rec.additional_notes !== 'None' && rec.additional_notes.trim() !== '');
@@ -12222,7 +12311,7 @@ document.addEventListener('DOMContentLoaded', function() {
             '</div>' +
             '<div style="text-align:right">' +
               '<span class="au-meta">' + escapeHTML(rec.time) + '</span>' +
-              '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">' + clearHealthBtn + removeBtn + '</div>' +
+              '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">' + contractBtn + clearHealthBtn + removeBtn + '</div>' +
             '</div>';
           inqBlock.appendChild(item);
         });
@@ -12267,6 +12356,72 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       }
       corpContainer.appendChild(bookBlock);
+
+      // Contracts block. Loaded separately because it lives behind its own
+      // owner-only RPC, and the whole section should still render if
+      // CORPORATE_CONTRACTS.sql has not been run yet.
+      var ctrBlock = document.createElement('div');
+      ctrBlock.className = 'admin-session-block';
+      ctrBlock.innerHTML = '<h3 style="color:var(--gold-text);">Contracts</h3>' +
+        '<div class="empty-state">Loading\u2026</div>';
+      corpContainer.appendChild(ctrBlock);
+
+      supabase.rpc('auric_contracts_list', { pass: ADMIN_PASSWORD }).then(function(res){
+        if (res.error) {
+          ctrBlock.innerHTML = '<h3 style="color:var(--gold-text);">Contracts</h3>' +
+            '<div class="empty-state">Not set up yet \u2014 run CORPORATE_CONTRACTS.sql in Supabase.</div>';
+          return;
+        }
+        var rows = res.data || [];
+        ctrBlock.innerHTML = '<h3 style="color:var(--gold-text);">Contracts \u00b7 ' + rows.length + '</h3>';
+        if (!rows.length) {
+          ctrBlock.innerHTML += '<div class="empty-state">No contracts yet \u2014 draft one from an inquiry above.</div>';
+          return;
+        }
+        rows.forEach(function(c){
+          var signed = !!c.signed_at;
+          var item = document.createElement('div'); item.className = 'admin-sub-item';
+          var money = (c.total_fee != null ? ctrMoney(c.total_fee) : '\u2014') +
+            (c.deposit != null ? ' (' + ctrMoney(c.deposit) + ' deposit)' : '');
+          var who = String(c.company_name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+          item.innerHTML =
+            '<div style="flex:1;min-width:0;">' +
+              '<span class="aname">' + escapeHTML(c.company_name) + '</span>' +
+              ' <span class="au-meta">\u2014 ' + escapeHTML(c.contact_name) + '</span>' +
+              '<br><span class="aemail">' + escapeHTML(c.contact_email) + '</span>' +
+              '<details style="margin-top:.4rem;">' +
+                '<summary style="cursor:pointer;font-size:.82rem;color:var(--gold-text);">View details</summary>' +
+                '<div style="font-size:.82rem;color:#3d322a;margin-top:.4rem;line-height:1.6;">' +
+                  '<strong>Session:</strong> ' + escapeHTML(c.session_date || '\u2014') + '<br>' +
+                  '<strong>Venue:</strong> ' + escapeHTML(c.location || '\u2014') + '<br>' +
+                  '<strong>Participants:</strong> ' + escapeHTML(c.headcount || '\u2014') + '<br>' +
+                  '<strong>Fee:</strong> ' + escapeHTML(money) + '<br>' +
+                  '<strong>Full fee within:</strong> ' + (c.cancel_window_days) + ' days<br>' +
+                  '<strong>Reference:</strong> ' + escapeHTML(c.code) +
+                  (signed ? '<br><strong>Signed by:</strong> ' + escapeHTML(c.signature) : '') +
+                '</div>' +
+              '</details>' +
+            '</div>' +
+            '<div style="text-align:right">' +
+              '<span class="atype ' + (signed ? 'type-confirmed' : 'type-waitlist') + '">' +
+                (signed ? 'signed' : 'awaiting signature') + '</span>' +
+              '<br><span class="au-meta">' +
+                escapeHTML(new Date(signed ? c.signed_at : c.created_at).toLocaleString()) + '</span>' +
+              '<br><div style="display:flex;gap:.3rem;justify-content:flex-end;margin-top:.3rem;flex-wrap:wrap;">' +
+                '<button onclick="corpCopyContractLink(\'' + c.code + '\')" style="background:#fff;' +
+                  'border:1px solid var(--gold);color:var(--brown);border-radius:6px;padding:.2rem .5rem;' +
+                  'font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u29c9 Copy Link</button>' +
+                '<button onclick="window.open(\'?contract=' + c.code + '\',\'_blank\')" style="background:#fff;' +
+                  'border:1px solid var(--gold);color:var(--brown);border-radius:6px;padding:.2rem .5rem;' +
+                  'font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u2197 View</button>' +
+                '<button onclick="corpDeleteContract(\'' + c.code + '\',\'' + who + '\')" style="background:#fdecea;' +
+                  'border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;' +
+                  'font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128465; Remove</button>' +
+              '</div>' +
+            '</div>';
+          ctrBlock.appendChild(item);
+        });
+      });
     });
   }
 
@@ -14717,6 +14872,414 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
+  // \u2500\u2500 Private event contracts \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  //
+  // The terms are generated ONCE, when the contract is drafted, and the
+  // exact text is stored on the row. The client is shown that stored text,
+  // never a fresh render. Editing the template below therefore changes what
+  // future clients sign and can never change what somebody already signed.
+  // \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+
+  function ctrMoney(n){
+    var v = Number(n);
+    if (!isFinite(v)) return '$0.00';
+    return '$' + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  // Plain text, deliberately. A contract that can be re-rendered differently
+  // from how it was stored is not a record of anything.
+  function auricContractTerms(o){
+    var total   = Number(o.total || 0);
+    var deposit = Number(o.deposit || 0);
+    var balance = Math.max(0, total - deposit);
+    var L = [];
+    var put = function(s){ L.push(s == null ? '' : s); };
+
+    put('PRIVATE EVENT AGREEMENT');
+    put('');
+    put('This agreement is between Auric Movement LLC ("Auric Movement") and');
+    put(o.company + ' ("the Client"), for the session described below.');
+    put('');
+    put('1. THE SESSION');
+    put('   Type: ' + (o.classType || 'To be confirmed'));
+    put('   Duration: ' + (o.duration || 'To be confirmed'));
+    put('   Participants: up to ' + (o.headcount || 'to be confirmed'));
+    put('   Date and time: ' + (o.sessionDate || 'To be confirmed'));
+    put('   Location: ' + (o.location || 'To be confirmed'));
+    put('');
+    put('2. FEES');
+    put('   Total fee: ' + ctrMoney(total));
+    put('   Deposit, due to reserve the date: ' + ctrMoney(deposit));
+    put('   Balance: ' + ctrMoney(balance) + ', due no later than ' + o.balanceDays +
+        ' day' + (o.balanceDays == 1 ? '' : 's') + ' before the session.');
+    put('');
+    put('   The deposit covers the venue rental and other costs Auric Movement');
+    put('   commits to on the Client\u2019s behalf the moment the date is held.');
+    put('');
+    put('3. IF THE CLIENT CANCELS');
+    put('   a. The deposit is non-refundable at any notice, because those costs');
+    put('      are already committed once the date is held.');
+    put('   b. Cancelling ' + o.cancelDays + ' day' + (o.cancelDays == 1 ? '' : 's') +
+        ' or fewer before the session: the full fee is due.');
+    put('      At that notice the date cannot be filled.');
+    put('   c. If Auric Movement recovers any committed cost \u2014 for example the');
+    put('      venue refunds the rental \u2014 that amount is returned to the Client.');
+    put('');
+    put('4. RESCHEDULING');
+    put('   The Client may reschedule once at no charge, with at least ' + o.reschedDays);
+    put('   days written notice and subject to availability. The deposit moves to');
+    put('   the new date. A further change is treated as a cancellation under');
+    put('   section 3.');
+    put('');
+    put('5. IF AURIC MOVEMENT CANCELS');
+    put('   If Auric Movement cancels for any reason other than the Client\u2019s');
+    put('   conduct, everything paid, deposit included, is refunded in full.');
+    put('');
+    put('6. PARTICIPANT NUMBERS');
+    put('   The fee is based on up to ' + (o.headcount || 'the agreed number of') +
+        ' participants. Final numbers');
+    put('   are due ' + o.balanceDays + ' day' + (o.balanceDays == 1 ? '' : 's') +
+        ' before the session. More participants may be added if');
+    put('   space allows, at the same per-person rate. The fee is not reduced if');
+    put('   fewer people attend.');
+    put('');
+    put('7. HEALTH AND WAIVERS');
+    put('   Every participant completes Auric Movement\u2019s liability waiver before');
+    put('   taking part. The Client will pass on any injury or health consideration');
+    put('   known to them. Participants take part at their own risk.');
+    put('');
+    put('8. VENUE AND CONDUCT');
+    put('   Where the Client provides the space, the Client is responsible for it');
+    put('   being safe and suitable for the session. Auric Movement may end a');
+    put('   session without refund if a participant\u2019s behaviour puts anyone at risk.');
+    put('');
+    put('9. PHOTOGRAPHY');
+    put('   Auric Movement may photograph or film the session for its own promotion');
+    put('   unless the Client says otherwise in writing before the date. Any');
+    put('   participant may ask not to be photographed, and that is respected.');
+    put('');
+    if (o.extra && o.extra.trim()) {
+      put('10. ADDITIONAL TERMS');
+      o.extra.trim().split('\n').forEach(function(line){ put('   ' + line); });
+      put('');
+      put('11. AGREEMENT');
+    } else {
+      put('10. AGREEMENT');
+    }
+    put('   This is the whole agreement between the parties for this session and');
+    put('   replaces anything discussed beforehand. It is governed by the laws of');
+    put('   the State of New York. Signing electronically is binding under the');
+    put('   E-SIGN Act, 15 U.S.C. \u00a7 7001.');
+    put('');
+    put('Auric Movement LLC \u00b7 auricmovement@outlook.com');
+    put('Client: ' + o.company + ' \u00b7 ' + o.contact + ' \u00b7 ' + o.email);
+    return L.join('\n');
+  }
+
+  // Render the stored text. Headings are recognised by shape, so the words on
+  // screen are byte-for-byte the words in the database.
+  function ctrRenderTerms(el, text){
+    el.innerHTML = '';
+    String(text == null ? '' : text).split('\n').forEach(function(line){
+      if (!line.trim()) { var sp = document.createElement('div'); sp.className = 'ctr-blank'; el.appendChild(sp); return; }
+      var d = document.createElement('div');
+      d.className = /^(\d+\.\s+[A-Z]|PRIVATE EVENT AGREEMENT)/.test(line) ? 'ctr-h' : 'ctr-line';
+      d.textContent = line;
+      el.appendChild(d);
+    });
+  }
+
+  // \u2500\u2500 The client's side: open the link, read it, sign it \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  function ctrShow(id){
+    ['ctr-loading','ctr-missing','ctr-doc'].forEach(function(x){
+      document.getElementById(x).classList.toggle('hidden', x !== id);
+    });
+  }
+
+  function ctrLoad(code){
+    supabase.rpc('auric_contract_get', { p_code: code }).then(function(res){
+      var row = (res.data && res.data.length) ? res.data[0] : null;
+      if (res.error || !row) { ctrShow('ctr-missing'); return; }
+
+      document.getElementById('ctr-ref-code').textContent = row.code;
+      document.getElementById('ctr-ref-date').textContent =
+        new Date(row.created_at).toLocaleDateString(undefined, { year:'numeric', month:'long', day:'numeric' });
+      ctrRenderTerms(document.getElementById('ctr-terms'), row.terms_snapshot);
+      document.getElementById('ctr-agree-company').textContent = row.company_name || '';
+
+      var signed = !!row.signed_at;
+      document.getElementById('ctr-signed-block').classList.toggle('hidden', !signed);
+      document.getElementById('ctr-sign-block').classList.toggle('hidden', signed);
+      if (signed) {
+        document.getElementById('ctr-signed-name').textContent = row.signature || '';
+        document.getElementById('ctr-signed-when').textContent = new Date(row.signed_at).toLocaleString();
+      }
+      ctrShow('ctr-doc');
+    }, function(){ ctrShow('ctr-missing'); });
+  }
+
+  (function wireContractSigning(){
+    var agree = document.getElementById('ctr-agree');
+    var sig   = document.getElementById('ctr-sig');
+    var btn   = document.getElementById('ctr-sign-btn');
+    if (!agree || !sig || !btn) return;
+
+    // The name box stays locked until the box is ticked, so nobody signs
+    // something they have scrolled straight past.
+    agree.addEventListener('change', function(){
+      sig.disabled = !agree.checked;
+      if (!agree.checked) { sig.value = ''; }
+      sync();
+    });
+    function sync(){ btn.disabled = !(agree.checked && sig.value.trim().length >= 2); }
+    sig.addEventListener('input', sync);
+
+    btn.addEventListener('click', function(){
+      var code = new URLSearchParams(window.location.search).get('contract');
+      var name = sig.value.trim();
+      if (!code || name.length < 2) return;
+      btn.disabled = true; btn.textContent = 'Signing\u2026';
+      document.getElementById('ctr-sig-err').textContent = '';
+
+      supabase.rpc('auric_contract_sign', { p_code: code, p_signature: name }).then(function(res){
+        if (res.error) throw res.error;
+        document.getElementById('ctr-signed-name').textContent = name;
+        document.getElementById('ctr-signed-when').textContent =
+          new Date(res.data || Date.now()).toLocaleString();
+        document.getElementById('ctr-sign-block').classList.add('hidden');
+        document.getElementById('ctr-signed-block').classList.remove('hidden');
+        document.getElementById('ctr-signed-block').scrollIntoView({ behavior:'smooth', block:'center' });
+        announce('Agreement signed.');
+      }).catch(function(err){
+        btn.disabled = false; btn.textContent = 'Sign Agreement \u2726';
+        console.error('Contract signing failed:', err);
+        document.getElementById('ctr-sign-status').innerHTML =
+          '<span style="color:var(--red);">\u26a0\ufe0f Could not record your signature. ' +
+          'Please email auricmovement@outlook.com.</span>';
+      });
+    });
+  })();
+
+  // \u2500\u2500 Admin: draft a contract from an inquiry \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+
+  function ctrLink(code){
+    return window.location.origin + window.location.pathname + '?contract=' + encodeURIComponent(code);
+  }
+
+  function ctrField(id, label, value, opts){
+    opts = opts || {};
+    return '<div class="field" style="margin-bottom:.7rem;">' +
+      '<label for="' + id + '" style="font-size:.78rem;">' + label +
+      (opts.hint ? ' <span style="color:var(--text-muted);font-weight:400;">' + opts.hint + '</span>' : '') +
+      '</label>' +
+      (opts.textarea
+        ? '<textarea id="' + id + '" rows="3" placeholder="' + (opts.placeholder || '') + '"></textarea>'
+        : '<input type="' + (opts.type || 'text') + '" id="' + id + '" value="' +
+          String(value == null ? '' : value).replace(/"/g, '&quot;') + '" placeholder="' +
+          (opts.placeholder || '') + '"' + (opts.step ? ' step="' + opts.step + '"' : '') +
+          (opts.min ? ' min="' + opts.min + '"' : '') + '>') +
+      '</div>';
+  }
+
+  // Read the modal's fields into the shape auricContractTerms() expects.
+  function ctrFormValues(){
+    var v = function(id){ var e = document.getElementById(id); return e ? e.value.trim() : ''; };
+    var n = function(id, dflt){ var x = parseInt(v(id), 10); return isFinite(x) && x >= 0 ? x : dflt; };
+    return {
+      company:     v('ctrf-company'),
+      contact:     v('ctrf-contact'),
+      email:       v('ctrf-email'),
+      phone:       v('ctrf-phone'),
+      classType:   v('ctrf-class'),
+      duration:    v('ctrf-duration'),
+      headcount:   v('ctrf-headcount'),
+      sessionDate: v('ctrf-date'),
+      location:    v('ctrf-location'),
+      total:       parseFloat(v('ctrf-total')) || 0,
+      deposit:     parseFloat(v('ctrf-deposit')) || 0,
+      balanceDays: n('ctrf-balance-days', 7),
+      cancelDays:  n('ctrf-cancel-days', 7),
+      reschedDays: n('ctrf-resched-days', 14),
+      extra:       v('ctrf-extra')
+    };
+  }
+
+  function ctrRefreshPreview(){
+    var o = ctrFormValues();
+    ctrRenderTerms(document.getElementById('ctrf-preview'), auricContractTerms(o));
+    var bal = Math.max(0, (o.total || 0) - (o.deposit || 0));
+    var warn = document.getElementById('ctrf-warn');
+    // A deposit bigger than the total is a typo, not a plan.
+    warn.textContent = (o.deposit > o.total && o.total > 0)
+      ? 'The deposit is larger than the total fee \u2014 check those numbers.'
+      : ('Balance after deposit: ' + ctrMoney(bal));
+    warn.style.color = (o.deposit > o.total && o.total > 0) ? 'var(--red)' : 'var(--text-muted)';
+  }
+
+  window.corpDraftContract = function(inquiryCode){
+    getCorpData(function(data){
+      var rec = (data.inquiries || []).filter(function(r){ return r.code === inquiryCode; })[0] || {};
+
+      var old = document.getElementById('ctrf-overlay');
+      if (old) old.remove();
+
+      var ov = document.createElement('div');
+      ov.id = 'ctrf-overlay';
+      ov.style.cssText = 'position:fixed;inset:0;background:rgba(60,40,20,.55);z-index:9999;' +
+        'overflow-y:auto;padding:2rem 1rem;font-family:\'Jost\',sans-serif;';
+      ov.innerHTML =
+        // The global form styling only reaches input[type=text] and [type=email],
+        // so the number boxes and the textarea need dressing here or they render
+        // as raw browser controls next to the styled ones.
+        '<style>' +
+          '#ctrf-overlay input,#ctrf-overlay textarea{width:100%;box-sizing:border-box;' +
+            'padding:.6rem .8rem;border:2px solid var(--border);border-radius:10px;' +
+            'font-size:.9rem;font-family:\'Jost\',sans-serif;color:var(--text);' +
+            'background:var(--cream-light);}' +
+          '#ctrf-overlay input:focus,#ctrf-overlay textarea:focus{border-color:var(--gold);' +
+            'box-shadow:0 0 0 3px rgba(176,120,64,.15);outline:none;}' +
+          '#ctrf-overlay textarea{resize:vertical;min-height:70px;line-height:1.6;}' +
+          '#ctrf-overlay label{display:block;margin-bottom:.3rem;font-weight:600;color:var(--brown);}' +
+          '@media(max-width:640px){#ctrf-overlay [style*="grid-template-columns"]{grid-template-columns:1fr !important;}}' +
+        '</style>' +
+        '<div style="max-width:720px;margin:0 auto;background:#fdfbf7;border-radius:14px;padding:1.75rem;">' +
+          '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:1rem;margin-bottom:.25rem;">' +
+            '<h2 style="font-family:var(--font-display);color:var(--brown);font-size:1.5rem;">Draft Contract</h2>' +
+            '<button type="button" id="ctrf-close" style="background:none;border:none;font-size:1.5rem;' +
+              'color:var(--text-muted);cursor:pointer;line-height:1;">&times;</button>' +
+          '</div>' +
+          '<p style="font-size:.82rem;color:var(--text-muted);line-height:1.6;margin-bottom:1.25rem;">' +
+            'Nothing is sent from here. You get a link to send yourself, in your own words.</p>' +
+
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 .75rem;">' +
+            ctrField('ctrf-company', 'Company / group', rec.company_name) +
+            ctrField('ctrf-contact', 'Contact name', rec.contact_name) +
+            ctrField('ctrf-email', 'Email', rec.contact_email, { type:'email' }) +
+            ctrField('ctrf-phone', 'Phone', rec.contact_phone === 'Not provided' ? '' : rec.contact_phone) +
+            ctrField('ctrf-class', 'Class type', rec.class_type) +
+            ctrField('ctrf-duration', 'Duration', rec.duration) +
+            ctrField('ctrf-headcount', 'Participants', rec.headcount) +
+            ctrField('ctrf-date', 'Date &amp; time', '', { placeholder:'Sat Nov 22, 11:00 AM' }) +
+          '</div>' +
+          ctrField('ctrf-location', 'Venue', '', { placeholder:'Maison Luxe Pilates &amp; Wellness, Brooklyn' }) +
+
+          '<div style="border-top:1px solid var(--border);margin:1rem 0 .9rem;padding-top:.9rem;">' +
+            '<div style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;' +
+              'color:var(--gold-text);margin-bottom:.6rem;">The money</div>' +
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 .75rem;">' +
+              ctrField('ctrf-total', 'Total fee', '', { type:'number', step:'0.01', min:'0', placeholder:'540.00' }) +
+              ctrField('ctrf-deposit', 'Deposit', '', { type:'number', step:'0.01', min:'0',
+                placeholder:'230.00', hint:'\u2014 set this to your venue rental' }) +
+            '</div>' +
+            '<div id="ctrf-warn" style="font-size:.78rem;color:var(--text-muted);margin:-.3rem 0 .8rem;"></div>' +
+            '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 .75rem;">' +
+              ctrField('ctrf-balance-days', 'Balance due', 7, { type:'number', min:'0', hint:'days before' }) +
+              ctrField('ctrf-cancel-days', 'Full fee within', 7, { type:'number', min:'0', hint:'days' }) +
+              ctrField('ctrf-resched-days', 'Reschedule notice', 14, { type:'number', min:'0', hint:'days' }) +
+            '</div>' +
+          '</div>' +
+
+          ctrField('ctrf-extra', 'Anything to add for this client', '', { textarea:true,
+            placeholder:'Optional \u2014 e.g. parking is covered, mats provided by the venue.' }) +
+
+          '<div style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;' +
+            'color:var(--gold-text);margin:1.1rem 0 .5rem;">What they will see</div>' +
+          '<div id="ctrf-preview" style="background:#fff;border:1px solid var(--border);border-radius:10px;' +
+            'padding:1.1rem 1.25rem;max-height:300px;overflow-y:auto;font-size:.8rem;line-height:1.75;color:#3d322a;"></div>' +
+
+          '<div id="ctrf-result" style="margin-top:1rem;"></div>' +
+          '<button type="button" id="ctrf-create" class="btn btn-primary btn-full" style="margin-top:1rem;">' +
+            'Create Contract &amp; Get Link</button>' +
+        '</div>';
+      document.body.appendChild(ov);
+
+      // The preview must track the fields, or it is decoration.
+      ['ctrf-company','ctrf-contact','ctrf-email','ctrf-class','ctrf-duration','ctrf-headcount',
+       'ctrf-date','ctrf-location','ctrf-total','ctrf-deposit','ctrf-balance-days',
+       'ctrf-cancel-days','ctrf-resched-days','ctrf-extra'].forEach(function(id){
+        var el = document.getElementById(id);
+        if (el) el.addEventListener('input', ctrRefreshPreview);
+      });
+      ctrRefreshPreview();
+
+      document.getElementById('ctrf-close').addEventListener('click', function(){ ov.remove(); });
+      ov.addEventListener('click', function(e){ if (e.target === ov) ov.remove(); });
+
+      document.getElementById('ctrf-create').addEventListener('click', function(){
+        var o = ctrFormValues();
+        var result = document.getElementById('ctrf-result');
+        if (!o.company || !o.contact || !o.email) {
+          result.innerHTML = '<span style="color:var(--red);font-size:.82rem;">' +
+            'Company, contact name and email are all needed.</span>';
+          return;
+        }
+        var createBtn = document.getElementById('ctrf-create');
+        createBtn.disabled = true; createBtn.textContent = 'Creating\u2026';
+
+        supabase.rpc('auric_contract_create', {
+          pass: ADMIN_PASSWORD,
+          p_company: o.company, p_contact: o.contact, p_email: o.email,
+          p_terms: auricContractTerms(o),
+          p_phone: o.phone, p_class_type: o.classType, p_duration: o.duration,
+          p_headcount: o.headcount, p_session_date: o.sessionDate, p_location: o.location,
+          p_total: o.total || null, p_deposit: o.deposit || null,
+          p_balance_days: o.balanceDays, p_cancel_days: o.cancelDays,
+          p_resched_days: o.reschedDays, p_extra: o.extra || null,
+          p_inquiry_code: inquiryCode || null
+        }).then(function(res){
+          if (res.error || !res.data) throw (res.error || new Error('no code returned'));
+          var link = ctrLink(res.data);
+          result.innerHTML =
+            '<div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:10px;padding:.9rem 1.1rem;">' +
+              '<strong style="color:#2e7d32;font-size:.86rem;">\u2713 Contract created</strong>' +
+              '<p style="font-size:.78rem;color:#3d322a;margin:.4rem 0 .5rem;line-height:1.6;">' +
+                'Send this link to ' + escapeHTML(o.contact) + '. Anyone holding it can read and sign ' +
+                'this one contract, so send it only to them.</p>' +
+              '<input type="text" id="ctrf-link" readonly value="' + escapeHTML(link) + '" ' +
+                'style="width:100%;font-size:.75rem;padding:.45rem .6rem;border:1px solid #a5d6a7;' +
+                'border-radius:6px;background:#fff;">' +
+              '<button type="button" id="ctrf-copy" class="btn btn-secondary" ' +
+                'style="margin-top:.5rem;font-size:.78rem;">\u29c9 Copy link</button>' +
+            '</div>';
+          createBtn.style.display = 'none';
+          document.getElementById('ctrf-copy').addEventListener('click', function(){
+            var f = document.getElementById('ctrf-link');
+            f.select(); f.setSelectionRange(0, 99999);
+            var ok = false;
+            try { ok = document.execCommand('copy'); } catch(e){}
+            if (navigator.clipboard) navigator.clipboard.writeText(f.value).catch(function(){});
+            this.textContent = ok || navigator.clipboard ? '\u2713 Copied' : 'Select and copy above';
+          });
+          if (typeof renderAdmin === 'function') renderAdmin();
+        }).catch(function(err){
+          createBtn.disabled = false; createBtn.textContent = 'Create Contract & Get Link';
+          console.error('Contract create failed:', err);
+          result.innerHTML = '<span style="color:var(--red);font-size:.82rem;">Could not create it: ' +
+            escapeHTML((err && (err.message || err.hint)) || 'unknown error') +
+            '. Have you run CORPORATE_CONTRACTS.sql?</span>';
+        });
+      });
+    });
+  };
+
+  window.corpCopyContractLink = function(code){
+    var link = ctrLink(code);
+    if (navigator.clipboard) navigator.clipboard.writeText(link).then(function(){
+      alert('Link copied:\n\n' + link);
+    }, function(){ prompt('Copy this link:', link); });
+    else prompt('Copy this link:', link);
+  };
+
+  window.corpDeleteContract = function(code, who){
+    if (!confirm('Delete the contract for ' + (who || 'this client') + '?\n\n' +
+                 'The link stops working immediately. If it was already signed, ' +
+                 'that record goes too. This cannot be undone.')) return;
+    supabase.rpc('auric_contract_delete', { pass: ADMIN_PASSWORD, p_code: code }).then(function(res){
+      if (res.error) { alert('Could not delete it. ' + (res.error.message || '')); return; }
+      if (typeof renderAdmin === 'function') renderAdmin();
+    });
+  };
+
   // \u2500\u2500 Events Hub \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
   // ──────────────────────────────────────────────────────────
@@ -14735,7 +15298,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function showAllPanels(activeId) {
-    var allPanels = ['tab-home','tab-events','tab-current','tab-matchat','tab-recharge','tab-coming','tab-about','tab-practice','tab-past','tab-faq','tab-corporate','tab-members'];
+    var allPanels = ['tab-home','tab-events','tab-current','tab-matchat','tab-recharge','tab-coming','tab-about','tab-practice','tab-past','tab-faq','tab-corporate','tab-contract','tab-members'];
     allPanels.forEach(function(id){
       var el = document.getElementById(id);
       if (!el) return;
@@ -18596,7 +19159,7 @@ document.addEventListener('DOMContentLoaded', function() {
       btn.classList.add('active');
       btn.setAttribute('aria-selected','true');
       var target = btn.getAttribute('aria-controls');
-      var allPanels = ['tab-home','tab-events','tab-current','tab-matchat','tab-recharge','tab-coming','tab-about','tab-practice','tab-past','tab-faq','tab-corporate','tab-members'];
+      var allPanels = ['tab-home','tab-events','tab-current','tab-matchat','tab-recharge','tab-coming','tab-about','tab-practice','tab-past','tab-faq','tab-corporate','tab-contract','tab-members'];
       allPanels.forEach(function(id){
         var el = document.getElementById(id);
         if (!el) return;
@@ -18641,7 +19204,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function switchTab(tabId) {
     document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
-    var allPanels = ['tab-home','tab-events','tab-current','tab-matchat','tab-recharge','tab-coming','tab-about','tab-practice','tab-past','tab-faq','tab-corporate','tab-members'];
+    var allPanels = ['tab-home','tab-events','tab-current','tab-matchat','tab-recharge','tab-coming','tab-about','tab-practice','tab-past','tab-faq','tab-corporate','tab-contract','tab-members'];
     allPanels.forEach(function(id){
       var el = document.getElementById(id);
       if (el) el.classList.toggle('active', id === tabId);
@@ -18697,6 +19260,15 @@ document.addEventListener('DOMContentLoaded', function() {
       else if (eventParam === 'corporate') switchTab('tab-corporate');
     }, 100);
   }
+  // A contract link goes straight to the agreement and nowhere else.
+  var contractParam = urlParams.get('contract');
+  if (contractParam) {
+    setTimeout(function(){
+      showAllPanels('tab-contract');
+      ctrLoad(contractParam);
+    }, 120);
+  }
+
   if (urlParams.get('booking') === 'corporate') {
     setTimeout(function(){
       switchTab('tab-corporate');
