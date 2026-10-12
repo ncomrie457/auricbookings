@@ -171,8 +171,12 @@
   var sb = (window.supabase && window.supabase.createClient)
     ? window.supabase.createClient(SB_URL, SB_KEY) : null;
 
-  // The same wording as every booking form on the main site.
-  var REFUND = 'As of October 10, 2026, all purchases are final and nonrefundable. ' +
+  // The main site's booking forms date this clause ("As of October 10, 2026")
+  // because public bookings predate that policy change and the Terms carve the
+  // older ones out. A private event has no such history — every guest here is
+  // booking under the current policy — so the date would only raise a question
+  // it does not answer. Same policy, stated plainly.
+  var REFUND = 'All purchases are final and nonrefundable. ' +
     'No refunds or credits are issued for cancellations, missed sessions, or no-shows, ' +
     'regardless of how much notice is given.';
   document.getElementById('refund-text').textContent = REFUND;
