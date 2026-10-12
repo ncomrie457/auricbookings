@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Private Event | Auric Movement</title>
+<!-- Not a page to be found by accident, and not one to be indexed. -->
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500;1,600&family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --cream:#f7f0e2; --card:#fffdf9; --green:#123522; --brown:#5A3A1A;
+         --gold:#9a6535; --muted:#6f6455; --border:#e6dbc8; --red:#b03636; }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{ font-family:'Jost','Helvetica Neue',Arial,sans-serif; background:linear-gradient(158deg,#f7f0e2,#efe3cd);
+        color:#3d322a; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  .wrap{ max-width:600px; margin:0 auto; padding:2.6rem 1.2rem 4rem; }
+  .brand{ text-align:center; font-size:.72rem; letter-spacing:.32em; text-transform:uppercase; color:var(--gold); font-weight:600; }
+  h1{ font-family:'Cormorant Garamond',Georgia,serif; font-style:italic; font-weight:600; font-size:2.1rem;
+      color:var(--green); text-align:center; margin:.5rem 0 .3rem; line-height:1.15; }
+  .sub{ text-align:center; color:var(--muted); font-size:.9rem; margin-bottom:1.5rem; }
+  .card{ background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.6rem 1.5rem;
+         box-shadow:0 20px 50px -34px rgba(90,58,26,.5); }
+  h2{ font-family:'Jost',sans-serif; font-size:.74rem; letter-spacing:.14em; text-transform:uppercase;
+      color:var(--gold); font-weight:700; margin:1.5rem 0 .6rem; }
+  h2:first-child{ margin-top:0; }
+  p{ font-size:.92rem; margin-bottom:.7rem; }
+  .field{ margin-bottom:.9rem; }
+  label{ display:block; font-size:.8rem; font-weight:600; color:var(--brown); margin-bottom:.3rem; }
+  label .opt{ font-weight:400; color:var(--muted); }
+  input[type=text],input[type=email],input[type=tel],input[type=number],textarea,select{
+    width:100%; padding:.72rem .9rem; border:2px solid var(--border); border-radius:10px;
+    font-family:'Jost',sans-serif; font-size:.95rem; background:#fffdf9; color:#3d322a; }
+  input:focus,textarea:focus,select:focus{ border-color:var(--gold); outline:none; box-shadow:0 0 0 3px rgba(176,120,64,.15); }
+  textarea{ min-height:76px; resize:vertical; }
+  button{ font-family:'Jost',sans-serif; font-weight:600; letter-spacing:.04em; border-radius:10px; cursor:pointer; }
+  .btn{ width:100%; padding:.9rem 1.2rem; font-size:.95rem; background:var(--brown); color:#fff; border:1px solid var(--brown); }
+  .btn:disabled{ opacity:.5; cursor:not-allowed; }
+  .btn-ghost{ background:none; border:none; color:var(--muted); text-decoration:underline; font-size:.82rem; padding:.5rem; font-weight:400; }
+  .err{ color:var(--red); font-size:.82rem; margin-top:.4rem; }
+  .hidden{ display:none !important; }
+  .detail{ display:flex; gap:.7rem; font-size:.92rem; padding:.35rem 0; }
+  .detail .k{ color:var(--gold); min-width:74px; font-size:.78rem; letter-spacing:.08em; text-transform:uppercase; font-weight:600; padding-top:.18rem; }
+  .detail .v strong{ color:var(--brown); }
+  .spots{ font-size:.82rem; color:var(--muted); margin-top:.8rem; }
+  /* Refund policy gets its own weight, same as the public booking forms. */
+  .refundbox{ background:#fdf6e9; border:2px solid var(--gold); border-radius:12px; padding:1rem 1.1rem; margin:1rem 0; }
+  .refundbox h4{ font-size:.82rem; color:var(--brown); margin-bottom:.4rem; }
+  .refundbox p{ font-size:.82rem; line-height:1.65; margin-bottom:.6rem; }
+  .checkrow{ display:flex; gap:.5rem; align-items:flex-start; font-size:.84rem; margin-bottom:.5rem; }
+  .checkrow input{ margin-top:.25rem; flex:0 0 auto; }
+  .inits{ display:flex; gap:.5rem; align-items:center; font-size:.82rem; }
+  .inits input{ width:92px; text-transform:uppercase; }
+  .ok{ background:#e8f5e9; border:1px solid #a5d6a7; border-radius:12px; padding:1.2rem 1.3rem; text-align:center; }
+  .ok h3{ color:#2e7d32; font-size:1.05rem; margin-bottom:.4rem; }
+  .foot{ text-align:center; font-size:.78rem; color:var(--muted); margin-top:1.4rem; }
+  .foot a{ color:var(--gold); text-decoration:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">Auric Movement</div>
+  <h1 id="hdr">Private Event</h1>
+  <div class="sub" id="sub">Enter the code you were given</div>
+
+  <!-- STEP 1 — the code -->
+  <div class="card" id="step-code">
+    <div class="field">
+      <label for="code">Access code</label>
+      <input type="text" id="code" placeholder="Type your code" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <div class="err" id="code-err" role="alert"></div>
+    </div>
+    <button type="button" class="btn" id="code-go">Continue &rarr;</button>
+    <p style="font-size:.78rem;color:var(--muted);margin:.9rem 0 0;text-align:center;">
+      No code? This one is invitation only &mdash; ask whoever invited you.
+    </p>
+  </div>
+
+  <!-- STEP 2 — the event, and the form -->
+  <div class="card hidden" id="step-event">
+    <!-- The invitation image, when there is one. It carries the date, time
+         and venue too, so the details below it are a repeat, not the only
+         copy — which is why a flyer that fails to load costs nothing. -->
+    <img id="ev-flyer" class="hidden" alt="" style="width:100%;border-radius:12px;display:block;margin-bottom:1.1rem;">
+    <div id="ev-details"></div>
+    <div class="spots" id="ev-spots"></div>
+
+    <div id="ev-closed" class="hidden" style="margin-top:1rem;padding:1rem;background:#fdecea;border:1px solid #f5c6c2;border-radius:10px;">
+      <p style="margin:0;color:var(--red);font-weight:600;">Reservations are closed for this one.</p>
+      <p style="margin:.4rem 0 0;font-size:.85rem;">Email <a href="mailto:auricmovement@outlook.com" style="color:var(--gold);">auricmovement@outlook.com</a> and we will see what we can do.</p>
+    </div>
+
+    <form id="ev-form">
+      <h2>Your details</h2>
+      <div class="field"><label for="f-name">Full name <span style="color:var(--red)">*</span></label>
+        <input type="text" id="f-name" autocomplete="name"></div>
+      <div class="field"><label for="f-email">Email <span style="color:var(--red)">*</span></label>
+        <input type="email" id="f-email" placeholder="you@email.com" autocomplete="email"></div>
+      <div class="field"><label for="f-phone">Phone <span class="opt">(optional)</span></label>
+        <input type="tel" id="f-phone" placeholder="(555) 123-4567" autocomplete="tel"></div>
+      <div class="field"><label for="f-guests">Spots you need</label>
+        <select id="f-guests">
+          <option value="1" selected>Just me</option>
+          <option value="2">2</option><option value="3">3</option><option value="4">4</option>
+        </select></div>
+
+      <h2>Before the class</h2>
+      <div class="field">
+        <label for="f-allergies">Food allergies or dietary needs <span style="color:var(--red)">*</span></label>
+        <textarea id="f-allergies" placeholder="There are desserts afterwards &mdash; tell us what to avoid. Write &ldquo;none&rdquo; if you have none."></textarea>
+      </div>
+      <div class="field">
+        <label for="f-health">Injuries or health considerations <span class="opt">(optional)</span></label>
+        <textarea id="f-health" placeholder="Injuries, recent surgery, pregnancy, anything your instructor should know."></textarea>
+      </div>
+
+      <div class="refundbox">
+        <h4>&#9888; Refund policy</h4>
+        <p id="refund-text"></p>
+        <div class="checkrow">
+          <input type="checkbox" id="f-refund">
+          <label for="f-refund" style="font-weight:400;margin:0;">I have read and agree to the refund policy above.</label>
+        </div>
+        <div class="inits">
+          <label for="f-initials" style="margin:0;">Your initials</label>
+          <input type="text" id="f-initials" maxlength="4" autocomplete="off" spellcheck="false" aria-label="Your initials, agreeing to the refund policy">
+        </div>
+      </div>
+
+      <h2>Waiver</h2>
+      <p style="font-size:.84rem;color:var(--muted);">
+        By typing your name you agree to the
+        <a href="https://book.auricmovement.com/waiver" target="_blank" rel="noopener" style="color:var(--gold);">liability waiver</a>
+        and confirm you are taking part at your own risk. Your signature is binding under the E-SIGN Act, 15 U.S.C. &sect; 7001.
+      </p>
+      <div class="field"><label for="f-sign">Sign &mdash; type your full name <span style="color:var(--red)">*</span></label>
+        <input type="text" id="f-sign" placeholder="Type your full name to sign" autocomplete="off"></div>
+
+      <div class="err" id="form-err" role="alert"></div>
+      <button type="submit" class="btn" id="f-go" disabled>Reserve my spot &rarr;</button>
+    </form>
+  </div>
+
+  <!-- STEP 3 — pay -->
+  <div class="card hidden" id="step-done">
+    <div class="ok">
+      <h3>&#10003; You&rsquo;re on the list</h3>
+      <p style="margin:0;font-size:.9rem;" id="done-line"></p>
+    </div>
+    <div id="pay-block" class="hidden">
+      <h2>One last step</h2>
+      <p style="font-size:.9rem;">Your spot is held once payment comes through.</p>
+      <a id="pay-link" class="btn" style="display:block;text-align:center;text-decoration:none;" href="#">Pay now &rarr;</a>
+      <p style="font-size:.78rem;color:var(--muted);margin:.8rem 0 0;text-align:center;">
+        Opens Stripe. We never see your card details.
+      </p>
+    </div>
+    <div id="nopay-block" class="hidden">
+      <p style="font-size:.9rem;margin-top:1rem;">We&rsquo;ll be in touch with anything else you need to know.</p>
+    </div>
+  </div>
+
+  <div class="foot">Auric Movement LLC &middot; <a href="https://book.auricmovement.com">book.auricmovement.com</a></div>
+</div>
+
+<script src="/vendor/supabase-js-2.117.3.min.js"></script>
+<script>
+(function(){
+  var SB_URL = 'https://qvmiwyxerotkqpbuhpun.supabase.co';
+  var SB_KEY = 'sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ';
+  var sb = (window.supabase && window.supabase.createClient)
+    ? window.supabase.createClient(SB_URL, SB_KEY) : null;
+
+  // The same wording as every booking form on the main site.
+  var REFUND = 'As of October 10, 2026, all purchases are final and nonrefundable. ' +
+    'No refunds or credits are issued for cancellations, missed sessions, or no-shows, ' +
+    'regardless of how much notice is given.';
+  document.getElementById('refund-text').textContent = REFUND;
+
+  var $ = function(id){ return document.getElementById(id); };
+  var EV = null;
+
+  function show(id){
+    ['step-code','step-event','step-done'].forEach(function(s){
+      $(s).classList.toggle('hidden', s !== id);
+    });
+  }
+  function esc(s){ var d = document.createElement('div'); d.textContent = (s == null ? '' : s); return d.innerHTML; }
+  function row(k, v){ return v ? '<div class="detail"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>' : ''; }
+
+  // ── Step 1: the code ────────────────────────────────────────────────
+  function lookup(code){
+    var errEl = $('code-err'); errEl.textContent = '';
+    if (!code || code.length < 3){ errEl.textContent = 'Please enter your code.'; return; }
+    if (!sb){ errEl.textContent = 'Something is blocking this page. Email auricmovement@outlook.com.'; return; }
+    var btn = $('code-go'); btn.disabled = true; btn.textContent = 'Checking…';
+
+    sb.rpc('auric_private_get', { p_code: code }).then(function(res){
+      btn.disabled = false; btn.textContent = 'Continue →';
+      if (res.error) throw res.error;
+      var ev = (res.data && res.data.length) ? res.data[0] : null;
+      // A wrong code and a switched-off event look identical on purpose:
+      // neither should confirm that some other code exists.
+      if (!ev){ errEl.textContent = 'That code does not match an open event. Check it with whoever invited you.'; return; }
+      EV = ev;
+      render(ev);
+    }).catch(function(e){
+      btn.disabled = false; btn.textContent = 'Continue →';
+      console.error('[private] lookup failed:', e);
+      errEl.textContent = 'Could not check that right now. Please try again in a moment.';
+    });
+  }
+
+  function render(ev){
+    $('hdr').textContent = ev.title || 'Private Event';
+    $('sub').textContent = ev.host_name ? ('Hosted by ' + ev.host_name) : '';
+    var fl = $('ev-flyer');
+    if (ev.flyer_url){
+      fl.onerror = function(){ fl.classList.add('hidden'); };
+      fl.src = ev.flyer_url;
+      fl.alt = (ev.title || 'Invitation') + ' flyer';
+      fl.classList.remove('hidden');
+    } else {
+      fl.classList.add('hidden');
+    }
+
+    $('ev-details').innerHTML =
+      (ev.blurb ? '<p>' + esc(ev.blurb) + '</p>' : '') +
+      row('When',  esc(ev.event_date) + (ev.event_time ? ' &middot; <strong>' + esc(ev.event_time) + '</strong>' : '')) +
+      row('Where', (ev.venue_name ? '<strong>' + esc(ev.venue_name) + '</strong>' : '') +
+                   (ev.venue_address ? '<br>' + esc(ev.venue_address) : '')) +
+      row('Cost',  esc(ev.price_text));
+
+    if (ev.spots_left != null) {
+      $('ev-spots').textContent = ev.spots_left + (ev.spots_left === 1 ? ' spot left' : ' spots left');
+    }
+    var closed = !!ev.closed;
+    $('ev-closed').classList.toggle('hidden', !closed);
+    $('ev-form').classList.toggle('hidden', closed);
+    show('step-event');
+  }
+
+  $('code-go').addEventListener('click', function(){ lookup($('code').value.trim()); });
+  $('code').addEventListener('keydown', function(e){ if (e.key === 'Enter') $('code-go').click(); });
+
+  // A code in the link saves typing; the page behaves the same either way.
+  var fromUrl = (new URLSearchParams(location.search).get('c') || '').trim();
+  if (fromUrl){ $('code').value = fromUrl; lookup(fromUrl); }
+
+  // ── Step 2: the form ────────────────────────────────────────────────
+  // Nothing submits until the refund policy is initialled and the waiver
+  // is signed — the same gate as the public booking forms.
+  function sync(){
+    var ok = $('f-name').value.trim().length > 1
+      && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($('f-email').value.trim())
+      && $('f-allergies').value.trim().length > 0
+      && $('f-refund').checked
+      && $('f-initials').value.trim().length >= 2
+      && $('f-sign').value.trim().length > 1;
+    $('f-go').disabled = !ok;
+  }
+  ['f-name','f-email','f-allergies','f-initials','f-sign'].forEach(function(id){
+    $(id).addEventListener('input', sync);
+  });
+  $('f-refund').addEventListener('change', sync);
+
+  $('ev-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    var errEl = $('form-err'); errEl.textContent = '';
+    var btn = $('f-go'); btn.disabled = true; btn.textContent = 'Reserving…';
+
+    sb.rpc('auric_private_rsvp', {
+      p_code: EV.code,
+      p_name: $('f-name').value.trim(),
+      p_email: $('f-email').value.trim(),
+      p_phone: $('f-phone').value.trim() || null,
+      p_guests: parseInt($('f-guests').value, 10) || 1,
+      p_note: null,
+      p_allergies: $('f-allergies').value.trim(),
+      p_health: $('f-health').value.trim() || null,
+      p_signature: $('f-sign').value.trim(),
+      p_initials: $('f-initials').value.trim()
+    }).then(function(res){
+      if (res.error) throw res.error;
+      $('done-line').textContent = $('f-name').value.trim() + ', your spot is reserved for ' +
+        (EV.event_date || 'the event') + (EV.event_time ? ' at ' + EV.event_time : '') + '.';
+      if (EV.pay_url){
+        $('pay-link').href = EV.pay_url;
+        $('pay-block').classList.remove('hidden');
+      } else {
+        $('nopay-block').classList.remove('hidden');
+      }
+      show('step-done');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }).catch(function(err){
+      btn.disabled = false; btn.textContent = 'Reserve my spot →';
+      console.error('[private] rsvp failed:', err);
+      // The database raises readable messages — "this one is full",
+      // "there are only 2 spots left" — so show them rather than a generic one.
+      errEl.textContent = (err && (err.message || err.hint))
+        ? String(err.message || err.hint)
+        : 'That did not save. Please try again, or email auricmovement@outlook.com.';
+    });
+  });
+})();
+</script>
+</body>
+</html>

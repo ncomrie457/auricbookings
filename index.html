@@ -5573,6 +5573,26 @@
                      border-radius:6px;padding:.45rem .8rem;font-size:.78rem;cursor:pointer;
                      font-family:'Jost',sans-serif;">Reset sent memory</button>
     </div>
+
+    <!-- Private events: invitation-only bookings behind an access code. The
+         code lives in Supabase, never in this file — the repo is public, so
+         anything written here is readable by anyone. -->
+    <div id="admin-private-section" style="margin-top:.75rem;padding:.8rem 1rem;background:#f3ecfb;
+         border:1px solid #d4bff4;border-radius:10px;font-family:'Jost',sans-serif;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:1rem;">
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+             color:#6a3ca5;">&#128274; Private events</div>
+        <button type="button" onclick="pvToggleForm()" style="background:#6a3ca5;border:1px solid #6a3ca5;
+                color:#fff;border-radius:6px;padding:.3rem .7rem;font-size:.72rem;cursor:pointer;
+                font-family:'Jost',sans-serif;font-weight:600;">+ New private event</button>
+      </div>
+      <div style="font-size:.78rem;color:#5c4a72;line-height:1.6;margin-top:.4rem;">
+        Give the code to the host; anyone without it sees nothing.
+        They register and pay the same way as a public booking, and are asked about food allergies.
+      </div>
+      <div id="pv-form" style="display:none;margin-top:.8rem;"></div>
+      <div id="pv-list" style="margin-top:.7rem;"></div>
+    </div>
     <style>
       #admin-panel .admin-tabnav{display:flex;gap:.1rem;border-bottom:1px solid var(--border);margin:.2rem 0 1.2rem;overflow-x:auto;-webkit-overflow-scrolling:touch;}
       #admin-panel .admin-tab{font-family:'Jost',sans-serif;font-size:.82rem;font-weight:600;color:var(--text-muted);background:none;border:none;border-bottom:3px solid transparent;padding:.7rem .95rem;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:.4rem;}
@@ -15361,6 +15381,175 @@ document.addEventListener('DOMContentLoaded', function() {
             '. Have you run CORPORATE_CONTRACTS.sql?</span>';
         });
       });
+    });
+  };
+
+  // ── Private events ───────────────────────────────────────────────────
+  //
+  // The access code is stored in Supabase and checked there. Nothing secret
+  // is written into this file, because this file is public: the repo can be
+  // read by anyone, so a code in the JavaScript would be a code in the open.
+  // ─────────────────────────────────────────────────────────────────────
+  function pvField(id, label, opts){
+    opts = opts || {};
+    return '<div style="margin-bottom:.55rem;">' +
+      '<label for="' + id + '" style="display:block;font-size:.72rem;font-weight:600;color:#5c4a72;margin-bottom:.2rem;">' +
+      label + (opts.hint ? ' <span style="font-weight:400;color:#8a7d9b;">' + opts.hint + '</span>' : '') + '</label>' +
+      (opts.textarea
+        ? '<textarea id="' + id + '" rows="2" placeholder="' + (opts.ph || '') + '"></textarea>'
+        : '<input type="' + (opts.type || 'text') + '" id="' + id + '" placeholder="' + (opts.ph || '') + '"' +
+          (opts.value ? ' value="' + opts.value + '"' : '') + '>') +
+      '</div>';
+  }
+
+  window.pvToggleForm = function(){
+    var box = document.getElementById('pv-form');
+    if (box.style.display === 'block'){ box.style.display = 'none'; return; }
+    box.innerHTML =
+      '<style>#pv-form input,#pv-form textarea{width:100%;box-sizing:border-box;padding:.5rem .7rem;' +
+        'border:1px solid #d4bff4;border-radius:8px;font-family:\'Jost\',sans-serif;font-size:.82rem;background:#fff;}' +
+        '#pv-form .two{display:grid;grid-template-columns:1fr 1fr;gap:0 .6rem;}' +
+        '@media(max-width:640px){#pv-form .two{grid-template-columns:1fr;}}</style>' +
+      '<div style="background:#fff;border:1px solid #d4bff4;border-radius:10px;padding:.9rem 1rem;">' +
+        '<div class="two">' +
+          pvField('pv-code', 'Access code', { ph:'FAINOLA25', hint:'— what you give the host' }) +
+          pvField('pv-title', 'Title', { ph:"Fainola's Birthday Celebration" }) +
+          pvField('pv-host', 'Hosted by', { ph:'Fainola' }) +
+          pvField('pv-capacity', 'Capacity', { type:'number', ph:'25' }) +
+          pvField('pv-date', 'Date', { ph:'Saturday, November 21' }) +
+          pvField('pv-time', 'Time', { ph:'4:30 PM' }) +
+          pvField('pv-venue', 'Venue', { ph:'Babe Skwod Studio' }) +
+          pvField('pv-price', 'Cost shown', { ph:'$45 per person' }) +
+        '</div>' +
+        pvField('pv-address', 'Address', { ph:'147 Prince St, Suite 208, Brooklyn, NY 11201' }) +
+        pvField('pv-payurl', 'Payment link', { ph:'https://buy.stripe.com/...', hint:'— stored here, never in the public code' }) +
+        pvField('pv-flyer', 'Flyer image', { ph:'fainola-birthday-flyer.jpg', hint:'— a filename on the site, or a full https:// link' }) +
+        pvField('pv-closes', 'Registration closes', { type:'date', hint:'— optional' }) +
+        pvField('pv-blurb', 'Short description', { textarea:true, ph:'A 45-minute mat class, then birthday desserts.' }) +
+        '<div id="pv-err" style="color:var(--red);font-size:.78rem;margin:.3rem 0;"></div>' +
+        '<button type="button" onclick="pvSave(this)" style="background:#6a3ca5;border:1px solid #6a3ca5;color:#fff;' +
+          'border-radius:6px;padding:.45rem .9rem;font-size:.8rem;cursor:pointer;font-family:\'Jost\',sans-serif;' +
+          'font-weight:600;">Save private event</button>' +
+        '<button type="button" onclick="pvToggleForm()" style="margin-left:.4rem;background:none;border:none;' +
+          'color:#8a7d9b;font-size:.78rem;text-decoration:underline;cursor:pointer;font-family:\'Jost\',sans-serif;">Cancel</button>' +
+      '</div>';
+    box.style.display = 'block';
+  };
+
+  window.pvSave = function(btn){
+    var v = function(id){ var e = document.getElementById(id); return e ? e.value.trim() : ''; };
+    var err = document.getElementById('pv-err');
+    err.textContent = '';
+    if (!v('pv-code') || !v('pv-title')){ err.textContent = 'A code and a title are the two it cannot do without.'; return; }
+    btn.disabled = true; btn.textContent = 'Saving…';
+    supabase.rpc('auric_private_save', {
+      pass: ADMIN_PASSWORD,
+      p_code: v('pv-code'), p_title: v('pv-title'), p_host: v('pv-host') || null,
+      p_blurb: v('pv-blurb') || null, p_date: v('pv-date') || null, p_time: v('pv-time') || null,
+      p_venue: v('pv-venue') || null, p_address: v('pv-address') || null,
+      p_price: v('pv-price') || null, p_pay_url: v('pv-payurl') || null,
+      p_flyer_url: v('pv-flyer') || null,
+      p_capacity: parseInt(v('pv-capacity'), 10) || null,
+      p_closes_at: v('pv-closes') || null, p_active: true
+    }).then(function(res){
+      btn.disabled = false; btn.textContent = 'Save private event';
+      if (res.error) throw res.error;
+      document.getElementById('pv-form').style.display = 'none';
+      pvRefresh();
+      alert('Saved.\n\nShare this link:\n' + window.location.origin + '/private?c=' + res.data +
+            '\n\nOr just the code: ' + String(res.data).toUpperCase());
+    }).catch(function(e){
+      btn.disabled = false; btn.textContent = 'Save private event';
+      console.error('[private] save failed:', e);
+      err.textContent = (e && (e.message || e.hint)) || 'Could not save. Have you run PRIVATE_EVENTS.sql?';
+    });
+  };
+
+  window.pvRefresh = function(){
+    var list = document.getElementById('pv-list');
+    if (!list) return;
+    supabase.rpc('auric_private_list', { pass: ADMIN_PASSWORD }).then(function(res){
+      if (res.error){
+        list.innerHTML = '<div style="font-size:.78rem;color:#8a7d9b;">Not set up yet — run PRIVATE_EVENTS.sql in Supabase.</div>';
+        return;
+      }
+      var rows = res.data || [];
+      if (!rows.length){ list.innerHTML = '<div style="font-size:.78rem;color:#8a7d9b;">None yet.</div>'; return; }
+      list.innerHTML = rows.map(function(e){
+        var link = window.location.origin + '/private?c=' + e.code;
+        return '<div style="background:#fff;border:1px solid #d4bff4;border-radius:8px;padding:.55rem .75rem;margin-bottom:.4rem;">' +
+          '<div style="display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;align-items:baseline;">' +
+            '<div><strong style="font-size:.86rem;color:#3d322a;">' + escapeHTML(e.title) + '</strong>' +
+              '<span style="font-size:.75rem;color:#8a7d9b;"> · code <strong style="color:#6a3ca5;">' +
+              escapeHTML(String(e.code).toUpperCase()) + '</strong></span>' +
+              (e.active ? '' : '<span style="font-size:.7rem;color:var(--red);"> · switched off</span>') +
+            '</div>' +
+            '<div style="font-size:.75rem;color:#5c4a72;">' + (e.taken || 0) +
+              (e.capacity ? ' / ' + e.capacity : '') + ' booked</div>' +
+          '</div>' +
+          '<div style="font-size:.75rem;color:#8a7d9b;margin-top:.15rem;">' +
+            escapeHTML([e.event_date, e.event_time, e.venue_name].filter(Boolean).join(' · ')) + '</div>' +
+          '<div style="display:flex;gap:.3rem;margin-top:.4rem;flex-wrap:wrap;">' +
+            '<button onclick="pvCopy(\'' + e.code + '\')" style="background:#fff;border:1px solid #d4bff4;color:#6a3ca5;' +
+              'border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">⧉ Copy link</button>' +
+            '<button onclick="pvGuests(\'' + e.code + '\')" style="background:#fff;border:1px solid #d4bff4;color:#6a3ca5;' +
+              'border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F465} Guests (' + (e.taken||0) + ')</button>' +
+            '<button onclick="window.open(\'/private?c=' + e.code + '\',\'_blank\')" style="background:#fff;border:1px solid #d4bff4;' +
+              'color:#6a3ca5;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">↗ View</button>' +
+            '<button onclick="pvDelete(\'' + e.code + '\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);' +
+              'border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">&#128465; Remove</button>' +
+          '</div>' +
+          '<div id="pv-guests-' + e.code + '"></div>' +
+        '</div>';
+      }).join('');
+    });
+  };
+
+  window.pvCopy = function(code){
+    var link = window.location.origin + '/private?c=' + code;
+    if (navigator.clipboard) navigator.clipboard.writeText(link).then(function(){ alert('Copied:\n\n' + link); },
+      function(){ prompt('Copy this link:', link); });
+    else prompt('Copy this link:', link);
+  };
+
+  window.pvGuests = function(code){
+    var box = document.getElementById('pv-guests-' + code);
+    if (!box) return;
+    if (box.innerHTML){ box.innerHTML = ''; return; }
+    box.innerHTML = '<div style="font-size:.75rem;color:#8a7d9b;padding:.3rem 0;">Loading…</div>';
+    supabase.rpc('auric_private_rsvps', { pass: ADMIN_PASSWORD, p_code: code }).then(function(res){
+      if (res.error){ box.innerHTML = '<div style="font-size:.75rem;color:var(--red);">Could not load the guest list.</div>'; return; }
+      var g = res.data || [];
+      if (!g.length){ box.innerHTML = '<div style="font-size:.75rem;color:#8a7d9b;padding:.3rem 0;">Nobody yet.</div>'; return; }
+      box.innerHTML = '<div style="border-top:1px solid #ece3f7;margin-top:.5rem;padding-top:.4rem;">' +
+        g.map(function(r){
+          // Allergies are called out rather than buried: there is food after
+          // this class, and that is the detail it is dangerous to miss.
+          var al = (r.food_allergies || '').trim();
+          var benign = /^(none|n\/a|no|nope|none that i know of)\.?$/i.test(al);
+          return '<div style="font-size:.78rem;padding:.3rem 0;border-bottom:1px solid #f6f1fb;">' +
+            '<strong>' + escapeHTML(r.name) + '</strong>' +
+            (r.guests > 1 ? ' <span style="color:#6a3ca5;">×' + r.guests + '</span>' : '') +
+            ' <span style="color:#8a7d9b;">' + escapeHTML(r.email) + '</span>' +
+            (r.phone ? ' <span style="color:#8a7d9b;">· ' + escapeHTML(r.phone) + '</span>' : '') +
+            (r.is_paid ? ' <span style="color:#2e7d32;font-weight:600;">✓ paid</span>'
+                       : ' <span style="color:#b0432e;">unpaid</span>') +
+            (al && !benign
+              ? '<div style="margin-top:.2rem;background:#fdeeea;border-left:3px solid #e4825f;border-radius:0 5px 5px 0;' +
+                'padding:.25rem .5rem;color:#8a3a1e;"><strong>⚠ Allergies:</strong> ' + escapeHTML(al) + '</div>'
+              : (al ? '<div style="color:#8a7d9b;font-size:.72rem;margin-top:.15rem;">Allergies: ' + escapeHTML(al) + '</div>' : '')) +
+            (r.health ? '<div style="color:#6b5847;font-size:.72rem;margin-top:.15rem;">Health: ' + escapeHTML(r.health) + '</div>' : '') +
+          '</div>';
+        }).join('') + '</div>';
+    });
+  };
+
+  window.pvDelete = function(code){
+    if (!confirm('Delete the private event "' + String(code).toUpperCase() + '"?\n\n' +
+                 'The link stops working and the guest list goes with it. This cannot be undone.')) return;
+    supabase.rpc('auric_private_delete', { pass: ADMIN_PASSWORD, p_code: code }).then(function(res){
+      if (res.error){ alert('Could not delete it. ' + (res.error.message || '')); return; }
+      pvRefresh();
     });
   };
 
