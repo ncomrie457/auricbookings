@@ -1,0 +1,211 @@
+<!--
+  ════════════════════════════════════════════════════════════
+   Halloween Reformer — "Shhh… Quiet on the Creek"
+   AURICFAM win-back promo for past attendees
+   (Valley Studio · Saturday, October 24 · $45, $35 with the code)
+   ────────────────────────────────────────────────────────────
+   BEFORE YOU SEND THIS — set the code up in Stripe, or the email
+   promises a discount that will not apply at checkout:
+     1. Stripe → Products → Coupons → New: $10 off, once per customer.
+     2. Add a promotion code to it with the code AURICFAM.
+     3. Set it to expire end of day Friday, October 16.
+     4. On EACH of the three Halloween payment links
+        (Stripe → Payment Links → the link → Edit), tick
+        "Allow promotion codes". Without that tick there is nowhere
+        on the checkout page to type it.
+
+   HOW TO USE:
+     1. In EmailJS → Email Templates → Create New Template.
+     2. Switch to the "Code"/HTML view and paste this ENTIRE file over
+        everything, then Save.
+     3. Copy the new template id and set it in index.html:
+          var RF_HW_TMPL_PROMO = 'template_xxxxxxx';
+     4. In the template Settings tab set:
+          Subject:   $10 off Halloween on the reformer — AURICFAM, ends Friday 🎃
+          From Name: Auric Movement
+          To Email:  {{to_email}}
+     5. Send it from the admin panel, on the Halloween roster:
+          🎃 Send AURICFAM promo to past attendees (X)
+
+   EmailJS variables:
+     {{from_name}}   — recipient's name
+     {{to_email}}    — their email (send-to)
+
+   The code and the deadline are written into the HTML on purpose rather
+   than passed as variables: an unpassed variable renders as a blank, and
+   a promo email with a blank where the code should be is worse than no
+   email at all.
+  ════════════════════════════════════════════════════════════
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>$10 off Halloween on the reformer</title>
+</head>
+<body style="margin:0;padding:0;background-color:#100c09;font-family:Georgia,'Times New Roman',serif;color:#e9dcc9;">
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#100c09;padding:32px 16px;">
+  <tr>
+    <td align="center">
+
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#1a1410;border-radius:14px;overflow:hidden;box-shadow:0 6px 34px rgba(0,0,0,0.55);max-width:600px;width:100%;">
+
+        <!-- Top accent stripe: moss · amber · ember -->
+        <tr>
+          <td style="padding:0;font-size:0;line-height:0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td width="34%" style="height:6px;background-color:#3b4a2f;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="33%" style="height:6px;background-color:#c9812f;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="33%" style="height:6px;background-color:#8a3a1e;font-size:0;line-height:0;">&nbsp;</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Header -->
+        <tr>
+          <td align="center" style="background-color:#161a12;padding:38px 30px 30px;border-bottom:1px solid #2c2a1f;">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:#c9812f;letter-spacing:4px;text-transform:uppercase;font-weight:bold;">Auric Movement</div>
+            <div style="font-size:30px;line-height:1;margin-top:14px;">&#127875;&nbsp;&#129415;&nbsp;&#127875;</div>
+            <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:32px;line-height:1.15;color:#f0e4cf;margin-top:12px;">Shhh&hellip;<br>Quiet on the Creek</div>
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:#a9b892;letter-spacing:2.5px;text-transform:uppercase;margin-top:14px;">Halloween on the Reformer &middot; Sat Oct 24</div>
+          </td>
+        </tr>
+
+        <!-- Greeting -->
+        <tr>
+          <td style="padding:36px 42px 8px;">
+            <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:26px;color:#f0e4cf;margin:0 0 16px 0;">{{from_name}}, this one&rsquo;s for you. &#129415;</p>
+            <p style="font-family:Georgia,serif;font-size:16px;line-height:1.8;color:#d9cbb5;margin:0 0 16px 0;">
+              You&rsquo;ve already moved with us &mdash; which makes you Auric family, and family gets first dibs.
+            </p>
+            <p style="font-family:Georgia,serif;font-size:16px;line-height:1.8;color:#d9cbb5;margin:0;">
+              On <strong style="color:#f0e4cf;">Saturday, October 24</strong> we&rsquo;re taking over Valley Studio for a reformer class that&rsquo;s a little eerie, a little sweaty, and a whole lot of fun. Low lights, a playlist with teeth, costumes very much encouraged.
+            </p>
+          </td>
+        </tr>
+
+        <!-- The offer -->
+        <tr>
+          <td style="padding:22px 42px 8px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#221a13;border:1px solid #c9812f;border-radius:10px;">
+              <tr>
+                <td style="padding:26px 26px 24px;" align="center">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#c9812f;letter-spacing:3px;text-transform:uppercase;font-weight:bold;">Your code</div>
+
+                  <!-- One unbreakable word, so its size sets the narrowest the
+                       whole email can ever be. At 34px with 6px tracking it ran
+                       ~17px past a 380px phone and pushed the entire layout into
+                       a sideways scroll. 30px/4px clears it with room spare. -->
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:30px;line-height:1.15;letter-spacing:4px;color:#f0e4cf;font-weight:bold;margin:12px 0 6px;">AURICFAM</div>
+
+                  <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:23px;color:#e0b878;margin:6px 0 0;">
+                    $10 off your spot
+                  </div>
+                  <div style="font-family:Georgia,serif;font-size:15px;color:#b6a888;margin:8px 0 0;">
+                    <span style="text-decoration:line-through;">$45</span>
+                    &nbsp;&rarr;&nbsp;
+                    <strong style="color:#f0e4cf;font-size:19px;">$35</strong>
+                  </div>
+
+                  <div style="border-top:1px solid #3a2f22;margin:18px 0 0;padding-top:16px;">
+                    <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:#e4825f;letter-spacing:2px;text-transform:uppercase;font-weight:bold;">
+                      &#9203;&nbsp; Ends Friday, October 16
+                    </div>
+                    <div style="font-family:Georgia,serif;font-size:13px;line-height:1.6;color:#b6a888;margin-top:8px;">
+                      After Friday the code stops working, and spots go at full price &mdash; if there are any left. Three sessions only.
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Book now -->
+        <tr>
+          <td style="padding:24px 42px 6px;" align="center">
+            <a href="https://book.auricmovement.com/?book=halloween" style="display:inline-block;background-color:#8a3a1e;color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:15px 34px;border-radius:8px;">Claim My Spot &rarr;</a>
+            <p style="font-family:Georgia,serif;font-size:12px;line-height:1.6;color:#8d8169;margin:14px 0 0 0;">
+              Enter <strong style="color:#b6a888;">AURICFAM</strong> at checkout, in the box marked &ldquo;Add promotion code.&rdquo;
+            </p>
+          </td>
+        </tr>
+
+        <!-- The details -->
+        <tr>
+          <td style="padding:22px 42px 8px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#161a12;border:1px solid #2c2a1f;border-radius:10px;">
+              <tr>
+                <td style="padding:22px 26px;">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#a9b892;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:14px;">The Details</div>
+
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-family:Georgia,serif;font-size:15px;line-height:1.7;color:#d9cbb5;">
+                    <tr>
+                      <td style="padding:0 0 10px 0;" valign="top" width="92">
+                        <span style="color:#c9812f;">When</span>
+                      </td>
+                      <td style="padding:0 0 10px 0;" valign="top">
+                        <strong style="color:#f0e4cf;">Saturday, October 24</strong><br>
+                        <span style="color:#b6a888;font-size:14px;">11:30&thinsp;AM &nbsp;&middot;&nbsp; 12:30&thinsp;PM &nbsp;&middot;&nbsp; 1:30&thinsp;PM</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 0 10px 0;" valign="top">
+                        <span style="color:#c9812f;">Where</span>
+                      </td>
+                      <td style="padding:0 0 10px 0;" valign="top">
+                        <strong style="color:#f0e4cf;">Valley Studio</strong><br>
+                        <span style="color:#b6a888;font-size:14px;">West Hempstead, NY</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0;" valign="top">
+                        <span style="color:#c9812f;">Wear</span>
+                      </td>
+                      <td style="padding:0;" valign="top">
+                        <span style="color:#d9cbb5;">Whatever you can move in &mdash; costumes very much encouraged. Grip socks required.</span>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Closing -->
+        <tr>
+          <td style="padding:26px 42px 30px;">
+            <p style="font-family:Georgia,serif;font-size:15px;color:#d9cbb5;line-height:1.75;margin:0 0 10px 0;">
+              These rooms stay small on purpose, so if you want in, don&rsquo;t sit on it. Hope to see you on the creek. &#127875;
+            </p>
+            <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:20px;color:#f0e4cf;margin:0;">&mdash; Niara</p>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background-color:#161a12;padding:28px 34px;" align="center">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#e9dcc9;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">Auric Movement</div>
+            <div style="font-family:Georgia,serif;font-size:12px;color:#b6a888;line-height:1.8;">
+              Pilates events in NYC, hosted with intention.<br>
+              <a href="mailto:auricmovement@outlook.com" style="color:#e0b878;text-decoration:none;">auricmovement@outlook.com</a> &middot; <a href="https://book.auricmovement.com" style="color:#e0b878;text-decoration:none;">book.auricmovement.com</a>
+            </div>
+            <div style="border-top:1px solid rgba(255,255,255,0.14);margin-top:20px;padding-top:16px;">
+              <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:15px;color:#cdd8bb;">&#10022; Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect &#10022;</div>
+            </div>
+          </td>
+        </tr>
+
+      </table>
+
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>
