@@ -14473,7 +14473,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var params = {
       company_name:    companyName, contact_name: contactName,
-      contact_email:   contactEmail, to_email: 'auricmovement@outlook.com',
+      // Every other owner notification on the site routes on {{admin_email}};
+      // these two corporate templates were the only ones passing {{to_email}}
+      // and hardcoding the address. Send both names, from the one constant, so
+      // the template delivers whichever variable it was built on.
+      contact_email:   contactEmail, to_email: ADMIN_EMAIL, admin_email: ADMIN_EMAIL,
       contact_phone:   document.getElementById('corp-contact-phone').value.trim() || 'Not provided',
       industry:        document.getElementById('corp-industry').value.trim() || 'Not provided',
       referral_source: document.getElementById('corp-referral').value || 'Not provided',
@@ -14690,7 +14694,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof emailjs !== 'undefined') {
       emailjs.send(EMAILJS_SERVICE_RESEND, TMPL_CORP_SIGNED, {
         company_name:  company, contact_name: name,
-        contact_email: email, to_email: 'auricmovement@outlook.com',
+        // Same as the inquiry above: both recipient variable names.
+        contact_email: email, to_email: ADMIN_EMAIL, admin_email: ADMIN_EMAIL,
         headcount:     headcount,
         session_date:  document.getElementById('corp-book-date').value.trim(),
         location:      document.getElementById('corp-book-location').value.trim() || 'Not provided',
