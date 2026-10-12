@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unsubscribe | Auric Movement</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{ --cream:#f7f0e2; --card:#fffdf9; --green:#123522; --brown:#5A3A1A; --gold:#9a6535; --muted:#6f6455; --border:#e6dbc8; --red:#b03636; }
+    *{ margin:0; padding:0; box-sizing:border-box; }
+    body{ font-family:'Jost','Helvetica Neue',Arial,sans-serif; background:linear-gradient(158deg,#f7f0e2,#efe3cd); color:#3d322a; line-height:1.6; -webkit-font-smoothing:antialiased; }
+    .wrap{ max-width:520px; margin:0 auto; padding:3rem 1.3rem 4rem; }
+    .brand{ text-align:center; font-size:.72rem; letter-spacing:.32em; text-transform:uppercase; color:var(--gold); font-weight:600; }
+    h1{ font-family:'Cormorant Garamond',Georgia,serif; font-style:italic; font-weight:600; font-size:2rem; color:var(--green); text-align:center; margin:.5rem 0 1.4rem; line-height:1.15; }
+    .card{ background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.8rem 1.6rem; box-shadow:0 20px 50px -34px rgba(90,58,26,.5); text-align:center; }
+    p{ font-size:.95rem; margin-bottom:.9rem; }
+    .addr{ font-weight:600; color:var(--brown); word-break:break-all; }
+    button{ font-family:'Jost',sans-serif; font-size:.9rem; font-weight:600; letter-spacing:.04em; border-radius:10px; padding:.85rem 1.6rem; cursor:pointer; border:1px solid var(--brown); background:var(--brown); color:#fff; }
+    button:disabled{ opacity:.55; cursor:default; }
+    .ghost{ background:none; color:var(--muted); border:none; text-decoration:underline; font-size:.82rem; padding:.6rem; font-weight:400; }
+    .field{ margin:.8rem 0; text-align:left; }
+    label{ display:block; font-size:.78rem; color:var(--muted); margin-bottom:.3rem; }
+    input{ width:100%; padding:.7rem .9rem; border:2px solid var(--border); border-radius:10px; font-family:'Jost',sans-serif; font-size:.95rem; background:#fffdf9; color:#3d322a; }
+    .ok{ background:#e8f5e9; border:1px solid #a5d6a7; color:#2e7d32; border-radius:12px; padding:1.1rem 1.2rem; }
+    .err{ color:var(--red); font-size:.85rem; margin-top:.6rem; }
+    .note{ font-size:.8rem; color:var(--muted); margin-top:1.2rem; line-height:1.7; }
+    .foot{ text-align:center; font-size:.78rem; color:var(--muted); margin-top:1.6rem; }
+    .foot a{ color:var(--gold); text-decoration:none; }
+    .hidden{ display:none; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">Auric Movement</div>
+    <h1>Unsubscribe</h1>
+
+    <div class="card">
+      <!-- Confirm, never act on page load. Mail scanners and link previewers
+           fetch every URL in an email; an unsubscribe that fires on load would
+           quietly remove people who never clicked anything. -->
+      <div id="ask">
+        <p>Stop sending event announcements and offers to</p>
+        <p class="addr" id="addr-label">this address</p>
+        <div class="field hidden" id="addr-field">
+          <label for="email">Your email address</label>
+          <input type="email" id="email" placeholder="you@example.com" autocomplete="email">
+        </div>
+        <button type="button" id="go">Unsubscribe me</button>
+        <div class="err" id="err" role="alert"></div>
+        <p class="note">
+          You will still get emails about classes you have actually booked &mdash;
+          confirmations, waivers and reminders for your own spot. This only stops
+          announcements and offers.
+        </p>
+      </div>
+
+      <div id="done" class="hidden">
+        <div class="ok">
+          <p style="margin:0;font-weight:600;">&#10003; Done</p>
+          <p style="margin:.4rem 0 0;font-size:.88rem;"><span class="addr" id="done-addr"></span> will not get any more announcements or offers from us.</p>
+        </div>
+        <p class="note">
+          Changed your mind, or unsubscribed by accident? Email
+          <a href="mailto:auricmovement@outlook.com" style="color:var(--gold);">auricmovement@outlook.com</a>
+          and we will put you back.
+        </p>
+      </div>
+    </div>
+
+    <div class="foot">Auric Movement LLC &middot; <a href="https://book.auricmovement.com">book.auricmovement.com</a></div>
+  </div>
+
+  <script src="/vendor/supabase-js-2.117.3.min.js"></script>
+  <script>
+  (function(){
+    var SB_URL = 'https://qvmiwyxerotkqpbuhpun.supabase.co';
+    var SB_KEY = 'sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ';
+    var sb = (window.supabase && window.supabase.createClient)
+      ? window.supabase.createClient(SB_URL, SB_KEY) : null;
+
+    var ask = document.getElementById('ask');
+    var done = document.getElementById('done');
+    var err = document.getElementById('err');
+    var go = document.getElementById('go');
+    var field = document.getElementById('addr-field');
+    var input = document.getElementById('email');
+    var label = document.getElementById('addr-label');
+
+    // The address comes from the link. If it is missing or malformed — a mail
+    // client that mangled the URL, someone who typed it from memory — ask for
+    // it rather than failing with nothing to act on.
+    var qs = new URLSearchParams(window.location.search);
+    var raw = (qs.get('e') || qs.get('email') || '').trim();
+    var valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    var source = (qs.get('c') || '').trim();
+
+    if (valid.test(raw)) {
+      label.textContent = raw;
+    } else {
+      label.classList.add('hidden');
+      field.classList.remove('hidden');
+      if (raw) input.value = raw;
+    }
+
+    function current(){
+      return valid.test(raw) ? raw : (input.value || '').trim();
+    }
+
+    go.addEventListener('click', function(){
+      var email = current();
+      err.textContent = '';
+      if (!valid.test(email)) {
+        field.classList.remove('hidden');
+        label.classList.add('hidden');
+        err.textContent = 'Please enter the email address you would like removed.';
+        input.focus();
+        return;
+      }
+      if (!sb) {
+        err.textContent = 'Something is blocking this page. Email auricmovement@outlook.com and we will remove you by hand.';
+        return;
+      }
+      go.disabled = true; go.textContent = 'Removing…';
+      sb.rpc('auric_optout_add', { p_email: email, p_source: source || 'unsubscribe-link' })
+        .then(function(res){
+          if (res.error) throw res.error;
+          document.getElementById('done-addr').textContent = email;
+          ask.classList.add('hidden');
+          done.classList.remove('hidden');
+        })
+        .catch(function(e){
+          go.disabled = false; go.textContent = 'Unsubscribe me';
+          console.error('[unsubscribe] failed:', e);
+          err.textContent = 'That did not save. Email auricmovement@outlook.com and we will remove you by hand.';
+        });
+    });
+
+    input.addEventListener('keydown', function(e){ if (e.key === 'Enter') go.click(); });
+  })();
+  </script>
+</body>
+</html>

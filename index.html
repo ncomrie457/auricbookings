@@ -18543,12 +18543,27 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btn0){ btn0.disabled = true; btn0.textContent = 'Gathering…'; }
     function restore(){ if (btn0){ btn0.disabled = false; btn0.textContent = label0; } }
 
-    supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(res){
-      if (res && res.error) throw res.error;
-      var rfRows = (res && res.data) ? res.data : [];
+    Promise.all([
+      supabase.rpc('reformer_roster',  { pass: ADMIN_PASSWORD }),
+      // An unsubscribe that the next send ignores is not an unsubscribe. If
+      // this list cannot be read the whole send is abandoned rather than
+      // mailing people who have already asked us not to.
+      supabase.rpc('auric_optouts_list', { pass: ADMIN_PASSWORD })
+    ]).then(function(r){
+      if (r[0] && r[0].error) throw r[0].error;
+      if (r[1] && r[1].error) {
+        throw new Error('Could not read the unsubscribe list — ' +
+          (r[1].error.message || 'unknown error') +
+          '. Run EMAIL_OPTOUT.sql in Supabase first; nothing was sent.');
+      }
+      var rfRows  = (r[0] && r[0].data) ? r[0].data : [];
+      var optOuts = {};
+      ((r[1] && r[1].data) || []).forEach(function(o){
+        if (o && o.email) optOuts[String(o.email).trim().toLowerCase()] = true;
+      });
       getClubData(function(marks){
         restore();
-        hwPromoBuild(triggerBtn, rfRows, marks);
+        hwPromoBuild(triggerBtn, rfRows, marks, optOuts);
       });
     }).catch(function(err){
       restore();
@@ -18558,7 +18573,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   };
 
-  function hwPromoBuild(triggerBtn, rfRows, marks){
+  function hwPromoBuild(triggerBtn, rfRows, marks, optOuts){
+    optOuts = optOuts || {};
     var RF_LABELS = {
       'riddim-kompa-reformer-2026-09-13': 'Riddim & Kompa · Sep 13',
       'riddim-kompa-brooklyn-2026-09-26': 'Riddim & Kompa · Sep 26',
@@ -18597,8 +18613,11 @@ document.addEventListener('DOMContentLoaded', function() {
       m.attendedAt.forEach(function(ev){ add(m.email, m.name, ev); });
     });
 
-    var recips = [], skippedBooked = 0, skippedSent = 0;
+    var recips = [], skippedBooked = 0, skippedSent = 0, skippedOptOut = 0;
     Object.keys(byKey).forEach(function(key){
+      // Checked first and reported separately: this one is a promise, not a
+      // preference, and it should be obvious it was honoured.
+      if (optOuts[key]) { skippedOptOut++; return; }
       if (alreadyBooked[key]) { skippedBooked++; return; }
       if (sent.indexOf(key) >= 0) { skippedSent++; return; }
       var p = byKey[key];
@@ -18608,14 +18627,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (!recips.length){
       alert('Nobody to send to.\n\n' +
-            skippedBooked + ' past attendee(s) are already booked for Halloween, and ' +
-            skippedSent + ' have already had this promo.\n\n' +
+            skippedBooked + ' past attendee(s) are already booked for Halloween, ' +
+            skippedSent + ' have already had this promo, and ' +
+            skippedOptOut + ' have unsubscribed.\n\n' +
             'If nothing is listed at all, mark people "✓ Attended" on their rosters first — ' +
             'that is who this reaches, across every event.');
       return;
     }
 
     var note = [];
+    if (skippedOptOut) note.push(skippedOptOut + ' unsubscribed');
     if (skippedBooked) note.push(skippedBooked + ' already booked for Halloween');
     if (skippedSent)   note.push(skippedSent + ' already had it');
     note = note.length ? note.join(', ') + ', so they are not listed.'
