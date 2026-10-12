@@ -15423,7 +15423,10 @@ document.addEventListener('DOMContentLoaded', function() {
         '</div>' +
         pvField('pv-address', 'Address', { ph:'147 Prince St, Suite 208, Brooklyn, NY 11201' }) +
         pvField('pv-payurl', 'Payment link', { ph:'https://buy.stripe.com/...', hint:'— stored here, never in the public code' }) +
-        pvField('pv-flyer', 'Flyer image', { ph:'fainola-birthday-flyer.jpg', hint:'— a filename on the site, or a full https:// link' }) +
+        // Deliberately not a filename in this repo: this repo is public, so a
+        // flyer committed here is a flyer anyone can find. Host it somewhere
+        // of your choosing and paste the link.
+        pvField('pv-flyer', 'Flyer image URL', { ph:'https://...', hint:'— paste a link; do not put the file in this repo' }) +
         pvField('pv-closes', 'Registration closes', { type:'date', hint:'— optional' }) +
         pvField('pv-blurb', 'Short description', { textarea:true, ph:'A 45-minute mat class, then birthday desserts.' }) +
         '<div id="pv-err" style="color:var(--red);font-size:.78rem;margin:.3rem 0;"></div>' +
