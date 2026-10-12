@@ -10,21 +10,27 @@ from this site, which means:
   that third party who is reading your site and when.
 - **The site cannot break because someone else had an outage.**
 
-The trade is that **updates are now manual**. Nothing here updates itself, so
-a security fix in one of these libraries will not reach the site until you
-replace the file. That is the whole maintenance cost, and it is the reason
-this file exists.
+Nothing here updates itself. A monthly GitHub Action
+(`.github/workflows/vendor-update.yml`) checks npm, and when something newer
+exists it opens a **pull request** with the swap already made — the site does
+not change until that PR is merged. The admin panel shows the result of the
+last check, so "is anything waiting?" is answerable without opening GitHub.
 
 ## What is here, and where it came from
 
+The table below is rewritten by `scripts/update-vendor.mjs`. Edit
+`vendor.json`, not this table.
+
+<!-- versions:start -->
 | File | Package | Version |
 |---|---|---|
 | `supabase-js-2.117.3.min.js` | `@supabase/supabase-js` | 2.117.3 |
 | `emailjs-browser-4.4.1.min.js` | `@emailjs/browser` | 4.4.1 |
 | `jspdf-2.5.1.umd.min.js` | `jspdf` | 2.5.1 |
 | `gsap-3.12.5.min.js` | `gsap` | 3.12.5 |
-| `gsap-scrolltrigger-3.12.5.min.js` | `gsap` (ScrollTrigger) | 3.12.5 |
+| `gsap-scrolltrigger-3.12.5.min.js` | `gsap` | 3.12.5 |
 | `lenis-1.1.13.min.js` | `lenis` | 1.1.13 |
+<!-- versions:end -->
 
 Every file was taken from the official npm tarball, unmodified. They are the
 same builds jsDelivr was serving: for Supabase that is `dist/umd/supabase.js`,
