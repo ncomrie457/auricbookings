@@ -6,7 +6,7 @@
     "every <script src> in the site, and updates this file and the README.",
     "",
     "'major' is a deliberate ceiling. A new major version means the library",
-    "changed in ways that break callers, so those never arrive by robot \u2014 ",
+    "changed in ways that break callers, so those never arrive by robot — ",
     "raise the number here by hand when you have time to test it."
   ],
   "libraries": [
@@ -38,7 +38,7 @@
       "major": 2,
       "tarballPath": "dist/jspdf.umd.min.js",
       "localPattern": "jspdf-{version}.umd.min.js",
-      "current": "2.5.1",
+      "current": "2.5.2",
       "role": "Builds the downloadable waiver PDF.",
       "expect": "jsPDF",
       "global": "window.jspdf.jsPDF"
@@ -49,7 +49,7 @@
       "major": 3,
       "tarballPath": "dist/gsap.min.js",
       "localPattern": "gsap-{version}.min.js",
-      "current": "3.12.5",
+      "current": "3.15.0",
       "role": "Animation on the home page.",
       "expect": "gsap",
       "global": "window.gsap"
@@ -60,7 +60,7 @@
       "major": 3,
       "tarballPath": "dist/ScrollTrigger.min.js",
       "localPattern": "gsap-scrolltrigger-{version}.min.js",
-      "current": "3.12.5",
+      "current": "3.15.0",
       "role": "Scroll-driven animation. Must match gsap exactly.",
       "expect": "ScrollTrigger",
       "global": "window.ScrollTrigger"
@@ -71,7 +71,7 @@
       "major": 1,
       "tarballPath": "dist/lenis.min.js",
       "localPattern": "lenis-{version}.min.js",
-      "current": "1.1.13",
+      "current": "1.3.26",
       "role": "Smooth scrolling.",
       "expect": "Lenis",
       "global": "window.Lenis"

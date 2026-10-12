@@ -26,10 +26,10 @@ The table below is rewritten by `scripts/update-vendor.mjs`. Edit
 |---|---|---|
 | `supabase-js-2.117.3.min.js` | `@supabase/supabase-js` | 2.117.3 |
 | `emailjs-browser-4.4.1.min.js` | `@emailjs/browser` | 4.4.1 |
-| `jspdf-2.5.1.umd.min.js` | `jspdf` | 2.5.1 |
-| `gsap-3.12.5.min.js` | `gsap` | 3.12.5 |
-| `gsap-scrolltrigger-3.12.5.min.js` | `gsap` | 3.12.5 |
-| `lenis-1.1.13.min.js` | `lenis` | 1.1.13 |
+| `jspdf-2.5.2.umd.min.js` | `jspdf` | 2.5.2 |
+| `gsap-3.15.0.min.js` | `gsap` | 3.15.0 |
+| `gsap-scrolltrigger-3.15.0.min.js` | `gsap` | 3.15.0 |
+| `lenis-1.3.26.min.js` | `lenis` | 1.3.26 |
 <!-- versions:end -->
 
 Every file was taken from the official npm tarball, unmodified. They are the
