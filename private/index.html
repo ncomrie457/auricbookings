@@ -98,12 +98,6 @@
         <input type="email" id="f-email" placeholder="you@email.com" autocomplete="email"></div>
       <div class="field"><label for="f-phone">Phone <span class="opt">(optional)</span></label>
         <input type="tel" id="f-phone" placeholder="(555) 123-4567" autocomplete="tel"></div>
-      <div class="field"><label for="f-guests">Spots you need</label>
-        <select id="f-guests">
-          <option value="1" selected>Just me</option>
-          <option value="2">2</option><option value="3">3</option><option value="4">4</option>
-        </select></div>
-
       <h2>Before the class</h2>
       <div class="field">
         <label for="f-allergies">Food allergies or dietary needs <span style="color:var(--red)">*</span></label>
@@ -278,7 +272,11 @@
       p_name: $('f-name').value.trim(),
       p_email: $('f-email').value.trim(),
       p_phone: $('f-phone').value.trim() || null,
-      p_guests: parseInt($('f-guests').value, 10) || 1,
+      // One spot per booking, always. The Stripe payment link charges for a
+      // single person, so a guest who picked 3 spots would hold three seats
+      // and pay for one. Each person books and pays for themselves.
+      // (The column stays in the database, so the SQL does not change.)
+      p_guests: 1,
       p_note: null,
       p_allergies: $('f-allergies').value.trim(),
       p_health: $('f-health').value.trim() || null,
