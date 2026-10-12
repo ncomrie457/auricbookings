@@ -6621,7 +6621,7 @@ Can't wait to move and connect with you!</textarea>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="/vendor/emailjs-browser-4.4.1.min.js"></script>
 <!-- Riddim & Kompa on the Reformer — pick-time → waiver gate → Stripe booking overlay -->
 <style>
   /* NOTE: these overlay selectors name each booking popup by id. A new
@@ -9188,13 +9188,13 @@ session:chosen, session_label:chosenLabel,
     } catch(e){}
   });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="/vendor/jspdf-2.5.1.umd.min.js"></script>
 <script async src="https://js.stripe.com/v3/buy-button.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/vendor/supabase-js-2.117.3.min.js"></script>
 <!-- Editorial luxury: GSAP + ScrollTrigger + Lenis smooth scroll -->
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="/vendor/gsap-3.12.5.min.js"></script>
+<script src="/vendor/gsap-scrolltrigger-3.12.5.min.js"></script>
+<script src="/vendor/lenis-1.1.13.min.js"></script>
 <!-- Startup watchdog (part 1): record the FIRST script error so the
      watchdog below can name the culprit. Must run before the app script. -->
 <script>
@@ -9966,7 +9966,8 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     } catch(e){}
     console.error('[auric] Supabase did not load — running without the database. '
-      + 'Usually a content blocker or tracking protection stopping cdn.jsdelivr.net.');
+      + 'The library is served from this site at /vendor/, so check that file '
+      + 'deployed rather than looking for a blocked CDN.');
     var ERR = { message: 'Database unavailable \u2014 something is blocking it. Check content blockers, then reload.' };
     var settled = function(){ return Promise.resolve({ data: null, error: ERR }); };
     // Chainable like a real query, and thenable, so .from(x).select().eq().order()
