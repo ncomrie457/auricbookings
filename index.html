@@ -15400,19 +15400,32 @@ document.addEventListener('DOMContentLoaded', function() {
   // ─────────────────────────────────────────────────────────────────────
   function pvField(id, label, opts){
     opts = opts || {};
+    var val = opts.value == null ? '' : String(opts.value);
     return '<div style="margin-bottom:.55rem;">' +
       '<label for="' + id + '" style="display:block;font-size:.72rem;font-weight:600;color:#5c4a72;margin-bottom:.2rem;">' +
       label + (opts.hint ? ' <span style="font-weight:400;color:#8a7d9b;">' + opts.hint + '</span>' : '') + '</label>' +
       (opts.textarea
-        ? '<textarea id="' + id + '" rows="2" placeholder="' + (opts.ph || '') + '"></textarea>'
+        ? '<textarea id="' + id + '" rows="2" placeholder="' + (opts.ph || '') + '">' + escapeHTML(val) + '</textarea>'
         : '<input type="' + (opts.type || 'text') + '" id="' + id + '" placeholder="' + (opts.ph || '') + '"' +
-          (opts.value ? ' value="' + opts.value + '"' : '') + '>') +
+          ' value="' + escapeHTML(val) + '">') +
       '</div>';
   }
 
-  window.pvToggleForm = function(){
+  // The code of the event currently open in the form, or null when the form is
+  // creating a new one. Saving sends it as p_old_code, which is what lets the
+  // code itself be changed: without it a new code means a second event, and the
+  // old one stays live at the leaked code.
+  var pvEditing = null;
+
+  // The last guest list drawn for each event, so a click can look a name up
+  // instead of carrying it through an HTML attribute.
+  var pvGuestRows = {};
+
+  window.pvToggleForm = function(data){
     var box = document.getElementById('pv-form');
-    if (box.style.display === 'block'){ box.style.display = 'none'; return; }
+    if (!data && box.style.display === 'block'){ box.style.display = 'none'; pvEditing = null; return; }
+    var d = data || {};
+    pvEditing = d.code || null;
     box.innerHTML =
       '<style>#pv-form input,#pv-form textarea{width:100%;box-sizing:border-box;padding:.5rem .7rem;' +
         'border:1px solid #d4bff4;border-radius:8px;font-family:\'Jost\',sans-serif;font-size:.82rem;background:#fff;}' +
@@ -15423,27 +15436,28 @@ document.addEventListener('DOMContentLoaded', function() {
           // These placeholders are public: this repo is public, and the whole
           // point of a private event is that its code is not. Keep them
           // invented. A real code here is a published code.
-          pvField('pv-code', 'Access code', { ph:'GUESTCODE25', hint:'— what you give the host' }) +
-          pvField('pv-title', 'Title', { ph:"Sam's Birthday Celebration" }) +
-          pvField('pv-host', 'Hosted by', { ph:'Sam' }) +
-          pvField('pv-capacity', 'Capacity', { type:'number', ph:'25' }) +
-          pvField('pv-date', 'Date', { ph:'Saturday, March 14' }) +
-          pvField('pv-time', 'Time', { ph:'4:30 PM' }) +
-          pvField('pv-venue', 'Venue', { ph:'Studio name' }) +
-          pvField('pv-price', 'Cost shown', { ph:'$45 per person' }) +
+          pvField('pv-code', 'Access code', { ph:'GUESTCODE25', value:d.code || '',
+            hint: pvEditing ? '— change it and the bookings come with it' : '— what you give the host' }) +
+          pvField('pv-title', 'Title', { ph:"Sam's Birthday Celebration", value:d.title || '' }) +
+          pvField('pv-host', 'Hosted by', { ph:'Sam', value:d.host_name || '' }) +
+          pvField('pv-capacity', 'Capacity', { type:'number', ph:'25', value:d.capacity == null ? '' : d.capacity }) +
+          pvField('pv-date', 'Date', { ph:'Saturday, March 14', value:d.event_date || '' }) +
+          pvField('pv-time', 'Time', { ph:'4:30 PM', value:d.event_time || '' }) +
+          pvField('pv-venue', 'Venue', { ph:'Studio name', value:d.venue_name || '' }) +
+          pvField('pv-price', 'Cost shown', { ph:'$45 per person', value:d.price_text || '' }) +
         '</div>' +
-        pvField('pv-address', 'Address', { ph:'147 Prince St, Suite 208, Brooklyn, NY 11201' }) +
-        pvField('pv-payurl', 'Payment link', { ph:'https://buy.stripe.com/...', hint:'— stored here, never in the public code' }) +
+        pvField('pv-address', 'Address', { ph:'147 Prince St, Suite 208, Brooklyn, NY 11201', value:d.venue_address || '' }) +
+        pvField('pv-payurl', 'Payment link', { ph:'https://buy.stripe.com/...', value:d.pay_url || '', hint:'— stored here, never in the public code' }) +
         // Deliberately not a filename in this repo: this repo is public, so a
         // flyer committed here is a flyer anyone can find. Host it somewhere
         // of your choosing and paste the link.
-        pvField('pv-flyer', 'Flyer image URL', { ph:'https://...', hint:'— paste a link; do not put the file in this repo' }) +
-        pvField('pv-closes', 'Registration closes', { type:'date', hint:'— optional' }) +
-        pvField('pv-blurb', 'Short description', { textarea:true, ph:'A 45-minute mat class, then birthday desserts.' }) +
+        pvField('pv-flyer', 'Flyer image URL', { ph:'https://...', value:d.flyer_url || '', hint:'— paste a link; do not put the file in this repo' }) +
+        pvField('pv-closes', 'Registration closes', { type:'date', value:d.closes_at || '', hint:'— optional' }) +
+        pvField('pv-blurb', 'Short description', { textarea:true, value:d.blurb || '', ph:'A 45-minute mat class, then birthday desserts.' }) +
         '<div id="pv-err" style="color:var(--red);font-size:.78rem;margin:.3rem 0;"></div>' +
         '<button type="button" onclick="pvSave(this)" style="background:#6a3ca5;border:1px solid #6a3ca5;color:#fff;' +
           'border-radius:6px;padding:.45rem .9rem;font-size:.8rem;cursor:pointer;font-family:\'Jost\',sans-serif;' +
-          'font-weight:600;">Save private event</button>' +
+          'font-weight:600;">' + (pvEditing ? 'Save changes' : 'Save private event') + '</button>' +
         '<button type="button" onclick="pvToggleForm()" style="margin-left:.4rem;background:none;border:none;' +
           'color:#8a7d9b;font-size:.78rem;text-decoration:underline;cursor:pointer;font-family:\'Jost\',sans-serif;">Cancel</button>' +
       '</div>';
@@ -15455,6 +15469,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var err = document.getElementById('pv-err');
     err.textContent = '';
     if (!v('pv-code') || !v('pv-title')){ err.textContent = 'A code and a title are the two it cannot do without.'; return; }
+    var was = pvEditing, label = was ? 'Save changes' : 'Save private event';
     btn.disabled = true; btn.textContent = 'Saving…';
     supabase.rpc('auric_private_save', {
       pass: ADMIN_PASSWORD,
@@ -15464,25 +15479,51 @@ document.addEventListener('DOMContentLoaded', function() {
       p_price: v('pv-price') || null, p_pay_url: v('pv-payurl') || null,
       p_flyer_url: v('pv-flyer') || null,
       p_capacity: parseInt(v('pv-capacity'), 10) || null,
-      p_closes_at: v('pv-closes') || null, p_active: true
+      p_closes_at: v('pv-closes') || null, p_active: true,
+      p_old_code: was || null
     }).then(function(res){
-      btn.disabled = false; btn.textContent = 'Save private event';
+      btn.disabled = false; btn.textContent = label;
       if (res.error) throw res.error;
       document.getElementById('pv-form').style.display = 'none';
+      pvEditing = null;
       pvRefresh();
-      alert('Saved.\n\nShare this link:\n' + window.location.origin + '/private?c=' + res.data +
-            '\n\nOr just the code: ' + String(res.data).toUpperCase());
+      var link = window.location.origin + '/private/?c=' + res.data;
+      // A changed code is the one case worth spelling out: the old link stops
+      // working the moment this saves, and anyone already holding it is locked
+      // out until they get the new one.
+      alert((was && was !== res.data)
+        ? 'Code changed to ' + String(res.data).toUpperCase() + '.\n\n' +
+          'The old link no longer works. Send everyone the new one:\n' + link
+        : 'Saved.\n\nShare this link:\n' + link +
+          '\n\nOr just the code: ' + String(res.data).toUpperCase());
     }).catch(function(e){
-      btn.disabled = false; btn.textContent = 'Save private event';
+      btn.disabled = false; btn.textContent = label;
       console.error('[private] save failed:', e);
       err.textContent = (e && (e.message || e.hint)) || 'Could not save. Have you run PRIVATE_EVENTS.sql?';
     });
   };
 
+  window.pvEdit = function(code){
+    supabase.rpc('auric_private_one', { pass: ADMIN_PASSWORD, p_code: code }).then(function(res){
+      var row = res && res.data && res.data[0];
+      if (res.error || !row){
+        alert('Could not open that event. ' + ((res.error && res.error.message) || 'Have you re-run PRIVATE_EVENTS.sql?'));
+        return;
+      }
+      document.getElementById('pv-form').style.display = 'none';
+      pvToggleForm(row);
+      document.getElementById('pv-form').scrollIntoView({ behavior:'smooth', block:'nearest' });
+    });
+  };
+
+  // Returns its promise: changing a guest has to redraw the booked count on
+  // the event row too, and that redraw replaces the guest list underneath it.
+  // Callers wait for it before reopening the list, or the two race and the
+  // list collapses the moment someone is added.
   window.pvRefresh = function(){
     var list = document.getElementById('pv-list');
-    if (!list) return;
-    supabase.rpc('auric_private_list', { pass: ADMIN_PASSWORD }).then(function(res){
+    if (!list) return Promise.resolve();
+    return supabase.rpc('auric_private_list', { pass: ADMIN_PASSWORD }).then(function(res){
       if (res.error){
         // "Run the SQL" is only one of the reasons this can fail, and saying it
         // for all of them hides the rest. A missing function is recognisable;
@@ -15511,6 +15552,8 @@ document.addEventListener('DOMContentLoaded', function() {
           '<div style="font-size:.75rem;color:#8a7d9b;margin-top:.15rem;">' +
             escapeHTML([e.event_date, e.event_time, e.venue_name].filter(Boolean).join(' · ')) + '</div>' +
           '<div style="display:flex;gap:.3rem;margin-top:.4rem;flex-wrap:wrap;">' +
+            '<button onclick="pvEdit(\'' + e.code + '\')" style="background:#f3ecfc;border:1px solid #d4bff4;color:#6a3ca5;' +
+              'border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;font-weight:600;">✎ Edit</button>' +
             '<button onclick="pvCopy(\'' + e.code + '\')" style="background:#fff;border:1px solid #d4bff4;color:#6a3ca5;' +
               'border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">⧉ Copy link</button>' +
             '<button onclick="pvGuests(\'' + e.code + '\')" style="background:#fff;border:1px solid #d4bff4;color:#6a3ca5;' +
@@ -15541,7 +15584,19 @@ document.addEventListener('DOMContentLoaded', function() {
     supabase.rpc('auric_private_rsvps', { pass: ADMIN_PASSWORD, p_code: code }).then(function(res){
       if (res.error){ box.innerHTML = '<div style="font-size:.75rem;color:var(--red);">Could not load the guest list.</div>'; return; }
       var g = res.data || [];
-      if (!g.length){ box.innerHTML = '<div style="font-size:.75rem;color:#8a7d9b;padding:.3rem 0;">Nobody yet.</div>'; return; }
+      pvGuestRows[code] = g;
+      // The host does not book through her own invitation, and someone who
+      // handed over cash still has to appear on the roster, so the list is
+      // never only what the form collected.
+      var addBtn = '<div style="margin-top:.45rem;">' +
+        '<button onclick="pvGuestForm(\'' + code + '\')" style="background:#f3ecfc;border:1px solid #d4bff4;' +
+          'color:#6a3ca5;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;' +
+          'font-family:\'Jost\',sans-serif;font-weight:600;">+ Add guest</button>' +
+        '<span id="pv-gform-' + code + '"></span></div>';
+      if (!g.length){
+        box.innerHTML = '<div style="font-size:.75rem;color:#8a7d9b;padding:.3rem 0;">Nobody yet.</div>' + addBtn;
+        return;
+      }
       box.innerHTML = '<div style="border-top:1px solid #ece3f7;margin-top:.5rem;padding-top:.4rem;">' +
         g.map(function(r){
           // Allergies are called out rather than buried: there is food after
@@ -15553,15 +15608,107 @@ document.addEventListener('DOMContentLoaded', function() {
             (r.guests > 1 ? ' <span style="color:#6a3ca5;">×' + r.guests + '</span>' : '') +
             ' <span style="color:#8a7d9b;">' + escapeHTML(r.email) + '</span>' +
             (r.phone ? ' <span style="color:#8a7d9b;">· ' + escapeHTML(r.phone) + '</span>' : '') +
-            (r.is_paid ? ' <span style="color:#2e7d32;font-weight:600;">✓ paid</span>'
-                       : ' <span style="color:#b0432e;">unpaid</span>') +
+            // A comp is marked paid so it holds a seat, which makes it look
+            // like revenue. Saying "comp" instead is the only thing that keeps
+            // a sold-out event from reading as money it never took.
+            (r.comp ? ' <span style="color:#6a3ca5;font-weight:600;">★ comp</span>'
+                    : (r.is_paid ? ' <span style="color:#2e7d32;font-weight:600;">✓ paid</span>'
+                                 : ' <span style="color:#b0432e;">unpaid</span>')) +
+            (r.signed_at ? '' : ' <span style="color:#8a7d9b;font-size:.7rem;">· no waiver</span>') +
             (al && !benign
               ? '<div style="margin-top:.2rem;background:#fdeeea;border-left:3px solid #e4825f;border-radius:0 5px 5px 0;' +
                 'padding:.25rem .5rem;color:#8a3a1e;"><strong>⚠ Allergies:</strong> ' + escapeHTML(al) + '</div>'
               : (al ? '<div style="color:#8a7d9b;font-size:.72rem;margin-top:.15rem;">Allergies: ' + escapeHTML(al) + '</div>' : '')) +
             (r.health ? '<div style="color:#6b5847;font-size:.72rem;margin-top:.15rem;">Health: ' + escapeHTML(r.health) + '</div>' : '') +
+            '<div style="display:flex;gap:.25rem;margin-top:.25rem;flex-wrap:wrap;">' +
+              pvGBtn(code, r.id, 'p_paid', !r.is_paid, r.is_paid ? 'Mark unpaid' : 'Mark paid') +
+              pvGBtn(code, r.id, 'p_comp', !r.comp, r.comp ? 'Not a comp' : 'Make comp') +
+              // The name is looked up at click time rather than written into
+              // the attribute: escapeHTML leaves quotes alone, so a name with
+              // one in it would end the onclick early and break the row.
+              '<button onclick="pvGuestRemove(\'' + code + '\',' + r.id + ')" ' +
+                'style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:5px;' +
+                'padding:.1rem .4rem;font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;">Remove</button>' +
+            '</div>' +
           '</div>';
-        }).join('') + '</div>';
+        }).join('') + '</div>' + addBtn;
+    });
+  };
+
+  function pvGBtn(code, id, field, value, label){
+    return '<button onclick="pvGuestSet(\'' + code + '\',' + id + ',\'' + field + '\',' + value + ')" ' +
+      'style="background:#fff;border:1px solid #d4bff4;color:#6a3ca5;border-radius:5px;padding:.1rem .4rem;' +
+      'font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;">' + label + '</button>';
+  }
+
+  // Only the one field travels. Everything else is sent as null, which the
+  // function reads as "leave alone" — so marking someone paid cannot quietly
+  // wipe the allergies they wrote down.
+  window.pvGuestSet = function(code, id, field, value){
+    var args = { pass: ADMIN_PASSWORD, p_id: id };
+    args[field] = value;
+    // Someone comped has not paid, but the seat is held either way.
+    if (field === 'p_comp' && value) args.p_paid = true;
+    supabase.rpc('auric_private_guest_update', args).then(function(res){
+      if (res.error){ alert('Could not update that guest. ' + (res.error.message || '')); return; }
+      pvRefresh().then(function(){ pvReopenGuests(code); });
+    });
+  };
+
+  window.pvGuestRemove = function(code, id){
+    var row = (pvGuestRows[code] || []).filter(function(r){ return r.id === id; })[0];
+    var name = (row && row.name) || 'this guest';
+    if (!confirm('Take ' + name + ' off the list?\n\nThis frees their seat and cannot be undone.')) return;
+    supabase.rpc('auric_private_guest_delete', { pass: ADMIN_PASSWORD, p_id: id }).then(function(res){
+      if (res.error){ alert('Could not remove them. ' + (res.error.message || '')); return; }
+      pvRefresh().then(function(){ pvReopenGuests(code); });
+    });
+  };
+
+  function pvReopenGuests(code){
+    var box = document.getElementById('pv-guests-' + code);
+    if (box) { box.innerHTML = ''; pvGuests(code); }
+  }
+
+  window.pvGuestForm = function(code){
+    var slot = document.getElementById('pv-gform-' + code);
+    if (!slot) return;
+    if (slot.innerHTML){ slot.innerHTML = ''; return; }
+    var i = function(id, ph){
+      return '<input id="pvg-' + id + '-' + code + '" placeholder="' + ph + '" style="width:100%;box-sizing:border-box;' +
+        'padding:.35rem .5rem;border:1px solid #d4bff4;border-radius:6px;font-family:\'Jost\',sans-serif;' +
+        'font-size:.76rem;margin-bottom:.3rem;background:#fff;">';
+    };
+    slot.innerHTML = '<div style="background:#faf7ff;border:1px solid #d4bff4;border-radius:8px;padding:.6rem;margin-top:.4rem;">' +
+      i('name','Full name') + i('email','Email') + i('phone','Phone (optional)') + i('allergies','Food allergies') +
+      '<label style="display:block;font-size:.74rem;color:#5c4a72;margin:.1rem 0 .4rem;">' +
+        '<input type="checkbox" id="pvg-comp-' + code + '" checked style="vertical-align:-1px;"> ' +
+        'Comp — holds a seat, but no money came in</label>' +
+      '<div id="pvg-err-' + code + '" style="color:var(--red);font-size:.72rem;margin-bottom:.25rem;"></div>' +
+      '<button onclick="pvGuestAdd(\'' + code + '\',this)" style="background:#6a3ca5;border:1px solid #6a3ca5;' +
+        'color:#fff;border-radius:6px;padding:.25rem .6rem;font-size:.74rem;cursor:pointer;' +
+        'font-family:\'Jost\',sans-serif;font-weight:600;">Add to the list</button>' +
+      '<button onclick="pvGuestForm(\'' + code + '\')" style="margin-left:.35rem;background:none;border:none;' +
+        'color:#8a7d9b;font-size:.72rem;text-decoration:underline;cursor:pointer;font-family:\'Jost\',sans-serif;">Cancel</button>' +
+    '</div>';
+  };
+
+  window.pvGuestAdd = function(code, btn){
+    var v = function(id){ var e = document.getElementById('pvg-' + id + '-' + code); return e ? e.value.trim() : ''; };
+    var err = document.getElementById('pvg-err-' + code);
+    err.textContent = '';
+    if (!v('name') || !v('email')){ err.textContent = 'A name and an email, at least.'; return; }
+    var comp = document.getElementById('pvg-comp-' + code).checked;
+    btn.disabled = true; btn.textContent = 'Adding…';
+    supabase.rpc('auric_private_guest_add', {
+      pass: ADMIN_PASSWORD, p_code: code,
+      p_name: v('name'), p_email: v('email'), p_phone: v('phone') || null,
+      p_allergies: v('allergies') || null, p_health: null,
+      p_paid: true, p_comp: comp
+    }).then(function(res){
+      btn.disabled = false; btn.textContent = 'Add to the list';
+      if (res.error){ err.textContent = res.error.message || 'Could not add them.'; return; }
+      pvRefresh().then(function(){ pvReopenGuests(code); });
     });
   };
 
