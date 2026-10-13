@@ -32,6 +32,7 @@
      {{signed_at}}     — when they signed
      {{refund_policy_text}} — the policy they agreed to, as shown to them
      {{calendar_url}}  — add-to-calendar page for this event
+     {{hero_image}}     — artwork across the top of the email
   ════════════════════════════════════════════════════════════
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -48,6 +49,14 @@
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;background-color:#fdfbf7;border:1px solid #e6dbc8;border-radius:16px;overflow:hidden;">
 
       <!-- Masthead -->
+      <!-- The event's own artwork, from flyer_url on the event row. One image
+           set once: the booking page shows it and so does this. A fallback is
+           always sent, because an email client cannot hide a broken image. -->
+      <tr><td style="padding:0;line-height:0;">
+        <img src="{{hero_image}}" alt="{{event_title}}" width="560"
+             style="display:block;width:100%;max-width:560px;height:auto;border:0;outline:none;text-decoration:none;">
+      </td></tr>
+
       <tr><td align="center" style="padding:26px 30px 6px;">
         <div style="font-size:12px;letter-spacing:4px;text-transform:uppercase;color:#9c6b34;font-weight:bold;">Auric&nbsp;&#10022;&nbsp;Movement</div>
       </td></tr>

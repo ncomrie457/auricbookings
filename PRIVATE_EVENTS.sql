@@ -96,6 +96,15 @@ alter table public.private_event_rsvps
 -- own proves nothing without the text it was given: these two are what let a
 -- signed waiver be reproduced months later as the document they saw, rather
 -- than as today's wording. Same reason the public bookings keep them.
+-- Artwork for the two emails. Separate from flyer_url, which is what the
+-- booking page shows: "almost there" and "confirmed" say different things and
+-- are not interchangeable. Either may be left empty, and then the event's
+-- flyer stands in.
+alter table public.private_events
+  add column if not exists email_pending_image text;
+alter table public.private_events
+  add column if not exists email_confirm_image text;
+
 alter table public.private_events
   add column if not exists starts_at timestamptz;
 alter table public.private_events
@@ -146,6 +155,7 @@ drop function if exists public.auric_private_save(text,text,text,text,text,text,
 drop function if exists public.auric_private_save(text,text,text,text,text,text,text,text,text,text,text,text,int,date,boolean);
 drop function if exists public.auric_private_save(text,text,text,text,text,text,text,text,text,text,text,text,int,date,boolean,text);
 drop function if exists public.auric_private_save(text,text,text,text,text,text,text,text,text,text,text,text,int,date,boolean,timestamptz,timestamptz,text);
+drop function if exists public.auric_private_save(text,text,text,text,text,text,text,text,text,text,text,text,int,date,boolean,timestamptz,timestamptz,text,text,text);
 drop function if exists public.auric_private_rsvp(text,text,text,text,int,text);
 drop function if exists public.auric_private_rsvp(text,text,text,text,int,text,text,text,text,text);
 drop function if exists public.auric_private_rsvp(text,text,text,text,int,text,text,text,text,text,int,text);
@@ -163,6 +173,7 @@ returns table (
   code text, title text, host_name text, blurb text,
   event_date text, event_time text, venue_name text, venue_address text,
   price_text text, pay_url text, flyer_url text,
+  email_pending_image text,
   starts_at timestamptz, ends_at timestamptz,
   spots_left int, closed boolean
 )
@@ -179,6 +190,7 @@ begin
     select e.code, e.title, e.host_name, e.blurb,
            e.event_date, e.event_time, e.venue_name, e.venue_address,
            e.price_text, e.pay_url, e.flyer_url,
+           e.email_pending_image,
            e.starts_at, e.ends_at,
            case when e.capacity is null then null
                 else greatest(e.capacity - public.auric_private_taken(e.code), 0) end as spots_left,
@@ -325,6 +337,8 @@ create or replace function public.auric_private_save(
   p_active      boolean default true,
   p_starts_at   timestamptz default null,
   p_ends_at     timestamptz default null,
+  p_pending_img text default null,
+  p_confirm_img text default null,
   -- The code of the event being edited, when the edit is changing that code.
   -- Without it a new code means a new event, and the old one stays live at the
   -- old code: a second door rather than a changed lock.
@@ -365,13 +379,14 @@ begin
   insert into public.private_events (
     code, title, host_name, blurb, event_date, event_time,
     venue_name, venue_address, price_text, pay_url, flyer_url, capacity, closes_at, active,
-    starts_at, ends_at
+    starts_at, ends_at, email_pending_image, email_confirm_image
   ) values (
     key, trim(p_title), nullif(trim(p_host), ''), nullif(trim(p_blurb), ''),
     nullif(trim(p_date), ''), nullif(trim(p_time), ''), nullif(trim(p_venue), ''),
     nullif(trim(p_address), ''), nullif(trim(p_price), ''), nullif(trim(p_pay_url), ''),
     nullif(trim(p_flyer_url), ''), p_capacity, p_closes_at, coalesce(p_active, true),
-    p_starts_at, p_ends_at
+    p_starts_at, p_ends_at,
+    nullif(trim(coalesce(p_pending_img, '')), ''), nullif(trim(coalesce(p_confirm_img, '')), '')
   )
   on conflict (code) do update set
     title = excluded.title, host_name = excluded.host_name, blurb = excluded.blurb,
@@ -380,7 +395,9 @@ begin
     price_text = excluded.price_text, pay_url = excluded.pay_url,
     flyer_url = excluded.flyer_url,
     capacity = excluded.capacity, closes_at = excluded.closes_at, active = excluded.active,
-    starts_at = excluded.starts_at, ends_at = excluded.ends_at;
+    starts_at = excluded.starts_at, ends_at = excluded.ends_at,
+    email_pending_image = excluded.email_pending_image,
+    email_confirm_image = excluded.email_confirm_image;
 
   return key;
 end;
@@ -521,7 +538,7 @@ $$;
 revoke all on function public.auric_private_list(text)                      from public, anon;
 revoke all on function public.auric_private_rsvps(text, text)               from public, anon;
 revoke all on function public.auric_private_delete(text, text)              from public, anon;
-revoke all on function public.auric_private_save(text,text,text,text,text,text,text,text,text,text,text,text,int,date,boolean,timestamptz,timestamptz,text) from public, anon;
+revoke all on function public.auric_private_save(text,text,text,text,text,text,text,text,text,text,text,text,int,date,boolean,timestamptz,timestamptz,text,text,text) from public, anon;
 revoke all on function public.auric_private_one(text, text)                 from public, anon;
 revoke all on function public.auric_private_guest_add(text,text,text,text,text,text,text,boolean,boolean) from public, anon;
 revoke all on function public.auric_private_guest_update(text,bigint,text,text,text,text,text,boolean,boolean) from public, anon;
@@ -530,7 +547,7 @@ revoke all on function public.auric_private_guest_delete(text, bigint)      from
 grant execute on function public.auric_private_list(text)                   to authenticated;
 grant execute on function public.auric_private_rsvps(text, text)            to authenticated;
 grant execute on function public.auric_private_delete(text, text)           to authenticated;
-grant execute on function public.auric_private_save(text,text,text,text,text,text,text,text,text,text,text,text,int,date,boolean,timestamptz,timestamptz,text) to authenticated;
+grant execute on function public.auric_private_save(text,text,text,text,text,text,text,text,text,text,text,text,int,date,boolean,timestamptz,timestamptz,text,text,text) to authenticated;
 grant execute on function public.auric_private_one(text, text)              to authenticated;
 grant execute on function public.auric_private_guest_add(text,text,text,text,text,text,text,boolean,boolean) to authenticated;
 grant execute on function public.auric_private_guest_update(text,bigint,text,text,text,text,text,boolean,boolean) to authenticated;

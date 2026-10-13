@@ -442,6 +442,9 @@
         signed_as:     rec.signature,
         signed_at:     rec.when.toLocaleString(),
         refund_policy_text: REFUND,
+        // An email client cannot hide a broken image, so something valid is
+        // always sent — the brand card when the event has no artwork of its own.
+        hero_image:    EV.email_pending_image || EV.flyer_url || 'https://book.auricmovement.com/og-preview.jpg?v=2',
         calendar_url: EV.starts_at
           ? 'https://book.auricmovement.com/calendar/add/?c=' + encodeURIComponent(EV.code) : ''
       }).catch(function(err){ console.error('[private] confirmation email failed:', err); });
