@@ -15395,6 +15395,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // The last guest list drawn for each event, so a click can look a name up
   // instead of carrying it through an HTML attribute.
   var pvGuestRows = {};
+  // The events themselves, so a waiver PDF can name the event it was signed
+  // for rather than just the person who signed it.
+  var pvEventRows = {};
 
   window.pvToggleForm = function(data){
     var box = document.getElementById('pv-form');
@@ -15511,6 +15514,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
       var rows = res.data || [];
+      rows.forEach(function(e){ pvEventRows[e.code] = e; });
       if (!rows.length){ list.innerHTML = '<div style="font-size:.78rem;color:#8a7d9b;">None yet.</div>'; return; }
       list.innerHTML = rows.map(function(e){
         var link = window.location.origin + '/private?c=' + e.code;
@@ -15598,6 +15602,14 @@ document.addEventListener('DOMContentLoaded', function() {
             '<div style="display:flex;gap:.25rem;margin-top:.25rem;flex-wrap:wrap;">' +
               pvGBtn(code, r.id, 'p_paid', !r.is_paid, r.is_paid ? 'Mark unpaid' : 'Mark paid') +
               pvGBtn(code, r.id, 'p_comp', !r.comp, r.comp ? 'Not a comp' : 'Make comp') +
+              // Only where there is a signature to reproduce. A comp added by
+              // hand has none, and offering a waiver for someone who never
+              // signed one would be worse than offering nothing.
+              (r.signature
+                ? '<button onclick="pvWaiver(\'' + code + '\',' + r.id + ')" style="background:#eef4fb;' +
+                  'border:1px solid #b5d4f4;color:#185fa5;border-radius:5px;padding:.1rem .4rem;' +
+                  'font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F4C4} Waiver</button>'
+                : '') +
               // The name is looked up at click time rather than written into
               // the attribute: escapeHTML leaves quotes alone, so a name with
               // one in it would end the onclick early and break the row.
@@ -15637,6 +15649,31 @@ document.addEventListener('DOMContentLoaded', function() {
     supabase.rpc('auric_private_guest_delete', { pass: ADMIN_PASSWORD, p_id: id }).then(function(res){
       if (res.error){ alert('Could not remove them. ' + (res.error.message || '')); return; }
       pvRefresh().then(function(){ pvReopenGuests(code); });
+    });
+  };
+
+  // Rebuilds a private guest's waiver as a PDF, through the same generator the
+  // public rosters use — one waiver layout for the whole business, not two
+  // that can drift apart. The clause list and refund wording come off the
+  // guest's own row where they were stored, so an old waiver reproduces as the
+  // document that guest was shown rather than as whatever the page says today.
+  window.pvWaiver = function(code, id){
+    var r = (pvGuestRows[code] || []).filter(function(x){ return x.id === id; })[0];
+    if (!r){ alert('Could not find that guest.'); return; }
+    if (!r.signature){ alert('No signature on file for this guest.'); return; }
+    var ev = pvEventRows[code] || {};
+    var when = ''; try { when = new Date(r.signed_at || r.created_at).toLocaleString(); } catch(e){}
+    generateWaiverPDF({
+      name: r.name, email: r.email, signature: r.signature, signatureData: null,
+      sessionLabel: ev.title || 'Private event',
+      arrival: '', classStart: ev.event_time || '',
+      eventDate: [ev.event_date, ev.venue_name].filter(Boolean).join(' · '),
+      time: when,
+      clausesAgreed: r.clauses_agreed || 0,
+      clauseList: window.__RF_CLAUSES || [],
+      refundPolicyText: r.refund_policy_text ||
+        (r.initials ? '[Initialed "' + r.initials + '" at booking] ' : '') ,
+      refundPolicyAck: r.signed_at || r.created_at || ''
     });
   };
 
