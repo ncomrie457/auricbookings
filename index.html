@@ -5553,31 +5553,6 @@
     <div id="admin-vendor-status" style="display:none;margin-top:.75rem;padding:.6rem .9rem;
          border-radius:8px;font-family:'Jost',sans-serif;font-size:.78rem;line-height:1.55;"></div>
 
-    <!-- Campaigns that go to people across every event rather than to one
-         roster. This lives up here, outside any event block, because the
-         AURICFAM promo first needed sending while nobody had booked
-         Halloween at all — and a button on an empty roster is a button
-         nobody can reach. -->
-    <div id="admin-campaign-section" style="margin-top:.75rem;padding:.8rem 1rem;background:#fdf1e6;
-         border:1px solid #e8b887;border-radius:10px;font-family:'Jost',sans-serif;">
-      <div style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
-           color:#8a3a1e;margin-bottom:.5rem;">&#127875; Halloween promo</div>
-      <div style="font-size:.78rem;color:#6b5847;line-height:1.6;margin-bottom:.6rem;">
-        Sends the AURICFAM email &mdash; $10 off Oct 24, code ends Fri Oct 16 &mdash; to
-        everyone marked <strong>&#10003; Attended</strong> at any Auric event, across all four
-        rosters. Anyone already booked for Halloween, or already sent it, is left out.
-        You see the full list and can untick anyone before it goes.
-      </div>
-      <button type="button" onclick="rfSendHalloweenPromo(this)"
-              style="background:#8a3a1e;border:1px solid #8a3a1e;color:#fff;border-radius:6px;
-                     padding:.45rem .9rem;font-size:.82rem;cursor:pointer;font-family:'Jost',sans-serif;
-                     font-weight:600;">&#127875; Send AURICFAM promo to past attendees</button>
-      <button type="button" onclick="rfHwPromoForget()" title="Allow everyone to be sent it again"
-              style="margin-left:.4rem;background:#fff;border:1px solid #e8b887;color:#8a3a1e;
-                     border-radius:6px;padding:.45rem .8rem;font-size:.78rem;cursor:pointer;
-                     font-family:'Jost',sans-serif;">Reset sent memory</button>
-    </div>
-
     <!-- Private events: invitation-only bookings behind an access code. The
          code lives in Supabase, never in this file — the repo is public, so
          anything written here is readable by anyone. -->
@@ -17600,6 +17575,28 @@ document.addEventListener('DOMContentLoaded', function() {
       block.innerHTML += '<button onclick="rfSendWinnerEmail(\'halloween\', this)" style="margin:.1rem .35rem .7rem 0;background:#fbf3e2;border:1px solid #e6d3a8;color:#9a6535;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F39F}\u{FE0F} Send 4-class winner email ('+win+')</button>';
       block.innerHTML += '<button onclick="rfSendThankYou(\'halloween\', this)" style="margin:.1rem 0 .7rem;background:#f3ecff;border:1px solid #cbb6f0;color:#5b3a8a;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F383} Send Halloween thank-you ('+att+' attended) — after the event</button>';
       block.innerHTML += '<button type="button" onclick="rfTyForget()" title="Allow everyone to be thanked again" style="margin:.1rem 0 .7rem .35rem;background:none;border:none;color:#8a7d6b;font-size:.72rem;text-decoration:underline;cursor:pointer;font-family:Jost,sans-serif;">Reset thank-you memory</button>';
+      // The AURICFAM promo belongs with the event it is promoting. It began as
+      // a section of its own because Halloween had no bookings yet and a button
+      // on an empty roster is a button nobody can reach; the roster exists now.
+      // It still draws from every roster rather than this one — hence saying so.
+      block.innerHTML += '<div style="margin:.1rem 0 .8rem;padding:.6rem .8rem;background:#fdf1e6;' +
+          'border:1px solid #e8b887;border-radius:8px;">' +
+        '<div style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;' +
+             'color:#8a3a1e;margin-bottom:.4rem;">\u{1F383} Halloween promo</div>' +
+        '<div style="font-size:.76rem;color:#6b5847;line-height:1.6;margin-bottom:.55rem;">' +
+          'Sends the AURICFAM email &mdash; $10 off this event, code ends Fri Oct 16 &mdash; to everyone ' +
+          'marked <strong>&#10003; Attended</strong> at <em>any</em> Auric event, across all four rosters. ' +
+          'Anyone already booked here, or already sent it, is left out. You see the full list and can ' +
+          'untick anyone before it goes.</div>' +
+        '<button type="button" onclick="rfSendHalloweenPromo(this)" style="background:#8a3a1e;' +
+            'border:1px solid #8a3a1e;color:#fff;border-radius:6px;padding:.4rem .85rem;font-size:.8rem;' +
+            'cursor:pointer;font-family:\'Jost\',sans-serif;font-weight:600;">' +
+          '\u{1F383} Send AURICFAM promo to past attendees</button>' +
+        '<button type="button" onclick="rfHwPromoForget()" title="Allow everyone to be sent it again" ' +
+            'style="margin-left:.4rem;background:#fff;border:1px solid #e8b887;color:#8a3a1e;' +
+            'border-radius:6px;padding:.4rem .75rem;font-size:.76rem;cursor:pointer;' +
+            'font-family:\'Jost\',sans-serif;">Reset sent memory</button>' +
+      '</div>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
       display.sort(function(a,b){ return (a.session||'').localeCompare(b.session||'') || (a.created_at||'').localeCompare(b.created_at||''); });
