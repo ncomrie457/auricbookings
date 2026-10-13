@@ -19,10 +19,16 @@
 // Registration tables that may hold the booking. The matching code is unique,
 // so a payment only ever lands in one of them; the others update 0 rows.
 const TABLES = [
-  'matchat_registrations',
-  'pilates_registrations',
-  'create_recharge_registrations',
-  'reformer_registrations',
+  { name: 'matchat_registrations' },
+  { name: 'pilates_registrations' },
+  { name: 'create_recharge_registrations' },
+  { name: 'reformer_registrations' },
+  // Private events differ in two ways that would otherwise break the loop:
+  // the row has no per-booking `code` column to match on, and no `paid_at`
+  // to write. Matching is therefore on the payer's email alone, and only
+  // is_paid is set. Filtering a column that does not exist would 400, the
+  // worker would throw, and Stripe would retry the event forever.
+  { name: 'private_event_rsvps', emailOnly: true, noPaidAt: true },
 ];
 
 export default {
@@ -146,10 +152,21 @@ async function markPaid(env, code, email) {
   const nowIso = new Date().toISOString();
   const matched = {};
 
-  for (const table of TABLES) {
-    const filter = code
+  for (const spec of TABLES) {
+    const table = spec.name;
+
+    // A table that can only be matched by email sits out when the session
+    // carried a reference instead, rather than guessing.
+    if (spec.emailOnly && !email) {
+      matched[table] = 0;
+      continue;
+    }
+
+    const filter = (code && !spec.emailOnly)
       ? 'code=eq.' + encodeURIComponent(code)
       : 'email=eq.' + encodeURIComponent(email) + '&is_paid=eq.false';
+
+    const body = spec.noPaidAt ? { is_paid: true } : { is_paid: true, paid_at: nowIso };
 
     const resp = await fetch(baseUrl + '/rest/v1/' + table + '?' + filter, {
       method: 'PATCH',
@@ -159,7 +176,7 @@ async function markPaid(env, code, email) {
         'content-type': 'application/json',
         Prefer: 'return=representation',
       },
-      body: JSON.stringify({ is_paid: true, paid_at: nowIso }),
+      body: JSON.stringify(body),
     });
 
     if (!resp.ok) {
