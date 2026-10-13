@@ -215,9 +215,11 @@
   // older ones out. A private event has no such history — every guest here is
   // booking under the current policy — so the date would only raise a question
   // it does not answer. Same policy, stated plainly.
-  var REFUND = 'All purchases are final and nonrefundable. ' +
-    'No refunds or credits are issued for cancellations, missed sessions, or no-shows, ' +
-    'regardless of how much notice is given.';
+  // Said once, plainly. No transfer offer here on purpose: the guest list for
+  // a private event belongs to whoever is hosting it, so passing a spot to a
+  // friend is not Auric Movement's to grant.
+  var REFUND = 'All sales are final — no refunds or credits for cancellations, ' +
+    'missed sessions, or no-shows.';
   document.getElementById('refund-text').textContent = REFUND;
 
   // The same clauses the main site's bookings use, minus the gift-bag one,
