@@ -46,7 +46,7 @@ create table if not exists public.private_events (
   id           bigint generated always as identity primary key,
   code         text not null unique,      -- stored lower-cased; compared lower-cased
   title        text not null,
-  host_name    text,                      -- "Fainola", for "you're invited to celebrate ..."
+  host_name    text,                      -- a first name, for "you're invited to celebrate ..."
   blurb        text,
   event_date   text,                      -- free text: "Saturday, November 21"
   event_time   text,                      -- "4:30 PM"
