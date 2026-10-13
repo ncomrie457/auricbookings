@@ -15405,6 +15405,23 @@ document.addEventListener('DOMContentLoaded', function() {
   // for rather than just the person who signed it.
   var pvEventRows = {};
 
+  // timestamptz <-> the value a datetime-local input wants, which is local
+  // wall-clock with no zone on it.
+  function pvLocal(iso){
+    if (!iso) return '';
+    try {
+      var d = new Date(iso);
+      if (isNaN(d)) return '';
+      var pad = function(n){ return (n < 10 ? '0' : '') + n; };
+      return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) +
+             'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+    } catch(e){ return ''; }
+  }
+  function pvInstant(local){
+    if (!local) return null;
+    try { var d = new Date(local); return isNaN(d) ? null : d.toISOString(); } catch(e){ return null; }
+  }
+
   window.pvToggleForm = function(data){
     var box = document.getElementById('pv-form');
     if (!data && box.style.display === 'block'){ box.style.display = 'none'; pvEditing = null; return; }
@@ -15427,6 +15444,11 @@ document.addEventListener('DOMContentLoaded', function() {
           pvField('pv-capacity', 'Capacity', { type:'number', ph:'25', value:d.capacity == null ? '' : d.capacity }) +
           pvField('pv-date', 'Date', { ph:'Saturday, March 14', value:d.event_date || '' }) +
           pvField('pv-time', 'Time', { ph:'4:30 PM', value:d.event_time || '' }) +
+          // Date and Time above are what a guest reads. These two are what a
+          // calendar needs: an actual instant. Without them the add-to-calendar
+          // link has nothing to offer, because "Saturday, November 21" is prose.
+          pvField('pv-starts', 'Starts (for calendar)', { type:'datetime-local', value:pvLocal(d.starts_at), hint:'— optional' }) +
+          pvField('pv-ends', 'Ends (for calendar)', { type:'datetime-local', value:pvLocal(d.ends_at), hint:'— optional' }) +
           pvField('pv-venue', 'Venue', { ph:'Studio name', value:d.venue_name || '' }) +
           pvField('pv-price', 'Cost shown', { ph:'$45 per person', value:d.price_text || '' }) +
         '</div>' +
@@ -15464,6 +15486,7 @@ document.addEventListener('DOMContentLoaded', function() {
       p_flyer_url: v('pv-flyer') || null,
       p_capacity: parseInt(v('pv-capacity'), 10) || null,
       p_closes_at: v('pv-closes') || null, p_active: true,
+      p_starts_at: pvInstant(v('pv-starts')), p_ends_at: pvInstant(v('pv-ends')),
       p_old_code: was || null
     }).then(function(res){
       btn.disabled = false; btn.textContent = label;
@@ -15915,6 +15938,10 @@ document.addEventListener('DOMContentLoaded', function() {
   };
   var RF_HW_TMPL_CONFIRM  = 'template_hhjwepr';   // Halloween "Shhh… Quiet on the Creek" payment confirmation (HALLOWEEN_CREEK_CONFIRMATION_TEMPLATE.html) — sent via Resend
   var RF_HW_TMPL_THANKYOU = 'template_g125fph';  // Halloween "Shhh… Quiet on the Creek" post-event thank-you (HALLOWEEN_CREEK_THANKYOU_TEMPLATE.html) — sent via Resend
+  // Private events: one template serves every one of them, because the
+  // title, date, venue and price all come from the event row rather than
+  // being written into the template.
+  var PV_TMPL_CONFIRM     = '';                 // PRIVATE_EVENT_CONFIRMATION_TEMPLATE.html
   var RF_HW_TMPL_PROMO    = 'template_cnxgnd5';  // AURICFAM $10-off win-back for past attendees (HALLOWEEN_AURICFAM_PROMO_TEMPLATE.html) — sent via Resend
   var RF_TB_TMPL_CONFIRM  = 'template_96eon3x';   // Turkey Burn! payment confirmation (TURKEY_BURN_CONFIRMATION_TEMPLATE.html) — sent via Resend
   var RF_TB_TMPL_THANKYOU = 'template_cnl8smi';  // Turkey Burn! post-event thank-you (TURKEY_BURN_THANKYOU_TEMPLATE.html) — sent via Resend

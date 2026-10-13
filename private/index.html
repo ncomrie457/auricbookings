@@ -187,6 +187,13 @@
     <div id="nopay-block" class="hidden">
       <p style="font-size:.9rem;margin-top:1rem;">We&rsquo;ll be in touch with anything else you need to know.</p>
     </div>
+    <!-- The same add-to-calendar page the public events use, reached by the
+         event's code so none of its details are written into this repo. -->
+    <div id="cal-block" class="hidden" style="margin-top:1rem;">
+      <a id="cal-link" class="btn" target="_blank" rel="noopener"
+         style="display:block;text-align:center;text-decoration:none;background:#fffdf9;color:var(--brown);border:1px solid var(--border);"
+         href="#">&#128197; Add to your calendar</a>
+    </div>
     <!-- Their copy of what they signed. Offered after reserving rather than
          before, because until then there is nothing signed to download. -->
     <div style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--border);">
@@ -203,8 +210,21 @@
 <!-- Self-hosted, like every other library on this site: a waiver is the last
      page that should be running code fetched from somebody else's CDN. -->
 <script src="/vendor/jspdf-2.5.2.umd.min.js"></script>
+<script src="/vendor/emailjs-browser-4.4.1.min.js"></script>
 <script>
 (function(){
+  // ── Email ───────────────────────────────────────────────────────────
+  // A private event is reached through a code, so a guest who closes the
+  // tab has no way back to the payment link. This email is that way back,
+  // which is why it goes out on reserving rather than on paying.
+  var EMAILJS_PUBLIC_KEY     = 'xr1kT3l8rFhNodudq';
+  var EMAILJS_SERVICE_RESEND = 'service_ieahnue';
+  // Set this to the template id from PRIVATE_EVENT_PENDING_TEMPLATE.html.
+  // Left empty the booking still works and simply sends nothing — a failed
+  // email must never cost someone their spot.
+  var PV_TMPL_PENDING = '';
+  try { if (window.emailjs && EMAILJS_PUBLIC_KEY) emailjs.init(EMAILJS_PUBLIC_KEY); } catch(e){}
+
   var SB_URL = 'https://qvmiwyxerotkqpbuhpun.supabase.co';
   var SB_KEY = 'sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ';
   var sb = (window.supabase && window.supabase.createClient)
@@ -383,8 +403,13 @@
         allergies: $('f-allergies').value.trim(), health: $('f-health').value.trim(),
         when: new Date()
       };
+      if (EV.starts_at){
+        $('cal-link').href = '/calendar/add/?c=' + encodeURIComponent(EV.code);
+        $('cal-block').classList.remove('hidden');
+      }
       show('step-done');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      sendPendingEmail(signed);
     }).catch(function(err){
       btn.disabled = false; btn.textContent = 'Reserve my spot →';
       console.error('[private] rsvp failed:', err);
@@ -395,6 +420,33 @@
         : 'That did not save. Please try again, or email auricmovement@outlook.com.';
     });
   });
+
+  // Sent after the reservation has already saved, and never allowed to undo
+  // it: the spot is held by the database row, not by the email. If this
+  // fails the guest still has their spot and the payment link on screen.
+  function sendPendingEmail(rec){
+    if (!PV_TMPL_PENDING || !window.emailjs || !rec) return;
+    try {
+      emailjs.send(EMAILJS_SERVICE_RESEND, PV_TMPL_PENDING, {
+        to_email:      rec.email,
+        from_name:     rec.name,
+        event_title:   EV.title || 'your event',
+        host_name:     EV.host_name || '',
+        event_date:    EV.event_date || '',
+        event_time:    EV.event_time || '',
+        venue_name:    EV.venue_name || '',
+        venue_address: EV.venue_address || '',
+        price_text:    EV.price_text || '',
+        pay_url:       EV.pay_url || '',
+        allergies:     rec.allergies || 'none given',
+        signed_as:     rec.signature,
+        signed_at:     rec.when.toLocaleString(),
+        refund_policy_text: REFUND,
+        calendar_url: EV.starts_at
+          ? 'https://book.auricmovement.com/calendar/add/?c=' + encodeURIComponent(EV.code) : ''
+      }).catch(function(err){ console.error('[private] confirmation email failed:', err); });
+    } catch(e){ console.error('[private] confirmation email failed:', e); }
+  }
 
   // ── The signed copy ─────────────────────────────────────────────────
   // Filled in when the reservation lands, so the PDF can only be built from
