@@ -79,9 +79,29 @@ create table if not exists public.private_event_rsvps (
   refund_ack  boolean not null default false,
   signed_at   timestamptz,
   is_paid     boolean not null default false,
+  -- A seat given rather than sold — the host's own seat, a prize, a make-good.
+  -- is_paid stays true so it holds a seat and behaves like any other booking;
+  -- this column is the only record that no money came in. Same meaning as
+  -- reformer_registrations.comp.
+  comp        boolean not null default false,
   admin_notes text,
   created_at  timestamptz not null default now()
 );
+
+-- For installs created before comp existed.
+alter table public.private_event_rsvps
+  add column if not exists comp boolean not null default false;
+
+-- The code is the key guests are found by, and it can be changed after the
+-- fact — a code that leaked has to be replaceable without losing the people
+-- who already booked under it. "on delete cascade" alone would refuse the
+-- rename; this carries the bookings across with it.
+alter table public.private_event_rsvps
+  drop constraint if exists private_event_rsvps_event_code_fkey;
+alter table public.private_event_rsvps
+  add constraint private_event_rsvps_event_code_fkey
+    foreign key (event_code) references public.private_events(code)
+    on update cascade on delete cascade;
 
 create index if not exists private_events_code_idx on public.private_events (code);
 create index if not exists private_rsvps_code_idx  on public.private_event_rsvps (event_code);
@@ -110,9 +130,14 @@ $$;
 drop function if exists public.auric_private_get(text);
 drop function if exists public.auric_private_save(text,text,text,text,text,text,text,text,text,text,text,int,date,boolean);
 drop function if exists public.auric_private_save(text,text,text,text,text,text,text,text,text,text,text,text,int,date,boolean);
+drop function if exists public.auric_private_save(text,text,text,text,text,text,text,text,text,text,text,text,int,date,boolean,text);
 drop function if exists public.auric_private_rsvp(text,text,text,text,int,text);
 drop function if exists public.auric_private_rsvp(text,text,text,text,int,text,text,text,text,text);
 drop function if exists public.auric_private_list(text);
+drop function if exists public.auric_private_one(text,text);
+drop function if exists public.auric_private_guest_add(text,text,text,text,text,text,text,boolean,boolean);
+drop function if exists public.auric_private_guest_update(text,bigint,text,text,text,text,text,boolean,boolean);
+drop function if exists public.auric_private_guest_delete(text,bigint);
 
 -- 2) Read one event by its code — PUBLIC ──────────────────────────────
 --    Deliberately returns NO guest details: a number of spots left, and
@@ -272,7 +297,11 @@ create or replace function public.auric_private_save(
   p_flyer_url   text default null,
   p_capacity    int default null,
   p_closes_at   date default null,
-  p_active      boolean default true
+  p_active      boolean default true,
+  -- The code of the event being edited, when the edit is changing that code.
+  -- Without it a new code means a new event, and the old one stays live at the
+  -- old code: a second door rather than a changed lock.
+  p_old_code    text default null
 )
 returns text
 language plpgsql
@@ -281,6 +310,7 @@ set search_path = public
 as $$
 declare
   key text := lower(trim(coalesce(p_code, '')));
+  old text := lower(trim(coalesce(p_old_code, '')));
 begin
   if not public.is_owner() then raise exception 'not authorized'; end if;
   if length(key) < 4 then
@@ -291,6 +321,18 @@ begin
   end if;
   if coalesce(trim(p_title), '') = '' then
     raise exception 'the event needs a title';
+  end if;
+
+  -- Renaming the code, rather than creating a second event under the new one.
+  -- The bookings follow, because the foreign key cascades on update.
+  if old <> '' and old <> key then
+    if not exists (select 1 from public.private_events where code = old) then
+      raise exception 'there is no event with the code you are editing';
+    end if;
+    if exists (select 1 from public.private_events where code = key) then
+      raise exception 'another event already uses that code';
+    end if;
+    update public.private_events set code = key where code = old;
   end if;
 
   insert into public.private_events (
@@ -327,16 +369,142 @@ begin
 end;
 $$;
 
+-- 7b) One event, exactly as stored — owner only ───────────────────────
+--     auric_private_get is the guest's view: it hides switched-off events and
+--     reports spots_left rather than capacity. An edit form needs the row.
+create or replace function public.auric_private_one(pass text, p_code text)
+returns setof public.private_events
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not public.is_owner() then raise exception 'not authorized'; end if;
+  return query
+    select * from public.private_events
+     where code = lower(trim(coalesce(p_code, '')));
+end;
+$$;
+
+-- 7c) Putting someone on the list by hand — owner only ────────────────
+--     The host does not book herself through her own invitation, and a guest
+--     who paid cash still has to appear on the roster. Such a row has not
+--     signed anything, and says so: refund_ack stays false and signed_at stays
+--     null rather than claiming a signature that was never given.
+create or replace function public.auric_private_guest_add(
+  pass        text,
+  p_code      text,
+  p_name      text,
+  p_email     text,
+  p_phone     text    default null,
+  p_allergies text    default null,
+  p_health    text    default null,
+  p_paid      boolean default true,
+  p_comp      boolean default false
+)
+returns bigint
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  key    text := lower(trim(coalesce(p_code, '')));
+  new_id bigint;
+begin
+  if not public.is_owner() then raise exception 'not authorized'; end if;
+  if not exists (select 1 from public.private_events where code = key) then
+    raise exception 'there is no event with that code';
+  end if;
+  if coalesce(trim(p_name), '') = '' or coalesce(trim(p_email), '') = '' then
+    raise exception 'a name and an email are needed';
+  end if;
+
+  insert into public.private_event_rsvps (
+    event_code, name, email, phone, guests,
+    food_allergies, health, is_paid, comp, refund_ack, signed_at
+  ) values (
+    key, trim(p_name), lower(trim(p_email)), nullif(trim(coalesce(p_phone, '')), ''), 1,
+    nullif(trim(coalesce(p_allergies, '')), ''), nullif(trim(coalesce(p_health, '')), ''),
+    coalesce(p_paid, true), coalesce(p_comp, false), false, null
+  )
+  returning id into new_id;
+
+  return new_id;
+end;
+$$;
+
+-- 7d) Changing a row on the list — owner only ─────────────────────────
+--     null means "leave this alone" and '' means "clear it", so the same
+--     function can rename a guest or just flip whether they have paid,
+--     without one call quietly wiping what the other set.
+create or replace function public.auric_private_guest_update(
+  pass        text,
+  p_id        bigint,
+  p_name      text    default null,
+  p_email     text    default null,
+  p_phone     text    default null,
+  p_allergies text    default null,
+  p_health    text    default null,
+  p_paid      boolean default null,
+  p_comp      boolean default null
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not public.is_owner() then raise exception 'not authorized'; end if;
+
+  update public.private_event_rsvps set
+    name           = coalesce(nullif(trim(coalesce(p_name, '')), ''), name),
+    email          = coalesce(nullif(lower(trim(coalesce(p_email, ''))), ''), email),
+    phone          = case when p_phone     is null then phone
+                          else nullif(trim(p_phone), '') end,
+    food_allergies = case when p_allergies is null then food_allergies
+                          else nullif(trim(p_allergies), '') end,
+    health         = case when p_health    is null then health
+                          else nullif(trim(p_health), '') end,
+    is_paid        = coalesce(p_paid, is_paid),
+    comp           = coalesce(p_comp, comp)
+  where id = p_id;
+
+  if not found then raise exception 'no such guest'; end if;
+end;
+$$;
+
+-- 7e) Taking someone off the list — owner only ────────────────────────
+create or replace function public.auric_private_guest_delete(pass text, p_id bigint)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not public.is_owner() then raise exception 'not authorized'; end if;
+  delete from public.private_event_rsvps where id = p_id;
+  if not found then raise exception 'no such guest'; end if;
+end;
+$$;
+
 -- 8) Who may call what ────────────────────────────────────────────────
 revoke all on function public.auric_private_list(text)                      from public, anon;
 revoke all on function public.auric_private_rsvps(text, text)               from public, anon;
 revoke all on function public.auric_private_delete(text, text)              from public, anon;
-revoke all on function public.auric_private_save(text,text,text,text,text,text,text,text,text,text,text,text,int,date,boolean) from public, anon;
+revoke all on function public.auric_private_save(text,text,text,text,text,text,text,text,text,text,text,text,int,date,boolean,text) from public, anon;
+revoke all on function public.auric_private_one(text, text)                 from public, anon;
+revoke all on function public.auric_private_guest_add(text,text,text,text,text,text,text,boolean,boolean) from public, anon;
+revoke all on function public.auric_private_guest_update(text,bigint,text,text,text,text,text,boolean,boolean) from public, anon;
+revoke all on function public.auric_private_guest_delete(text, bigint)      from public, anon;
 
 grant execute on function public.auric_private_list(text)                   to authenticated;
 grant execute on function public.auric_private_rsvps(text, text)            to authenticated;
 grant execute on function public.auric_private_delete(text, text)           to authenticated;
-grant execute on function public.auric_private_save(text,text,text,text,text,text,text,text,text,text,text,text,int,date,boolean) to authenticated;
+grant execute on function public.auric_private_save(text,text,text,text,text,text,text,text,text,text,text,text,int,date,boolean,text) to authenticated;
+grant execute on function public.auric_private_one(text, text)              to authenticated;
+grant execute on function public.auric_private_guest_add(text,text,text,text,text,text,text,boolean,boolean) to authenticated;
+grant execute on function public.auric_private_guest_update(text,bigint,text,text,text,text,text,boolean,boolean) to authenticated;
+grant execute on function public.auric_private_guest_delete(text, bigint)   to authenticated;
 
 -- The guest holding the code is not signed in. Both of these are scoped to
 -- a single event by exact code, and neither returns anybody's details.
