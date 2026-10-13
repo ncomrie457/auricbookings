@@ -15634,6 +15634,9 @@ document.addEventListener('DOMContentLoaded', function() {
               : (al ? '<div style="color:#8a7d9b;font-size:.72rem;margin-top:.15rem;">Allergies: ' + escapeHTML(al) + '</div>' : '')) +
             (r.health ? '<div style="color:#6b5847;font-size:.72rem;margin-top:.15rem;">Health: ' + escapeHTML(r.health) + '</div>' : '') +
             '<div style="display:flex;gap:.25rem;margin-top:.25rem;flex-wrap:wrap;">' +
+              '<button onclick="pvGuestForm(\'' + code + '\',' + r.id + ')" style="background:#f3ecfc;' +
+                'border:1px solid #d4bff4;color:#6a3ca5;border-radius:5px;padding:.1rem .4rem;' +
+                'font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u270E Edit</button>' +
               pvGBtn(code, r.id, 'p_paid', !r.is_paid, r.is_paid ? 'Mark unpaid' : 'Mark paid') +
               pvGBtn(code, r.id, 'p_comp', !r.comp, r.comp ? 'Not a comp' : 'Make comp') +
               // Only where there is a signature to reproduce. A comp added by
@@ -15662,6 +15665,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:5px;' +
                 'padding:.1rem .4rem;font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;">Remove</button>' +
             '</div>' +
+            '<div id="pv-gedit-' + r.id + '"></div>' +
           '</div>';
         }).join('') + '</div>' + addBtn;
     });
@@ -15776,27 +15780,58 @@ document.addEventListener('DOMContentLoaded', function() {
     if (box) { box.innerHTML = ''; pvGuests(code); }
   }
 
-  window.pvGuestForm = function(code){
-    var slot = document.getElementById('pv-gform-' + code);
+  // One form, two jobs. With an id it edits that guest; without, it adds a new
+  // one. A misspelled name was the one thing the list could not fix.
+  window.pvGuestForm = function(code, id){
+    var slot = document.getElementById(id ? 'pv-gedit-' + id : 'pv-gform-' + code);
     if (!slot) return;
     if (slot.innerHTML){ slot.innerHTML = ''; return; }
-    var i = function(id, ph){
-      return '<input id="pvg-' + id + '-' + code + '" placeholder="' + ph + '" style="width:100%;box-sizing:border-box;' +
-        'padding:.35rem .5rem;border:1px solid #d4bff4;border-radius:6px;font-family:\'Jost\',sans-serif;' +
-        'font-size:.76rem;margin-bottom:.3rem;background:#fff;">';
+    var r = id ? (pvGuestRows[code] || []).filter(function(x){ return x.id === id; })[0] : null;
+    if (id && !r){ alert('Could not find that guest.'); return; }
+    var i = function(f, ph, val){
+      return '<input id="pvg-' + f + '-' + code + '" placeholder="' + ph + '" value="' + escapeHTML(val || '') +
+        '" style="width:100%;box-sizing:border-box;padding:.35rem .5rem;border:1px solid #d4bff4;' +
+        'border-radius:6px;font-family:\'Jost\',sans-serif;font-size:.76rem;margin-bottom:.3rem;background:#fff;">';
     };
     slot.innerHTML = '<div style="background:#faf7ff;border:1px solid #d4bff4;border-radius:8px;padding:.6rem;margin-top:.4rem;">' +
-      i('name','Full name') + i('email','Email') + i('phone','Phone (optional)') + i('allergies','Food allergies') +
-      '<label style="display:block;font-size:.74rem;color:#5c4a72;margin:.1rem 0 .4rem;">' +
-        '<input type="checkbox" id="pvg-comp-' + code + '" checked style="vertical-align:-1px;"> ' +
-        'Comp — holds a seat, but no money came in</label>' +
+      i('name', 'Full name', r && r.name) +
+      i('email', 'Email', r && r.email) +
+      i('phone', 'Phone (optional)', r && r.phone) +
+      i('allergies', 'Food allergies', r && r.food_allergies) +
+      (id ? i('health', 'Injuries or health notes', r && r.health) : '') +
+      (id ? ''
+          : '<label style="display:block;font-size:.74rem;color:#5c4a72;margin:.1rem 0 .4rem;">' +
+            '<input type="checkbox" id="pvg-comp-' + code + '" checked style="vertical-align:-1px;"> ' +
+            'Comp — holds a seat, but no money came in</label>') +
       '<div id="pvg-err-' + code + '" style="color:var(--red);font-size:.72rem;margin-bottom:.25rem;"></div>' +
-      '<button onclick="pvGuestAdd(\'' + code + '\',this)" style="background:#6a3ca5;border:1px solid #6a3ca5;' +
-        'color:#fff;border-radius:6px;padding:.25rem .6rem;font-size:.74rem;cursor:pointer;' +
-        'font-family:\'Jost\',sans-serif;font-weight:600;">Add to the list</button>' +
-      '<button onclick="pvGuestForm(\'' + code + '\')" style="margin-left:.35rem;background:none;border:none;' +
-        'color:#8a7d9b;font-size:.72rem;text-decoration:underline;cursor:pointer;font-family:\'Jost\',sans-serif;">Cancel</button>' +
+      '<button onclick="' + (id ? "pvGuestSave('" + code + "'," + id + ",this)" : "pvGuestAdd('" + code + "',this)") +
+        '" style="background:#6a3ca5;border:1px solid #6a3ca5;color:#fff;border-radius:6px;padding:.25rem .6rem;' +
+        'font-size:.74rem;cursor:pointer;font-family:\'Jost\',sans-serif;font-weight:600;">' +
+        (id ? 'Save changes' : 'Add to the list') + '</button>' +
+      '<button onclick="pvGuestForm(\'' + code + '\'' + (id ? ',' + id : '') + ')" style="margin-left:.35rem;' +
+        'background:none;border:none;color:#8a7d9b;font-size:.72rem;text-decoration:underline;cursor:pointer;' +
+        'font-family:\'Jost\',sans-serif;">Cancel</button>' +
     '</div>';
+  };
+
+  // Only the fields on the form travel. paid and comp are left out entirely,
+  // which the function reads as "leave alone", so fixing a name cannot undo a
+  // tick or turn a comp back into a paying guest.
+  window.pvGuestSave = function(code, id, btn){
+    var v = function(f){ var e = document.getElementById('pvg-' + f + '-' + code); return e ? e.value.trim() : ''; };
+    var err = document.getElementById('pvg-err-' + code);
+    err.textContent = '';
+    if (!v('name') || !v('email')){ err.textContent = 'A name and an email, at least.'; return; }
+    btn.disabled = true; btn.textContent = 'Saving…';
+    supabase.rpc('auric_private_guest_update', {
+      pass: ADMIN_PASSWORD, p_id: id,
+      p_name: v('name'), p_email: v('email'),
+      p_phone: v('phone'), p_allergies: v('allergies'), p_health: v('health')
+    }).then(function(res){
+      btn.disabled = false; btn.textContent = 'Save changes';
+      if (res.error){ err.textContent = res.error.message || 'Could not save that.'; return; }
+      pvRefresh().then(function(){ pvReopenGuests(code); });
+    });
   };
 
   window.pvGuestAdd = function(code, btn){
