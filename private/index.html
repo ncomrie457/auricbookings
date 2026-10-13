@@ -63,6 +63,13 @@
   /* Refund policy gets its own weight, same as the public booking forms. */
   .refundbox{ background:#fdf6e9; border:2px solid var(--gold); border-radius:12px; padding:1rem 1.1rem; margin:1rem 0; }
   .refundbox h4{ font-size:.82rem; color:var(--brown); margin-bottom:.4rem; }
+  /* The clauses scroll rather than collapse: a reader can see there are many
+     and can reach every one, without the form becoming a wall of text. */
+  .waiverbox{ background:#fffdf9; border:1px solid var(--border); border-radius:12px; padding:.9rem 1rem; margin:.3rem 0 .8rem; }
+  .waiver-scroll{ max-height:230px; overflow-y:auto; padding-right:.5rem; margin-bottom:.7rem;
+                  border-bottom:1px solid var(--border); }
+  .waiver-scroll ol{ margin:0; padding-left:1.1rem; }
+  .waiver-scroll li{ font-size:.78rem; line-height:1.6; color:#4a3f36; margin-bottom:.55rem; }
   .refundbox p{ font-size:.82rem; line-height:1.65; margin-bottom:.6rem; }
   .checkrow{ display:flex; gap:.5rem; align-items:flex-start; font-size:.84rem; margin-bottom:.5rem; }
   .checkrow input{ margin-top:.25rem; flex:0 0 auto; }
@@ -139,10 +146,21 @@
       </div>
 
       <h2>Waiver</h2>
-      <p style="font-size:.84rem;color:var(--muted);">
-        By typing your name you agree to the
-        <a href="https://book.auricmovement.com/waiver" target="_blank" rel="noopener" style="color:var(--gold);">liability waiver</a>
-        and confirm you are taking part at your own risk. Your signature is binding under the E-SIGN Act, 15 U.S.C. &sect; 7001.
+      <!-- The terms are on the page, not behind a link. A signature is only
+           worth something against text the signer was actually shown, and a
+           link they may never open is not that. The public booking forms put
+           the same clauses in front of people for the same reason. -->
+      <div class="waiverbox">
+        <div class="waiver-scroll" id="f-clauses"></div>
+        <div class="checkrow">
+          <input type="checkbox" id="f-waiver">
+          <label for="f-waiver" style="font-weight:400;margin:0;">
+            I have read and agree to all of the above.</label>
+        </div>
+      </div>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:.7rem;">
+        Typing your name below is your signature, and is binding under the E-SIGN Act,
+        15 U.S.C. &sect; 7001. You can download a copy once you have reserved.
       </p>
       <div class="field"><label for="f-sign">Sign &mdash; type your full name <span style="color:var(--red)">*</span></label>
         <input type="text" id="f-sign" placeholder="Type your full name to sign" autocomplete="off"></div>
@@ -169,12 +187,22 @@
     <div id="nopay-block" class="hidden">
       <p style="font-size:.9rem;margin-top:1rem;">We&rsquo;ll be in touch with anything else you need to know.</p>
     </div>
+    <!-- Their copy of what they signed. Offered after reserving rather than
+         before, because until then there is nothing signed to download. -->
+    <div style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--border);">
+      <button type="button" id="dl-waiver" class="btn"
+              style="background:#fffdf9;color:var(--brown);border:1px solid var(--border);">
+        &#11015; Download your signed waiver (PDF)</button>
+    </div>
   </div>
 
   <div class="foot">Auric Movement LLC &middot; <a href="https://book.auricmovement.com">book.auricmovement.com</a></div>
 </div>
 
 <script src="/vendor/supabase-js-2.117.3.min.js"></script>
+<!-- Self-hosted, like every other library on this site: a waiver is the last
+     page that should be running code fetched from somebody else's CDN. -->
+<script src="/vendor/jspdf-2.5.2.umd.min.js"></script>
 <script>
 (function(){
   var SB_URL = 'https://qvmiwyxerotkqpbuhpun.supabase.co';
@@ -191,6 +219,38 @@
     'No refunds or credits are issued for cancellations, missed sessions, or no-shows, ' +
     'regardless of how much notice is given.';
   document.getElementById('refund-text').textContent = REFUND;
+
+  // The same clauses the main site's bookings use, minus the gift-bag one,
+  // which is about goodie bags at the reformer events and has nothing to do
+  // with a private class. Kept in full here because this page is standalone;
+  // if the waiver is ever reworded, it is reworded in both places.
+  var CLAUSES = [
+    "I understand that participation in wellness, movement, and/or energy-based sessions offered by Auric Movement LLC involves physical activity and inherent risks, including but not limited to muscle strain, sprains, fractures, and other injuries.",
+    "I acknowledge that I am voluntarily participating in these sessions and assume all risks of injury or harm that may result from my participation, whether foreseeable or unforeseeable.",
+    "I represent that I am physically and mentally fit to participate and have no medical conditions that would prevent safe participation, or I have obtained clearance from a licensed healthcare provider.",
+    "I agree to disclose any known medical conditions, allergies, injuries, or physical limitations to my instructor before each session.",
+    "I understand that the instructors and staff of Auric Movement LLC are not licensed medical professionals and that no session is a substitute for professional medical advice, diagnosis, or treatment.",
+    "I agree to follow all instructions, safety guidelines, and rules provided by Auric Movement LLC staff during sessions.",
+    "I understand that I may stop participation at any time if I feel pain, discomfort, or distress, and I agree to immediately notify my instructor.",
+    "I release, discharge, and hold harmless Auric Movement LLC, its owners, instructors, employees, agents, and affiliates from any and all claims, liabilities, damages, or expenses arising from my participation.",
+    "I agree that if any claim is made despite this waiver, the total liability of Auric Movement LLC, its owners, instructors, employees, agents, and affiliates for any claim arising from my participation is limited to the amount I paid for the session giving rise to the claim, and that they are not liable for any indirect, incidental, or consequential damages. This limit does not apply to gross negligence or willful misconduct.",
+    "I agree to indemnify and hold harmless Auric Movement LLC, its owners, instructors, employees, agents, affiliates, and the host studio from any claims, damages, or expenses, including reasonable legal fees, arising from my own conduct during the session, including injury I cause to another participant and damage I cause to the premises or equipment.",
+    "I waive any right to bring a lawsuit or legal claim against Auric Movement LLC, its owners, instructors, employees, agents, or affiliates for any injury, illness, or loss sustained during or as a result of my participation.",
+    "I understand that this waiver extends to any claims arising from the negligence of Auric Movement LLC, its owners, instructors, employees, agents, or affiliates, excluding gross negligence or willful misconduct.",
+    "I consent to the use of any photographs, video recordings, or audio recordings taken during sessions for promotional, educational, or marketing purposes by Auric Movement LLC, unless I submit a written opt-out request.",
+    "I understand that personal belongings brought to sessions are my responsibility and that Auric Movement LLC is not liable for any lost, stolen, or damaged items.",
+    "I agree that any disputes arising from this waiver or my participation shall be resolved through binding arbitration in accordance with the rules of the American Arbitration Association, and not through court litigation.",
+    "I acknowledge that this waiver is governed by and construed in accordance with the laws of the State of New York.",
+    "I understand that if any provision of this waiver is found to be unenforceable, the remaining provisions shall remain in full force and effect.",
+    "I confirm that I am at least 18 years of age, or that I have obtained parental or guardian consent if I am a minor.",
+    "I agree that this waiver remains in effect for all future sessions and activities with Auric Movement LLC unless I submit a written revocation.",
+    "I acknowledge that I have had sufficient opportunity to read this waiver, ask questions, and seek independent legal advice before signing."
+  ];
+  (function(){
+    var ol = document.createElement('ol');
+    CLAUSES.forEach(function(c){ var li = document.createElement('li'); li.textContent = c; ol.appendChild(li); });
+    document.getElementById('f-clauses').appendChild(ol);
+  })();
 
   var $ = function(id){ return document.getElementById(id); };
   var EV = null;
@@ -271,6 +331,7 @@
       && $('f-allergies').value.trim().length > 0
       && $('f-refund').checked
       && $('f-initials').value.trim().length >= 2
+      && $('f-waiver').checked
       && $('f-sign').value.trim().length > 1;
     $('f-go').disabled = !ok;
   }
@@ -278,6 +339,7 @@
     $(id).addEventListener('input', sync);
   });
   $('f-refund').addEventListener('change', sync);
+  $('f-waiver').addEventListener('change', sync);
 
   $('ev-form').addEventListener('submit', function(e){
     e.preventDefault();
@@ -298,7 +360,11 @@
       p_allergies: $('f-allergies').value.trim(),
       p_health: $('f-health').value.trim() || null,
       p_signature: $('f-sign').value.trim(),
-      p_initials: $('f-initials').value.trim()
+      p_initials: $('f-initials').value.trim(),
+      // The evidence: how many clauses were on screen, and the refund wording
+      // shown. Without these a stored signature cannot be tied to any text.
+      p_clauses: CLAUSES.length,
+      p_refund_text: REFUND
     }).then(function(res){
       if (res.error) throw res.error;
       $('done-line').textContent = $('f-name').value.trim() + ', your spot is reserved for ' +
@@ -309,6 +375,12 @@
       } else {
         $('nopay-block').classList.remove('hidden');
       }
+      signed = {
+        name: $('f-name').value.trim(), email: $('f-email').value.trim(),
+        signature: $('f-sign').value.trim(), initials: $('f-initials').value.trim().toUpperCase(),
+        allergies: $('f-allergies').value.trim(), health: $('f-health').value.trim(),
+        when: new Date()
+      };
       show('step-done');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }).catch(function(err){
@@ -320,6 +392,67 @@
         ? String(err.message || err.hint)
         : 'That did not save. Please try again, or email auricmovement@outlook.com.';
     });
+  });
+
+  // ── The signed copy ─────────────────────────────────────────────────
+  // Filled in when the reservation lands, so the PDF can only be built from
+  // something that actually saved.
+  var signed = null;
+
+  $('dl-waiver').addEventListener('click', function(){
+    if (!signed){ return; }
+    if (!(window.jspdf && window.jspdf.jsPDF)){
+      alert('The PDF tool did not load. Refresh the page and try again, or email auricmovement@outlook.com for a copy.');
+      return;
+    }
+    var doc = new window.jspdf.jsPDF({ unit:'pt', format:'letter' });
+    var W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
+    var M = 54, CW = W - M*2, y = M;
+
+    function space(n){ if (y + n > H - M){ doc.addPage(); y = M; } }
+    function text(str, size, style, colour, gap){
+      doc.setFont('helvetica', style || 'normal'); doc.setFontSize(size || 10);
+      doc.setTextColor.apply(doc, colour || [40,34,28]);
+      var lines = doc.splitTextToSize(String(str), CW);
+      for (var i = 0; i < lines.length; i++){
+        space(size + 4); doc.text(lines[i], M, y); y += size + 3;
+      }
+      y += (gap == null ? 6 : gap);
+    }
+    function rule(){ space(14); doc.setDrawColor(214,198,170); doc.line(M, y, W - M, y); y += 14; }
+
+    text('AURIC MOVEMENT LLC', 11, 'bold', [154,101,53], 2);
+    text('Liability Waiver & Release', 19, 'bold', [18,53,34], 10);
+    rule();
+
+    text('Event', 8, 'bold', [122,104,80], 1);
+    text(EV.title + (EV.host_name ? '  (hosted by ' + EV.host_name + ')' : ''), 11, 'normal', null, 6);
+    text([EV.event_date, EV.event_time, EV.venue_name, EV.venue_address]
+      .filter(Boolean).join('  ·  '), 9, 'normal', [90,78,66], 12);
+
+    text('Participant', 8, 'bold', [122,104,80], 1);
+    text(signed.name + '   ·   ' + signed.email, 11, 'normal', null, 6);
+    if (signed.allergies) text('Food allergies / dietary: ' + signed.allergies, 9, 'normal', [90,78,66], 2);
+    if (signed.health)    text('Health disclosure: ' + signed.health, 9, 'normal', [90,78,66], 2);
+    y += 6; rule();
+
+    text('Refund policy', 8, 'bold', [122,104,80], 1);
+    text(REFUND, 9, 'normal', null, 4);
+    text('Initialled "' + signed.initials + '" at the time of booking.', 9, 'italic', [90,78,66], 12);
+    rule();
+
+    text('Terms agreed', 8, 'bold', [122,104,80], 6);
+    CLAUSES.forEach(function(c, i){ text((i + 1) + '.  ' + c, 9, 'normal', null, 4); });
+
+    y += 8; rule();
+    text('Signature', 8, 'bold', [122,104,80], 1);
+    doc.setFont('times', 'italic'); doc.setFontSize(20); doc.setTextColor(18,53,34);
+    space(26); doc.text(signed.signature, M, y); y += 24;
+    text('Signed electronically on ' + signed.when.toLocaleString() +
+         '. Binding under the E-SIGN Act, 15 U.S.C. § 7001. ' +
+         CLAUSES.length + ' clauses were presented and agreed.', 8, 'normal', [122,104,80], 0);
+
+    doc.save('auric-waiver-' + signed.name.replace(/[^a-z0-9]/gi,'-').toLowerCase() + '.pdf');
   });
 })();
 </script>

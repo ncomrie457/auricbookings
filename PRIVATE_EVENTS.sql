@@ -92,6 +92,15 @@ create table if not exists public.private_event_rsvps (
 alter table public.private_event_rsvps
   add column if not exists comp boolean not null default false;
 
+-- What the guest actually agreed to, kept with their row. A signature on its
+-- own proves nothing without the text it was given: these two are what let a
+-- signed waiver be reproduced months later as the document they saw, rather
+-- than as today's wording. Same reason the public bookings keep them.
+alter table public.private_event_rsvps
+  add column if not exists clauses_agreed int;
+alter table public.private_event_rsvps
+  add column if not exists refund_policy_text text;
+
 -- The code is the key guests are found by, and it can be changed after the
 -- fact — a code that leaked has to be replaceable without losing the people
 -- who already booked under it. "on delete cascade" alone would refuse the
@@ -133,6 +142,7 @@ drop function if exists public.auric_private_save(text,text,text,text,text,text,
 drop function if exists public.auric_private_save(text,text,text,text,text,text,text,text,text,text,text,text,int,date,boolean,text);
 drop function if exists public.auric_private_rsvp(text,text,text,text,int,text);
 drop function if exists public.auric_private_rsvp(text,text,text,text,int,text,text,text,text,text);
+drop function if exists public.auric_private_rsvp(text,text,text,text,int,text,text,text,text,text,int,text);
 drop function if exists public.auric_private_list(text);
 drop function if exists public.auric_private_one(text,text);
 drop function if exists public.auric_private_guest_add(text,text,text,text,text,text,text,boolean,boolean);
@@ -184,7 +194,12 @@ create or replace function public.auric_private_rsvp(
   p_allergies text default null,
   p_health    text default null,
   p_signature text default null,
-  p_initials  text default null
+  p_initials  text default null,
+  -- How many waiver clauses were on screen when they signed, and the refund
+  -- wording they were shown. Stored so the waiver can be reproduced as the
+  -- document they agreed to, not as whatever the page says later.
+  p_clauses   int  default null,
+  p_refund_text text default null
 )
 returns int                                  -- spots left afterwards, or -1 for unlimited
 language plpgsql
@@ -230,12 +245,14 @@ begin
 
   insert into public.private_event_rsvps (
     event_code, name, email, phone, guests, note,
-    food_allergies, health, signature, initials, refund_ack, signed_at
+    food_allergies, health, signature, initials, refund_ack, signed_at,
+    clauses_agreed, refund_policy_text
   ) values (
     ev.code, trim(p_name), lower(trim(p_email)), nullif(trim(p_phone), ''),
     party, nullif(trim(p_note), ''),
     nullif(trim(p_allergies), ''), nullif(trim(p_health), ''),
-    trim(p_signature), upper(nullif(trim(p_initials), '')), true, now()
+    trim(p_signature), upper(nullif(trim(p_initials), '')), true, now(),
+    p_clauses, nullif(trim(coalesce(p_refund_text, '')), '')
   );
 
   if ev.capacity is null then return -1; end if;
@@ -509,7 +526,7 @@ grant execute on function public.auric_private_guest_delete(text, bigint)   to a
 -- The guest holding the code is not signed in. Both of these are scoped to
 -- a single event by exact code, and neither returns anybody's details.
 grant execute on function public.auric_private_get(text) to anon, authenticated;
-grant execute on function public.auric_private_rsvp(text, text, text, text, int, text, text, text, text, text) to anon, authenticated;
+grant execute on function public.auric_private_rsvp(text, text, text, text, int, text, text, text, text, text, int, text) to anon, authenticated;
 grant execute on function public.auric_private_taken(text) to anon, authenticated;
 
 select 'private events ready — create one in the admin panel, then share the code.' as status;
