@@ -15645,7 +15645,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 ? '<button onclick="pvConfirmEmail(\'' + code + '\',' + r.id + ',this)" style="background:#e8f5e9;' +
                   'border:1px solid #a5d6a7;color:#2e7d32;border-radius:5px;padding:.1rem .4rem;' +
                   'font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;font-weight:600;">\u2709 Confirm + email</button>'
-                : '') +
+                // Someone who booked and never paid is the one person who most
+                // needs an email, and the automatic one only fires at booking.
+                : '<button onclick="pvPendingEmail(\'' + code + '\',' + r.id + ',this)" style="background:#fff4e5;' +
+                  'border:1px solid #f0c890;color:#a86617;border-radius:5px;padding:.1rem .4rem;' +
+                  'font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;font-weight:600;">\u2709 Send payment link</button>') +
               (r.signature
                 ? '<button onclick="pvWaiver(\'' + code + '\',' + r.id + ')" style="background:#eef4fb;' +
                   'border:1px solid #b5d4f4;color:#185fa5;border-radius:5px;padding:.1rem .4rem;' +
@@ -15701,11 +15705,15 @@ document.addEventListener('DOMContentLoaded', function() {
   // Tells a guest their spot is secured. Reads the event fresh rather than
   // trusting the list view, because the list does not carry the venue address,
   // the artwork or the times this email needs.
-  window.pvConfirmEmail = function(code, id, btn){
+  window.pvPendingEmail = function(code, id, btn){ pvGuestEmail(code, id, btn, 'pending'); };
+  window.pvConfirmEmail = function(code, id, btn){ pvGuestEmail(code, id, btn, 'confirm'); };
+
+  function pvGuestEmail(code, id, btn, kind){
     var r = (pvGuestRows[code] || []).filter(function(x){ return x.id === id; })[0];
     if (!r){ alert('Could not find that guest.'); return; }
-    if (!PV_TMPL_CONFIRM){
-      alert('No confirmation template set yet.\n\nCreate it from PRIVATE_EVENT_CONFIRMATION_TEMPLATE.html, then put its id into PV_TMPL_CONFIRM in index.html.');
+    var tmpl = kind === 'pending' ? PV_TMPL_PENDING : PV_TMPL_CONFIRM;
+    if (!tmpl){
+      alert('No ' + (kind === 'pending' ? 'payment-pending' : 'confirmation') + ' template set yet.');
       return;
     }
     var label = btn ? btn.textContent : '';
@@ -15713,7 +15721,7 @@ document.addEventListener('DOMContentLoaded', function() {
     supabase.rpc('auric_private_one', { pass: ADMIN_PASSWORD, p_code: code }).then(function(res){
       var e = (res && res.data && res.data[0]) || {};
       var when = ''; try { when = new Date(r.signed_at || r.created_at).toLocaleString(); } catch(err){}
-      return emailjs.send(EMAILJS_SERVICE_RESEND, PV_TMPL_CONFIRM, {
+      return emailjs.send(EMAILJS_SERVICE_RESEND, tmpl, {
         to_email:      r.email,
         from_name:     r.name,
         event_title:   e.title || '',
@@ -15726,19 +15734,22 @@ document.addEventListener('DOMContentLoaded', function() {
         signed_as:     r.signature || r.name,
         signed_at:     when,
         refund_policy_text: r.refund_policy_text || '',
-        hero_image:    e.email_confirm_image || e.flyer_url || 'https://book.auricmovement.com/og-preview.jpg?v=2',
+        price_text:    e.price_text || '',
+        pay_url:       e.pay_url || '',
+        hero_image:    (kind === 'pending' ? e.email_pending_image : e.email_confirm_image)
+                         || e.flyer_url || 'https://book.auricmovement.com/og-preview.jpg?v=2',
         calendar_url:  e.starts_at
           ? 'https://book.auricmovement.com/calendar/add/?c=' + encodeURIComponent(code) : ''
       });
     }).then(function(){
       if (btn){ btn.disabled = false; btn.textContent = label; }
-      alert('✅ Confirmation sent to ' + r.email);
+      alert('✅ ' + (kind === 'pending' ? 'Payment link sent to ' : 'Confirmation sent to ') + r.email);
     }, function(err){
       if (btn){ btn.disabled = false; btn.textContent = label; }
-      console.error('[private] confirmation failed:', err);
+      console.error('[private] email failed:', err);
       alert('⚠️ Could not send it. ' + ((err && (err.text || err.message)) || 'Check the EmailJS dashboard.'));
     });
-  };
+  }
 
   window.pvWaiver = function(code, id){
     var r = (pvGuestRows[code] || []).filter(function(x){ return x.id === id; })[0];
@@ -15996,6 +16007,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // title, date, venue and price all come from the event row rather than
   // being written into the template.
   var PV_TMPL_CONFIRM     = 'template_dk1skma'; // PRIVATE_EVENT_CONFIRMATION_TEMPLATE.html
+  var PV_TMPL_PENDING     = 'template_ozy2pcc'; // PRIVATE_EVENT_PENDING_TEMPLATE.html — must
+                                                // match private/index.html, which sends it
+                                                // automatically when someone books.
   var RF_HW_TMPL_PROMO    = 'template_cnxgnd5';  // AURICFAM $10-off win-back for past attendees (HALLOWEEN_AURICFAM_PROMO_TEMPLATE.html) — sent via Resend
   var RF_TB_TMPL_CONFIRM  = 'template_96eon3x';   // Turkey Burn! payment confirmation (TURKEY_BURN_CONFIRMATION_TEMPLATE.html) — sent via Resend
   var RF_TB_TMPL_THANKYOU = 'template_cnl8smi';  // Turkey Burn! post-event thank-you (TURKEY_BURN_THANKYOU_TEMPLATE.html) — sent via Resend
