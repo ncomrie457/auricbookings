@@ -15416,13 +15416,16 @@ document.addEventListener('DOMContentLoaded', function() {
         '@media(max-width:640px){#pv-form .two{grid-template-columns:1fr;}}</style>' +
       '<div style="background:#fff;border:1px solid #d4bff4;border-radius:10px;padding:.9rem 1rem;">' +
         '<div class="two">' +
-          pvField('pv-code', 'Access code', { ph:'FAINOLA25', hint:'— what you give the host' }) +
-          pvField('pv-title', 'Title', { ph:"Fainola's Birthday Celebration" }) +
-          pvField('pv-host', 'Hosted by', { ph:'Fainola' }) +
+          // These placeholders are public: this repo is public, and the whole
+          // point of a private event is that its code is not. Keep them
+          // invented. A real code here is a published code.
+          pvField('pv-code', 'Access code', { ph:'GUESTCODE25', hint:'— what you give the host' }) +
+          pvField('pv-title', 'Title', { ph:"Sam's Birthday Celebration" }) +
+          pvField('pv-host', 'Hosted by', { ph:'Sam' }) +
           pvField('pv-capacity', 'Capacity', { type:'number', ph:'25' }) +
-          pvField('pv-date', 'Date', { ph:'Saturday, November 21' }) +
+          pvField('pv-date', 'Date', { ph:'Saturday, March 14' }) +
           pvField('pv-time', 'Time', { ph:'4:30 PM' }) +
-          pvField('pv-venue', 'Venue', { ph:'Babe Skwod Studio' }) +
+          pvField('pv-venue', 'Venue', { ph:'Studio name' }) +
           pvField('pv-price', 'Cost shown', { ph:'$45 per person' }) +
         '</div>' +
         pvField('pv-address', 'Address', { ph:'147 Prince St, Suite 208, Brooklyn, NY 11201' }) +
