@@ -15457,7 +15457,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Deliberately not a filename in this repo: this repo is public, so a
         // flyer committed here is a flyer anyone can find. Host it somewhere
         // of your choosing and paste the link.
-        pvField('pv-flyer', 'Flyer image URL', { ph:'https://...', value:d.flyer_url || '', hint:'— paste a link; do not put the file in this repo' }) +
+        pvField('pv-flyer', 'Flyer image URL', { ph:'https://...', value:d.flyer_url || '', hint:'— shown on the booking page' }) +
+        // "Almost there" and "confirmed" say different things, so each email
+        // gets its own artwork. Leave either empty and the flyer stands in.
+        pvField('pv-img-pending', 'Email image &mdash; not paid yet', { ph:'https://...', value:d.email_pending_image || '', hint:'— optional' }) +
+        pvField('pv-img-confirm', 'Email image &mdash; confirmed', { ph:'https://...', value:d.email_confirm_image || '', hint:'— optional' }) +
         pvField('pv-closes', 'Registration closes', { type:'date', value:d.closes_at || '', hint:'— optional' }) +
         pvField('pv-blurb', 'Short description', { textarea:true, value:d.blurb || '', ph:'A 45-minute mat class, then birthday desserts.' }) +
         '<div id="pv-err" style="color:var(--red);font-size:.78rem;margin:.3rem 0;"></div>' +
@@ -15487,6 +15491,7 @@ document.addEventListener('DOMContentLoaded', function() {
       p_capacity: parseInt(v('pv-capacity'), 10) || null,
       p_closes_at: v('pv-closes') || null, p_active: true,
       p_starts_at: pvInstant(v('pv-starts')), p_ends_at: pvInstant(v('pv-ends')),
+      p_pending_img: v('pv-img-pending') || null, p_confirm_img: v('pv-img-confirm') || null,
       p_old_code: was || null
     }).then(function(res){
       btn.disabled = false; btn.textContent = label;
@@ -15634,6 +15639,13 @@ document.addEventListener('DOMContentLoaded', function() {
               // Only where there is a signature to reproduce. A comp added by
               // hand has none, and offering a waiver for someone who never
               // signed one would be worse than offering nothing.
+              // Only where it can do something: a guest who has not paid is
+              // not confirmed, and saying they are would be a lie in writing.
+              (r.is_paid
+                ? '<button onclick="pvConfirmEmail(\'' + code + '\',' + r.id + ',this)" style="background:#e8f5e9;' +
+                  'border:1px solid #a5d6a7;color:#2e7d32;border-radius:5px;padding:.1rem .4rem;' +
+                  'font-size:.7rem;cursor:pointer;font-family:\'Jost\',sans-serif;font-weight:600;">\u2709 Confirm + email</button>'
+                : '') +
               (r.signature
                 ? '<button onclick="pvWaiver(\'' + code + '\',' + r.id + ')" style="background:#eef4fb;' +
                   'border:1px solid #b5d4f4;color:#185fa5;border-radius:5px;padding:.1rem .4rem;' +
@@ -15686,6 +15698,48 @@ document.addEventListener('DOMContentLoaded', function() {
   // that can drift apart. The clause list and refund wording come off the
   // guest's own row where they were stored, so an old waiver reproduces as the
   // document that guest was shown rather than as whatever the page says today.
+  // Tells a guest their spot is secured. Reads the event fresh rather than
+  // trusting the list view, because the list does not carry the venue address,
+  // the artwork or the times this email needs.
+  window.pvConfirmEmail = function(code, id, btn){
+    var r = (pvGuestRows[code] || []).filter(function(x){ return x.id === id; })[0];
+    if (!r){ alert('Could not find that guest.'); return; }
+    if (!PV_TMPL_CONFIRM){
+      alert('No confirmation template set yet.\n\nCreate it from PRIVATE_EVENT_CONFIRMATION_TEMPLATE.html, then put its id into PV_TMPL_CONFIRM in index.html.');
+      return;
+    }
+    var label = btn ? btn.textContent : '';
+    if (btn){ btn.disabled = true; btn.textContent = 'Sending…'; }
+    supabase.rpc('auric_private_one', { pass: ADMIN_PASSWORD, p_code: code }).then(function(res){
+      var e = (res && res.data && res.data[0]) || {};
+      var when = ''; try { when = new Date(r.signed_at || r.created_at).toLocaleString(); } catch(err){}
+      return emailjs.send(EMAILJS_SERVICE_RESEND, PV_TMPL_CONFIRM, {
+        to_email:      r.email,
+        from_name:     r.name,
+        event_title:   e.title || '',
+        host_name:     e.host_name || '',
+        event_date:    e.event_date || '',
+        event_time:    e.event_time || '',
+        venue_name:    e.venue_name || '',
+        venue_address: e.venue_address || '',
+        allergies:     r.food_allergies || 'none given',
+        signed_as:     r.signature || r.name,
+        signed_at:     when,
+        refund_policy_text: r.refund_policy_text || '',
+        hero_image:    e.email_confirm_image || e.flyer_url || 'https://book.auricmovement.com/og-preview.jpg?v=2',
+        calendar_url:  e.starts_at
+          ? 'https://book.auricmovement.com/calendar/add/?c=' + encodeURIComponent(code) : ''
+      });
+    }).then(function(){
+      if (btn){ btn.disabled = false; btn.textContent = label; }
+      alert('✅ Confirmation sent to ' + r.email);
+    }, function(err){
+      if (btn){ btn.disabled = false; btn.textContent = label; }
+      console.error('[private] confirmation failed:', err);
+      alert('⚠️ Could not send it. ' + ((err && (err.text || err.message)) || 'Check the EmailJS dashboard.'));
+    });
+  };
+
   window.pvWaiver = function(code, id){
     var r = (pvGuestRows[code] || []).filter(function(x){ return x.id === id; })[0];
     if (!r){ alert('Could not find that guest.'); return; }
