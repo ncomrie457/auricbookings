@@ -11296,6 +11296,10 @@ document.addEventListener('DOMContentLoaded', function() {
       adminPanel.classList.add('visible');
       renderAdmin();
       if (typeof refreshAdminBadgeToggles === 'function') { try{ refreshAdminBadgeToggles(); }catch(e){} }
+      // Private events live outside admin-body, so renderAdmin does not draw
+      // them. Without this the list only ever filled in after saving or
+      // deleting one, and an event created in an earlier visit looked missing.
+      if (typeof pvRefresh === 'function') { try{ pvRefresh(); }catch(e){} }
       adminPanel.scrollIntoView({behavior:'smooth'});
     });
   }
@@ -15480,7 +15484,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!list) return;
     supabase.rpc('auric_private_list', { pass: ADMIN_PASSWORD }).then(function(res){
       if (res.error){
-        list.innerHTML = '<div style="font-size:.78rem;color:#8a7d9b;">Not set up yet — run PRIVATE_EVENTS.sql in Supabase.</div>';
+        // "Run the SQL" is only one of the reasons this can fail, and saying it
+        // for all of them hides the rest. A missing function is recognisable;
+        // anything else gets reported as whatever the database actually said.
+        var m = String((res.error && (res.error.message || res.error.hint)) || '');
+        list.innerHTML = /does not exist|schema cache|not find the function/i.test(m)
+          ? '<div style="font-size:.78rem;color:#8a7d9b;">Not set up yet — run PRIVATE_EVENTS.sql in Supabase.</div>'
+          : '<div style="font-size:.78rem;color:var(--red);">Could not load private events — ' + escapeHTML(m) + '</div>';
+        console.error('[private] list failed:', res.error);
         return;
       }
       var rows = res.data || [];
