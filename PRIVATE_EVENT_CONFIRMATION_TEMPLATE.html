@@ -1,0 +1,149 @@
+<!--
+  ════════════════════════════════════════════════════════════
+   Private Event — Confirmation ("you're all set")
+   ────────────────────────────────────────────────────────────
+   Works for ANY private event. Nothing about a particular party is
+   written into this file: the title, host, date, time, venue and price
+   all arrive as variables from whatever the event says in Supabase, so
+   this one template serves every private booking you ever take.
+
+   HOW TO USE:
+     1. EmailJS → Email Templates → Create New Template.
+     2. Switch to the "Code"/HTML view and paste this ENTIRE file over
+        everything, then Save.
+     3. In the template Settings tab set:
+          Subject:   You're all set — {{event_title}}
+          From Name: Auric Movement
+          To Email:  {{to_email}}
+     4. Copy the template id (template_xxxxxxx) and set it in
+        index.html:  var PV_TMPL_CONFIRM = 'template_xxxxxxx';
+
+   EmailJS variables:
+     {{to_email}}      — the guest (send-to)
+     {{from_name}}     — the guest's name
+     {{event_title}}   — "Fainola's Birthday Celebration"
+     {{host_name}}     — "Fainola"
+     {{event_date}}    — "Saturday, November 21"
+     {{event_time}}    — "4:30 PM"
+     {{venue_name}}    — "Babe Skwod Studio"
+     {{venue_address}} — street address
+     {{allergies}}     — what they told us to avoid
+     {{signed_as}}     — the name they signed with
+     {{signed_at}}     — when they signed
+     {{refund_policy_text}} — the policy they agreed to, as shown to them
+     {{calendar_url}}  — add-to-calendar page for this event
+  ════════════════════════════════════════════════════════════
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You're all set</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f6f0e4;font-family:Helvetica,Arial,sans-serif;color:#3a2f26;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f6f0e4;padding:26px 12px;">
+  <tr><td align="center">
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;background-color:#fdfbf7;border:1px solid #e6dbc8;border-radius:16px;overflow:hidden;">
+
+      <!-- Masthead -->
+      <tr><td align="center" style="padding:26px 30px 6px;">
+        <div style="font-size:12px;letter-spacing:4px;text-transform:uppercase;color:#9c6b34;font-weight:bold;">Auric&nbsp;&#10022;&nbsp;Movement</div>
+      </td></tr>
+
+      <tr><td align="center" style="padding:14px 30px 0;">
+        <div style="font-family:Georgia,'Times New Roman',serif;font-size:30px;line-height:1.2;color:#123522;font-style:italic;">You&rsquo;re all set</div>
+        <div style="font-size:15px;line-height:1.6;color:#6f6455;padding-top:10px;">
+          Hi {{from_name}} &mdash; your spot at <strong style="color:#3a2f26;">{{event_title}}</strong> is confirmed.
+          We can&rsquo;t wait to celebrate with {{host_name}}.
+        </div>
+      </td></tr>
+
+      <!-- The details -->
+      <tr><td style="padding:22px 30px 0;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f1e9da;border-radius:12px;">
+          <tr><td style="padding:16px 18px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#9c6b34;font-weight:bold;padding-bottom:3px;">When</td>
+              </tr>
+              <tr>
+                <td style="font-size:17px;color:#3a2f26;font-weight:bold;padding-bottom:14px;">{{event_date}} &middot; {{event_time}}</td>
+              </tr>
+              <tr>
+                <td style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#9c6b34;font-weight:bold;padding-bottom:3px;">Where</td>
+              </tr>
+              <tr>
+                <td style="font-size:15px;color:#3a2f26;line-height:1.5;">
+                  <strong>{{venue_name}}</strong><br>
+                  <span style="color:#6f6455;">{{venue_address}}</span>
+                </td>
+              </tr>
+            </table>
+          </td></tr>
+        </table>
+      </td></tr>
+
+      <tr><td align="center" style="padding:18px 30px 0;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+          <tr><td align="center" style="border:1px solid #9c6b34;border-radius:999px;">
+            <a href="{{calendar_url}}" style="display:inline-block;padding:11px 26px;font-size:14px;font-weight:bold;color:#9c6b34;text-decoration:none;">&#128197; Add to your calendar</a>
+          </td></tr>
+        </table>
+      </td></tr>
+
+      <!-- What to bring -->
+      <tr><td style="padding:20px 30px 0;">
+        <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#9c6b34;font-weight:bold;padding-bottom:8px;">Before you come</div>
+        <div style="font-size:14px;line-height:1.75;color:#3a2f26;">
+          &bull;&nbsp; Arrive about <strong>10 minutes early</strong> so we can start on time.<br>
+          &bull;&nbsp; <strong>Grip socks</strong> are required &mdash; bring your own, or grab a pair at the studio.<br>
+          &bull;&nbsp; Wear something you can move in, and bring water.<br>
+          &bull;&nbsp; No experience needed. Every movement has an easier version if you want one.
+        </div>
+      </td></tr>
+
+      <!-- Their allergy note, read back so they know it landed -->
+      <tr><td style="padding:18px 30px 0;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fdf1e6;border-left:3px solid #e0b878;border-radius:0 8px 8px 0;">
+          <tr><td style="padding:12px 14px;font-size:13px;line-height:1.6;color:#6b4a2a;">
+            <strong>Allergies you told us about:</strong> {{allergies}}<br>
+            <span style="color:#8a7d6b;">There are treats afterwards &mdash; we&rsquo;ll plan around this. If anything changes, just reply to this email.</span>
+          </td></tr>
+        </table>
+      </td></tr>
+
+      <!-- Receipt of what they agreed to -->
+      <tr><td style="padding:20px 30px 0;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #e6dbc8;border-radius:10px;">
+          <tr><td style="padding:14px 16px;">
+            <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#9c6b34;font-weight:bold;padding-bottom:8px;">Your record</div>
+            <div style="font-size:12px;line-height:1.7;color:#6f6455;">
+              Waiver signed as <strong style="color:#3a2f26;">{{signed_as}}</strong> on {{signed_at}}.<br>
+              <span style="display:inline-block;padding-top:6px;">{{refund_policy_text}}</span>
+            </div>
+          </td></tr>
+        </table>
+      </td></tr>
+
+      <!-- Sign-off -->
+      <tr><td align="center" style="padding:24px 30px 4px;">
+        <div style="font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:17px;color:#5A3A1A;">See you on the mat &#10022;</div>
+        <div style="font-size:14px;color:#6f6455;padding-top:6px;">Niara &middot; Auric Movement</div>
+      </td></tr>
+
+      <tr><td align="center" style="padding:18px 30px 26px;">
+        <div style="font-size:12px;color:#a99483;line-height:1.6;">
+          Questions? Just reply, or email
+          <a href="mailto:auricmovement@outlook.com" style="color:#9c6b34;">auricmovement@outlook.com</a><br>
+          <a href="https://book.auricmovement.com" style="color:#9c6b34;">book.auricmovement.com</a>
+        </div>
+      </td></tr>
+
+    </table>
+
+  </td></tr>
+</table>
+</body>
+</html>
