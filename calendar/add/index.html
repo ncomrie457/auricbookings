@@ -30,6 +30,25 @@
     a.btn.primary:hover{ background:#33421f; }
     .note{ font-size:.76rem; color:#8a7a5f; margin:1rem 0 0; line-height:1.5; }
     .err{ font-family:'Cormorant Garamond',Georgia,serif; font-style:italic; font-size:1.15rem; color:var(--brown); }
+
+    /* A private event is somebody's party, not an Auric class, so the page
+       takes its cue from the invitation rather than the house palette. Only
+       the ?c= branch wears it; the public events are untouched. */
+    body.pv{ background:linear-gradient(158deg,#fdf0f2,#f8e3e6); }
+    body.pv .card{ border-color:#f0d3d8; box-shadow:0 20px 60px -30px rgba(150,40,70,.35); }
+    body.pv .head{ background:linear-gradient(140deg,#c2185b,#9e1549); color:#fff2f5; }
+    body.pv .brand{ color:#f6ccd8; }
+    body.pv .mark{ color:#f0c27a; }
+    body.pv .eyebrow{ color:#b03a62; }
+    body.pv h1{ color:#1f4535; }
+    body.pv .meta strong{ color:#9e1549; }
+    body.pv a.btn{ background:#fdf5f7; border-color:#f0d3d8; color:#9e1549; }
+    body.pv a.btn:hover{ border-color:#c2185b; background:#fbecef; }
+    body.pv a.btn.primary{ background:#c2185b; border-color:#c2185b; color:#fff2f5; }
+    body.pv a.btn.primary:hover{ background:#a71450; }
+    body.pv .note{ color:#9c7a84; }
+    /* The invitation itself, when the event has one. */
+    .flyer{ display:block; width:100%; height:auto; border-bottom:1px solid #f0d3d8; }
   </style>
 </head>
 <body>
@@ -128,6 +147,7 @@
     function privateEvent(code, body){
       var URL_ = 'https://qvmiwyxerotkqpbuhpun.supabase.co/rest/v1/rpc/auric_private_get';
       var KEY_ = 'sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ';
+      document.body.classList.add('pv');
       body.innerHTML = '<p class="meta">Loading&hellip;</p>';
       fetch(URL_, { method:'POST', headers:{ 'apikey':KEY_, 'Content-Type':'application/json' },
                     body: JSON.stringify({ p_code: code }) })
@@ -155,6 +175,19 @@
           var ics = icsDataUri(title, z(start), z(end), loc, desc);
           var when = (e.event_date || start.toDateString()) +
                      (e.event_time ? ' \u00B7 ' + e.event_time : '');
+          // The event's own artwork replaces the house masthead when it has
+          // one. It fails quietly: a flyer that will not load removes itself
+          // rather than leaving a broken frame above somebody's invitation.
+          if (e.flyer_url){
+            var head = document.querySelector('.head');
+            if (head){
+              var img = new Image();
+              img.className = 'flyer';
+              img.alt = e.title || '';
+              img.onload = function(){ head.parentNode.replaceChild(img, head); };
+              img.src = e.flyer_url;
+            }
+          }
           body.innerHTML =
             '<div class="eyebrow">Add to your calendar</div>' +
             '<h1>' + esc(e.title) + '</h1>' +
