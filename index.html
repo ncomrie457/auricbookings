@@ -6211,6 +6211,14 @@
         <input type="text" id="admin-donor-reformer-bk" data-event-donors="reformer-bk" placeholder="e.g., partner or sponsor names" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.82rem;box-sizing:border-box;background:#fff;color:#3d322a;">
       </div>
       <div style="margin-bottom:.75rem;">
+        <label for="admin-donor-reformer-o10" class="au-label">Riddim &amp; Kompa &mdash; Brooklyn, Oct 10 &mdash; Donors</label>
+        <input type="text" id="admin-donor-reformer-o10" data-event-donors="reformer-o10" placeholder="e.g., partner or sponsor names" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.9rem;">
+      </div>
+      <div style="margin-bottom:.75rem;">
+        <label for="admin-donor-reformer-n21" class="au-label">Riddim &amp; Kompa &mdash; Brooklyn, Nov 21 &mdash; Donors</label>
+        <input type="text" id="admin-donor-reformer-n21" data-event-donors="reformer-n21" placeholder="e.g., partner or sponsor names" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.9rem;">
+      </div>
+      <div style="margin-bottom:.75rem;">
         <label for="admin-donor-halloween" class="au-label">Shhh&hellip; Quiet on the Creek &mdash; Donors</label>
         <input type="text" id="admin-donor-halloween" data-event-donors="halloween" placeholder="e.g., partner or sponsor names" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.82rem;box-sizing:border-box;background:#fff;color:#3d322a;">
       </div>
@@ -10478,7 +10486,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function applyEventBadges() {
     ensureDonorSlots();
     getEventConfig(function(cfg){
-      var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat', recharge: 'event-card-recharge', reformer: 'event-card-reformer', 'reformer-bk': 'event-card-reformer-bk', halloween: 'event-card-halloween', turkey: ['event-card-turkey','event-card-turkey28'], blooming: 'event-card-blooming' };
+      var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat', recharge: 'event-card-recharge', reformer: 'event-card-reformer', 'reformer-bk': 'event-card-reformer-bk', 'reformer-o10': 'event-card-reformer-o10', 'reformer-n21': 'event-card-reformer-n21', halloween: 'event-card-halloween', turkey: ['event-card-turkey','event-card-turkey28'], blooming: 'event-card-blooming' };
       Object.keys(cards).forEach(function(key){
         var _ids = cards[key]; if(!Array.isArray(_ids)) _ids = [_ids];
         _ids.forEach(function(_cardId){
