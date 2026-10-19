@@ -3284,12 +3284,12 @@
       <button type="button" id="event-card-halloween" class="bq-event scroll-reveal" data-event-id="halloween-creek-2026-10-24" data-event-date="2026-10-24" data-event-name="Halloween Reformer Pilates" data-location="long-island">
         <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
         <div class="bq-event-photo">
-          <img src="halloween-creek-flyer.jpg?v=3" alt="Halloween Reformer Pilates &#8212; Shhh&hellip; Quiet on the Creek. Saturday, October 24 at Valley Studio, West Hempstead NY &#183; three sessions (11:30 AM, 12:30 &amp; 1:30 PM) &#183; $45, costumes encouraged" loading="lazy" decoding="async">
+          <img src="halloween-creek-flyer.jpg?v=3" alt="Halloween Reformer Pilates &#8212; Shhh&hellip; Quiet on the Creek. Saturday, October 24 at Valley Studio, West Hempstead NY &#183; 1:30 PM &#183; $45, costumes encouraged" loading="lazy" decoding="async">
         </div>
         <div class="bq-event-date">10.24.26 &#183; Halloween</div>
         <div class="bq-event-name">Halloween <em>Reformer Pilates</em></div>
         <div class="bq-event-loc">West Hempstead, NY</div>
-        <div class="bq-event-sub">Sat &#183; 11:30 AM, 12:30 &amp; 1:30 PM &#183; $45 &#183; Valley Studio, West Hempstead NY &#183; costumes encouraged &#127875;</div>
+        <div class="bq-event-sub">Sat &#183; 1:30 PM &#183; $45 &#183; Valley Studio, West Hempstead NY &#183; costumes encouraged &#127875;</div>
         <div class="bq-event-raffle">&#127875; Best costume &#183; win a 4-class package</div>
         <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
       </button>
@@ -3504,8 +3504,14 @@
     if (window.auricIsClosed && window.auricIsClosed(card.getAttribute('data-event-id')))
       return { text:'Sold out', cls:'sold' };
     if (!paid) return null;
+    // A held session's empty seats are not availability — nobody can buy
+    // them. Counting them would let a date whose only open time is full
+    // still read "Now booking" on the card most people see first.
+    var held = (window.AURIC_CLOSED_SESSIONS || {})[card.getAttribute('data-event-id')] || {};
+    var open = cfg.sessions.filter(function(s){ return !held[s]; });
+    if (!open.length) return { text:'Registration closed', cls:'sold' };
     var rem = 0;
-    cfg.sessions.forEach(function(s){ var r = cfg.cap - (paid[s] || 0); rem += (r > 0 ? r : 0); });
+    open.forEach(function(s){ var r = cfg.cap - (paid[s] || 0); rem += (r > 0 ? r : 0); });
     if (rem <= 0) return { text:'Sold out',        cls:'sold' };
     if (rem <= 3) return { text:'Almost sold out', cls:'warn' };
     return            { text:'Now booking',     cls:'ok'   };
@@ -7131,21 +7137,31 @@ Can't wait to move and connect with you!</textarea>
   };
   /* ── A single session held back ───────────────────────────────────────
      Different from closing a whole date. The event keeps selling; one slot
-     stops taking money because it is spoken for — a private booking, a
-     birthday group, anything held for someone by arrangement.
+     stops taking money — because it is spoken for (a private booking, a
+     birthday group, anything held by arrangement), or because you have
+     decided not to run that time and want the others to carry on.
 
      No waitlist is offered on a held slot. A waitlist means "tell me if a
-     seat frees up", and this seat is not going to: it already has someone's
-     name on it. Offering one would collect hope and deliver nothing.
+     seat frees up", and this seat is not going to — it already has someone's
+     name on it, or the time is not being run at all. Offering one would
+     collect hope and deliver nothing.
 
      TO HOLD ONE:  add the session key under its event, with what the button
                    should say.
      TO RELEASE:   delete the line and it goes straight back on sale at
-                   whatever the live count says.                          */
-  // Nothing held right now. The Nov 21 3 PM slot was reserved for a birthday
-  // and has been released. Shape kept for the next one:
-  //   'event-id': { 'session-key': 'Registration closed' }
-  window.AURIC_CLOSED_SESSIONS = {};
+                   whatever the live count says.
+
+     Anyone who already paid for a held time is untouched: their row, their
+     confirmation, their reminders and the ?paid= return screen all still
+     work. This only stops new bookings being taken.                      */
+  window.AURIC_CLOSED_SESSIONS = {
+    // Oct 24 is running the 1:30 PM only. The two earlier times stop taking
+    // bookings; delete these two lines to put them back on sale.
+    'halloween-creek-2026-10-24': {
+      'hw1130': 'Registration closed',
+      'hw1230': 'Registration closed'
+    }
+  };
   // Lock every held slot on a screen, without asking the database anything.
   // This runs before the seat count, so a hold survives Supabase being slow,
   // blocked or down — the count re-enables buttons when it arrives, and if it
