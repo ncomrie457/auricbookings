@@ -18070,16 +18070,37 @@ document.addEventListener('DOMContentLoaded', function() {
 
      Two things are handled for you: a person with two signups is listed
      once, and anyone already sent this email comes UNTICKED, with a chip
-     saying so, so a second pass does not mail them twice.              */
+     saying so, so a second pass does not mail them twice.
+
+     The dates live in ONE place below. They were written out twice — on
+     the button and in the confirm box — and when the email was changed
+     from Oct 10 to Nov 22 both were left behind, so the panel offered to
+     send an email that no longer existed. Change RK_ND_DATES and both
+     follow.                                                            */
+  // What template_0x7r3ty currently says. Keep this in step with
+  // RIDDIM_KOMPA_NEW_DATES_TEMPLATE.html whenever the dates change.
+  var RK_ND_DATES = 'Nov 21 & Nov 22';
   var RK_SENT_KEY = 'auric_rk_newdates_sent';
+  // "Already sent" means already sent THIS email, not any email from here.
+  // When the dates change the email is a different one, and someone who got
+  // the old version is exactly the person who most needs the new one — so a
+  // row only counts as sent when it was sent under the current RK_ND_DATES.
+  // Older entries are plain strings from before this was recorded; they are
+  // treated as a different version, which is what they are.
   function rkSentSet(){
     try { var a = JSON.parse(localStorage.getItem(RK_SENT_KEY) || '[]');
-          var m = {}; a.forEach(function(e){ m[String(e).toLowerCase()] = 1; }); return m; }
+          var m = {};
+          a.forEach(function(e){
+            if(e && typeof e === 'object'){
+              if(e.d === RK_ND_DATES && e.e) m[String(e.e).toLowerCase()] = 1;
+            }
+          });
+          return m; }
     catch(e){ return {}; }
   }
   function rkSentAdd(email){
     try { var a = JSON.parse(localStorage.getItem(RK_SENT_KEY) || '[]');
-          a.push(String(email).toLowerCase());
+          a.push({ e: String(email).toLowerCase(), d: RK_ND_DATES, at: new Date().toISOString() });
           localStorage.setItem(RK_SENT_KEY, JSON.stringify(a)); } catch(e){}
   }
   window.rkNewDatesForget = function(){
@@ -18109,7 +18130,7 @@ document.addEventListener('DOMContentLoaded', function() {
       + people.length + ' on the list'
       + (dupes ? ' · ' + dupes + ' duplicate signup' + (dupes === 1 ? '' : 's') + ' merged' : '')
       + (noEmail ? ' · ' + noEmail + ' with no email' : '')
-      + (people.length - fresh ? ' · ' + (people.length - fresh) + ' already sent, unticked' : '')
+      + (people.length - fresh ? ' · ' + (people.length - fresh) + ' already sent the ' + RK_ND_DATES + ' email, unticked' : '')
       + '</div>'
       + '<div style="margin-bottom:.5rem;">'
       + '<button type="button" class="au-btn is-quiet is-compact" onclick="rkNewDatesTick(1)">Tick all</button> '
@@ -18133,7 +18154,7 @@ document.addEventListener('DOMContentLoaded', function() {
     html += '</div><div style="margin-top:.6rem;">'
       + '<button type="button" class="au-btn is-primary is-compact" onclick="rkNewDatesSend(this)">'
       + 'Send to the ticked people</button>'
-      + '<span class="au-meta" style="margin-left:.5rem;">Oct 10 &amp; Nov 21 · template_0x7r3ty</span>'
+      + '<span class="au-meta" style="margin-left:.5rem;">' + escapeHTML(RK_ND_DATES) + ' · template_0x7r3ty</span>'
       + '</div></div>';
     out.innerHTML = html;
     window._rkPick = {};
@@ -18152,7 +18173,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if(!picked.length){ alert('Nobody is ticked.'); return; }
     if(typeof emailjs === 'undefined'){ alert('EmailJS not loaded.'); return; }
     var names = picked.map(function(p){ return (p.name || p.email); }).join('\n   ');
-    if(!confirm('Send the Oct 10 & Nov 21 email to ' + picked.length + ' person(s)?\n\n   '
+    if(!confirm('Send the ' + RK_ND_DATES + ' email to ' + picked.length + ' person(s)?\n\n   '
                 + names)) return;
 
     btn.disabled = true;
