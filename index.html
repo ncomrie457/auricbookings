@@ -8389,7 +8389,24 @@ session:chosen, session_label:chosenLabel,
       sessionLabel:(document.getElementById('tb-pay-label').textContent||''), stripeUrl:(document.getElementById('tb-pay-btn').getAttribute('href')||'') });
   });
   // Deep link from the shared flyer (/turkey-burn) → open the booking popup.
-  try { if(new URLSearchParams(location.search).get('book')==='turkey'){ setTimeout(openOv, 450); } } catch(e){}
+  // &s= preselects a time, the same way the Oct 10 and Nov 21 links do, so a
+  // button in an email lands on the form already set to that session. A held
+  // or sold-out time is left alone: the click is skipped and the reader picks
+  // from the list, rather than being dropped into a form they cannot finish.
+  try {
+    var _tq = new URLSearchParams(location.search);
+    if(_tq.get('book')==='turkey'){
+      var _ts = _tq.get('s');
+      setTimeout(function(){
+        openOv();
+        if(!_ts) return;
+        setTimeout(function(){
+          var _tb = stepTime.querySelector('.rf-time[data-session="' + _ts + '"]');
+          if(_tb && !_tb.disabled) _tb.click();
+        }, 700);
+      }, 450);
+    }
+  } catch(e){}
   // ── Payment confirmation (Stripe returns to ?paid=turkey&s=tb1230|tb130) ──
   var TB_CONF = {
     'tb1130':    { label:'11:30 AM session', date:'Sunday, November 22', cal:'https://book.auricmovement.com/calendar/add/?e=turkey-burn-1130am' },
