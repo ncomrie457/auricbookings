@@ -58,4 +58,14 @@
     <priority>0.4</priority>
   </url>
 
+  <!-- Partner With Us — corporate and private group enquiries. Listed high
+       because it is the page a company is looking for, and unlike an event
+       page it does not go out of date. -->
+  <url>
+    <loc>https://book.auricmovement.com/partner/</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
 </urlset>
