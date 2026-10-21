@@ -20101,6 +20101,25 @@ document.addEventListener('DOMContentLoaded', function() {
     _historyLastPanel = _initialPanel;
   }
 
+  /* A #tab-… address in the bar should open that tab ────────────────────
+     The hash was recorded in history above but never acted on, so every
+     #tab-… URL loaded the home page. That is a quiet trap rather than a
+     cosmetic one: clicking a tab puts the hash in the address bar, so the
+     obvious way to share a tab — click it, copy the URL — produced a link
+     that sent the reader somewhere else. Pasting /#tab-corporate to a
+     company landed them on the home page with no idea what they were
+     meant to see.
+
+     Only a real panel id is honoured. Other hashes on this page mean
+     other things (#admin, #privacy, #terms, #club) and are handled
+     where they belong. */
+  try {
+    var _hashPanel = (location.hash || '').replace('#','');
+    if (/^tab-[a-z]+$/.test(_hashPanel) && document.getElementById(_hashPanel)) {
+      setTimeout(function(){ switchTab(_hashPanel); }, 60);
+    }
+  } catch(e){}
+
   function switchTab(tabId) {
     document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
     var allPanels = ['tab-home','tab-events','tab-current','tab-matchat','tab-recharge','tab-coming','tab-about','tab-practice','tab-past','tab-faq','tab-corporate','tab-contract','tab-members'];
