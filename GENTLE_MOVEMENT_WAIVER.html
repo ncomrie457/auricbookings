@@ -148,10 +148,25 @@
     display:flex; justify-content:space-between; gap:16px;
   }
 
+  /* Two pages, and only two. The whole form has to survive being printed,
+     stacked on a clipboard and handed round a room — a stray third page
+     carrying two tick boxes is the one that gets separated and lost, and
+     an unsigned page 4 is worse than no form at all. Everything below is
+     tuned to land page 1 on Photos and page 2 on the signature; if you
+     add a section, re-check the page count before printing a stack. */
   @media print{
-    body{ background:#fff; font-size:10.8pt; }
+    body{ background:#fff; font-size:9.9pt; line-height:1.42; }
     .sheet{ width:auto; min-height:0; margin:0; padding:0; box-shadow:none; }
     .page-break{ break-before:page; page-break-before:always; }
+    h2{ margin:13px 0 4px; font-size:10.3pt; }
+    h2:first-of-type{ margin-top:15px; }
+    p{ margin:0 0 7px; }
+    .rule-top{ margin-bottom:15px; }
+    .ticks{ gap:6px 18px; margin:5px 0 3px; }
+    .term{ font-size:9.4pt; line-height:1.4; margin-bottom:5px; }
+    .lines{ margin-top:17px; }
+    .line i{ height:20px; }
+    footer{ margin-top:15px; }
   }
 </style>
 </head>
