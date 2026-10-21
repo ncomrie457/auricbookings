@@ -63,6 +63,13 @@
     .final-check input[type="checkbox"] { width:20px; height:20px; min-width:20px; accent-color:var(--gold); cursor:pointer; }
     .final-check label { margin-bottom:0; font-weight:500; cursor:pointer; font-size:.9rem; }
 
+    /* Gentle Movement tick rows. Deliberately larger than the rest of the
+       form: 22px targets and 1rem labels, because these are tapped by the
+       people the session is for, often on a phone, often without reading
+       glasses. The default 16px box is a miss waiting to happen. */
+    .gentle-tick { display:flex; align-items:center; gap:.7rem; font-size:1rem; font-weight:400; margin-bottom:0; cursor:pointer; line-height:1.45; }
+    .gentle-tick input { width:22px; height:22px; min-width:22px; accent-color:var(--gold); cursor:pointer; margin:0; }
+
     .success-card { text-align:center; padding:2.5rem 1.5rem; }
     .checkmark { font-size:3rem; margin-bottom:.75rem; color:var(--gold); }
     .success-card h2 { text-align:center; color:var(--brown); margin-bottom:.5rem; }
@@ -147,6 +154,7 @@
           <option value="rk-wh">Riddim &amp; Kompa — West Hempstead · Sun, Sep 13</option>
           <option value="rk-bk">Riddim &amp; Kompa — Brooklyn · Sat, Sep 26 (moved to Oct 10)</option>
         </optgroup>
+        <option value="gentle">Gentle Movement session (seated &amp; standing)</option>
         <option value="other">Another event / private session</option>
       </select>
       <div id="reg-event-err" class="err-msg" role="alert"></div>
@@ -157,6 +165,83 @@
       <label for="reg-date" style="display:block;margin-top:.7rem;">Event Date &amp; Time</label>
       <input type="text" id="reg-date" placeholder="e.g. August 20th at 10:00 AM">
     </div>
+    <!-- ══ Gentle Movement only ════════════════════════════════════════
+         Shown when the Gentle Movement session is chosen and hidden
+         otherwise, so a reformer booking is not asked about joint
+         replacements and a gentle one is not asked about nothing. ══ -->
+    <div id="gentle-fields" class="hidden">
+
+      <div class="field">
+        <label>Please tick anything that applies to you <span style="font-weight:400;color:var(--text-muted);">(optional)</span></label>
+        <p style="font-size:.8rem;color:var(--text-muted);margin:-.15rem 0 .55rem;line-height:1.5;">This is how your instructor knows what to offer you and what to leave out. Seen only by her.</p>
+        <div id="gentle-health" style="display:flex;flex-direction:column;gap:.5rem;">
+          <label class="gentle-tick"><input type="checkbox" value="Heart condition"> Heart condition</label>
+          <label class="gentle-tick"><input type="checkbox" value="High blood pressure"> High blood pressure</label>
+          <label class="gentle-tick"><input type="checkbox" value="Joint replacement (hip, knee, shoulder)"> Joint replacement (hip, knee, shoulder)</label>
+          <label class="gentle-tick"><input type="checkbox" value="Osteoporosis or low bone density"> Osteoporosis or low bone density</label>
+          <label class="gentle-tick"><input type="checkbox" value="A fall in the past year"> A fall in the past year</label>
+          <label class="gentle-tick"><input type="checkbox" value="Dizziness or balance concerns"> Dizziness or balance concerns</label>
+          <label class="gentle-tick"><input type="checkbox" value="Recent surgery or injury"> Recent surgery or injury</label>
+          <label class="gentle-tick"><input type="checkbox" value="Uses a cane, walker or other mobility aid"> I use a cane, walker, or other mobility aid</label>
+          <label class="gentle-tick"><input type="checkbox" value="None of these"> None of these</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Hands-on help</label>
+        <p style="font-size:.8rem;color:var(--text-muted);margin:-.15rem 0 .55rem;line-height:1.5;">Sometimes an instructor offers a light touch to guide a position — a hand at the shoulder or the back. You will be asked first each time, and you can say no at any point.</p>
+        <div style="display:flex;flex-direction:column;gap:.5rem;">
+          <label class="gentle-tick"><input type="radio" name="gentle-hands" value="yes"> Yes, hands-on guidance is fine</label>
+          <label class="gentle-tick"><input type="radio" name="gentle-hands" value="no"> No, please do not use hands-on guidance</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Photos</label>
+        <p style="font-size:.8rem;color:var(--text-muted);margin:-.15rem 0 .55rem;line-height:1.5;">Photos are sometimes taken for community and promotional use. Either answer is completely fine, and you can change it later by emailing us.</p>
+        <div style="display:flex;flex-direction:column;gap:.5rem;">
+          <label class="gentle-tick"><input type="radio" name="gentle-photo" value="yes"> Yes, photos of me may be used</label>
+          <label class="gentle-tick"><input type="radio" name="gentle-photo" value="no"> No, please do not use photos of me</label>
+        </div>
+      </div>
+
+      <!-- ══ The group option ═════════════════════════════════════════
+           Optional, and off by default. A gentle session is usually
+           arranged by somebody — a centre's activities coordinator, a
+           daughter, a church group — and asking twelve people in their
+           eighties to each fill in a web form is how you end up with
+           three. One person can submit for everybody.
+
+           What it does NOT do is pretend one signature is twelve
+           signatures. Each name becomes its own waiver record, stamped
+           with who submitted it and the tick below, so the roster is
+           real and the limits of it are on the record too. ══ -->
+      <div class="field" style="border:2px dashed var(--border);border-radius:10px;padding:1rem 1.1rem;background:var(--cream-light);">
+        <label class="gentle-tick" style="font-weight:600;">
+          <input type="checkbox" id="group-toggle"> I'm filling this in for a group
+        </label>
+        <p style="font-size:.8rem;color:var(--text-muted);margin:.4rem 0 0;line-height:1.5;">Leave this unticked if you're only signing for yourself.</p>
+
+        <div id="group-fields" class="hidden" style="margin-top:.9rem;">
+          <label for="group-names">Who is taking part? <span class="required" aria-hidden="true">*</span></label>
+          <p style="font-size:.8rem;color:var(--text-muted);margin:-.15rem 0 .45rem;line-height:1.5;">One name per line. Include yourself if you're taking part too — a name that isn't on this list isn't covered.</p>
+          <textarea id="group-names" rows="6" placeholder="Marie Joseph&#10;Alice Pierre&#10;Rose Baptiste"></textarea>
+          <div id="group-names-err" class="err-msg" role="alert"></div>
+
+          <label class="gentle-tick" style="margin-top:.7rem;align-items:flex-start;">
+            <input type="checkbox" id="group-authority">
+            <span>I have read these terms to each person named above, they have agreed to them, and they have asked me to submit this on their behalf.</span>
+          </label>
+          <div id="group-authority-err" class="err-msg" role="alert"></div>
+
+          <p style="font-size:.78rem;color:var(--text-muted);margin:.7rem 0 0;line-height:1.55;">
+            If anyone would rather sign for themselves, send them this page, or print the paper form and have them sign it on the day.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
     <div class="field">
       <label for="reg-note">Anything we should know before class? <span style="font-weight:400;color:var(--text-muted);">(optional)</span></label>
       <p style="font-size:.8rem;color:var(--text-muted);margin:-.15rem 0 .45rem;line-height:1.5;">Injuries, recent surgeries, pregnancy, allergies — anything that helps us support you. Seen only by your instructor.</p>
@@ -425,7 +510,37 @@ document.addEventListener('DOMContentLoaded', function() {
   var CR_ART_CLAUSE =
     "I understand that Create & Recharge is co-hosted with Georgina Arroyo and includes creative and art-based activities. I acknowledge the inherent risks of using art materials and tools — including cuts, skin irritation, or allergic reactions to paints, adhesives, or other supplies, and staining of clothing or belongings — and I voluntarily assume all such risks. I agree that every release, waiver, and hold-harmless provision in this agreement also protects Auric Movement LLC's collaborators, co-hosts, and guest instructors, including Georgina Arroyo, to the same extent as the Released Parties. I agree to disclose any known allergies or sensitivities to my instructor before participating.";
 
+  /* ── Gentle Movement ──────────────────────────────────────────────────
+     A REPLACEMENT set, not an addition. The 22 clauses above are written
+     for a reformer room and read like a contract; this is read by people
+     who are often reading without their glasses, on a phone someone else
+     is holding. Same cover, plain words, eleven items instead of
+     twenty-two — because a form nobody finishes protects nobody.
+
+     Two things here are in no other Auric waiver, because this room needs
+     them and a reformer room does not: permission to call emergency
+     services (an emergency-contact field implies it but does not give
+     it), and consent to hands-on guidance, which is asked below rather
+     than assumed. Photo consent is also a question below rather than a
+     clause, so declining does not mean refusing the whole waiver.      */
+  var GENTLE_CLAUSES = [
+    "I am choosing to take part in a gentle, Pilates-based movement session (which may include seated and standing exercises) led by Niara Comrie, certified Pilates instructor, of Auric Movement LLC. Taking part is voluntary, and I may rest, modify, or stop at any time.",
+    "I understand that any physical activity carries some risk — including muscle strain, dizziness, falls, and, in rare cases, more serious injury — and I accept those risks, whether or not they could have been foreseen.",
+    "I confirm that I am able to do light exercise, or that I have checked with my doctor. I have disclosed any conditions, injuries, recent surgeries, or medications that could affect my ability to exercise safely, and I will tell the instructor if anything changes.",
+    "I understand that Auric Movement's instructors are not licensed medical professionals, and that nothing offered in a session is medical advice, diagnosis, or treatment, or a substitute for any of them.",
+    "I will stop right away if I feel pain, dizziness, shortness of breath, or chest discomfort, and I will tell the instructor. I will follow the instructor's directions and safety guidance, and use any props or equipment only as shown.",
+    "If I appear to need urgent medical help, I give permission for Auric Movement, the host, or the venue to call emergency services and to share what they know of my health details with the people who come. I understand I am responsible for the cost of any emergency care or transport.",
+    "I release Niara Comrie and Auric Movement LLC, along with its instructors, employees, agents and affiliates, and any event host, organizer or venue (together, the “Released Parties”), from claims for injury, illness or loss arising from my participation. I understand this covers ordinary negligence, and that it does not cover gross negligence or willful misconduct, which are not released.",
+    "I agree that if a claim is made despite this release, the total liability of the Released Parties is limited to the amount I paid for the session the claim arises from, and that they are not liable for indirect, incidental or consequential damages. This limit does not apply to gross negligence or willful misconduct.",
+    "I will cover the Released Parties for any claim, damage or reasonable legal cost arising from my own conduct in the session, including injury I cause to another participant or damage I cause to the venue or its equipment. My belongings are my own responsibility, and the Released Parties are not liable for anything lost, stolen or damaged.",
+    "I agree that any dispute arising from this waiver or from my participation will be settled by binding arbitration in New York under the rules of the American Arbitration Association, rather than in court. This waiver is governed by the law of the State of New York, and if any part of it is found unenforceable, the rest still stands.",
+    "I am at least 18 years of age, everything I have entered here is true and accurate to the best of my knowledge, and I have had enough opportunity to read this form, ask questions, and take independent legal advice if I wanted it. I sign it freely."
+  ];
+
   // Per-event waiver config. extraClauses are appended to the base set above.
+  // `clauses` REPLACES the base set instead (used by Gentle Movement).
+  // `gentle:true` reveals the health screen, hands-on and photo questions,
+  // and the group option.
   //
   // These dates are printed onto a signed waiver, so they have to match the
   // event cards in /index.html — data-event-date there is the source of truth.
@@ -441,6 +556,10 @@ document.addEventListener('DOMContentLoaded', function() {
     //    resolve to the right event instead of silently falling back to "other".
     'rk-wh':    { name: 'Riddim & Kompa on the Reformer — West Hempstead', date: 'Sunday, September 13, 2026',   extraClauses: [], custom: false },
     'rk-bk':    { name: 'Riddim & Kompa on the Reformer — Brooklyn',       date: 'Saturday, September 26, 2026', extraClauses: [], custom: false },
+    // A gentle session is booked one at a time — a senior centre, a church
+    // hall, a family — so the name and date are typed in rather than listed.
+    gentle:     { name: '',                                                date: '',                             extraClauses: [], custom: true,
+                  clauses: GENTLE_CLAUSES, gentle: true },
     other:      { name: '',                                                date: '',                             extraClauses: [], custom: true }
   };
   // The clause set currently in play (base by default; swapped when an event is chosen).
@@ -550,8 +669,17 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
-    activeClauses = cfg.extraClauses.length ? clauseTexts.concat(cfg.extraClauses) : clauseTexts.slice();
+    // `clauses` replaces the base set; `extraClauses` adds to it.
+    activeClauses = cfg.clauses ? cfg.clauses.slice()
+                  : (cfg.extraClauses.length ? clauseTexts.concat(cfg.extraClauses) : clauseTexts.slice());
     TOTAL_CLAUSES = activeClauses.length;
+
+    // Gentle-only questions, and the group option, follow the event.
+    var gf = document.getElementById('gentle-fields');
+    if (gf) gf.classList.toggle('hidden', !cfg.gentle);
+    // Switching away from a gentle session leaves its answers behind; clear
+    // them so a later reformer waiver cannot carry a stale group roster.
+    if (!cfg.gentle) resetGentleFields();
 
     if (cfg.custom) {
       customWrap.classList.remove('hidden');
@@ -578,6 +706,58 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('reg-event-select').addEventListener('change', function(){
     applyEventSelection(this.value);
   });
+
+  // ── Gentle Movement answers ───────────────────────────────────────────
+  function resetGentleFields(){
+    var gf = document.getElementById('gentle-fields'); if (!gf) return;
+    Array.prototype.forEach.call(gf.querySelectorAll('input[type="checkbox"],input[type="radio"]'),
+      function(i){ i.checked = false; });
+    var gn = document.getElementById('group-names'); if (gn) gn.value = '';
+    var gw = document.getElementById('group-fields'); if (gw) gw.classList.add('hidden');
+    ['group-names-err','group-authority-err'].forEach(function(id){
+      var e = document.getElementById(id); if (e) e.textContent = '';
+    });
+  }
+  (function(){
+    var t = document.getElementById('group-toggle');
+    if (!t) return;
+    t.addEventListener('change', function(){
+      document.getElementById('group-fields').classList.toggle('hidden', !this.checked);
+    });
+    // "None of these" and a named condition are contradictory answers. Rather
+    // than reject the combination after the fact, let the last tap win.
+    var health = document.getElementById('gentle-health');
+    if (health) health.addEventListener('change', function(e){
+      var box = e.target; if (!box || box.type !== 'checkbox') return;
+      var none = health.querySelector('input[value="None of these"]');
+      if (!none) return;
+      if (box === none && box.checked) {
+        Array.prototype.forEach.call(health.querySelectorAll('input[type="checkbox"]'),
+          function(i){ if (i !== none) i.checked = false; });
+      } else if (box !== none && box.checked) {
+        none.checked = false;
+      }
+    });
+  })();
+
+  // Everything the gentle questions collected, as one readable block. It
+  // goes into `notes` rather than new columns so this needs no migration —
+  // and so it shows up as-is in the admin list and in the emailed copy,
+  // which is where it actually gets read.
+  function gentleNoteBlock(){
+    var gf = document.getElementById('gentle-fields');
+    if (!gf || gf.classList.contains('hidden')) return '';
+    var ticked = [];
+    Array.prototype.forEach.call(gf.querySelectorAll('#gentle-health input:checked'),
+      function(i){ ticked.push(i.value); });
+    var hands = gf.querySelector('input[name="gentle-hands"]:checked');
+    var photo = gf.querySelector('input[name="gentle-photo"]:checked');
+    var out = [];
+    out.push('Health: ' + (ticked.length ? ticked.join('; ') : 'not answered'));
+    out.push('Hands-on guidance: ' + (hands ? (hands.value === 'yes' ? 'yes' : 'NO — do not use hands-on') : 'not answered'));
+    out.push('Photos: ' + (photo ? (photo.value === 'yes' ? 'yes' : 'NO — do not use photos') : 'not answered'));
+    return out.join('\n');
+  }
 
   // Build clauses
   function buildClauses() {
@@ -695,6 +875,26 @@ document.addEventListener('DOMContentLoaded', function() {
       ok = false;
     } else { document.getElementById('reg-event-err').textContent = ''; }
 
+    // Group mode: the roster is the thing being submitted, so an empty or
+    // unconfirmed one is a hard stop. Without the names there is no record
+    // of who was covered, which is the whole point of collecting it.
+    var groupOn = !!(document.getElementById('group-toggle') || {}).checked
+               && !document.getElementById('gentle-fields').classList.contains('hidden');
+    var groupNames = [];
+    if (groupOn) {
+      groupNames = (document.getElementById('group-names').value || '')
+        .split('\n').map(function(s){ return s.trim(); })
+        .filter(function(s){ return s.length > 1; });
+      if (!groupNames.length) {
+        document.getElementById('group-names-err').textContent = 'Please list at least one name, one per line.';
+        ok = false;
+      } else { document.getElementById('group-names-err').textContent = ''; }
+      if (!document.getElementById('group-authority').checked) {
+        document.getElementById('group-authority-err').textContent = 'Please confirm each person has agreed and asked you to submit for them.';
+        ok = false;
+      } else { document.getElementById('group-authority-err').textContent = ''; }
+    }
+
     if (!ok) {
       document.getElementById('reg-name').scrollIntoView({behavior:'smooth', block:'center'});
       return;
@@ -715,20 +915,49 @@ document.addEventListener('DOMContentLoaded', function() {
     var noteEl = document.getElementById('reg-note');
     var noteVal = noteEl ? noteEl.value.trim() : '';
     var now = new Date();
-    var record = {
-      name: name, email: email, signature: sig,
-      eventName: eventName, eventDate: eventDate, notes: noteVal,
-      time: now.toLocaleString(), timestamp: now.toISOString(),
-      code: genCode(), clausesAgreed: TOTAL_CLAUSES, clauseList: activeClauses.slice()
-    };
+
+    // The gentle answers ride along in `notes`, after whatever was typed.
+    var gBlock = gentleNoteBlock();
+    if (gBlock) noteVal = noteVal ? (noteVal + '\n\n' + gBlock) : gBlock;
+
+    // One record on your own; one record PER PERSON for a group, all sharing
+    // the submitter's signature and one group code. A single row saying
+    // "and 11 others" is not a roster — you cannot take a register from it,
+    // and it does not say who was actually covered.
+    var records;
+    if (groupOn) {
+      var gcode = genCode();
+      records = groupNames.map(function(who, i){
+        return {
+          name: who, email: email, signature: sig,
+          eventName: eventName, eventDate: eventDate,
+          notes: 'Submitted for this person by ' + name + ' (' + email + '), who confirmed they '
+               + 'read them the terms, that they agreed, and that they asked for it to be submitted '
+               + 'on their behalf. Group of ' + groupNames.length + ', reference ' + gcode + '.'
+               + (noteVal ? '\n\n' + noteVal : ''),
+          time: now.toLocaleString(), timestamp: now.toISOString(),
+          code: gcode + '-' + (i + 1),
+          clausesAgreed: TOTAL_CLAUSES, clauseList: activeClauses.slice()
+        };
+      });
+    } else {
+      records = [{
+        name: name, email: email, signature: sig,
+        eventName: eventName, eventDate: eventDate, notes: noteVal,
+        time: now.toLocaleString(), timestamp: now.toISOString(),
+        code: genCode(), clausesAgreed: TOTAL_CLAUSES, clauseList: activeClauses.slice()
+      }];
+    }
+    var record = records[0];
 
     getData(function(data){
       if (!data.waivers) data.waivers = [];
-      data.waivers.push(record);
+      records.forEach(function(r){ data.waivers.push(r); });
       saveData(data, function(){
         submitBtn.disabled = false; submitBtn.textContent = 'Submit Waiver ✦';
         lastSubmission = record;
-        document.getElementById('conf-name').textContent  = name;
+        document.getElementById('conf-name').textContent  =
+          groupOn ? (groupNames.length + ' people — ' + groupNames.join(', ')) : name;
         document.getElementById('conf-email').textContent = email;
         document.getElementById('conf-time').textContent  = record.time;
         if (eventName) {

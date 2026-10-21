@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gentle Movement Waiver — Auric Movement</title>
+<!--
+  ════════════════════════════════════════════════════════════
+   Auric Movement — Gentle Movement Participation Waiver
+   A print form, built from the "Waiver - Gentle Movement" draft.
+
+   TO PRINT:  open this file in a browser → Print → Letter, portrait,
+              margins "Default", "Print backgrounds" OFF. Two pages.
+              Save as PDF from the same dialog if you want a file.
+
+   WHAT CHANGED FROM THE DRAFT
+   The draft's own wording is kept almost word for word — it is plain,
+   kind, and pitched at the room it is for. What it was missing is the
+   legal cover that every other Auric Movement waiver carries, so the
+   terms from the 21-clause booking waiver (index.html → RF_CLAUSES) are
+   here in plain English rather than in their original legalese: that
+   the instructor is not a medical professional, the limit of liability,
+   indemnity, personal belongings, arbitration, New York law,
+   severability, 18+, and the confirmation that the form was read.
+
+   Three things are here that are in NO other Auric waiver, because this
+   room needs them and a reformer room does not:
+     · consent to hands-on adjustment, which is asked, not assumed
+     · consent to call emergency services, which an emergency contact
+       field implies but does not actually give
+     · a line for someone signing with help, or on another person's
+       behalf, which in this population happens and should be recorded
+
+   IF THE SESSION IS FREE: delete the block marked PAID-ONLY below.
+   Charging nothing makes a refund policy meaningless and a form that
+   states terms that do not apply is a worse form.
+
+   NOT LEGAL ADVICE. This mirrors the cover your booking waiver already
+   has; it has not been reviewed by a lawyer, and the arbitration clause
+   in particular is worth one hour of a real one's time before you use
+   this with an older-adult group.
+  ════════════════════════════════════════════════════════════
+-->
+<style>
+  @page { size: letter portrait; margin: 0.6in 0.65in; }
+
+  :root{
+    --brown:#5A3A1A;
+    --gold:#b07840;
+    --gold-deep:#9a6535;
+    --ink:#23201d;
+    --soft:#5d5349;
+    --rule:#d9cdb8;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    background:#f1ece2;
+    color:var(--ink);
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    /* Set larger than a normal form on purpose. This is read by people
+       who are often reading it without their glasses, on a clipboard,
+       in a room that is not well lit. */
+    font-size:11.2pt;
+    line-height:1.5;
+  }
+
+  .sheet{
+    background:#fff;
+    width:8.5in;
+    min-height:11in;
+    margin:0 auto 0.4in;
+    padding:0.6in 0.65in;
+    box-shadow:0 2px 18px rgba(90,58,26,.16);
+  }
+
+  /* Masthead ─────────────────────────────────────────────── */
+  .rule-top{ height:5px; background:var(--gold); margin:0 0 20px; }
+
+  .mast{ display:flex; justify-content:space-between; align-items:flex-start; gap:24px; }
+  .wordmark{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:21pt; color:var(--gold-deep); margin:0 0 2px;
+    letter-spacing:.3px;
+  }
+  .doctitle{ font-size:13pt; font-weight:700; color:var(--ink); margin:0; }
+
+  /* The three fill-ins at the top right of the draft, kept. */
+  .meta{ min-width:3.1in; }
+  .meta-row{ display:flex; align-items:baseline; gap:10px; margin-bottom:11px; }
+  .meta-row span{ font-size:9.5pt; color:var(--soft); width:52px; flex:none; }
+  .meta-row i{ flex:1; border-bottom:1px solid var(--ink); height:15px; display:block; }
+
+  h2{
+    font-size:11pt; font-weight:700; color:var(--ink);
+    margin:19px 0 5px; padding:0;
+  }
+  h2:first-of-type{ margin-top:22px; }
+  p{ margin:0 0 9px; }
+  .fine{ font-size:9.5pt; color:var(--soft); line-height:1.45; }
+
+  /* Tick boxes ───────────────────────────────────────────── */
+  .ticks{ display:flex; flex-wrap:wrap; gap:7px 22px; margin:7px 0 4px; }
+  .tick{ display:flex; align-items:center; gap:8px; }
+  .box{
+    width:13px; height:13px; border:1.3px solid var(--ink);
+    flex:none; display:inline-block;
+  }
+  .choice{ display:flex; flex-wrap:wrap; gap:8px 30px; margin:6px 0 4px; }
+
+  /* The terms ────────────────────────────────────────────── */
+  .terms{ counter-reset:t; margin:6px 0 0; }
+  .term{
+    counter-increment:t; position:relative;
+    padding-left:21px; margin-bottom:7px;
+    font-size:10.2pt; line-height:1.45;
+    break-inside:avoid; page-break-inside:avoid;
+  }
+  .term::before{
+    content:counter(t) ".";
+    position:absolute; left:0; top:0;
+    color:var(--gold-deep); font-weight:700; font-size:9.5pt;
+  }
+
+  .callout{
+    border-left:3px solid var(--gold);
+    background:#faf6ef;
+    padding:10px 13px; margin:11px 0;
+    break-inside:avoid; page-break-inside:avoid;
+  }
+
+  /* Signature block ──────────────────────────────────────── */
+  .sign{ margin-top:16px; break-inside:avoid; page-break-inside:avoid; }
+  .lines{ display:flex; gap:28px; margin-top:20px; }
+  .line{ flex:1; }
+  .line i{ display:block; border-bottom:1px solid var(--ink); height:22px; }
+  .line span{ display:block; font-size:9pt; color:var(--soft); padding-top:4px; }
+
+  .notes i{ display:block; border-bottom:1px solid var(--rule); height:24px; }
+
+  footer{
+    margin-top:20px; padding-top:9px; border-top:1px solid var(--rule);
+    font-size:8.6pt; color:var(--soft);
+    display:flex; justify-content:space-between; gap:16px;
+  }
+
+  @media print{
+    body{ background:#fff; font-size:10.8pt; }
+    .sheet{ width:auto; min-height:0; margin:0; padding:0; box-shadow:none; }
+    .page-break{ break-before:page; page-break-before:always; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sheet">
+
+  <div class="rule-top"></div>
+
+  <div class="mast">
+    <div>
+      <div class="wordmark">Auric Movement</div>
+      <p class="doctitle">Gentle Movement Participation Waiver and Release</p>
+    </div>
+    <div class="meta">
+      <div class="meta-row"><span>Event</span><i></i></div>
+      <div class="meta-row"><span>Date</span><i></i></div>
+      <div class="meta-row"><span>Location</span><i></i></div>
+    </div>
+  </div>
+
+  <h2>What I am joining</h2>
+  <p>I am choosing to take part in a gentle, Pilates-based movement session (which may include seated
+  and standing exercises) led by Niara Comrie, certified Pilates instructor, of Auric Movement LLC.
+  Taking part is voluntary. I may rest, modify, or stop at any time, and I do not need a reason.</p>
+
+  <h2>My health</h2>
+  <p>I understand that any physical activity carries some risk, including muscle strain, dizziness,
+  falls, and, in rare cases, more serious injury. I confirm that I am able to do light exercise, or
+  that I have checked with my doctor. I have disclosed any pre-existing conditions, injuries, recent
+  surgeries, or medications that could affect my ability to exercise safely, and I will tell the
+  instructor if anything changes. I will stop right away if I feel pain, dizziness, shortness of
+  breath, or chest discomfort.</p>
+  <p>I understand that Auric Movement's instructors are <strong>not licensed medical professionals</strong>,
+  and that nothing offered in a session is medical advice, diagnosis, or treatment, or a substitute
+  for any of them.</p>
+
+  <h2>Please check any that apply to you</h2>
+  <div class="ticks">
+    <label class="tick"><i class="box"></i> Heart condition</label>
+    <label class="tick"><i class="box"></i> High blood pressure</label>
+    <label class="tick"><i class="box"></i> Joint replacement (hip, knee, shoulder)</label>
+  </div>
+  <div class="ticks">
+    <label class="tick"><i class="box"></i> Osteoporosis or low bone density</label>
+    <label class="tick"><i class="box"></i> A fall in the past year</label>
+    <label class="tick"><i class="box"></i> Dizziness or balance concerns</label>
+  </div>
+  <div class="ticks">
+    <label class="tick"><i class="box"></i> Recent surgery or injury</label>
+    <label class="tick"><i class="box"></i> I use a cane, walker, or other mobility aid</label>
+    <label class="tick"><i class="box"></i> None of these</label>
+  </div>
+
+  <h2>Hands-on help</h2>
+  <p>From time to time an instructor may offer a light touch to guide a position — a hand at the
+  shoulder or the back. This is always optional, I will be asked first each time, and I can say no
+  at any point without explaining why.</p>
+  <div class="choice">
+    <label class="tick"><i class="box"></i> Yes, hands-on guidance is fine</label>
+    <label class="tick"><i class="box"></i> No, please do not use hands-on guidance</label>
+  </div>
+
+  <h2>If there is an emergency</h2>
+  <p>If I appear to need urgent medical help, I give permission for Auric Movement, the host, or the
+  venue to call emergency services and to share what they know of my health details with the people
+  who come. I understand I am responsible for the cost of any emergency care or transport, and that
+  nobody here is obliged to provide medical treatment themselves.</p>
+
+  <h2>Photos</h2>
+  <p>Photos may be taken at this event for community and promotional use. My choice below applies
+  whichever way I mark it, and I may change it later by emailing auricmovement@outlook.com.</p>
+  <div class="choice">
+    <label class="tick"><i class="box"></i> Yes, photos of me may be used</label>
+    <label class="tick"><i class="box"></i> No, please do not use photos of me</label>
+  </div>
+
+</div>
+
+<!-- ═══ Page two — the terms, then the signature. The signature comes
+     after the terms deliberately: a signature above the thing being
+     agreed to is the first thing anyone disputing it would point at. ═══ -->
+<div class="sheet page-break">
+
+  <h2 style="margin-top:0;">What I am agreeing to</h2>
+  <p class="fine">Please read these before signing. They are the same protections that apply to every
+  Auric Movement session, written out plainly.</p>
+
+  <div class="terms">
+    <p class="term">I take part voluntarily and accept the ordinary risks of gentle movement described
+    above, whether or not they could have been foreseen.</p>
+
+    <p class="term">I will follow the instructor's directions and safety guidance, and use any props
+    or equipment only as shown.</p>
+
+    <p class="term">I release Niara Comrie and Auric Movement LLC, along with its instructors,
+    employees, agents and affiliates, and any event host, organizer or venue (together, the
+    "Released Parties"), from claims for injury, illness or loss arising from my participation.
+    I understand this covers ordinary negligence, and that it does <strong>not</strong> cover gross
+    negligence or willful misconduct, which are not released.</p>
+
+    <p class="term">If a claim is made despite this release, the total liability of the Released
+    Parties is limited to the amount I paid for the session the claim arises from, and they are not
+    liable for indirect, incidental or consequential damages. This limit does not apply to gross
+    negligence or willful misconduct.</p>
+
+    <p class="term">I will cover the Released Parties for any claim, damage or reasonable legal cost
+    that arises from my own conduct in the session, including injury I cause to another participant
+    or damage I cause to the venue or its equipment.</p>
+
+    <p class="term">My belongings are my own responsibility. The Released Parties are not liable for
+    anything lost, stolen or damaged.</p>
+
+    <p class="term">Any dispute arising from this form or from my participation will be settled by
+    binding arbitration in New York under the rules of the American Arbitration Association, rather
+    than in court.</p>
+
+    <p class="term">This form is governed by the law of the State of New York. If any part of it is
+    found unenforceable, the rest of it still stands.</p>
+
+    <p class="term">I am at least 18 years of age.</p>
+
+    <p class="term">Everything I have written on this form is true and accurate to the best of my
+    knowledge.</p>
+
+    <p class="term">I have had enough opportunity to read this form, to ask questions about it, and
+    to take independent legal advice if I wanted it. I sign it freely.</p>
+  </div>
+
+  <!-- ═══ PAID-ONLY ═══ Delete this whole callout if the session is free.
+       Stating a refund policy for a session nobody paid for is noise, and
+       noise in a waiver costs you the reader's attention for the parts
+       that matter. ═══ -->
+  <div class="callout">
+    <p style="margin:0 0 6px;"><strong>If I paid for this session</strong></p>
+    <p class="fine" style="margin:0;">All sales are final — no refunds or credits for cancellations,
+    missed sessions, or no-shows. Late arrivals may not be admitted for safety reasons, and no refund
+    or credit is given for a late arrival or a no-show. I can pass my spot to someone else up to
+    24 hours beforehand by emailing auricmovement@outlook.com with both names. If refreshments are
+    served, I am responsible for telling the instructor about any food allergy in advance, and I
+    take responsibility for anything I choose to eat or drink. Full terms:
+    book.auricmovement.com/#terms</p>
+  </div>
+
+  <h2>Anything the instructor should know <span style="font-weight:400;color:var(--soft);font-size:9.5pt;">(optional)</span></h2>
+  <div class="notes"><i></i><i></i></div>
+
+  <div class="sign">
+    <div class="lines">
+      <div class="line"><i></i><span>Printed name</span></div>
+      <div class="line"><i></i><span>Phone</span></div>
+    </div>
+    <div class="lines">
+      <div class="line"><i></i><span>Signature</span></div>
+      <div class="line"><i></i><span>Date</span></div>
+    </div>
+    <div class="lines">
+      <div class="line"><i></i><span>Emergency contact name</span></div>
+      <div class="line"><i></i><span>Emergency contact phone</span></div>
+    </div>
+
+    <!-- Someone in this room may be signing with a family member's help, or
+         may not be signing for themselves at all. Unrecorded, that is the
+         detail that unravels a waiver later. Asked here, it is just a line. -->
+    <div class="lines">
+      <div class="line"><i></i><span>If completed with help, or on this person's behalf — name and relationship</span></div>
+    </div>
+  </div>
+
+  <footer>
+    <span>Auric Movement LLC &middot; Niara Comrie, Certified Pilates Instructor</span>
+    <span>Thank you for moving with us.</span>
+  </footer>
+
+</div>
+
+</body>
+</html>
