@@ -16974,18 +16974,37 @@ document.addEventListener('DOMContentLoaded', function() {
         if(e) e.value = p.email || '';
       });
     }
-    // Aggregate every past attendee across ALL class types (deduped by email).
+    // Aggregate every past attendee across ALL class types.
     // Each source renders as it arrives, so one slow/failed source can't block the rest.
-    var map = {};
+    //
+    // Deduped by email AND name, not by email alone. Two people genuinely do
+    // share an address — a couple, a parent booking for a child, friends who
+    // booked together on one phone — and keying on the email alone silently
+    // dropped whichever of them loaded second. Yaffascha Jackson and Donielle
+    // Capers both booked under one address, so only one of them was ever
+    // pickable here and the other could not be added to anything.
+    //
+    // This is a PERSON picker, so the person is the key. Lists that exist to
+    // send email (the Riddim new-dates roster, for one) are right to dedupe by
+    // address instead — nobody wants the same inbox mailed twice.
+    var map = {};   // "email|name" → person, for rows that have a name
+    var bare = {};  // "email"      → person, for rows with no name at all
     function add(name, email){
       if(!email) return;
-      var k = (email||'').toLowerCase();
-      if(!map[k]) map[k] = { name:name||'', email:email };
-      else if(!map[k].name && name) map[k].name = name;
+      var em = String(email).trim(), key = em.toLowerCase();
+      var nm = String(name||'').trim().replace(/\s+/g,' ');
+      if(nm) map[key + '|' + nm.toLowerCase()] = { name:nm, email:em };
+      else if(!bare[key]) bare[key] = { name:'', email:em };
     }
     function render(){
-      var list = Object.keys(map).map(function(k){ return map[k]; })
-        .sort(function(a,b){ return (a.name||a.email).toLowerCase().localeCompare((b.name||b.email).toLowerCase()); });
+      // A nameless row says nothing a named one doesn't, so it only appears
+      // when that address has no named booking anywhere. Checked at render
+      // rather than on the way in, so it holds whichever source lands first.
+      var named = {};
+      Object.keys(map).forEach(function(k){ named[map[k].email.toLowerCase()] = 1; });
+      var list = Object.keys(map).map(function(k){ return map[k]; });
+      Object.keys(bare).forEach(function(k){ if(!named[k]) list.push(bare[k]); });
+      list.sort(function(a,b){ return (a.name||a.email).toLowerCase().localeCompare((b.name||b.email).toLowerCase()); });
       var html = '<option value="">— New guest / type below —</option>';
       list.forEach(function(p,i){ html += '<option value="'+i+'">'+escapeHTML(p.name||'(no name)')+' — '+escapeHTML(p.email)+'</option>'; });
       sel.innerHTML = html;
