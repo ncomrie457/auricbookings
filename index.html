@@ -7191,6 +7191,14 @@ Can't wait to move and connect with you!</textarea>
   window.auricIsClosed = function(ev){
     return !!(window.AURIC_CLOSED_EVENTS && window.AURIC_CLOSED_EVENTS[ev]);
   };
+  // Is this one session no longer taking bookings? The booking pages use
+  // auricLockSession to grey a button; the admin panel uses this to stop
+  // offering the session at all, so the one list above drives both and a
+  // closed time cannot linger in a dropdown after the button is locked.
+  window.auricSessionClosed = function(ev, session){
+    var held = (window.AURIC_CLOSED_SESSIONS || {})[ev];
+    return !!(held && held[session]);
+  };
   // What a closed event should say, with sensible wording when an entry is
   // just a string.
   window.auricClosedCopy = function(ev){
@@ -11491,6 +11499,35 @@ document.addEventListener('DOMContentLoaded', function() {
   var _origToggleAdmin = toggleAdmin;
   toggleAdmin = function(){ _origToggleAdmin(); if (adminPanel.classList.contains('visible')) refreshAdminBadgeToggles(); };
 
+  // Which event+session each Manual-Add option actually writes to. Lifted out
+  // of the click handler so the admin UI can also ask what an option means —
+  // the dropdown needs it to drop sessions that are no longer taking bookings.
+  window.RF_ADD_MAP = {
+    'rk1pm':  { session:'1pm',    slabel:'1:00 PM session',  event:'riddim-kompa-reformer-2026-09-13', name:'Riddim & Kompa — West Hempstead, 1 PM' },
+    'rk2pm':  { session:'2pm',    slabel:'2:00 PM session',  event:'riddim-kompa-reformer-2026-09-13', name:'Riddim & Kompa — West Hempstead, 2 PM' },
+    'rk3pm':  { session:'3pm',    slabel:'3:00 PM session',  event:'riddim-kompa-reformer-2026-09-13', name:'Riddim & Kompa — West Hempstead, 3 PM' },
+    'rkbk12': { session:'bk12',   slabel:'12:00 PM session', event:'riddim-kompa-brooklyn-2026-09-26', name:'Riddim & Kompa — Brooklyn, 12 PM' },
+    'rkbk1':  { session:'bk1',    slabel:'1:00 PM session',  event:'riddim-kompa-brooklyn-2026-09-26', name:'Riddim & Kompa — Brooklyn, 1 PM' },
+    'rkbk2':  { session:'bk2',    slabel:'2:00 PM session',  event:'riddim-kompa-brooklyn-2026-09-26', name:'Riddim & Kompa — Brooklyn, 2 PM' },
+    'rko12': { session:'o12', slabel:'12:00 PM session', event:'riddim-kompa-brooklyn-2026-10-10', name:'Riddim & Kompa — Brooklyn Oct 10, 12 PM' },
+    'rko1': { session:'o1', slabel:'1:00 PM session', event:'riddim-kompa-brooklyn-2026-10-10', name:'Riddim & Kompa — Brooklyn Oct 10, 1 PM' },
+    'rko2': { session:'o2', slabel:'2:00 PM session', event:'riddim-kompa-brooklyn-2026-10-10', name:'Riddim & Kompa — Brooklyn Oct 10, 2 PM' },
+    'rko3': { session:'o3', slabel:'3:00 PM session', event:'riddim-kompa-brooklyn-2026-10-10', name:'Riddim & Kompa — Brooklyn Oct 10, 3 PM' },
+    'rkn12': { session:'n12', slabel:'12:00 PM session', event:'riddim-kompa-brooklyn-2026-11-21', name:'Riddim & Kompa — Brooklyn Nov 21, 12 PM' },
+    'rkn1': { session:'n1', slabel:'1:00 PM session', event:'riddim-kompa-brooklyn-2026-11-21', name:'Riddim & Kompa — Brooklyn Nov 21, 1 PM' },
+    'rkn2': { session:'n2', slabel:'2:00 PM session', event:'riddim-kompa-brooklyn-2026-11-21', name:'Riddim & Kompa — Brooklyn Nov 21, 2 PM' },
+    'rkn3': { session:'n3', slabel:'3:00 PM session', event:'riddim-kompa-brooklyn-2026-11-21', name:'Riddim & Kompa — Brooklyn Nov 21, 3 PM' },
+    'tb1130': { session:'tb1130', slabel:'11:30 AM session', event:'turkey-burn-2026-11-22',           name:'Pre-Turkey Burn — 11:30 AM' },
+    'tb1230': { session:'tb1230', slabel:'12:30 PM session', event:'turkey-burn-2026-11-22',           name:'Pre-Turkey Burn — 12:30 PM' },
+    'tb130':  { session:'tb130',  slabel:'1:30 PM session',  event:'turkey-burn-2026-11-22',           name:'Pre-Turkey Burn — 1:30 PM' },
+    'hw1130': { session:'hw1130', slabel:'11:30 AM session', event:'halloween-creek-2026-10-24',       name:'Shhh… Quiet on the Creek — 11:30 AM' },
+    'hw1230': { session:'hw1230', slabel:'12:30 PM session', event:'halloween-creek-2026-10-24',       name:'Shhh… Quiet on the Creek — 12:30 PM' },
+    'hw130':  { session:'hw130',  slabel:'1:30 PM session',  event:'halloween-creek-2026-10-24',       name:'Shhh… Quiet on the Creek — 1:30 PM' },
+    'tb28_1130': { session:'tb28_1130', slabel:'11:30 AM session', event:'turkey-burn-2026-11-28',     name:'Post-Turkey Burn — 11:30 AM' },
+    'tb28_1230': { session:'tb28_1230', slabel:'12:30 PM session', event:'turkey-burn-2026-11-28',     name:'Post-Turkey Burn — 12:30 PM' },
+    'tb28_130':  { session:'tb28_130',  slabel:'1:30 PM session',  event:'turkey-burn-2026-11-28',     name:'Post-Turkey Burn — 1:30 PM' }
+  };
+
   document.getElementById('admin-add-btn').addEventListener('click', function(){
     var name   = document.getElementById('admin-add-name').value.trim();
     var email  = document.getElementById('admin-add-email').value.trim();
@@ -11510,31 +11547,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Build the row directly (skipping the diff-based saveData) so we can mark it paid and surface real errors
     var row, table, label, isReformer = false;
-    var RF_ADD_MAP = {
-      'rk1pm':  { session:'1pm',    slabel:'1:00 PM session',  event:'riddim-kompa-reformer-2026-09-13', name:'Riddim & Kompa — West Hempstead, 1 PM' },
-      'rk2pm':  { session:'2pm',    slabel:'2:00 PM session',  event:'riddim-kompa-reformer-2026-09-13', name:'Riddim & Kompa — West Hempstead, 2 PM' },
-      'rk3pm':  { session:'3pm',    slabel:'3:00 PM session',  event:'riddim-kompa-reformer-2026-09-13', name:'Riddim & Kompa — West Hempstead, 3 PM' },
-      'rkbk12': { session:'bk12',   slabel:'12:00 PM session', event:'riddim-kompa-brooklyn-2026-09-26', name:'Riddim & Kompa — Brooklyn, 12 PM' },
-      'rkbk1':  { session:'bk1',    slabel:'1:00 PM session',  event:'riddim-kompa-brooklyn-2026-09-26', name:'Riddim & Kompa — Brooklyn, 1 PM' },
-      'rkbk2':  { session:'bk2',    slabel:'2:00 PM session',  event:'riddim-kompa-brooklyn-2026-09-26', name:'Riddim & Kompa — Brooklyn, 2 PM' },
-      'rko12': { session:'o12', slabel:'12:00 PM session', event:'riddim-kompa-brooklyn-2026-10-10', name:'Riddim & Kompa — Brooklyn Oct 10, 12 PM' },
-      'rko1': { session:'o1', slabel:'1:00 PM session', event:'riddim-kompa-brooklyn-2026-10-10', name:'Riddim & Kompa — Brooklyn Oct 10, 1 PM' },
-      'rko2': { session:'o2', slabel:'2:00 PM session', event:'riddim-kompa-brooklyn-2026-10-10', name:'Riddim & Kompa — Brooklyn Oct 10, 2 PM' },
-      'rko3': { session:'o3', slabel:'3:00 PM session', event:'riddim-kompa-brooklyn-2026-10-10', name:'Riddim & Kompa — Brooklyn Oct 10, 3 PM' },
-      'rkn12': { session:'n12', slabel:'12:00 PM session', event:'riddim-kompa-brooklyn-2026-11-21', name:'Riddim & Kompa — Brooklyn Nov 21, 12 PM' },
-      'rkn1': { session:'n1', slabel:'1:00 PM session', event:'riddim-kompa-brooklyn-2026-11-21', name:'Riddim & Kompa — Brooklyn Nov 21, 1 PM' },
-      'rkn2': { session:'n2', slabel:'2:00 PM session', event:'riddim-kompa-brooklyn-2026-11-21', name:'Riddim & Kompa — Brooklyn Nov 21, 2 PM' },
-      'rkn3': { session:'n3', slabel:'3:00 PM session', event:'riddim-kompa-brooklyn-2026-11-21', name:'Riddim & Kompa — Brooklyn Nov 21, 3 PM' },
-      'tb1130': { session:'tb1130', slabel:'11:30 AM session', event:'turkey-burn-2026-11-22',           name:'Pre-Turkey Burn — 11:30 AM' },
-      'tb1230': { session:'tb1230', slabel:'12:30 PM session', event:'turkey-burn-2026-11-22',           name:'Pre-Turkey Burn — 12:30 PM' },
-      'tb130':  { session:'tb130',  slabel:'1:30 PM session',  event:'turkey-burn-2026-11-22',           name:'Pre-Turkey Burn — 1:30 PM' },
-      'hw1130': { session:'hw1130', slabel:'11:30 AM session', event:'halloween-creek-2026-10-24',       name:'Shhh… Quiet on the Creek — 11:30 AM' },
-      'hw1230': { session:'hw1230', slabel:'12:30 PM session', event:'halloween-creek-2026-10-24',       name:'Shhh… Quiet on the Creek — 12:30 PM' },
-      'hw130':  { session:'hw130',  slabel:'1:30 PM session',  event:'halloween-creek-2026-10-24',       name:'Shhh… Quiet on the Creek — 1:30 PM' },
-      'tb28_1130': { session:'tb28_1130', slabel:'11:30 AM session', event:'turkey-burn-2026-11-28',     name:'Post-Turkey Burn — 11:30 AM' },
-      'tb28_1230': { session:'tb28_1230', slabel:'12:30 PM session', event:'turkey-burn-2026-11-28',     name:'Post-Turkey Burn — 12:30 PM' },
-      'tb28_130':  { session:'tb28_130',  slabel:'1:30 PM session',  event:'turkey-burn-2026-11-28',     name:'Post-Turkey Burn — 1:30 PM' }
-    };
+    var RF_ADD_MAP = window.RF_ADD_MAP;
     if (RF_ADD_MAP[event]) {
       isReformer = true;
       table = 'reformer_registrations';
@@ -16961,7 +16974,27 @@ document.addEventListener('DOMContentLoaded', function() {
   // Fill the "Returning guest" picker in Manual Add with everyone who has
   // attended a reformer class (deduped by email). Picking one auto-fills the
   // name + email fields; the owner then chooses the event and clicks Add.
+  /* A session that has stopped taking bookings should not be offered in the
+     admin panel either. Adding someone to the Oct 24 11:30 would create a
+     booking for a class that is not running, and the roster it lands on is
+     the one nobody is reading any more.
+
+     Driven off AURIC_CLOSED_SESSIONS, so closing a time in that one list
+     removes it here too. The option is removed rather than disabled: a
+     disabled row in a long select still reads as a choice you might be able
+     to make, and this one never will be. */
+  function pruneClosedAddOptions(){
+    var sel = document.getElementById('admin-add-event');
+    var map = window.RF_ADD_MAP || {};
+    if(!sel || !window.auricSessionClosed) return;
+    Array.prototype.slice.call(sel.options).forEach(function(opt){
+      var m = map[opt.value];
+      if(m && window.auricSessionClosed(m.event, m.session)) opt.remove();
+    });
+  }
+
   function populateReturningGuests(){
+    pruneClosedAddOptions();
     var sel = document.getElementById('admin-add-returning');
     if(!sel) return;
     if(!sel._wired){
@@ -17179,6 +17212,10 @@ document.addEventListener('DOMContentLoaded', function() {
     var sel = document.getElementById('wlc-session');
     var opts = ['<option value="*">Every session</option>'];
     Object.keys(slab).forEach(function(k){
+      // No waitlist offer for a session that has stopped taking bookings —
+      // telling someone a spot opened on a class you are not running is the
+      // worst message on this panel.
+      if (window.auricSessionClosed && window.auricSessionClosed(dbEvent, k)) return;
       opts.push('<option value="' + k + '">' + escapeHTML(slab[k]) + '</option>');
     });
     sel.innerHTML = opts.join('');
@@ -17806,7 +17843,19 @@ document.addEventListener('DOMContentLoaded', function() {
       var paid = display.filter(function(r){ return r.is_paid; }).length;
       var att = display.filter(function(r){ return r.attendance==='attended'; }).length;
       var win = display.filter(function(r){ return r.winner; }).length;
-      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F383} Shhh… Quiet on the Creek · Oct 24th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(11:30 AM '+pd.hw1130+'/'+CAP+' · 12:30 PM '+pd.hw1230+'/'+CAP+' · 1:30 PM '+pd.hw130+'/'+CAP+')</span></h3>';
+      // Only the times still running get a count. A closed session is dropped
+      // UNLESS somebody is actually on it — those people paid for a class that
+      // is no longer happening, and a header that quietly stops counting them
+      // is how you forget to move or refund them. So it stays, and says why.
+      var _hwLab = { 'hw1130':'11:30 AM', 'hw1230':'12:30 PM', 'hw130':'1:30 PM' };
+      var _hwOn = Object.keys(_hwLab).filter(function(k){
+        var shut = window.auricSessionClosed && window.auricSessionClosed('halloween-creek-2026-10-24', k);
+        return !shut || display.some(function(r){ return r.session===k; });
+      }).map(function(k){
+        var shut = window.auricSessionClosed && window.auricSessionClosed('halloween-creek-2026-10-24', k);
+        return _hwLab[k] + ' ' + pd[k] + '/' + CAP + (shut ? ' · closed' : '');
+      }).join(' · ');
+      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F383} Shhh… Quiet on the Creek · Oct 24th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">('+_hwOn+')</span></h3>';
       block.innerHTML += '<button onclick="rfSendWinnerEmail(\'halloween\', this)" style="margin:.1rem .35rem .7rem 0;background:#fbf3e2;border:1px solid #e6d3a8;color:#9a6535;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F39F}\u{FE0F} Send 4-class winner email ('+win+')</button>';
       block.innerHTML += '<button onclick="rfSendThankYou(\'halloween\', this)" style="margin:.1rem 0 .7rem;background:#f3ecff;border:1px solid #cbb6f0;color:#5b3a8a;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F383} Send Halloween thank-you ('+att+' attended) — after the event</button>';
       block.innerHTML += '<button type="button" onclick="rfTyForget()" title="Allow everyone to be thanked again" style="margin:.1rem 0 .7rem .35rem;background:none;border:none;color:#8a7d6b;font-size:.72rem;text-decoration:underline;cursor:pointer;font-family:Jost,sans-serif;">Reset thank-you memory</button>';
