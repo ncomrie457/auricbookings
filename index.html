@@ -15653,6 +15653,22 @@ document.addEventListener('DOMContentLoaded', function() {
     supabase.rpc('auric_private_rsvps', { pass: ADMIN_PASSWORD, p_code: code }).then(function(res){
       if (res.error){ box.innerHTML = '<div style="font-size:.75rem;color:var(--red);">Could not load the guest list.</div>'; return; }
       var g = res.data || [];
+      /* Paid first, then comps, then whoever still owes you ─────────────
+         The list arrived in booking order, which buries the one thing you
+         open it to find out: who has not paid. Unpaid now sit together at
+         the bottom, which is also where the "Send payment link" buttons
+         end up — so chasing people is one pass down the end of the list
+         rather than a hunt through it.
+
+         Comps are their own tier rather than being lumped in with paid.
+         A comp is flagged is_paid so it holds a seat, so sorting on that
+         alone would scatter them through the paying guests and make the
+         event look like it took money it never did. */
+      function pvRank(r){ return r.comp ? 1 : (r.is_paid ? 0 : 2); }
+      g = g.slice().sort(function(a,b){
+        return pvRank(a) - pvRank(b)
+          || String(a.name||'').toLowerCase().localeCompare(String(b.name||'').toLowerCase());
+      });
       pvGuestRows[code] = g;
       // The host does not book through her own invitation, and someone who
       // handed over cash still has to appear on the roster, so the list is
@@ -15666,7 +15682,19 @@ document.addEventListener('DOMContentLoaded', function() {
         box.innerHTML = '<div style="font-size:.75rem;color:#8a7d9b;padding:.3rem 0;">Nobody yet.</div>' + addBtn;
         return;
       }
-      box.innerHTML = '<div style="border-top:1px solid #ece3f7;margin-top:.5rem;padding-top:.4rem;">' +
+      // What the sort is for, said in one line: the number still to chase,
+      // and seats held by comps kept out of the paid figure so a full room
+      // never reads as money that came in.
+      var _nPaid = g.filter(function(r){ return r.is_paid && !r.comp; }).length,
+          _nComp = g.filter(function(r){ return r.comp; }).length,
+          _nOwed = g.filter(function(r){ return !r.is_paid && !r.comp; }).length;
+      var _tally = '<div style="font-size:.72rem;color:#8a7d9b;margin-top:.5rem;">' +
+        '<strong style="color:#2e7d32;">' + _nPaid + ' paid</strong>' +
+        (_nComp ? ' · <span style="color:#6a3ca5;">' + _nComp + ' comp</span>' : '') +
+        (_nOwed ? ' · <strong style="color:#b0432e;">' + _nOwed + ' unpaid</strong>' : '') +
+        ' · ' + g.length + ' total</div>';
+
+      box.innerHTML = _tally + '<div style="border-top:1px solid #ece3f7;margin-top:.5rem;padding-top:.4rem;">' +
         g.map(function(r){
           // Allergies are called out rather than buried: there is food after
           // this class, and that is the detail it is dangerous to miss.
