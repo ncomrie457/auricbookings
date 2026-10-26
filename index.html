@@ -2924,7 +2924,15 @@
      them — about 1.5MB for pictures most people never reached. These three
      each show something the others don't: the room full of people, the
      Riddim & Kompa reformer night, and the goodie bags going out. */
-  .bq-hero-slides{position:absolute;inset:0;z-index:0;background:#ece3d2 url('hero-slide-10.jpg') center 28%/cover no-repeat;}
+  /* The plate behind the slides, and the FIRST thing anyone sees — it is
+     painted before the fades begin and shows through until slide 1 has
+     faded in over it. It held hero-slide-10, the Riddim x Kompa room, so
+     the site opened on Riddim x Kompa however the slide order was arranged:
+     the reel started on Mat & Chat, but nobody saw that frame first.
+     It now carries slide 1's own photo, at slide 1's framing, so the first
+     paint and the first slide are the same picture. Change this with
+     nth-child(1) below or they drift apart again. */
+  .bq-hero-slides{position:absolute;inset:0;z-index:0;background:#ece3d2 url('hero-slide-1.jpg') center/cover no-repeat;}
   .bq-hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;
     animation:bqHeroFade 35s linear infinite;will-change:opacity;}
   /* Oldest event to newest, so the reel ends on the most recent rooms rather
