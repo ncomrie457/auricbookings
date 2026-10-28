@@ -7271,6 +7271,23 @@ Can't wait to move and connect with you!</textarea>
     var held = (window.AURIC_CLOSED_SESSIONS || {})[ev];
     return !!(held && held[session]);
   };
+  /* The "12 PM 3/5 · 1 PM 5/5 · …" line on a roster header.
+     A closed session is left out, so the admin panel stops offering a time
+     that is not running — UNLESS somebody is still on it, in which case it
+     stays and is marked closed. Those people paid for a class that is not
+     happening, and a header that quietly stops counting them is how they
+     get forgotten rather than moved or refunded.
+     One implementation for every roster, so closing a session needs a line
+     in AURIC_CLOSED_SESSIONS and nothing else. */
+  window.auricSessionLine = function(ev, labels, paidBy, cap, rows){
+    return Object.keys(labels).filter(function(k){
+      return !window.auricSessionClosed(ev, k)
+          || (rows || []).some(function(r){ return r.session === k; });
+    }).map(function(k){
+      return labels[k] + ' ' + (paidBy[k] || 0) + '/' + cap
+           + (window.auricSessionClosed(ev, k) ? ' · closed' : '');
+    }).join(' · ');
+  };
   // What a closed event should say, with sensible wording when an entry is
   // just a string.
   window.auricClosedCopy = function(ev){
@@ -17709,7 +17726,7 @@ document.addEventListener('DOMContentLoaded', function() {
       display.forEach(function(r){ if(r.is_paid && pd[r.session]!==undefined) pd[r.session]++; });
       var paid = display.filter(function(r){ return r.is_paid; }).length;
       var att = display.filter(function(r){ return r.attendance==='attended'; }).length;
-      block.innerHTML = '<h3 style="color:var(--gold-text);">Riddim &amp; Kompa — Brooklyn · Nov 21st · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">12 PM '+pd['n12']+'/'+CAP+' · 1 PM '+pd['n1']+'/'+CAP+' · 2 PM '+pd['n2']+'/'+CAP+' · 3 PM '+pd['n3']+'/'+CAP+'</span></h3>';
+      block.innerHTML = '<h3 style="color:var(--gold-text);">Riddim &amp; Kompa — Brooklyn · Nov 21st · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">'+window.auricSessionLine('riddim-kompa-brooklyn-2026-11-21',{'n12':'12 PM','n1':'1 PM','n2':'2 PM','n3':'3 PM'},pd,CAP,display)+'</span></h3>';
       block.innerHTML += '<button onclick="rfSendThankYou(\'n21\', this)" style="margin:.1rem 0 .7rem;background:#fdeeea;border:1px solid #f2b8ab;color:#b23a2e;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F33A} Send Mèsi Anpil thank-you ('+att+' attended) — after the event</button>';
       block.innerHTML += '<button type="button" onclick="rfTyForget()" title="Allow everyone to be thanked again" style="margin:.1rem 0 .7rem .35rem;background:none;border:none;color:#8a7d6b;font-size:.72rem;text-decoration:underline;cursor:pointer;font-family:Jost,sans-serif;">Reset thank-you memory</button>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
@@ -17786,7 +17803,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var paid = display.filter(function(r){ return r.is_paid; }).length;
       var att = display.filter(function(r){ return r.attendance==='attended'; }).length;
       var win = display.filter(function(r){ return r.winner; }).length;
-      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F983} Post-Turkey Burn · Nov 28th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(11:30 AM '+pd.tb28_1130+'/'+CAP+' · 12:30 PM '+pd.tb28_1230+'/'+CAP+' · 1:30 PM '+pd.tb28_130+'/'+CAP+')</span></h3>';
+      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F983} Post-Turkey Burn · Nov 28th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">('+window.auricSessionLine('turkey-burn-2026-11-28',{'tb28_1130':'11:30 AM','tb28_1230':'12:30 PM','tb28_130':'1:30 PM'},pd,CAP,display)+')</span></h3>';
       block.innerHTML += tyTurkeyPicker('ty-turkey-pick-28', 'tb28');
       block.innerHTML += '<button type="button" onclick="rfTyForget()" title="Allow everyone to be thanked again" style="margin:.1rem 0 .7rem .35rem;background:none;border:none;color:#8a7d6b;font-size:.72rem;text-decoration:underline;cursor:pointer;font-family:Jost,sans-serif;">Reset thank-you memory</button>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
@@ -17865,7 +17882,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var paid = display.filter(function(r){ return r.is_paid; }).length;
       var att = display.filter(function(r){ return r.attendance==='attended'; }).length;
       var win = display.filter(function(r){ return r.winner; }).length;
-      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F983} Pre-Turkey Burn · Nov 22nd · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">(11:30 AM '+pd.tb1130+'/'+CAP+' · 12:30 PM '+pd.tb1230+'/'+CAP+' · 1:30 PM '+pd.tb130+'/'+CAP+')</span></h3>';
+      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F983} Pre-Turkey Burn · Nov 22nd · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">('+window.auricSessionLine('turkey-burn-2026-11-22',{'tb1130':'11:30 AM','tb1230':'12:30 PM','tb130':'1:30 PM'},pd,CAP,display)+')</span></h3>';
       block.innerHTML += '<button onclick="rfSendWinnerEmail(\'turkey\', this)" style="margin:.1rem .35rem .7rem 0;background:#fbf3e2;border:1px solid #e6d3a8;color:#9a6535;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F39F}\u{FE0F} Send 4-class winner email ('+win+')</button>';
       block.innerHTML += tyTurkeyPicker('ty-turkey-pick-22', 'turkey');
       block.innerHTML += '<button type="button" onclick="rfTyForget()" title="Allow everyone to be thanked again" style="margin:.1rem 0 .7rem .35rem;background:none;border:none;color:#8a7d6b;font-size:.72rem;text-decoration:underline;cursor:pointer;font-family:Jost,sans-serif;">Reset thank-you memory</button>';
@@ -17947,15 +17964,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // UNLESS somebody is actually on it — those people paid for a class that
       // is no longer happening, and a header that quietly stops counting them
       // is how you forget to move or refund them. So it stays, and says why.
-      var _hwLab = { 'hw1130':'11:30 AM', 'hw1230':'12:30 PM', 'hw130':'1:30 PM' };
-      var _hwOn = Object.keys(_hwLab).filter(function(k){
-        var shut = window.auricSessionClosed && window.auricSessionClosed('halloween-creek-2026-10-24', k);
-        return !shut || display.some(function(r){ return r.session===k; });
-      }).map(function(k){
-        var shut = window.auricSessionClosed && window.auricSessionClosed('halloween-creek-2026-10-24', k);
-        return _hwLab[k] + ' ' + pd[k] + '/' + CAP + (shut ? ' · closed' : '');
-      }).join(' · ');
-      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F383} Shhh… Quiet on the Creek · Oct 24th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">('+_hwOn+')</span></h3>';
+      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F383} Shhh… Quiet on the Creek · Oct 24th · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">('+window.auricSessionLine('halloween-creek-2026-10-24',{'hw1130':'11:30 AM','hw1230':'12:30 PM','hw130':'1:30 PM'},pd,CAP,display)+')</span></h3>';
       block.innerHTML += '<button onclick="rfSendWinnerEmail(\'halloween\', this)" style="margin:.1rem .35rem .7rem 0;background:#fbf3e2;border:1px solid #e6d3a8;color:#9a6535;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F39F}\u{FE0F} Send 4-class winner email ('+win+')</button>';
       block.innerHTML += '<button onclick="rfSendThankYou(\'halloween\', this)" style="margin:.1rem 0 .7rem;background:#f3ecff;border:1px solid #cbb6f0;color:#5b3a8a;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F383} Send Halloween thank-you ('+att+' attended) — after the event</button>';
       block.innerHTML += '<button type="button" onclick="rfTyForget()" title="Allow everyone to be thanked again" style="margin:.1rem 0 .7rem .35rem;background:none;border:none;color:#8a7d6b;font-size:.72rem;text-decoration:underline;cursor:pointer;font-family:Jost,sans-serif;">Reset thank-you memory</button>';
