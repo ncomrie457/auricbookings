@@ -3892,6 +3892,46 @@
         <div class="bq-section-eyebrow">From Our Guests</div>
         <h2 class="bq-section-title" id="bq-testimonials-title">Kind <em>Words</em></h2>
       </div>
+      <!-- ────────────────────────────────────────────────────────
+           Said out loud, above the written reviews.
+
+           Thirty seconds of somebody's face and voice does what a wall
+           of five-star text cannot: it is plainly a real person, in the
+           real room, who was not paid to say it. So it leads, and the
+           written reviews back it up underneath.
+
+           preload="none" with a poster, like every other video here: the
+           page costs 32KB a card until somebody presses play, not 7MB.
+           Muted is NOT set — the whole point is hearing them, and a
+           click is a gesture the browser accepts for sound.
+
+           TO ADD ANOTHER: drop in testimonial-N.mp4 and a matching
+           -poster.jpg and copy a figure. Keep them short.
+      ──────────────────────────────────────────────────────── -->
+      <div class="bq-vtesti" style="max-width:1080px;margin:2rem auto 0;padding:0 1rem;">
+        <style>
+          .bq-vtesti-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+            gap:1.1rem;max-width:620px;margin:0 auto;}
+          .bq-vtesti-grid figure{margin:0;}
+          .bq-vtesti-grid video{width:100%;height:auto;display:block;border-radius:16px;
+            background:#000;border:1px solid #ece0cf;}
+          .bq-vtesti-grid figcaption{font-family:'Jost',sans-serif;font-size:.78rem;
+            color:var(--text-muted);text-align:center;padding-top:.5rem;}
+        </style>
+        <div class="bq-vtesti-grid">
+          <figure>
+            <video src="testimonial-1.mp4" poster="testimonial-1-poster.jpg" controls playsinline
+                   preload="none" aria-label="A guest talking about her class at Auric Movement"></video>
+            <figcaption>In her own words &#183; after class</figcaption>
+          </figure>
+          <figure>
+            <video src="testimonial-2.mp4" poster="testimonial-2-poster.jpg" controls playsinline
+                   preload="none" aria-label="A guest talking about her class at Auric Movement"></video>
+            <figcaption>In her own words &#183; after class</figcaption>
+          </figure>
+        </div>
+      </div>
+
       <div class="bq-testimonials-widget" style="max-width:1080px;margin:2rem auto 0;padding:0 1rem;">
         <style>
           .am-testi-grid{column-count:3;column-gap:1.1rem;}
