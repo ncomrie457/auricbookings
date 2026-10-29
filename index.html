@@ -7228,10 +7228,12 @@ Can't wait to move and connect with you!</textarea>
       'hw1130': 'Registration closed',
       'hw1230': 'Registration closed'
     },
-    // Nov 21 Brooklyn stops taking the 3 PM. The 12, 1 and 2 carry on;
-    // delete this line to put the 3 PM back on sale.
+    // Nov 21 Brooklyn is not running the 3 PM. hide:true takes it off the
+    // booking page entirely rather than greying it out — the flyer only
+    // ever advertised 12, 1 and 2, so nobody is looking for it. The 12, 1
+    // and 2 carry on; delete this line to put the 3 PM back on sale.
     'riddim-kompa-brooklyn-2026-11-21': {
-      'n3': 'Registration closed'
+      'n3': { hide: true }
     }
   };
   // Lock every held slot on a screen, without asking the database anything.
@@ -7251,6 +7253,14 @@ Can't wait to move and connect with you!</textarea>
     var held = (window.AURIC_CLOSED_SESSIONS || {})[ev];
     var tag  = held && held[session];
     if(!tag || !btn) return false;
+    // { hide:true } takes the time off the page altogether, rather than
+    // showing it greyed out with a label. Use it when a time was pulled
+    // early enough that nobody needs telling — a row saying "Registration
+    // closed" answers a question the reader never asked, and three clean
+    // choices read better than four with one crossed out. Use the string
+    // form instead when people HAVE seen the time advertised and would
+    // otherwise wonder where it went.
+    if(tag && tag.hide){ btn.remove(); return true; }
     var left = btn.querySelector('.rf-left-tag');    if(left) left.remove();
     var old  = btn.querySelector('.rf-soldout-tag'); if(old) old.remove();
     if(window.auricWaitlistClear) window.auricWaitlistClear(btn);
