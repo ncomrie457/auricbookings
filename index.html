@@ -3914,8 +3914,11 @@
       ──────────────────────────────────────────────────────── -->
       <div class="bq-vtesti" style="max-width:1080px;margin:2rem auto 0;padding:0 1rem;">
         <style>
+          /* One clip now, so it is centred at a readable width rather than
+             stretched across the row two used to fill. auto-fit is kept, so
+             dropping a second figure back in still lays them out side by side. */
           .bq-vtesti-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-            gap:1.1rem;max-width:620px;margin:0 auto;}
+            gap:1.1rem;max-width:320px;margin:0 auto;}
           .bq-vtesti-grid figure{margin:0;}
           .bq-vtesti-grid video{width:100%;height:auto;display:block;border-radius:16px;
             background:#000;border:1px solid #ece0cf;}
@@ -3924,14 +3927,9 @@
         </style>
         <div class="bq-vtesti-grid">
           <figure>
-            <video src="testimonial-1.mp4" poster="testimonial-1-poster.jpg" controls playsinline
-                   preload="none" aria-label="A guest talking about her class at Auric Movement"></video>
-            <figcaption>In her own words &#183; after class</figcaption>
-          </figure>
-          <figure>
-            <video src="testimonial-2.mp4" poster="testimonial-2-poster.jpg" controls playsinline
-                   preload="none" aria-label="A guest talking about her class at Auric Movement"></video>
-            <figcaption>In her own words &#183; after class</figcaption>
+            <video src="testimonials.mp4" poster="testimonials-poster.jpg" controls playsinline
+                   preload="none" aria-label="Three guests talking about their class at Auric Movement"></video>
+            <figcaption>Three guests, in their own words &#183; straight after class</figcaption>
           </figure>
         </div>
       </div>
