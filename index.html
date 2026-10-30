@@ -3563,11 +3563,15 @@
     if (window.auricIsClosed && window.auricIsClosed(card.getAttribute('data-event-id')))
       return { text:'Sold out', cls:'sold' };
     if (!paid) return null;
-    // A held session's empty seats are not availability — nobody can buy
-    // them. Counting them would let a date whose only open time is full
-    // still read "Now booking" on the card most people see first.
-    var held = (window.AURIC_CLOSED_SESSIONS || {})[card.getAttribute('data-event-id')] || {};
-    var open = cfg.sessions.filter(function(s){ return !held[s]; });
+    // A held session's empty seats are not availability to the person
+    // reading this card. Counting them would let a date whose only public
+    // time is full still read "Now booking" on the card most people see
+    // first. Unlisted, not closed: a time open behind a shared link is
+    // still excluded here, because a passer-by cannot book it either.
+    var _ev = card.getAttribute('data-event-id');
+    var open = cfg.sessions.filter(function(s){
+      return !(window.auricSessionUnlisted && window.auricSessionUnlisted(_ev, s));
+    });
     if (!open.length) return { text:'Registration closed', cls:'sold' };
     var rem = 0;
     open.forEach(function(s){ var r = cfg.cap - (paid[s] || 0); rem += (r > 0 ? r : 0); });
@@ -7347,11 +7351,21 @@ Can't wait to move and connect with you!</textarea>
   window.auricIsClosed = function(ev){
     return !!(window.AURIC_CLOSED_EVENTS && window.AURIC_CLOSED_EVENTS[ev]);
   };
-  // Is this one session no longer taking bookings? The booking pages use
-  // auricLockSession to grey a button; the admin panel uses this to stop
-  // offering the session at all, so the one list above drives both and a
-  // closed time cannot linger in a dropdown after the button is locked.
+  /* Two different questions, and conflating them put the admin panel wrong.
+       auricSessionClosed   — is this time not selling AT ALL?
+       auricSessionUnlisted — is it just not offered to a passer-by?
+     A time hidden behind an `unlock` link is unlisted but very much still
+     selling: people are booking it from the link you sent them. The admin
+     panel asks the first question, so it keeps showing the time, counting
+     it, and letting you add someone to it. The public status pill asks the
+     second, so it does not advertise seats a visitor cannot reach. */
   window.auricSessionClosed = function(ev, session){
+    var held = (window.AURIC_CLOSED_SESSIONS || {})[ev];
+    var v = held && held[session];
+    if(!v) return false;
+    return !v.unlock;
+  };
+  window.auricSessionUnlisted = function(ev, session){
     var held = (window.AURIC_CLOSED_SESSIONS || {})[ev];
     return !!(held && held[session]);
   };
