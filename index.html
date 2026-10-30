@@ -7268,12 +7268,23 @@ Can't wait to move and connect with you!</textarea>
       'hw1130': 'Registration closed',
       'hw1230': 'Registration closed'
     },
-    // Nov 21 Brooklyn is not running the 3 PM. hide:true takes it off the
-    // booking page entirely rather than greying it out — the flyer only
-    // ever advertised 12, 1 and 2, so nobody is looking for it. The 12, 1
-    // and 2 carry on; delete this line to put the 3 PM back on sale.
+    // Nov 21 Brooklyn keeps the 3 PM off the public page — the flyer only
+    // ever advertised 12, 1 and 2 — but `unlock` lets a link bring it back
+    // for the people you send it to:
+    //
+    //   book.auricmovement.com/?book=reformer-n21&s=n3&k=3pm7h2k
+    //
+    // Once a guest opens that, the 3 PM behaves like any other time: real
+    // seat count, same Stripe link, same roster, same confirmation email.
+    //
+    // THIS IS A QUIET DOOR, NOT A LOCKED ONE. The key sits in this file and
+    // this repository is public, so anyone who reads the page source can
+    // find it. It stops the 3 PM being seen, not a determined person being
+    // let in. If it ever needs to be properly private, the thing to use is
+    // the private-event system in /private — its codes live in the database
+    // and never in the page. Change the key here and old links stop working.
     'riddim-kompa-brooklyn-2026-11-21': {
-      'n3': { hide: true }
+      'n3': { hide: true, unlock: '3pm7h2k' }
     }
   };
   // Lock every held slot on a screen, without asking the database anything.
@@ -7300,7 +7311,14 @@ Can't wait to move and connect with you!</textarea>
     // choices read better than four with one crossed out. Use the string
     // form instead when people HAVE seen the time advertised and would
     // otherwise wonder where it went.
-    if(tag && tag.hide){ btn.remove(); return true; }
+    if(tag && tag.hide){
+      // An `unlock` key turns the hidden time back on for whoever holds the
+      // link. Returning false hands the button back to the seat count, so an
+      // invited guest sees the real number left and books exactly as anyone
+      // else would — no second code path, and nothing special to maintain.
+      if(tag.unlock && window.auricUnlocked(ev, session, tag.unlock)) return false;
+      btn.remove(); return true;
+    }
     var left = btn.querySelector('.rf-left-tag');    if(left) left.remove();
     var old  = btn.querySelector('.rf-soldout-tag'); if(old) old.remove();
     if(window.auricWaitlistClear) window.auricWaitlistClear(btn);
@@ -7309,6 +7327,22 @@ Can't wait to move and connect with you!</textarea>
     t.className = 'rf-soldout-tag'; t.textContent = tag;
     btn.appendChild(t);
     return true;
+  };
+  /* Has this visitor been given the key to a hidden session?
+     The key arrives as ?k= on the link you send. It is remembered for the
+     tab afterwards, because the booking flow navigates — off to Stripe and
+     back — and a guest who had to re-paste the link halfway through paying
+     would simply give up. sessionStorage, not localStorage: the key should
+     not outlive the visit, and it must never be the reason a shared laptop
+     shows the time to the next person.
+     Storage throws in some private-browsing modes, so the URL on its own
+     still works if it does. */
+  window.auricUnlocked = function(ev, session, key){
+    if(!key) return false;
+    var slot = 'auric_unlock_' + ev + '_' + session, q = null;
+    try { q = new URLSearchParams(location.search).get('k'); } catch(e){}
+    if(q === key){ try { sessionStorage.setItem(slot, '1'); } catch(e){} return true; }
+    try { return sessionStorage.getItem(slot) === '1'; } catch(e){ return false; }
   };
   window.auricIsClosed = function(ev){
     return !!(window.AURIC_CLOSED_EVENTS && window.AURIC_CLOSED_EVENTS[ev]);
