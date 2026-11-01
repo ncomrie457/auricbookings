@@ -24,12 +24,12 @@ The table below is rewritten by `scripts/update-vendor.mjs`. Edit
 <!-- versions:start -->
 | File | Package | Version |
 |---|---|---|
-| `supabase-js-2.117.3.min.js` | `@supabase/supabase-js` | 2.117.3 |
+| `supabase-js-2.118.0.min.js` | `@supabase/supabase-js` | 2.118.0 |
 | `emailjs-browser-4.4.1.min.js` | `@emailjs/browser` | 4.4.1 |
 | `jspdf-2.5.2.umd.min.js` | `jspdf` | 2.5.2 |
 | `gsap-3.15.0.min.js` | `gsap` | 3.15.0 |
 | `gsap-scrolltrigger-3.15.0.min.js` | `gsap` | 3.15.0 |
-| `lenis-1.3.26.min.js` | `lenis` | 1.3.26 |
+| `lenis-1.3.27.min.js` | `lenis` | 1.3.27 |
 <!-- versions:end -->
 
 Every file was taken from the official npm tarball, unmodified. They are the
