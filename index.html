@@ -12987,28 +12987,38 @@ document.addEventListener('DOMContentLoaded', function() {
     'tb-1130':   { src:'reformer', dbEvent:'turkey-burn-2026-11-22', session:'tb1130', name:'Pre-Turkey Burn · 11:30 AM', date:'Sunday, November 22nd', time:'Arrival 11:25 AM · Class 11:30 AM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
     'tb-1230':   { src:'reformer', dbEvent:'turkey-burn-2026-11-22', session:'tb1230', name:'Pre-Turkey Burn · 12:30 PM', date:'Sunday, November 22nd', time:'Arrival 12:25 PM · Class 12:30 PM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
     'tb-130':    { src:'reformer', dbEvent:'turkey-burn-2026-11-22', session:'tb130',  name:'Pre-Turkey Burn · 1:30 PM', date:'Sunday, November 22nd', time:'Arrival 1:25 PM · Class 1:30 PM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
-    'recharge':  { src:'recharge', name:'Create & Recharge', date:'Saturday, August 15th', time:'Arrival 11:30 AM · Art 11:35 AM', loc:'Inner Diamond Studio · 300 W 38th St, 2F, New York, NY 10018' },
+    'tb28-1130': { src:'reformer', dbEvent:'turkey-burn-2026-11-28', session:'tb28_1130', name:'Post-Turkey Burn · 11:30 AM', date:'Saturday, November 28th', time:'Arrival 11:25 AM · Class 11:30 AM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
+    'tb28-1230': { src:'reformer', dbEvent:'turkey-burn-2026-11-28', session:'tb28_1230', name:'Post-Turkey Burn · 12:30 PM', date:'Saturday, November 28th', time:'Arrival 12:25 PM · Class 12:30 PM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
+    'tb28-130':  { src:'reformer', dbEvent:'turkey-burn-2026-11-28', session:'tb28_130',  name:'Post-Turkey Burn · 1:30 PM', date:'Saturday, November 28th', time:'Arrival 1:25 PM · Class 1:30 PM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
+    'recharge':{ src:'recharge', name:'Create & Recharge', date:'Saturday, August 15th', time:'Arrival 11:30 AM · Art 11:35 AM', loc:'Inner Diamond Studio · 300 W 38th St, 2F, New York, NY 10018' },
     'pilates':   { src:'pilates',  name:'Pilates x Niara', date:'Friday, June 19th', time:'', loc:'The Space Pilates Studio · 36 West 20th Street, 2nd Floor, New York, NY 10011' }
   };
-  function foundingGatherFirst(eventKey, cb){
-    var meta=FOUNDING_EVENTS[eventKey]; if(!meta){ cb(null); return; }
-    function earliest(arr){ var v=arr.filter(function(r){ return r.email; }); v.sort(function(a,b){ return (a.created||'').localeCompare(b.created||''); }); return v[0]||null; }
+  // Everyone eligible for a Founding One on an event, earliest booking first.
+  // [0] is the automatic winner — the badge the roster already shows — and the
+  // rest are there so the gift can be handed to somebody else by name, without
+  // editing the roster to fake a booking order.
+  function foundingGatherAll(eventKey, cb){
+    var meta=FOUNDING_EVENTS[eventKey]; if(!meta){ cb([]); return; }
+    function ordered(arr){ var v=arr.filter(function(r){ return r.email; }); v.sort(function(a,b){ return (a.created||'').localeCompare(b.created||''); }); return v; }
     if(meta.src==='matchat'){
-      getMCData(function(d){ cb(earliest((d.mc1||[]).filter(function(r){return r.type==='confirmed';}).map(function(r){return {name:r.name,email:r.email,created:r.created_at||r.timestamp_iso||r.time};}))); });
+      getMCData(function(d){ cb(ordered((d.mc1||[]).filter(function(r){return r.type==='confirmed';}).map(function(r){return {name:r.name,email:r.email,created:r.created_at||r.timestamp_iso||r.time};}))); });
     } else if(meta.src==='recharge'){
-      getCRData(function(d){ cb(earliest((d.cr1||[]).filter(function(r){return r.type==='confirmed'&&r.isPaid;}).map(function(r){return {name:r.name,email:r.email,created:r.created_at};}))); });
+      getCRData(function(d){ cb(ordered((d.cr1||[]).filter(function(r){return r.type==='confirmed'&&r.isPaid;}).map(function(r){return {name:r.name,email:r.email,created:r.created_at};}))); });
     } else if(meta.src==='pilates'){
-      getData(function(d){ var c=[]; SESSIONS.forEach(function(s){ (d[s.id]||[]).filter(function(r){return r.type==='confirmed';}).forEach(function(r){ c.push({name:r.name,email:r.email,created:r.created_at||r.timestamp_iso||r.time}); }); }); cb(earliest(c)); });
+      getData(function(d){ var c=[]; SESSIONS.forEach(function(s){ (d[s.id]||[]).filter(function(r){return r.type==='confirmed';}).forEach(function(r){ c.push({name:r.name,email:r.email,created:r.created_at||r.timestamp_iso||r.time}); }); }); cb(ordered(c)); });
     } else if(meta.src==='reformer'){
       try {
         supabase.rpc('reformer_roster',{pass:ADMIN_PASSWORD}).then(function(res){
           var rows=(res&&res.data)||[];
-          // Same guard as everywhere else: an archived row isn't a registrant,
-          // so it can't be the session's first paid booker.
-          cb(earliest(rows.filter(function(r){return r.is_paid&&r.email&&!r.archived&&r.type!=='waitlist'&&r.event===meta.dbEvent&&r.session===meta.session;}).map(function(r){return {name:r.name,email:r.email,created:r.created_at};})));
-        }, function(){ cb(null); });
-      } catch(e){ cb(null); }
-    } else cb(null);
+          // Same eligibility test as the roster badge, so the two agree:
+          // an archived row isn't a registrant, a waitlist row hasn't got a
+          // seat, a transferred-in row didn't book this date, and a comped
+          // seat is marked is_paid to hold a seat but brought no money in —
+          // the gift goes to someone who bought a spot.
+          cb(ordered(rows.filter(function(r){return r.is_paid&&!r.comp&&r.email&&!r.archived&&r.type!=='waitlist'&&!r.moved_at&&r.event===meta.dbEvent&&r.session===meta.session;}).map(function(r){return {name:r.name,email:r.email,created:r.created_at};})));
+        }, function(){ cb([]); });
+      } catch(e){ cb([]); }
+    } else cb([]);
   }
   function openFoundingOne(){
     var prior=document.getElementById('founding-one'); if(prior) prior.remove();
@@ -13017,13 +13027,15 @@ document.addEventListener('DOMContentLoaded', function() {
     var opts=Object.keys(FOUNDING_EVENTS).map(function(k){ return '<option value="'+k+'">'+escapeHTML(FOUNDING_EVENTS[k].name)+'</option>'; }).join('');
     ov.innerHTML='<div style="background:#f4ecdb;max-width:440px;width:100%;border-radius:16px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.4);font-family:\'Jost\',sans-serif;">'
       +'<div style="font-family:\'Cormorant Garamond\',serif;font-style:italic;font-size:1.6rem;color:#3b4a2f;margin-bottom:2px;">🎁 Send Founding One</div>'
-      +'<div style="font-size:.86em;color:#6b6750;margin-bottom:14px;">Emails the free-tote note to the <strong>first person</strong> who booked the event you pick.</div>'
+      +'<div style="font-size:.86em;color:#6b6750;margin-bottom:14px;">Emails the free-tote note. It starts on the <strong>first person who paid</strong> for a seat — change it below to hand the gift to somebody else.</div>'
       +'<label style="display:block;font-size:.82rem;color:#3b4a2f;font-weight:600;margin-bottom:.3rem;">Event</label>'
       +'<select id="founding-one-event" style="width:100%;padding:.5rem .75rem;border:1px solid #d9cba6;border-radius:10px;font-family:\'Jost\',sans-serif;font-size:.82rem;background:#fff;color:#3d322a;margin-bottom:12px;">'+opts+'</select>'
-      +'<div id="founding-one-preview" style="margin-bottom:12px;padding:.7rem .85rem;background:#eef3e8;border:1px solid #cdddbb;border-radius:10px;font-size:.86em;color:#3b4a2f;min-height:1.1em;">Looking up the first booker…</div>'
+      +'<label id="founding-one-wholbl" style="display:none;font-size:.82rem;color:#3b4a2f;font-weight:600;margin-bottom:.3rem;">Goes to</label>'
+      +'<select id="founding-one-who" style="display:none;width:100%;padding:.5rem .75rem;border:1px solid #d9cba6;border-radius:10px;font-family:\'Jost\',sans-serif;font-size:.82rem;background:#fff;color:#3d322a;margin-bottom:12px;"></select>'
+      +'<div id="founding-one-preview"style="margin-bottom:12px;padding:.7rem .85rem;background:#eef3e8;border:1px solid #cdddbb;border-radius:10px;font-size:.86em;color:#3b4a2f;min-height:1.1em;">Looking up the first booker…</div>'
       +'<div id="founding-one-status" style="margin-bottom:12px;font-size:.86em;color:#3b4a2f;min-height:1.1em;"></div>'
       +'<div style="display:flex;gap:9px;">'
-      +'<button type="button" id="founding-one-send" class="btn btn-primary" style="flex:1;" disabled>Send to first booker</button>'
+      +'<button type="button" id="founding-one-send" class="btn btn-primary" style="flex:1;" disabled>Send gift email</button>'
       +'<button type="button" id="founding-one-cancel" class="btn" style="background:#e3d9bf;color:#3b4a2f;">Cancel</button>'
       +'</div></div>';
     document.body.appendChild(ov);
@@ -13031,22 +13043,45 @@ document.addEventListener('DOMContentLoaded', function() {
     ov.addEventListener('click',function(e){ if(e.target===ov) close(); });
     document.getElementById('founding-one-cancel').addEventListener('click',close);
     var evSel=document.getElementById('founding-one-event');
+    var whoSel=document.getElementById('founding-one-who');
+    var whoLbl=document.getElementById('founding-one-wholbl');
     var prevEl=document.getElementById('founding-one-preview');
     var sendBtn=document.getElementById('founding-one-send');
     var stEl=document.getElementById('founding-one-status');
-    var _curPerson=null, _lookupToken=0;
+    var _people=[], _curPerson=null, _lookupToken=0;
+    // Has a Founding One already gone out for this seat? Worth saying out loud
+    // once the pick can be made by hand, so the same session isn't gifted twice.
+    function alreadySent(p){
+      var meta=FOUNDING_EVENTS[evSel.value];
+      if(!meta || meta.src!=='reformer' || !p) return false;
+      try { return !!_foundingSent[foundingKey(p.email, meta.dbEvent, meta.session)]; } catch(e){ return false; }
+    }
+    function describe(){
+      var p=_curPerson;
+      if(!p){ prevEl.innerHTML='<span style="color:#8a6b3a;">Nobody has paid for a seat on this one yet.</span>'; return; }
+      var first=_people[0] && _people[0].email===p.email;
+      prevEl.innerHTML='<strong>'+(first?'First to book':'Your pick')+':</strong> '+escapeHTML(p.name)
+        +'<br><span style="color:#5f7052;">'+escapeHTML(p.email)+'</span>'
+        +(first?'':'<br><span style="color:#8a6b3a;">'+escapeHTML(_people[0].name)+' booked first.</span>')
+        +(alreadySent(p)?'<br><span style="color:#8a6b3a;">🎁 Already sent a Founding One for this session.</span>':'');
+    }
     function preview(){
-      var key=evSel.value; stEl.textContent=''; _curPerson=null; sendBtn.disabled=true;
+      var key=evSel.value; stEl.textContent=''; _people=[]; _curPerson=null; sendBtn.disabled=true;
+      whoSel.innerHTML=''; whoSel.style.display='none'; whoLbl.style.display='none';
       prevEl.textContent='Looking up the first booker…';
       var tok=++_lookupToken;
-      foundingGatherFirst(key,function(p){
+      foundingGatherAll(key,function(list){
         if(tok!==_lookupToken) return; // a newer lookup superseded this one
-        _curPerson=p;
-        if(!p){ prevEl.innerHTML='<span style="color:#8a6b3a;">No paid/confirmed bookings for this event yet.</span>'; sendBtn.disabled=true; return; }
-        prevEl.innerHTML='<strong>First to book:</strong> '+escapeHTML(p.name)+'<br><span style="color:#5f7052;">'+escapeHTML(p.email)+'</span>';
-        sendBtn.disabled=false;
+        _people=list||[];
+        if(!_people.length){ describe(); return; }
+        whoSel.innerHTML=_people.map(function(p,i){
+          return '<option value="'+i+'">'+escapeHTML(p.name+' · '+p.email)+(i===0?' · booked first':'')+'</option>';
+        }).join('');
+        whoSel.value='0'; whoSel.style.display=''; whoLbl.style.display='';
+        _curPerson=_people[0]; sendBtn.disabled=false; describe();
       });
     }
+    whoSel.addEventListener('change', function(){ _curPerson=_people[Number(whoSel.value)]||null; stEl.textContent=''; describe(); });
     evSel.addEventListener('change', preview);
     preview();
     sendBtn.addEventListener('click',function(){
@@ -13054,7 +13089,12 @@ document.addEventListener('DOMContentLoaded', function() {
       if(!p){ stEl.textContent='No first booker to send to yet.'; return; }
       if(typeof emailjs==='undefined'){ stEl.textContent='EmailJS not loaded.'; return; }
       if(MC_TMPL_FOUNDING.indexOf('REPLACE')!==-1){ stEl.textContent='Set the founding template id first.'; return; }
-      if(!confirm('Send the Founding One gift email to '+p.name+' ('+p.email+')?\n\nThey were the first to book '+meta.name+'.')) return;
+      var isFirst = _people[0] && _people[0].email===p.email;
+      var note = isFirst
+        ? 'They were the first to book '+meta.name+'.'
+        : 'They are NOT the first booker on '+meta.name+' — '+_people[0].name+' is. Sending by hand.';
+      if(alreadySent(p)) note += '\n\n🎁 A Founding One has already gone out for this session.';
+      if(!confirm('Send the Founding One gift email to '+p.name+' ('+p.email+')?\n\n'+note)) return;
       sendBtn.disabled=true; stEl.textContent='Sending…';
       emailjs.send(EMAILJS_SERVICE_RESEND, MC_TMPL_FOUNDING, {
         from_name:p.name, to_email:p.email,
@@ -17107,7 +17147,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Who is the Founding One of each event + session.
   //
-  // The badge belongs to whoever booked THAT date first. Two wrinkles:
+  // The badge belongs to whoever booked THAT date first. Three wrinkles:
+  //
+  //  • A comped seat is left out. It is marked is_paid so it holds a seat and
+  //    behaves like a booking everywhere else, but nobody bought it — the
+  //    badge is for the first person who paid their way in.
   //
   //  • A booking moved here from another date (moved_at set) is left out. It
   //    carries the original booking time, which would otherwise put it ahead
@@ -17127,6 +17171,7 @@ document.addEventListener('DOMContentLoaded', function() {
     pool.forEach(function(r){
       if(!r || !r.is_paid || !r.email) return;
       if(r.type === 'waitlist') return;
+      if(r.comp) return;                                // comped seat — holds a seat, bought nothing
       if(r.moved_at) return;                            // transferred in — not their date
       var k = (r.event||'')+'|'+(r.session||'');
       (bySession[k] = bySession[k] || []).push(r);
