@@ -1840,11 +1840,11 @@
 
     /* Riddim & Kompa card: show the whole illustrated flyer (not a crop).
        Frame background matches the flyer's cream (#f8f1e7) so the letterbox is seamless. */
-    #event-card-reformer .bq-event-photo, #event-card-reformer-bk .bq-event-photo, #event-card-turkey .bq-event-photo, #event-card-turkey28 .bq-event-photo { background: #f5efe3; }
+    #event-card-reformer .bq-event-photo, #event-card-reformer-bk .bq-event-photo, #event-card-turkey .bq-event-photo { background: #f5efe3; }
     /* Oct 10 and Nov 21 are dark flyers — letterbox them in near-black, not cream. */
     #event-card-reformer-o10 .bq-event-photo,
     #event-card-reformer-n21 .bq-event-photo { background:#0d0b09; }
-    #event-card-reformer .bq-event-photo img, #event-card-reformer-bk .bq-event-photo img, #event-card-reformer-o10 .bq-event-photo img, #event-card-reformer-n21 .bq-event-photo img, #event-card-turkey .bq-event-photo img, #event-card-turkey28 .bq-event-photo img { object-fit: contain; }
+    #event-card-reformer .bq-event-photo img, #event-card-reformer-bk .bq-event-photo img, #event-card-reformer-o10 .bq-event-photo img, #event-card-reformer-n21 .bq-event-photo img, #event-card-turkey .bq-event-photo img { object-fit: contain; }
     /* Halloween flyer is dark — letterbox in near-black so it blends. */
     #event-card-halloween .bq-event-photo { background:#140f0b; }
     #event-card-halloween .bq-event-photo img { object-fit: contain; }
@@ -3317,19 +3317,14 @@
         <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
       </button>
 
-      <!-- Post-Turkey Burn — Nov 28, Valley Studio. Opens the Post-Turkey Burn booking overlay. -->
-      <button type="button" id="event-card-turkey28" class="bq-event scroll-reveal" data-event-id="turkey-burn-2026-11-28" data-event-date="2026-11-28" data-event-name="Post-Turkey Burn" data-location="long-island">
-        <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
-        <div class="bq-event-photo">
-          <img src="post-turkey-burn-flyer.jpg?v=2" alt="Post-Turkey Burn on the Reformer &#8212; Saturday, November 28 at Valley Studio, West Hempstead NY &#183; three sessions (11:30 AM, 12:30 &amp; 1:30 PM) &#183; $45" loading="lazy" decoding="async">
-        </div>
-        <div class="bq-event-date">11.28.26 &#183; Post-Turkey Burn</div>
-        <div class="bq-event-name">Post-Turkey <em>Burn</em></div>
-        <div class="bq-event-loc">West Hempstead, NY</div>
-        <div class="bq-event-sub">Sat &#183; 11:30 AM, 12:30 &amp; 1:30 PM &#183; $45 &#183; Valley Studio, West Hempstead NY</div>
-        <div class="bq-event-raffle">&#127903; Prize drawing &#183; win a 4-class package</div>
-        <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
-      </button>
+      <!-- Post-Turkey Burn — Nov 28, Valley Studio. The card is deliberately NOT
+           here: the date is off the public page. Everything else about Nov 28 is
+           still wired up — the booking overlay below, ?book=turkey28, the Stripe
+           return, the roster, the confirmation emails — so anyone holding the
+           link can still book and anyone already booked is untouched. To put it
+           back on the page, restore this card and its four registry entries
+           (AURIC_EVENT_CAPS, the Next Up id list, the Upcoming list, and the
+           donor-badge card map); the overlay needs no changes. -->
 
       <!-- Something's Blooming — Dec 13, Long Island. Interest list → /blooming -->
       <a href="/blooming" id="event-card-blooming" class="bq-event scroll-reveal" data-event-date="2026-12-13" data-event-name="Something&#8217;s Blooming" data-location="long-island">
@@ -3546,8 +3541,7 @@
     'event-card-reformer-o10':{ cap:5, sessions:['o12','o1','o2','o3'] },
     'event-card-reformer-n21':{ cap:5, sessions:['n12','n1','n2','n3'] },
     'event-card-halloween':   { cap:6, sessions:['hw1130','hw1230','hw130'] },
-    'event-card-turkey':      { cap:6, sessions:['tb1130','tb1230','tb130'] },
-    'event-card-turkey28':    { cap:6, sessions:['tb28_1130','tb28_1230','tb28_130'] }
+    'event-card-turkey':      { cap:6, sessions:['tb1130','tb1230','tb130'] }
   };
   // null means "no opinion" — the caller keeps whatever it already shows.
   window.auricStatusFor = function(cardId, paid){
@@ -3686,7 +3680,7 @@
         if(!mount) return;
         var ids = ['event-card-recharge','event-card-reformer','event-card-reformer-bk',
                    'event-card-reformer-o10','event-card-reformer-n21',
-                   'event-card-halloween','event-card-turkey','event-card-turkey28',
+                   'event-card-halloween','event-card-turkey',
                    'event-card-matchat','event-card-pilates'];
         var today = new Date(); today.setHours(0,0,0,0);
         var best=null, bestDate=null;
@@ -3789,8 +3783,7 @@
           {id:'event-card-reformer-o10', tag:'Now booking', cls:'ok'},
           {id:'event-card-reformer-n21', tag:'Now booking', cls:'ok'},
           {id:'event-card-halloween', tag:'Now booking', cls:'ok'},
-          {id:'event-card-turkey', tag:'Now booking', cls:'ok'},
-          {id:'event-card-turkey28', tag:'Now booking', cls:'ok'}
+          {id:'event-card-turkey', tag:'Now booking', cls:'ok'}
         ];
         // Headed "Upcoming", so it has to read in date order. Sorting on the
         // card's own data-event-date means adding a date here never puts it in
@@ -8735,7 +8728,11 @@ session:chosen, session_label:chosenLabel,
 document.addEventListener('DOMContentLoaded', function(){
   var card = document.getElementById('event-card-turkey28');
   var ov   = document.getElementById('turkey28-overlay');
-  if(!card || !ov) return;
+  // The card is gone from the page, so this flow is reached by ?book=turkey28
+  // and by Stripe returning to ?paid=turkey28. Bailing out on a missing card
+  // would take the payment-confirmation screen down with it, which is the one
+  // thing that still has to work for someone mid-checkout.
+  if(!ov) return;
 
   var TB28_EVENT = 'turkey-burn-2026-11-28';
   var chosen=null, chosenLabel='';
@@ -8790,7 +8787,7 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   function openOv(){ ov.style.display='flex'; document.body.style.overflow='hidden'; applyCap(); }
   function closeOv(){ ov.style.display='none'; document.body.style.overflow=''; }
-  card.addEventListener('click', openOv);
+  if(card) card.addEventListener('click', openOv);
   document.getElementById('turkey28-close').addEventListener('click', closeOv);
   document.getElementById('turkey28-close2').addEventListener('click', closeOv);
   ov.addEventListener('click', function(e){ if(e.target===ov) closeOv(); });
@@ -10713,7 +10710,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function applyEventBadges() {
     ensureDonorSlots();
     getEventConfig(function(cfg){
-      var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat', recharge: 'event-card-recharge', reformer: 'event-card-reformer', 'reformer-bk': 'event-card-reformer-bk', 'reformer-o10': 'event-card-reformer-o10', 'reformer-n21': 'event-card-reformer-n21', halloween: 'event-card-halloween', turkey: ['event-card-turkey','event-card-turkey28'], blooming: 'event-card-blooming' };
+      var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat', recharge: 'event-card-recharge', reformer: 'event-card-reformer', 'reformer-bk': 'event-card-reformer-bk', 'reformer-o10': 'event-card-reformer-o10', 'reformer-n21': 'event-card-reformer-n21', halloween: 'event-card-halloween', turkey: 'event-card-turkey', blooming: 'event-card-blooming' };
       Object.keys(cards).forEach(function(key){
         var _ids = cards[key]; if(!Array.isArray(_ids)) _ids = [_ids];
         _ids.forEach(function(_cardId){
