@@ -1,14 +1,14 @@
 {
-  "checkedAt": "2026-10-12T15:48:07.984Z",
-  "behind": 0,
+  "checkedAt": "2026-11-01T16:15:41.140Z",
+  "behind": 2,
   "errors": 0,
   "libraries": [
     {
       "name": "supabase-js",
       "package": "@supabase/supabase-js",
       "current": "2.117.3",
-      "latest": "2.117.3",
-      "behind": false,
+      "latest": "2.118.0",
+      "behind": true,
       "error": null
     },
     {
@@ -47,8 +47,8 @@
       "name": "lenis",
       "package": "lenis",
       "current": "1.3.26",
-      "latest": "1.3.26",
-      "behind": false,
+      "latest": "1.3.27",
+      "behind": true,
       "error": null
     }
   ]
