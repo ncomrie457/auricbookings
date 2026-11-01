@@ -1405,7 +1405,10 @@
       flex-direction: column;
       gap: .55rem;
     }
-    .bq-footer-links button {
+    /* The policy links are buttons because they open a modal; FAQ is a real tab,
+       so it is an anchor and has to pick up the same styling. */
+    .bq-footer-links button,
+    .bq-footer-links a {
       background: none;
       border: 0;
       padding: 0;
@@ -1419,7 +1422,8 @@
       transition: color .2s ease;
       letter-spacing:.06em;
     }
-    .bq-footer-links button:hover { color: var(--gold-text); }
+    .bq-footer-links button:hover,
+    .bq-footer-links a:hover { color: var(--gold-text); }
 
     .bq-footer-fine {
       border-top: 1px solid rgba(240,230,214,.15);
@@ -6576,6 +6580,11 @@ Can't wait to move and connect with you!</textarea>
         <div class="bq-footer-handle">@auricmovement</div>
 
         <nav class="bq-footer-links" aria-label="Footer">
+          <!-- The old tab strip that used to carry FAQ is display:none, so until
+               now the only way in was one link at the foot of the Events tab.
+               data-nav-tab is the site's own convention for switching tabs; the
+               href keeps it a real link that works without it. -->
+          <a href="#tab-faq" data-nav-tab="btn-faq">FAQ</a>
           <button type="button" id="open-privacy-btn">Privacy Policy</button>
           <button type="button" id="open-terms-btn">Terms &amp; Refund</button>
           <button type="button" id="open-policies-btn">Class Policies</button>
@@ -20899,14 +20908,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // In-content tab links (e.g., FAQ answer linking to Corporate tab)
-  document.querySelectorAll('.bq-faq-link[data-nav-tab]').forEach(function(link){
+  // In-content tab links (e.g., FAQ answer linking to Corporate tab), and the
+  // footer's FAQ link. data-nav-tab is wired in two places — here and inside
+  // wireTopNav — so a link that sits in neither does nothing but jump to a
+  // hidden panel. The footer is named explicitly rather than catching every
+  // [data-nav-tab] on the page, so the top nav keeps its own handler and
+  // nothing ends up bound twice.
+  document.querySelectorAll('.bq-faq-link[data-nav-tab], .bq-footer-links a[data-nav-tab]').forEach(function(link){
     link.addEventListener('click', function(e){
       e.preventDefault();
       var tabId = link.getAttribute('data-nav-tab');
       var btn = document.getElementById(tabId);
       if (btn) btn.click();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Lenis runs the scrolling on this page and ignores window.scrollTo, so a
+      // click from the footer switched the tab and left you standing in the
+      // footer. Ask Lenis where it exists, and keep the native call as fallback.
+      if (window.__lenis && typeof window.__lenis.scrollTo === 'function') window.__lenis.scrollTo(0, { duration: 1 });
+      else window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   });
 
