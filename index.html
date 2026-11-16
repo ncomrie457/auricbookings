@@ -6428,6 +6428,25 @@
         </div>
       </div>
 
+      <!-- The template always prints an Arrival row and a Class starts row,
+           filled from the session the booking is on. A private event has one
+           stored time, not two, so both rows showed the same time and an
+           invitation saying "arrive 4:30, class 4:45" contradicted its own
+           header. These two override whatever the event would have supplied.
+           Left blank they change nothing, so every public event behaves
+           exactly as before. Saved per event like the rest of this panel. -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.85rem;">
+        <div>
+          <label for="admin-flex-reminder-arrival" class="au-label">Arrival time <span style="font-weight:400;color:var(--text-muted);">(optional)</span></label>
+          <input type="text" id="admin-flex-reminder-arrival" placeholder="e.g., 4:30 PM" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.82rem;box-sizing:border-box;background:#fff;color:#3d322a;">
+        </div>
+        <div>
+          <label for="admin-flex-reminder-start" class="au-label">Start time <span style="font-weight:400;color:var(--text-muted);">(optional)</span></label>
+          <input type="text" id="admin-flex-reminder-start" placeholder="e.g., 4:45 PM" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.82rem;box-sizing:border-box;background:#fff;color:#3d322a;">
+        </div>
+      </div>
+      <p style="font-size:.72rem;color:var(--text-muted);margin:-.55rem 0 .85rem;font-style:italic;">Leave both empty to use the times already on the booking. Fill them in for a private event, which stores one time rather than an arrival and a start.</p>
+
       <div style="margin-bottom:.85rem;">
         <label for="admin-flex-reminder-greeting" class="au-label">Greeting <span style="font-weight:400;color:var(--text-muted);">(auto-fills based on days &mdash; or write your own)</span></label>
         <input type="text" id="admin-flex-reminder-greeting" placeholder="e.g., See you next week!" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.82rem;box-sizing:border-box;background:#fff;color:#3d322a;">
@@ -13427,7 +13446,9 @@ document.addEventListener('DOMContentLoaded', function() {
       qQuestion: 'admin-flex-reminder-question',
       qSub:      'admin-flex-reminder-question-sub',
       linkText:  'admin-flex-reminder-link-text',
-      linkUrl:   'admin-flex-reminder-link-url'
+      linkUrl:   'admin-flex-reminder-link-url',
+      arrival:   'admin-flex-reminder-arrival',
+      start:     'admin-flex-reminder-start'
     };
     function el(id){ return document.getElementById(id); }
     function key(ev){ return 'auric_reminder_draft_' + ev; }
@@ -13854,6 +13875,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var phrasing = getReminderPhrasing(days);
     var greeting = customGreeting || phrasing.greeting;
     var daysText = phrasing.days_text;
+    // Optional arrival/start overrides from the panel. Read once here rather
+    // than per recipient, so every email in one send carries the same times.
+    var _ovrEl = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
+    var _ovrArrival = _ovrEl('admin-flex-reminder-arrival');
+    var _ovrStart   = _ovrEl('admin-flex-reminder-start');
 
     function gatherConfirmed(callback){
       // If the roster list is on screen for this event, it wins — what she
@@ -14004,7 +14030,14 @@ document.addEventListener('DOMContentLoaded', function() {
       var pickNote = confirmed._handPicked
         ? '\n\n(These are the people you ticked in the list, not the automatic set.)' : '';
       if (!confirm('Send this reminder to ' + confirmed.length + ' person(s)?\n\n' + lines + dupeNote + pickNote
-                   + '\n\nGreeting: "' + greeting + '"\nTiming: "' + daysText + '"')) return;
+                   + '\n\nGreeting: "' + greeting + '"\nTiming: "' + daysText + '"'
+                   // Say the overridden times out loud. They are the one thing
+                   // here that contradicts what the booking says, so they should
+                   // not go out without being seen first.
+                   + ((_ovrArrival || _ovrStart)
+                       ? '\nArrival: "' + (_ovrArrival || '(from the booking)')
+                         + '"\nStarts: "' + (_ovrStart || '(from the booking)') + '"'
+                       : ''))) return;
       if (typeof emailjs === 'undefined') { alert('EmailJS not loaded.'); return; }
 
       var btn = document.getElementById('admin-flex-reminder-send');
@@ -14031,8 +14064,11 @@ document.addEventListener('DOMContentLoaded', function() {
           to_email:      item.rec.email,
           session_label: item.sess.label,
           event_date:    item.sess.date || '',
-          arrival_time:  item.sess.arrival,
-          class_time:    item.sess.start,
+          // A time typed into the panel wins over the one the booking carries.
+          // Blank means "no opinion", so the booking's own time is used and
+          // every public event sends exactly what it always did.
+          arrival_time:  _ovrArrival || item.sess.arrival,
+          class_time:    _ovrStart   || item.sess.start,
           question_block: questionBlock,
           greeting:      greeting,
           days_text:     daysText,
