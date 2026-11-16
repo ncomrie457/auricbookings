@@ -6362,8 +6362,11 @@
               <option value="reformer-n21" data-event-date="2026-11-21">Riddim &amp; Kompa &mdash; Brooklyn (Nov 21)</option>
               <option value="halloween" data-event-date="2026-10-24">Shhh&hellip; Quiet on the Creek (Oct 24)</option>
               <option value="turkey" data-event-date="2026-11-22">Pre-Turkey Burn (Nov 22)</option>
-              <option value="turkey28" data-event-date="2026-11-28">Post-Turkey Burn (Nov 28)</option>
             </optgroup>
+            <!-- Filled from the database each time the admin panel opens, so a
+                 private event appears here the moment it is created and nobody
+                 has to add it by hand. Empty and hidden when there are none. -->
+            <optgroup label="Private events" id="admin-flex-reminder-private" hidden></optgroup>
             <optgroup label="Interest lists">
               <option value="blooming">Something&rsquo;s Blooming (interest list)</option>
             </optgroup>
@@ -11534,6 +11537,10 @@ document.addEventListener('DOMContentLoaded', function() {
       // them. Without this the list only ever filled in after saving or
       // deleting one, and an event created in an earlier visit looked missing.
       if (typeof pvRefresh === 'function') { try{ pvRefresh(); }catch(e){} }
+      // Same reason pvRefresh is here: the private events the reminder picker
+      // offers are the ones that exist right now, not the ones that existed
+      // when the page loaded.
+      if (typeof window.auricFillPrivateReminder === 'function') { try{ window.auricFillPrivateReminder(); }catch(e){} }
       adminPanel.scrollIntoView({behavior:'smooth'});
     });
   }
@@ -13509,8 +13516,36 @@ document.addEventListener('DOMContentLoaded', function() {
     'reformer-o10': 'riddim-kompa-brooklyn-2026-10-10',
     'reformer-n21': 'riddim-kompa-brooklyn-2026-11-21',
     'turkey':      'turkey-burn-2026-11-22',
-    'turkey28':    'turkey-burn-2026-11-28',
     'halloween':   'halloween-creek-2026-10-24'
+  };
+  // Put every private event into the custom-reminder picker, newest first, and
+  // remember each one's title, date and time so the reminder can fill them in.
+  // The list is read fresh every time the admin panel opens, because private
+  // events are created inside the panel — a hand-written list here would always
+  // be one event behind the one she just made.
+  window.__pvReminderMeta = {};
+  window.auricFillPrivateReminder = function(){
+    var grp = document.getElementById('admin-flex-reminder-private');
+    if(!grp) return;
+    try {
+      supabase.rpc('auric_private_list', { pass: ADMIN_PASSWORD }).then(function(res){
+        var rows = (res && res.data) || [];
+        var sel = document.getElementById('admin-flex-reminder-event');
+        var keep = sel ? sel.value : '';      // don't move her selection
+        grp.innerHTML = '';
+        window.__pvReminderMeta = {};
+        rows.forEach(function(e){
+          if(!e || !e.code) return;
+          window.__pvReminderMeta[e.code] = e;
+          var o = document.createElement('option');
+          o.value = 'private:' + e.code;
+          o.textContent = (e.title || e.code) + (e.event_date ? ' (' + e.event_date + ')' : '');
+          grp.appendChild(o);
+        });
+        grp.hidden = !rows.length;
+        if(keep && sel) sel.value = keep;
+      }, function(){});
+    } catch(e){}
   };
   // What the roster list currently has ticked. The send reads this, so what
   // you see in the list is exactly what goes out.
@@ -13886,7 +13921,6 @@ document.addEventListener('DOMContentLoaded', function() {
           'reformer-o10':function(ev){ return ev === 'riddim-kompa-brooklyn-2026-10-10'; },
           'reformer-n21':function(ev){ return ev === 'riddim-kompa-brooklyn-2026-11-21'; },
           'turkey':      function(ev){ return ev === 'turkey-burn-2026-11-22'; },
-          'turkey28':    function(ev){ return ev === 'turkey-burn-2026-11-28'; },
           'halloween':   function(ev){ return ev === 'halloween-creek-2026-10-24'; }
         };
         var keep = RF_EVENT_FILTER[eventType];
@@ -13907,6 +13941,39 @@ document.addEventListener('DOMContentLoaded', function() {
               seen[k] = 1; return true;
             }).map(function(rec){
               return { rec: { name: rec.name, email: rec.email }, sess: RF_SESS[rec.session] || RF_SESS['1pm'] };
+            });
+            confirmed._dupes = dupes;
+            callback(confirmed);
+          }, function(){ callback([]); });
+        } catch(e){ callback([]); }
+      } else if (eventType.indexOf('private:') === 0) {
+        // A private event — Fainola's birthday and anything else behind an
+        // access code. The guest list lives in its own table, not the reformer
+        // roster, so it is fetched by code rather than filtered out of the
+        // roster like the public events above.
+        var _pcode = eventType.slice('private:'.length);
+        var _pmeta = (window.__pvReminderMeta || {})[_pcode] || {};
+        try {
+          supabase.rpc('auric_private_rsvps', { pass: ADMIN_PASSWORD, p_code: _pcode }).then(function(res){
+            var rows = (res && res.data) || [];
+            // One reminder per person, however many rows they have. A private
+            // event has no waitlist and no archive, so there is nothing else
+            // to exclude — but somebody with no email cannot be written to.
+            var seen = {}, dupes = 0;
+            var confirmed = rows.filter(function(r){
+              if(!(r && r.email)) return false;
+              var k = String(r.email).trim().toLowerCase();
+              if(seen[k]){ dupes++; return false; }
+              seen[k] = 1; return true;
+            }).map(function(rec){
+              return { rec: { name: rec.name, email: rec.email }, sess: {
+                label: _pmeta.title || 'Private event',
+                date:  _pmeta.event_date || '',
+                // A private event has one time, not an arrival and a start, so
+                // both rows of the template show it rather than one going blank.
+                arrival: _pmeta.event_time || '',
+                start:   _pmeta.event_time || ''
+              } };
             });
             confirmed._dupes = dupes;
             callback(confirmed);
