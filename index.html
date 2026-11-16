@@ -5786,7 +5786,6 @@
             <option value="riddim-kompa-brooklyn-2026-11-21" data-event-date="2026-11-21">Riddim &amp; Kompa &mdash; Brooklyn (Nov 21)</option>
             <option value="halloween-creek-2026-10-24" data-event-date="2026-10-24">Shhh&hellip; Quiet on the Creek (Oct 24)</option>
             <option value="turkey-burn-2026-11-22" data-event-date="2026-11-22">Pre-Turkey Burn (Nov 22)</option>
-            <option value="turkey-burn-2026-11-28" data-event-date="2026-11-28">Post-Turkey Burn (Nov 28)</option>
             <option value="riddim-kompa-reformer-2026-09-13" data-event-date="2026-09-13">Riddim &amp; Kompa &mdash; West Hempstead (Sep 13)</option>
           </select>
         </div>
@@ -5885,9 +5884,6 @@
             <option value="tb1130" data-event-date="2026-11-22">Pre-Turkey Burn &#183; Sun Nov 22 &#183; 11:30 AM</option>
             <option value="tb1230" data-event-date="2026-11-22">Pre-Turkey Burn &#183; Sun Nov 22 &#183; 12:30 PM</option>
             <option value="tb130" data-event-date="2026-11-22">Pre-Turkey Burn &#183; Sun Nov 22 &#183; 1:30 PM</option>
-            <option value="tb28_1130" data-event-date="2026-11-28">Post-Turkey Burn &#183; Sat Nov 28 &#183; 11:30 AM</option>
-            <option value="tb28_1230" data-event-date="2026-11-28">Post-Turkey Burn &#183; Sat Nov 28 &#183; 12:30 PM</option>
-            <option value="tb28_130" data-event-date="2026-11-28">Post-Turkey Burn &#183; Sat Nov 28 &#183; 1:30 PM</option>
           </select>
         </div>
         <div>
@@ -12506,8 +12502,13 @@ document.addEventListener('DOMContentLoaded', function() {
     var datedSections = [
       reformerContainer, reformerBkContainer, reformerO10Container, reformerN21Container,
       halloweenContainer, turkeyContainer,
-      turkey28Container, bloomContainer, crContainer, mcContainer, sessionsContainer
+      bloomContainer, crContainer, mcContainer, sessionsContainer
     ];
+    // turkey28Container is deliberately not in that list: Post-Turkey Burn is
+    // off the admin panel, so its section is never appended and never drawn.
+    // Its rows are untouched in the database — this hides the view, it does
+    // not delete anybody. Put it back by adding the container here again and
+    // restoring the renderReformerTb28Section call below.
     // One test, used by both the ordering below and the Show-events filter, so
     // the two can never disagree about where an event belongs. data-past files
     // a section under Past before its date arrives — a date that was cancelled
@@ -12553,7 +12554,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof renderReformerO10Section === 'function') renderReformerO10Section(reformerO10Container);
     if (typeof renderReformerN21Section === 'function') renderReformerN21Section(reformerN21Container);
     if (typeof renderReformerTbSection === 'function') renderReformerTbSection(turkeyContainer);
-    if (typeof renderReformerTb28Section === 'function') renderReformerTb28Section(turkey28Container);
+    // Post-Turkey Burn is off the admin panel. Not calling this also leaves
+    // rfTb28AdminContainer null, so every later refresh skips it too.
     if (typeof renderReformerHwSection === 'function') renderReformerHwSection(halloweenContainer);
     if (typeof renderReformerArchivedSection === 'function') renderReformerArchivedSection(archivedContainer);
     if (typeof renderBloomingSection === 'function') renderBloomingSection(bloomContainer);
@@ -13022,9 +13024,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'tb-1130':   { src:'reformer', dbEvent:'turkey-burn-2026-11-22', session:'tb1130', name:'Pre-Turkey Burn · 11:30 AM', date:'Sunday, November 22nd', time:'Arrival 11:25 AM · Class 11:30 AM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
     'tb-1230':   { src:'reformer', dbEvent:'turkey-burn-2026-11-22', session:'tb1230', name:'Pre-Turkey Burn · 12:30 PM', date:'Sunday, November 22nd', time:'Arrival 12:25 PM · Class 12:30 PM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
     'tb-130':    { src:'reformer', dbEvent:'turkey-burn-2026-11-22', session:'tb130',  name:'Pre-Turkey Burn · 1:30 PM', date:'Sunday, November 22nd', time:'Arrival 1:25 PM · Class 1:30 PM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
-    'tb28-1130': { src:'reformer', dbEvent:'turkey-burn-2026-11-28', session:'tb28_1130', name:'Post-Turkey Burn · 11:30 AM', date:'Saturday, November 28th', time:'Arrival 11:25 AM · Class 11:30 AM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
-    'tb28-1230': { src:'reformer', dbEvent:'turkey-burn-2026-11-28', session:'tb28_1230', name:'Post-Turkey Burn · 12:30 PM', date:'Saturday, November 28th', time:'Arrival 12:25 PM · Class 12:30 PM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
-    'tb28-130':  { src:'reformer', dbEvent:'turkey-burn-2026-11-28', session:'tb28_130',  name:'Post-Turkey Burn · 1:30 PM', date:'Saturday, November 28th', time:'Arrival 1:25 PM · Class 1:30 PM', loc:'Valley Studio · 45 Cherry Valley Ave, West Hempstead, NY 11552' },
     'recharge':{ src:'recharge', name:'Create & Recharge', date:'Saturday, August 15th', time:'Arrival 11:30 AM · Art 11:35 AM', loc:'Inner Diamond Studio · 300 W 38th St, 2F, New York, NY 10018' },
     'pilates':   { src:'pilates',  name:'Pilates x Niara', date:'Friday, June 19th', time:'', loc:'The Space Pilates Studio · 36 West 20th Street, 2nd Floor, New York, NY 10011' }
   };
@@ -17214,10 +17213,7 @@ document.addEventListener('DOMContentLoaded', function() {
     { event:'halloween-creek-2026-10-24',       session:'hw130',  session_label:'1:30 PM session',  name:'Shhh… Quiet on the Creek · Sat Oct 24 · 1:30 PM' },
     { event:'turkey-burn-2026-11-22',           session:'tb1130', session_label:'11:30 AM session', name:'Pre-Turkey Burn · Sun Nov 22 · 11:30 AM' },
     { event:'turkey-burn-2026-11-22',           session:'tb1230', session_label:'12:30 PM session', name:'Pre-Turkey Burn · Sun Nov 22 · 12:30 PM' },
-    { event:'turkey-burn-2026-11-22',           session:'tb130',  session_label:'1:30 PM session',  name:'Pre-Turkey Burn · Sun Nov 22 · 1:30 PM' },
-    { event:'turkey-burn-2026-11-28',           session:'tb28_1130', session_label:'11:30 AM session', name:'Post-Turkey Burn · Sat Nov 28 · 11:30 AM' },
-    { event:'turkey-burn-2026-11-28',           session:'tb28_1230', session_label:'12:30 PM session', name:'Post-Turkey Burn · Sat Nov 28 · 12:30 PM' },
-    { event:'turkey-burn-2026-11-28',           session:'tb28_130',  session_label:'1:30 PM session',  name:'Post-Turkey Burn · Sat Nov 28 · 1:30 PM' }
+    { event:'turkey-burn-2026-11-22',           session:'tb130',  session_label:'1:30 PM session',  name:'Pre-Turkey Burn · Sun Nov 22 · 1:30 PM' }
   ];
   // Track who has been sent a Founding One (per event + session), so the roster
   // shows a 🎁 badge. Stored in localStorage (this browser).
@@ -19335,11 +19331,7 @@ document.addEventListener('DOMContentLoaded', function() {
     { v:'turkey',            t:'Sun Nov 22 \u2014 everyone who attended' },
     { v:'turkey|tb1130',     t:'Sun Nov 22 \u2014 11:30 AM only' },
     { v:'turkey|tb1230',     t:'Sun Nov 22 \u2014 12:30 PM only' },
-    { v:'turkey|tb130',      t:'Sun Nov 22 \u2014 1:30 PM only' },
-    { v:'tb28',              t:'Sat Nov 28 \u2014 everyone who attended' },
-    { v:'tb28|tb28_1130',    t:'Sat Nov 28 \u2014 11:30 AM only' },
-    { v:'tb28|tb28_1230',    t:'Sat Nov 28 \u2014 12:30 PM only' },
-    { v:'tb28|tb28_130',     t:'Sat Nov 28 \u2014 1:30 PM only' }
+    { v:'turkey|tb130',      t:'Sun Nov 22 \u2014 1:30 PM only' }
   ];
   function tyTurkeyPicker(id, preselect){
     var opts = TY_TURKEY_GROUPS.map(function(g){
