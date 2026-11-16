@@ -3330,17 +3330,12 @@
            (AURIC_EVENT_CAPS, the Next Up id list, the Upcoming list, and the
            donor-badge card map); the overlay needs no changes. -->
 
-      <!-- Something's Blooming — Dec 13, Long Island. Interest list → /blooming -->
-      <a href="/blooming" id="event-card-blooming" class="bq-event scroll-reveal" data-event-date="2026-12-13" data-event-name="Something&#8217;s Blooming" data-location="long-island">
-        <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
-        <div class="bq-event-photo">
-          <img src="blooming-flyer.png?v=1" alt="Something&rsquo;s Blooming &#8212; Saturday, December 13th, Long Island" loading="lazy" decoding="async" style="object-position:center 20%;">
-        </div>
-        <div class="bq-event-date">12.13.26 &#183; Something&rsquo;s Blooming</div>
-        <div class="bq-event-name">Something&rsquo;s <em>Blooming</em></div>
-        <div class="bq-event-sub">Mat &#183; flower bar &#183; goodie bag &#183; Long Island</div>
-        <span class="bq-event-link">Join the list <span aria-hidden="true">&#8594;</span></span>
-      </a>
+      <!-- Something's Blooming — Dec 13, Long Island. The card is deliberately
+           NOT here: the date is off the public page. Everything behind it still
+           works — /blooming still takes sign-ups for anyone holding the link,
+           the interest list and its roster are untouched, and the reminder
+           picker still offers it. To put it back, restore this card and its
+           entry in the All Events list and the donor-badge card map. -->
 
       <!-- Riddim & Kompa — next-date interest (join the list) -->
       <a href="/riddim-interest" id="event-card-riddim-interest" class="bq-event scroll-reveal" data-event-name="Riddim &amp; Kompa — Next Date" data-location="all" data-riddim="true">
@@ -3837,11 +3832,8 @@
             +'<button type="button" class="bq-ae-btn" data-target="'+it.id+'">'
             +((shut && shut.card) ? shut.card : 'Book')+'</button></div></article>';
         });
-        out+='<article class="bq-ae-card">'
-          +'<div class="bq-ae-photo" style="background-image:url(\'blooming-flyer.png\');background-position:center 18%;"><span class="bq-ae-status ok">Interest list</span></div>'
-          +'<div class="bq-ae-body"><div class="bq-ae-name">Something&rsquo;s Blooming</div>'
-          +'<div class="bq-ae-sub">Sun, Dec 13 &middot; Mat &middot; flower bar &middot; limited spots</div>'
-          +'<a class="bq-ae-btn" href="/blooming">Join the list</a></div></article>';
+        // Something's Blooming is off the public page; its card used to sit
+        // here, between the dated events and the Riddim next-date list.
         out+='<article class="bq-ae-card">'
           +'<div class="bq-ae-photo" style="background-image:url(\'riddim-interest-card.jpg?v=1\');background-position:center;"><span class="bq-ae-status ok">Interest list</span></div>'
           +'<div class="bq-ae-body"><div class="bq-ae-name">Riddim &amp; Kompa <em>&mdash; Next Date</em></div>'
@@ -10733,7 +10725,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function applyEventBadges() {
     ensureDonorSlots();
     getEventConfig(function(cfg){
-      var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat', recharge: 'event-card-recharge', reformer: 'event-card-reformer', 'reformer-bk': 'event-card-reformer-bk', 'reformer-o10': 'event-card-reformer-o10', 'reformer-n21': 'event-card-reformer-n21', halloween: 'event-card-halloween', turkey: 'event-card-turkey', blooming: 'event-card-blooming' };
+      var cards = { pilates: 'event-card-pilates', matchat: 'event-card-matchat', recharge: 'event-card-recharge', reformer: 'event-card-reformer', 'reformer-bk': 'event-card-reformer-bk', 'reformer-o10': 'event-card-reformer-o10', 'reformer-n21': 'event-card-reformer-n21', halloween: 'event-card-halloween', turkey: 'event-card-turkey' };
       Object.keys(cards).forEach(function(key){
         var _ids = cards[key]; if(!Array.isArray(_ids)) _ids = [_ids];
         _ids.forEach(function(_cardId){
