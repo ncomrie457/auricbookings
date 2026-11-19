@@ -1,0 +1,189 @@
+<!--
+  ════════════════════════════════════════════════════════════
+   Private Event — Post-Event Thank-You
+   (Fainola's birthday, and every private event after it)
+
+   WHY THIS IS NOT THE REFORMER THANK-YOU: a private event is somebody
+   else's occasion. The host's name goes in the greeting, the guest is
+   thanked for celebrating rather than for training, and there is no
+   "book the next one" push — these guests came for a person, not for a
+   class, and selling to them here reads badly.
+
+   DATE-NEUTRAL on purpose: one template serves every private event.
+   {{event_title}} and {{host_name}} fill in from the event record, so
+   nothing here is written for one party.
+
+   ────────────────────────────────────────────────────────────
+   HOW TO USE:
+     1. EmailJS → Email Templates → Create New Template.
+     2. Switch to the "Code"/HTML view, paste this ENTIRE file over
+        everything, Save.
+     3. Copy the new template id into index.html:
+          var PV_TMPL_THANKYOU = 'template_xxxxxxx';
+     4. Settings tab:
+          Subject:   Thank you for celebrating with us ✦ Auric Movement
+          From Name: Auric Movement
+          To Email:  {{to_email}}
+     5. Send it from the admin panel: Private events → the event →
+          💌 Thank-you to all
+
+   EmailJS variables:
+     {{from_name}}    — the guest's name
+     {{to_email}}     — their email (send-to)
+     {{event_title}}  — e.g. "Fainola's Birthday Celebration"
+     {{host_name}}    — e.g. "Fainola"
+     {{hero_image}}   — the event's flyer
+
+   SEASONAL: the holiday block is the only dated thing in this file.
+   Delete that whole <tr> in January.
+  ════════════════════════════════════════════════════════════
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thank you for celebrating with us</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f1e9da;font-family:Georgia,'Times New Roman',serif;color:#2a231d;">
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f1e9da;padding:32px 16px;">
+  <tr>
+    <td align="center">
+
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#fdfbf7;border-radius:14px;overflow:hidden;box-shadow:0 6px 30px rgba(90,50,26,0.16);max-width:600px;width:100%;">
+
+        <!-- Top band -->
+        <tr>
+          <td style="padding:0;font-size:0;line-height:0;height:8px;background-color:#6a3ca5;">&nbsp;</td>
+        </tr>
+
+        <!-- Header -->
+        <tr>
+          <td align="center" style="background-color:#f6f0e4;padding:34px 30px 28px;border-bottom:1px solid #e4d6c0;">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:#2a231d;letter-spacing:2px;text-transform:uppercase;font-weight:bold;">Auric Movement</div>
+            <div style="font-size:32px;line-height:1;margin-top:16px;">&#127881;</div>
+            <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:30px;line-height:1.25;color:#6a3ca5;margin-top:10px;">{{event_title}}</div>
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:#7a6a55;letter-spacing:3px;text-transform:uppercase;margin-top:10px;">Thank you for celebrating</div>
+          </td>
+        </tr>
+
+        <!-- Greeting -->
+        <tr>
+          <td style="padding:34px 42px 8px;">
+            <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:25px;color:#6a3ca5;margin:0 0 16px 0;">Thank you, {{from_name}}. &#128149;</p>
+            <p style="font-family:Georgia,serif;font-size:16px;line-height:1.8;color:#3a2f26;margin:0 0 16px 0;">
+              Thank you for spending part of your day on the mat with us and for making {{host_name}}&rsquo;s celebration what it was. A room full of people who showed up for someone is a good room to be in, and that was down to you.
+            </p>
+            <p style="font-family:Georgia,serif;font-size:16px;line-height:1.8;color:#3a2f26;margin:0;">
+              We hope you left feeling strong, a little lighter, and well fed.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Photos + tag -->
+        <tr>
+          <td style="padding:18px 42px 8px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f6f0e4;border:1px solid #e4d6c0;border-radius:10px;">
+              <tr>
+                <td style="padding:22px 26px;" align="center">
+                  <div style="font-size:22px;line-height:1;">&#128247;</div>
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#6a3ca5;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin:10px 0 8px;">Photos</div>
+                  <p style="font-family:Georgia,serif;font-size:15px;line-height:1.7;color:#3a2f26;margin:0;">
+                    Photos go up soon. Posting yours? Tag <strong style="color:#6a3ca5;">@auricmovement</strong> &mdash; we&rsquo;d love to share them.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Review. Asked gently here: they came for a birthday, not for us. -->
+        <tr>
+          <td align="center" style="padding:24px 42px 6px;">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#6a3ca5;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">One Small Thing</div>
+            <p style="font-family:Georgia,serif;font-size:15px;line-height:1.7;color:#3a2f26;margin:0 0 6px 0;">
+              If you enjoyed the class, a review is how the next person finds us.
+            </p>
+            <p style="font-family:Georgia,serif;font-size:14px;line-height:1.7;color:#7a6a55;margin:0 0 16px 0;">
+              We don&rsquo;t run ads &mdash; people find Auric Movement because someone like you said something. Two lines is plenty.
+            </p>
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
+              <tr>
+                <td style="background-color:#6a3ca5;border-radius:8px;">
+                  <a href="https://g.page/r/CUDyTE7xa-SuEAE/review" style="display:block;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;padding:13px 30px;">&#9733; Leave a Google Review</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Booking their own. Soft, and last of the asks: a guest at
+             somebody else's party is not a warm lead, they are a guest. -->
+        <tr>
+          <td align="center" style="padding:26px 42px 10px;">
+            <p style="font-family:Georgia,serif;font-size:15px;line-height:1.7;color:#3a2f26;margin:0 0 16px 0;">
+              Thinking of doing something like this for your own celebration? We host private groups all year &mdash; just reply to this email and we&rsquo;ll talk it through.
+            </p>
+            <a href="https://book.auricmovement.com/partner" style="display:inline-block;background-color:#f6f0e4;border:1px solid #d9cba6;color:#6a3ca5;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:13px 30px;border-radius:8px;">Host Your Own &rarr;</a>
+          </td>
+        </tr>
+
+        <!-- Holiday note — SEASONAL. Delete this whole row in January. -->
+        <tr>
+          <td style="padding:20px 42px 4px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f6f0e4;border:1px solid #e4d6c0;border-radius:10px;">
+              <tr>
+                <td style="padding:22px 26px;" align="center">
+                  <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:22px;line-height:1.4;color:#6a3ca5;margin:0 0 8px 0;">Happy holidays from Auric Movement!</div>
+                  <p style="font-family:Georgia,serif;font-size:15px;line-height:1.75;color:#3a2f26;margin:0;">
+                    We hope you have a wonderful holiday season, and we hope to see you in the new year.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Sign-off -->
+        <tr>
+          <td style="padding:22px 42px 30px;">
+            <!-- Niara's own line, and the only "I" in an email that is
+                 otherwise "we" — which is the point of it. -->
+            <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:21px;line-height:1.5;color:#6a3ca5;margin:0 0 12px 0;">Thank you for allowing me to be your instructor &mdash; I am forever grateful.</p>
+            <p style="font-family:Georgia,serif;font-size:15px;color:#3a2f26;line-height:1.75;margin:0 0 10px 0;">Until next time &mdash; move well and celebrate often. &#10084;&#65039;</p>
+            <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:20px;color:#6a3ca5;margin:0;">&mdash; Niara</p>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background-color:#1f1a17;padding:26px 34px;" align="center">
+            <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:16px;color:#cdb6e9;margin-bottom:10px;">Move. Celebrate. Feel Good. &#10084;&#65039;</div>
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#ffffff;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">Auric Movement</div>
+            <div style="font-family:Georgia,serif;font-size:12px;color:#d8c8b6;line-height:1.8;">
+              Pilates events in NYC, hosted with intention.<br>
+              <a href="mailto:auricmovement@outlook.com" style="color:#cdb6e9;text-decoration:none;">auricmovement@outlook.com</a> &middot; <a href="https://book.auricmovement.com" style="color:#cdb6e9;text-decoration:none;">book.auricmovement.com</a>
+            </div>
+            <div style="border-top:1px solid rgba(255,255,255,0.18);margin-top:18px;padding-top:14px;">
+              <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#d8c8b6;letter-spacing:2px;text-transform:uppercase;">Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect</div>
+            </div>
+          </td>
+        </tr>
+
+      </table>
+
+    </td>
+  </tr>
+</table>
+
+<!-- CAN-SPAM footer: opt-out + physical address -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f1e9da;">
+  <tr><td align="center" style="padding:18px 24px 26px;font-family:Georgia,'Times New Roman',serif;font-size:11px;line-height:1.7;color:#8a7c62;">
+    You&rsquo;re receiving this because you attended an Auric Movement event.<br>
+    Prefer not to get event updates? <a href="mailto:auricmovement@outlook.com?subject=Unsubscribe" style="color:#8a7c62;text-decoration:underline;">Unsubscribe</a> and we&rsquo;ll take you off.<br>
+    Auric Movement LLC &middot; New York, NY
+  </td></tr>
+</table>
+</body>
+</html>
