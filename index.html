@@ -15963,6 +15963,8 @@ document.addEventListener('DOMContentLoaded', function() {
               'border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">⧉ Copy link</button>' +
             '<button onclick="pvGuests(\'' + e.code + '\')" style="background:#fff;border:1px solid #d4bff4;color:#6a3ca5;' +
               'border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F465} Guests (' + (e.taken||0) + ')</button>' +
+            '<button onclick="pvThankAll(\'' + e.code + '\', this)" style="background:#fff;border:1px solid #d4bff4;color:#6a3ca5;' +
+              'border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F48C} Thank-you to all</button>' +
             '<button onclick="window.open(\'/private?c=' + e.code + '\',\'_blank\')" style="background:#fff;border:1px solid #d4bff4;' +
               'color:#6a3ca5;border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">↗ View</button>' +
             '<button onclick="pvDelete(\'' + e.code + '\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);' +
@@ -16131,6 +16133,68 @@ document.addEventListener('DOMContentLoaded', function() {
   // the artwork or the times this email needs.
   window.pvPendingEmail = function(code, id, btn){ pvGuestEmail(code, id, btn, 'pending'); };
   window.pvConfirmEmail = function(code, id, btn){ pvGuestEmail(code, id, btn, 'confirm'); };
+
+  // Post-event thank-you, to everybody at once. One at a time is how the
+  // other two private-event emails work, which is right for a payment link
+  // and wrong for a thank-you — nobody sends twenty of those by hand.
+  //
+  // It shows WHO before it sends, the same as the reformer sends do. A count
+  // on its own cannot tell you the list is wrong.
+  window.pvThankAll = function(code, btn){
+    if (!PV_TMPL_THANKYOU || PV_TMPL_THANKYOU.indexOf('REPLACE') !== -1){
+      alert('No thank-you template set yet.\n\nCreate one in EmailJS from PRIVATE_EVENT_THANKYOU_TEMPLATE.html, then put its id into PV_TMPL_THANKYOU in index.html.');
+      return;
+    }
+    if (typeof emailjs === 'undefined'){ alert('EmailJS not loaded.'); return; }
+    var label = btn ? btn.textContent : '';
+    if (btn){ btn.disabled = true; btn.textContent = 'Loading…'; }
+    function restore(){ if (btn){ btn.disabled = false; btn.textContent = label; } }
+
+    supabase.rpc('auric_private_one', { pass: ADMIN_PASSWORD, p_code: code }).then(function(res){
+      var ev = (res && res.data && res.data[0]) || {};
+      return supabase.rpc('auric_private_rsvps', { pass: ADMIN_PASSWORD, p_code: code }).then(function(r2){
+        var rows = (r2 && r2.data) || [];
+        // One thank-you per person however many rows they hold, and nobody
+        // without an address to send to.
+        var seen = {}, list = [];
+        rows.forEach(function(g){
+          if (!g || !g.email) return;
+          var k = String(g.email).trim().toLowerCase();
+          if (seen[k]) return;
+          seen[k] = 1; list.push(g);
+        });
+        if (!list.length){ restore(); alert('Nobody on this guest list has an email address.'); return; }
+        var dupes = rows.filter(function(g){ return g && g.email; }).length - list.length;
+        if (!confirm('Send the thank-you for “' + (ev.title || code) + '” to ' + list.length + ' guest'
+                     + (list.length === 1 ? '' : 's') + '?\n\n'
+                     + list.map(function(g){ return '   ' + (g.name || g.email); }).join('\n')
+                     + (dupes ? '\n\n(' + dupes + ' duplicate row' + (dupes === 1 ? '' : 's') + ' skipped.)' : ''))){
+          restore(); return;
+        }
+        var sent = 0, failed = [], i = 0;
+        (function next(){
+          if (i >= list.length){
+            restore();
+            alert('✅ Sent ' + sent + ' thank-you email' + (sent === 1 ? '' : 's') + '.'
+                  + (failed.length ? '\n\n⚠️ ' + failed.length + ' failed: ' + failed.join(', ')
+                     + '\n\nCheck EmailJS → History.' : ''));
+            return;
+          }
+          var g = list[i++];
+          if (btn) btn.textContent = 'Sending… (' + i + '/' + list.length + ')';
+          emailjs.send(EMAILJS_SERVICE_RESEND, PV_TMPL_THANKYOU, {
+            to_email:    g.email,
+            from_name:   g.name || '',
+            event_title: ev.title || '',
+            host_name:   ev.host_name || '',
+            event_date:  ev.event_date || '',
+            venue_name:  ev.venue_name || '',
+            hero_image:  ev.flyer_url || 'https://book.auricmovement.com/og-preview.jpg?v=2'
+          }).then(function(){ sent++; next(); }, function(){ failed.push(g.email); next(); });
+        })();
+      });
+    }, function(){ restore(); alert('Could not read that event.'); });
+  };
 
   function pvGuestEmail(code, id, btn, kind){
     var r = (pvGuestRows[code] || []).filter(function(x){ return x.id === id; })[0];
@@ -16462,6 +16526,10 @@ document.addEventListener('DOMContentLoaded', function() {
   // title, date, venue and price all come from the event row rather than
   // being written into the template.
   var PV_TMPL_CONFIRM     = 'template_dk1skma'; // PRIVATE_EVENT_CONFIRMATION_TEMPLATE.html
+  // Post-event thank-you for private events. Create the template in EmailJS
+  // from PRIVATE_EVENT_THANKYOU_TEMPLATE.html and paste its id here; until
+  // then the button says so rather than failing silently.
+  var PV_TMPL_THANKYOU    = 'template_REPLACE_ME'; // PRIVATE_EVENT_THANKYOU_TEMPLATE.html
   var PV_TMPL_PENDING     = 'template_ozy2pcc'; // PRIVATE_EVENT_PENDING_TEMPLATE.html — must
                                                 // match private/index.html, which sends it
                                                 // automatically when someone books.
