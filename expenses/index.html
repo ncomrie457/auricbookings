@@ -28,6 +28,12 @@
   label{display:block;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:.28rem;}
   input,select,textarea{width:100%;padding:.6rem .7rem;border:1px solid var(--border);border-radius:9px;font-family:inherit;font-size:.95rem;background:#fff;color:#3d322a;}
   textarea{resize:vertical;min-height:2.4rem;}
+  /* The rule above is written for text fields, and a tick box is not one. Left
+     stretched, a checkbox inside the event picker took the whole width of its
+     pill and squeezed the event name into a column two letters wide, which is
+     why those chips read as a tall stack of fragments. .row-check input below
+     fixed it in one place; this fixes it everywhere, including the pills. */
+  input[type=checkbox],input[type=radio]{width:auto;padding:0;}
   .row-check{display:flex;align-items:center;gap:.5rem;margin-top:1.5rem;}
   .row-check input{width:auto;}
   .row-check label{margin:0;text-transform:none;letter-spacing:0;font-size:.9rem;color:#3d322a;font-weight:500;}
