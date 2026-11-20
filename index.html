@@ -5781,12 +5781,28 @@
       <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:.85rem;line-height:1.5;">The four Cherry Valley Sports photos, the address and a map, as their own email. Goes to everyone booked and paid on the date you pick &mdash; you see the names before it sends.</p>
       <div style="display:grid;grid-template-columns:1fr auto;gap:.75rem;align-items:end;">
         <div>
-          <label for="getin-event" class="au-label">Event</label>
-          <select id="getin-event" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.82rem;background:#fff;color:#3d322a;">
-            <option value="turkey-burn-2026-11-22" data-event-date="2026-11-22">Riddim &times; Kompa Pre-Turkey Burn (Nov 22)</option>
-            <option value="halloween-creek-2026-10-24" data-event-date="2026-10-24">Shhh&hellip; Quiet on the Creek (Oct 24)</option>
-            <option value="riddim-kompa-reformer-2026-09-13" data-event-date="2026-09-13">Riddim &amp; Kompa &mdash; West Hempstead (Sep 13)</option>
+          <label for="getin-event" class="au-label">Send to everyone booked on</label>
+          <!-- Every event is listed, because the one time this email is really
+               needed is the time nobody predicted. The grouping is the guard:
+               the template's photos are of one building, so a date at another
+               venue is marked as such here and warned about again in the
+               confirm box, rather than quietly sending wrong directions. -->
+          <select id="getin-event" onchange="rfGetInVenueNote()" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.82rem;background:#fff;color:#3d322a;">
+            <optgroup label="Valley Studio — the photos match">
+              <option value="turkey-burn-2026-11-22" data-valley="1">Riddim &times; Kompa Pre-Turkey Burn (Nov 22)</option>
+              <option value="turkey-burn-2026-11-28" data-valley="1">Post-Turkey Burn (Nov 28)</option>
+              <option value="halloween-creek-2026-10-24" data-valley="1">Shhh&hellip; Quiet on the Creek (Oct 24)</option>
+              <option value="riddim-kompa-reformer-2026-09-13" data-valley="1">Riddim &amp; Kompa &mdash; West Hempstead (Sep 13)</option>
+            </optgroup>
+            <optgroup label="Other venues — the photos will be wrong">
+              <option value="riddim-kompa-brooklyn-2026-11-21">Riddim &amp; Kompa &mdash; Brooklyn (Nov 21)</option>
+              <option value="riddim-kompa-brooklyn-2026-10-10">Riddim &amp; Kompa &mdash; Brooklyn (Oct 10)</option>
+              <option value="riddim-kompa-brooklyn-2026-09-26">Riddim &amp; Kompa &mdash; Brooklyn (Sep 26)</option>
+            </optgroup>
           </select>
+          <div id="getin-venue-note" hidden style="margin-top:.4rem;padding:.5rem .7rem;background:#fdecea;border-left:3px solid var(--red);border-radius:0 8px 8px 0;font-size:.75rem;line-height:1.5;color:#7a2318;">
+            &#9888;&#65039; This email shows <strong>Cherry Valley Sports</strong> &mdash; its address, its map and its four photos. Guests at another venue would be sent to the wrong building.
+          </div>
         </div>
         <button type="button" id="getin-send" onclick="rfSendGetIn(this)" class="btn btn-primary" style="font-size:.82rem;white-space:nowrap;">&#128205; Send directions</button>
       </div>
@@ -17800,6 +17816,15 @@ document.addEventListener('DOMContentLoaded', function() {
   // One email per person however many rows they hold, and the names are shown
   // before anything leaves, because a directions email that reaches the wrong
   // date is worse than none at all.
+  // Show the wrong-building warning for any date that is not at Valley Studio.
+  window.rfGetInVenueNote = function(){
+    var sel = document.getElementById('getin-event');
+    var note = document.getElementById('getin-venue-note');
+    if (!sel || !note) return;
+    var o = sel.options[sel.selectedIndex];
+    note.hidden = !!(o && o.getAttribute('data-valley'));
+  };
+
   window.rfSendGetIn = function(btn){
     var sel = document.getElementById('getin-event');
     var out = document.getElementById('getin-status');
@@ -17825,7 +17850,15 @@ document.addEventListener('DOMContentLoaded', function() {
         seen[k] = 1; list.push(r);
       });
       if (!list.length){ restore(); say('<span style="color:#8a6b3a;">Nobody booked and paid on ' + escapeHTML(evName) + ' yet.</span>'); return; }
-      if (!confirm('Send the "how to get in" email for ' + evName + ' to ' + list.length + ' guest'
+      // The warning is repeated here because the panel's red box is easy to
+      // scroll past, and this is the last moment it can be stopped.
+      var _o = sel.options[sel.selectedIndex];
+      var notValley = !(_o && _o.getAttribute('data-valley'));
+      if (!confirm((notValley
+                     ? '\u26a0\ufe0f WRONG BUILDING?\n\nThis email shows Cherry Valley Sports \u2014 its address, its map and its four photos. '
+                       + evName + ' is not there, so these guests would be sent to the wrong place.\n\n'
+                     : '')
+                   + 'Send the "how to get in" email for ' + evName + ' to ' + list.length + ' guest'
                    + (list.length === 1 ? '' : 's') + '?\n\n'
                    + list.map(function(r){ return '   ' + (r.name || r.email); }).join('\n')
                    + (dupes ? '\n\n(' + dupes + ' duplicate row' + (dupes === 1 ? '' : 's') + ' skipped.)' : ''))){
