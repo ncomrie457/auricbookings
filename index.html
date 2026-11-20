@@ -6480,6 +6480,10 @@ Can't wait to move and connect with you!</textarea>
       <div style="margin-bottom:.85rem;padding-top:.75rem;border-top:1px dashed var(--border);">
         <label for="admin-flex-reminder-question-preset" class="au-label">Question box <span style="font-weight:400;color:var(--text-muted);">(the highlighted prompt &mdash; pick a preset per event, or write your own)</span></label>
         <label style="display:flex;align-items:center;gap:.5rem;margin:.1rem 0 .55rem;font-size:.82rem;color:var(--brown);font-weight:500;cursor:pointer;"><input type="checkbox" id="admin-flex-reminder-include-q" checked style="width:16px;height:16px;accent-color:var(--gold);"> Include the question box in this reminder</label>
+        <!-- Off by default, and ticked per event rather than worked out from
+             the event id: the photos are Valley Studio's, and a Brooklyn guest
+             sent West Hempstead directions is worse than one sent none. -->
+        <label style="display:flex;align-items:center;gap:.5rem;margin:.1rem 0 .55rem;font-size:.82rem;color:var(--brown);font-weight:500;cursor:pointer;"><input type="checkbox" id="admin-flex-reminder-wayfinding" style="width:16px;height:16px;accent-color:var(--gold);"> Include the &ldquo;how to get in&rdquo; photos <span style="font-weight:400;color:var(--text-muted);">(Valley Studio &mdash; Cherry Valley Sports)</span></label>
         <select id="admin-flex-reminder-question-preset" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.82rem;box-sizing:border-box;background:#fff;color:#3d322a;margin-bottom:.5rem;"></select>
         <input type="text" id="admin-flex-reminder-question-eyebrow" placeholder="Small label above (e.g., One Little Thing)" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.82rem;box-sizing:border-box;background:#fff;color:#3d322a;margin-bottom:.4rem;">
         <input type="text" id="admin-flex-reminder-question" placeholder="The question (e.g., What's the one song you need to hear on the mat?)" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.82rem;box-sizing:border-box;background:#fff;color:#3d322a;margin-bottom:.4rem;">
@@ -13466,12 +13470,15 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!d) return;
       Object.keys(F).forEach(function(k){ var e = el(F[k]); if (e && d[k] != null && (k !== 'days' || d[k] !== '')) e.value = d[k]; });
       var inc = el('admin-flex-reminder-include-q'); if (inc && typeof d.includeQ === 'boolean') inc.checked = d.includeQ;
+      var wf = el('admin-flex-reminder-wayfinding'); if (wf) wf.checked = (typeof d.includeWF === 'boolean') ? d.includeWF : false;
     }
     function saveDraft(){
       var ev = evSel.value, inc = el('admin-flex-reminder-include-q');
       var d = {};
       Object.keys(F).forEach(function(k){ var e = el(F[k]); if(e) d[k] = e.value; });
       d.includeQ = inc ? inc.checked : true;
+      var wfEl = el('admin-flex-reminder-wayfinding');
+      d.includeWF = wfEl ? wfEl.checked : false;
       try { localStorage.setItem(key(ev), JSON.stringify(d)); } catch(e){}
       var tag = el('admin-flex-reminder-saved'); if (tag){ tag.style.opacity='1'; setTimeout(function(){ tag.style.opacity='0'; }, 1400); }
       var who = label();
@@ -13853,6 +13860,37 @@ document.addEventListener('DOMContentLoaded', function() {
       + (qSub ? '<p style="font-family:Georgia,serif;font-size:13px;line-height:1.6;color:#8a7a5f;margin:0;">'+esc(qSub)+'</p>' : '')
       + '</td></tr></table></td></tr>'
     ) : '';
+    // The Valley Studio walk-through, same four photos and the same wording as
+    // the day-of email, so a guest who gets both is not given two different
+    // sets of directions. Built here rather than written into the template
+    // because the template serves every event, and only some are in a building
+    // you cannot walk straight into.
+    var _wfEl = document.getElementById('admin-flex-reminder-wayfinding');
+    var wayfindingBlock = (_wfEl && _wfEl.checked) ? (function(){
+      var step = function(badge, words, img, alt, padTop){
+        return '<tr><td style="padding:' + padTop + 'px 40px 0;">'
+          + '<p style="font-family:\'Helvetica Neue\',Arial,sans-serif;font-size:13px;color:#5A3A1A;font-weight:bold;margin:0 0 8px 0;">'
+          + '<span style="display:inline-block;background-color:#a9853f;color:#ffffff;border-radius:999px;padding:2px 9px;font-size:12px;margin-right:8px;">' + badge + '</span> ' + words + '</p>'
+          + '<img src="https://book.auricmovement.com/' + img + '" alt="' + alt + '" width="516" style="display:block;width:100%;max-width:516px;height:auto;border:1px solid #e6d8c2;border-radius:10px;outline:none;">'
+          + '</td></tr>';
+      };
+      return '<tr><td style="padding:8px 40px 0;">'
+        + '<h2 style="font-family:\'Cormorant Garamond\',Georgia,serif;font-style:italic;font-size:22px;color:#5A3A1A;margin:0 0 6px 0;font-weight:500;">Getting there</h2>'
+        + '<p style="font-family:Georgia,serif;font-size:14px;color:#6d5f45;line-height:1.7;margin:0;">'
+        + 'Valley Studio is <em>inside</em> the Cherry Valley Sports building. Follow these four photos from the front doors and you&rsquo;ll walk right to us.</p>'
+        + '</td></tr>'
+        + step('1', 'Enter here &mdash; Cherry Valley Sports front doors', 'wayfinding-1-enter.jpg', 'Cherry Valley Sports front entrance', 14)
+        + step('2', 'Walk down the turf, then make a right &mdash; <span style="color:#b0432e;">not</span> through the glass doors', 'wayfinding-2-walk.jpg', 'Turf hallway &mdash; keep walking, then make a right', 18)
+        + step('3', 'Valley Studio is the door at the very end (restrooms on your right)', 'wayfinding-3-studio.jpg', 'Main room &mdash; Valley Studio is the door at the far end', 18)
+        + step('&#9733;', 'Or use Valley Studio&rsquo;s own entrance &mdash; right side of the building', 'wayfinding-4-alt.jpg', 'Alternate entrance &mdash; right side of the building', 18)
+        + '<tr><td style="padding:20px 40px 0;">'
+        + '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border-left:3px solid #c79a54;border-radius:0 8px 8px 0;">'
+        + '<tr><td style="padding:16px 22px;">'
+        + '<div style="font-family:\'Helvetica Neue\',Arial,sans-serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">&#129355; Before you enter the studio</div>'
+        + '<p style="font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0;">'
+        + 'Please <strong>leave your shoes outside</strong> the studio, and <strong>bring all your personal belongings in with you</strong> &mdash; there are cubbies inside to store everything.</p>'
+        + '</td></tr></table></td></tr>';
+    })() : '';
     // An optional button, for when a bare link in the message isn't enough.
     // Both fields or neither — a button with no destination is a dead end, and
     // a destination with no words on it is a mystery.
@@ -14076,7 +14114,8 @@ document.addEventListener('DOMContentLoaded', function() {
           // Sending both means neither version of the template breaks.
           custom_message: customMessage,
           message_body:  window.auricLinkify(customMessage),
-          link_block:    linkBlock
+          link_block:    linkBlock,
+          wayfinding_block: wayfindingBlock
         }).then(function(){
           sent++;
         }).catch(function(err){
