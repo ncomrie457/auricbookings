@@ -5889,7 +5889,8 @@
         <div>
           <label for="admin-add-type" class="au-label">Type</label>
           <select id="admin-add-type" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.82rem;box-sizing:border-box;">
-            <option value="confirmed">Confirmed</option>
+            <option value="confirmed">Confirmed &mdash; already paid</option>
+            <option value="pending">Confirmed &mdash; payment pending</option>
             <option value="comp">Comp &mdash; free seat</option>
             <option value="waitlist">Waitlist</option>
           </select>
@@ -5913,7 +5914,7 @@
           var t = document.getElementById('admin-add-type'),
               n = document.getElementById('admin-add-comp-note');
           if (!t || !n) return;
-          function sync(){ n.hidden = (t.value !== 'comp'); }
+          function sync(){ n.hidden = (t.value !== 'comp' && t.value !== 'pending'); }
           t.addEventListener('change', sync);
           sync();
         })();
@@ -11770,19 +11771,26 @@ document.addEventListener('DOMContentLoaded', function() {
       var m = RF_ADD_MAP[event];
       label = m.name;
       var isComp = (type === 'comp');
+      // "Payment pending" is for somebody being let in who has not paid and
+      // has not signed — a waitlister being given a freed seat, say. The row
+      // has to read as unpaid or the roster offers no payment link, and it
+      // must not claim a signature nobody wrote, so it is treated like a comp
+      // on the waiver and unlike one on the money.
+      var isPending = (type === 'pending');
+      var unsigned = isComp || isPending;
       row = {
         name: name, email: email, session: m.session, session_label: m.slabel,
         // A comp signs the standalone waiver afterwards, so there is no
         // signature here and claiming one would put a name on a document
         // nobody signed. The roster says "waiver outstanding" until their
         // standalone waiver turns up, matched on email.
-        signature: isComp ? null : name,
-        clauses_agreed: isComp ? null : (window.__RF_CLAUSES ? window.__RF_CLAUSES.length : 19),
-        refund_ack: !isComp, waiver_agreed: !isComp,
+        signature: unsigned ? null : name,
+        clauses_agreed: unsigned ? null : (window.__RF_CLAUSES ? window.__RF_CLAUSES.length : 19),
+        refund_ack: !unsigned, waiver_agreed: !unsigned,
         // Comps are marked paid on purpose: the seat is taken, the session can
         // fill, and they can be sent a confirmation like anyone else. The comp
         // column is the only thing that remembers no money came in.
-        is_paid: true, paid_at: nowIso, created_at: nowIso,
+        is_paid: !isPending, paid_at: isPending ? null : nowIso, created_at: nowIso,
         comp: isComp,
         event: m.event
       };
@@ -11792,13 +11800,16 @@ document.addEventListener('DOMContentLoaded', function() {
       row = {
         name: name, email: email, signature: null,
         time_str: timeStr, timestamp_iso: nowIso,
-        code: code, type: type,
+        // These tables have never known a "pending" type. It is the money that
+        // is pending, not the booking, so it is stored as confirmed-and-unpaid
+        // rather than inventing a type the rest of the code cannot read.
+        code: code, type: (type === 'pending' ? 'confirmed' : type),
         wl_position: null,
         clauses_agreed: 19,
         notes: null,
         is_pair: false,
         friend_name: null, friend_email: null,
-        is_paid: true, paid_at: nowIso
+        is_paid: (type !== 'pending'), paid_at: (type === 'pending' ? null : nowIso)
       };
     } else {
       table = 'pilates_registrations';
@@ -11809,10 +11820,12 @@ document.addEventListener('DOMContentLoaded', function() {
         name: name, email: email, signature: null,
         session_label: sess.label, arrival: sess.arrival, class_start: sess.start,
         time_str: timeStr, timestamp_iso: nowIso,
-        code: code, type: type,
+        // Same as the Mat & Chat branch: "pending" describes the money, not
+        // the booking, so it stores as confirmed-and-unpaid.
+        code: code, type: (type === 'pending' ? 'confirmed' : type),
         wl_position: null,
         clauses_agreed: 19,
-        is_paid: true, paid_at: nowIso
+        is_paid: (type !== 'pending'), paid_at: (type === 'pending' ? null : nowIso)
       };
     }
 
@@ -11844,7 +11857,7 @@ document.addEventListener('DOMContentLoaded', function() {
         status.innerHTML='<span style="color:var(--red);">\u274c Insert returned no rows. Check Supabase RLS policies.</span>';
         return;
       }
-      if (isReformer && type === 'comp') {
+      if (isReformer && (type === 'comp' || type === 'pending')) {
         // A comp still needs a waiver, and they sign the standalone one. Hand
         // over the link already filled in with their name, email and event, so
         // the chasing is one paste rather than a lookup.
@@ -11862,8 +11875,11 @@ document.addEventListener('DOMContentLoaded', function() {
                  + '&email=' + encodeURIComponent(email) + (wk ? '&event=' + encodeURIComponent(wk) : '');
         status.innerHTML =
             '<span style="color:#2e7d32;">\u2705 ' + escapeHTML(name) + ' added to ' + label
-          + ' as a <strong>comp</strong> \u2014 seat held, nothing charged.</span>'
-          + (_compColumnMissing
+          + (type === 'comp'
+              ? ' as a <strong>comp</strong> \u2014 seat held, nothing charged.'
+              : ' as <strong>payment pending</strong> \u2014 the seat is held and the roster will offer a payment link.')
+          + '</span>'
+          + (_compColumnMissing && type === 'comp'
               ? '<div style="margin-top:.4rem;color:var(--red);font-size:.78rem;">\u26a0\ufe0f Saved, but not recorded as a comp \u2014 run ADD_COMP_ATTENDEE.sql, then it will show on the roster.</div>'
               : '')
           + '<div style="margin-top:.5rem;padding:.5rem .7rem;background:#faf5ee;border-left:3px solid var(--gold);border-radius:0 8px 8px 0;font-size:.78rem;line-height:1.5;">'
