@@ -6511,6 +6511,12 @@ Can't wait to move and connect with you!</textarea>
         <label for="admin-flex-reminder-link-text" class="au-label">Button <span style="font-weight:400;color:var(--text-muted);">(optional &mdash; leave both blank for no button)</span></label>
         <input type="text" id="admin-flex-reminder-link-text" placeholder="Words on the button (e.g., Add it to your calendar)" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.82rem;box-sizing:border-box;background:#fff;color:#3d322a;margin-bottom:.4rem;">
         <input type="text" id="admin-flex-reminder-link-url" placeholder="Where it goes (e.g., book.auricmovement.com/calendar/add/)" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.82rem;box-sizing:border-box;background:#fff;color:#3d322a;">
+      </div>
+
+      <div style="margin-bottom:.85rem;">
+        <label for="admin-flex-reminder-hero" class="au-label">Artwork <span style="font-weight:400;color:var(--text-muted);">(optional &mdash; paste an image URL)</span></label>
+        <input type="text" id="admin-flex-reminder-hero" placeholder="e.g., the event's flyer URL" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.82rem;box-sizing:border-box;background:#fff;color:#3d322a;">
+        <p style="font-size:.72rem;color:var(--text-muted);margin-top:.2rem;font-style:italic;">Shown under the header. Saved per event, so a private event keeps its own flyer. Leave empty for no picture.</p>
         <p style="font-size:.72rem;color:var(--text-muted);margin-top:.25rem;font-style:italic;">Sits under the message, styled like the buttons in the other emails. https:// is added for you if you leave it off.</p>
       </div>
 
@@ -13499,6 +13505,7 @@ document.addEventListener('DOMContentLoaded', function() {
       qSub:      'admin-flex-reminder-question-sub',
       linkText:  'admin-flex-reminder-link-text',
       linkUrl:   'admin-flex-reminder-link-url',
+      hero:      'admin-flex-reminder-hero',
       arrival:   'admin-flex-reminder-arrival',
       start:     'admin-flex-reminder-start'
     };
@@ -13906,6 +13913,17 @@ document.addEventListener('DOMContentLoaded', function() {
       + (qSub ? '<p style="font-family:Georgia,serif;font-size:13px;line-height:1.6;color:#8a7a5f;margin:0;">'+esc(qSub)+'</p>' : '')
       + '</td></tr></table></td></tr>'
     ) : '';
+    // Optional artwork. A bare URL rather than an upload because the images
+    // already live somewhere — the flyer on the event row, a file on the site
+    // — and a second copy is a second thing to keep in step.
+    var heroUrl = (document.getElementById('admin-flex-reminder-hero') || {}).value || '';
+    heroUrl = heroUrl.trim();
+    if (heroUrl && !/^https?:\/\//i.test(heroUrl)) heroUrl = 'https://' + heroUrl;
+    var heroBlock = heroUrl
+      ? '<tr><td style="padding:0;line-height:0;">'
+        + '<img src="' + esc(heroUrl) + '" alt="" width="600" style="display:block;width:100%;max-width:600px;height:auto;border:0;outline:none;text-decoration:none;">'
+        + '</td></tr>'
+      : '';
     // An optional button, for when a bare link in the message isn't enough.
     // Both fields or neither — a button with no destination is a dead end, and
     // a destination with no words on it is a mystery.
@@ -14129,7 +14147,8 @@ document.addEventListener('DOMContentLoaded', function() {
           // Sending both means neither version of the template breaks.
           custom_message: customMessage,
           message_body:  window.auricLinkify(customMessage),
-          link_block:    linkBlock
+          link_block:    linkBlock,
+          hero_block:    heroBlock
         }).then(function(){
           sent++;
         }).catch(function(err){
