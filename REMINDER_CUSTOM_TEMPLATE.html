@@ -19,10 +19,6 @@
      {{{question_block}}}   ← the whole highlighted prompt box (raw HTML; empty = omitted)
      {{{message_body}}}     ← the message you typed, with any link made clickable
      {{{link_block}}}       ← the optional button (raw HTML; empty = omitted)
-     {{{wayfinding_block}}} ← the Cherry Valley Sports photo walk-through
-                              (raw HTML; empty = omitted). Ticked per send in
-                              the panel, because it is only right for Valley
-                              Studio — a Brooklyn guest must never get it.
 
    NOTE ON THE TRIPLE BRACES: {{{ }}} tells Mustache to leave the HTML alone.
    Written as {{message_body}} the <a> tags would be escaped and your guests
@@ -91,12 +87,6 @@
           </td></tr>
         </table>
       </td></tr>
-
-      <!-- Optional "how to get in" photos, for events inside a building a
-           guest cannot simply walk into. Ticked in the panel; blank = these
-           rows vanish, so a Brooklyn reminder never carries West Hempstead
-           directions. -->
-      {{{wayfinding_block}}}
 
       <!-- Optional button, straight from the panel. Blank = this row vanishes. -->
       {{{link_block}}}
