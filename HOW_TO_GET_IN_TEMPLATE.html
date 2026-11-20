@@ -1,0 +1,231 @@
+<!--
+  ════════════════════════════════════════════════════════════
+   Valley Studio — "How to get in" email
+   (Valley Studio, inside Cherry Valley Sports · 45 Cherry Valley Ave,
+    West Hempstead NY 11552)
+
+   WHAT IT IS: one job, done properly — getting a guest from the car
+   park to the mat. Send it to anyone booked onto a Valley Studio date,
+   whenever you like: a few days out, the night before, or to one person
+   who has written to say they cannot find the place.
+
+   WHY IT IS ITS OWN EMAIL: the directions used to be buried in a
+   confirmation somebody read three weeks earlier. On its own it can be
+   re-sent, forwarded to a friend being brought along, and opened on a
+   phone in the car park — which is where it is actually needed.
+
+   THE CAPTIONS MATTER MORE THAN THE PHOTOS. Most email apps hide images
+   until the reader taps "show images", so every step says in words what
+   its photo shows. Someone who never loads a single picture can still
+   find the door.
+
+   ────────────────────────────────────────────────────────────
+   HOW TO USE:
+     1. EmailJS → Email Templates → Create New Template.
+     2. Switch to the "Code"/HTML view, paste this ENTIRE file over
+        everything, Save.
+     3. Send Niara the template id so it can be wired to a button in the
+        admin panel.
+     4. Settings tab:
+          Subject:   How to find us at Valley Studio ✦ Auric Movement
+          From Name: Auric Movement
+          To Email:  {{to_email}}
+
+   EmailJS variables:
+     {{from_name}}    — the guest's name
+     {{to_email}}     — their email (send-to)
+     {{event_name}}   — e.g. "Riddim × Kompa Pre-Turkey Burn"
+     {{event_date}}   — e.g. "Sunday, November 22nd"
+     {{arrival_time}} — e.g. "11:25 AM"
+     {{class_time}}   — e.g. "11:30 AM"
+
+   The four photos live on the site, so swapping one is replacing a file
+   — no template edit, no re-send:
+     wayfinding-1-enter.jpg · wayfinding-2-walk.jpg
+     wayfinding-3-studio.jpg · wayfinding-4-alt.jpg
+  ════════════════════════════════════════════════════════════
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to find us at Valley Studio</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f1e9da;font-family:Georgia,'Times New Roman',serif;color:#2a231d;">
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f1e9da;padding:30px 14px;">
+  <tr>
+    <td align="center">
+
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#fffdfa;border-radius:14px;overflow:hidden;box-shadow:0 6px 30px rgba(90,50,26,0.16);max-width:600px;width:100%;">
+
+        <!-- Top band -->
+        <tr>
+          <td style="padding:0;font-size:0;line-height:0;height:8px;background-color:#a9853f;">&nbsp;</td>
+        </tr>
+
+        <!-- Header -->
+        <tr>
+          <td align="center" style="background-color:#fffaf0;padding:32px 30px 26px;border-bottom:1px solid #ecdcb8;">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:#2a231d;letter-spacing:2px;text-transform:uppercase;font-weight:bold;">Auric Movement</div>
+            <div style="font-size:30px;line-height:1;margin-top:14px;">&#128205;</div>
+            <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:30px;line-height:1.25;color:#5A3A1A;margin-top:10px;">How to find us</div>
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:#9a6535;letter-spacing:3px;text-transform:uppercase;margin-top:10px;">Valley Studio &middot; West Hempstead</div>
+          </td>
+        </tr>
+
+        <!-- The one thing people get wrong, said before anything else -->
+        <tr>
+          <td style="padding:30px 40px 0;">
+            <p style="font-family:Georgia,serif;font-size:16px;line-height:1.8;color:#3a2f26;margin:0 0 14px 0;">
+              Hi {{from_name}} &mdash; here&rsquo;s exactly how to get in, so you&rsquo;re not hunting for the door on the day.
+            </p>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border-left:3px solid #b0432e;border-radius:0 8px 8px 0;">
+              <tr>
+                <td style="padding:16px 22px;">
+                  <p style="font-family:Georgia,serif;font-size:15px;line-height:1.7;color:#3d322a;margin:0;">
+                    <strong>Valley Studio is inside the Cherry Valley Sports building.</strong> There&rsquo;s no sign out front with our name on it &mdash; you&rsquo;re looking for Cherry Valley Sports, then you walk through.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Address + map -->
+        <tr>
+          <td align="center" style="padding:22px 40px 0;">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">The Address</div>
+            <p style="font-family:Georgia,serif;font-size:16px;line-height:1.6;color:#3d322a;margin:0 0 12px 0;">
+              Cherry Valley Sports<br>45 Cherry Valley Ave, West Hempstead, NY 11552
+            </p>
+            <a href="https://maps.google.com/?q=45+Cherry+Valley+Ave+West+Hempstead+NY+11552" style="display:inline-block;background-color:#5A3A1A;color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:12px 26px;border-radius:8px;">&#128205; Open in Google Maps</a>
+          </td>
+        </tr>
+
+        <!-- Your session — so this email stands on its own -->
+        <tr>
+          <td style="padding:26px 40px 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fffaf0;border:1px solid #ecdcb8;border-radius:10px;">
+              <tr>
+                <td style="padding:18px 22px;">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">Your Session</div>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr><td style="padding:3px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;width:92px;"><strong>Event:</strong></td><td style="padding:3px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{event_name}}</td></tr>
+                    <tr><td style="padding:3px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Date:</strong></td><td style="padding:3px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{event_date}}</td></tr>
+                    <tr><td style="padding:3px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Arrival:</strong></td><td style="padding:3px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{arrival_time}}</td></tr>
+                    <tr><td style="padding:3px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;"><strong>Class starts:</strong></td><td style="padding:3px 0;font-family:Georgia,serif;font-size:14px;color:#3d322a;">{{class_time}}</td></tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Heading for the walk-through -->
+        <tr>
+          <td style="padding:28px 40px 0;">
+            <h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:23px;color:#5A3A1A;margin:0 0 6px 0;font-weight:500;">The walk in, in four photos</h2>
+            <p style="font-family:Georgia,serif;font-size:14px;color:#6d5f45;line-height:1.7;margin:0;">
+              From the front doors to the mat. If your email app is hiding the pictures, the words alone will still get you there.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Step 1 -->
+        <tr>
+          <td style="padding:16px 40px 0;">
+            <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#5A3A1A;font-weight:bold;margin:0 0 8px 0;"><span style="display:inline-block;background-color:#a9853f;color:#ffffff;border-radius:999px;padding:2px 9px;font-size:12px;margin-right:8px;">1</span> Enter here &mdash; Cherry Valley Sports front doors</p>
+            <img src="https://book.auricmovement.com/wayfinding-1-enter.jpg" alt="Cherry Valley Sports front entrance" width="520" style="display:block;width:100%;max-width:520px;height:auto;border:1px solid #e6d8c2;border-radius:10px;outline:none;">
+          </td>
+        </tr>
+
+        <!-- Step 2 -->
+        <tr>
+          <td style="padding:18px 40px 0;">
+            <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#5A3A1A;font-weight:bold;margin:0 0 8px 0;"><span style="display:inline-block;background-color:#a9853f;color:#ffffff;border-radius:999px;padding:2px 9px;font-size:12px;margin-right:8px;">2</span> Walk down the turf, then make a right &mdash; <span style="color:#b0432e;">not</span> through the glass doors</p>
+            <img src="https://book.auricmovement.com/wayfinding-2-walk.jpg" alt="Turf hallway — keep walking, then make a right; not through the glass doors" width="520" style="display:block;width:100%;max-width:520px;height:auto;border:1px solid #e6d8c2;border-radius:10px;outline:none;">
+          </td>
+        </tr>
+
+        <!-- Step 3 -->
+        <tr>
+          <td style="padding:18px 40px 0;">
+            <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#5A3A1A;font-weight:bold;margin:0 0 8px 0;"><span style="display:inline-block;background-color:#a9853f;color:#ffffff;border-radius:999px;padding:2px 9px;font-size:12px;margin-right:8px;">3</span> Valley Studio is the door at the very end (restrooms on your right)</p>
+            <img src="https://book.auricmovement.com/wayfinding-3-studio.jpg" alt="Main room — Valley Studio is the door at the far end, restrooms on the right" width="520" style="display:block;width:100%;max-width:520px;height:auto;border:1px solid #e6d8c2;border-radius:10px;outline:none;">
+          </td>
+        </tr>
+
+        <!-- Step 4 -->
+        <tr>
+          <td style="padding:18px 40px 0;">
+            <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#5A3A1A;font-weight:bold;margin:0 0 8px 0;"><span style="display:inline-block;background-color:#a9853f;color:#ffffff;border-radius:999px;padding:2px 9px;font-size:12px;margin-right:8px;">&#9733;</span> Or use Valley Studio&rsquo;s own entrance &mdash; right side of the building</p>
+            <img src="https://book.auricmovement.com/wayfinding-4-alt.jpg" alt="Alternate entrance — Valley Studio, right side of the building" width="520" style="display:block;width:100%;max-width:520px;height:auto;border:1px solid #e6d8c2;border-radius:10px;outline:none;">
+          </td>
+        </tr>
+
+        <!-- Before you enter -->
+        <tr>
+          <td style="padding:24px 40px 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#faf5ee;border-left:3px solid #c79a54;border-radius:0 8px 8px 0;">
+              <tr>
+                <td style="padding:16px 22px;">
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#9a6535;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">&#129355; Before you enter the studio</div>
+                  <p style="font-family:Georgia,serif;font-size:14px;color:#3d322a;line-height:1.7;margin:0;">
+                    Please <strong>leave your shoes outside</strong> the studio, and <strong>bring all your personal belongings in with you</strong> &mdash; there are cubbies inside to store everything.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Still stuck -->
+        <tr>
+          <td align="center" style="padding:24px 40px 0;">
+            <p style="font-family:Georgia,serif;font-size:15px;line-height:1.7;color:#3a2f26;margin:0;">
+              Still can&rsquo;t find us on the day? Reply to this email or write to
+              <a href="mailto:auricmovement@outlook.com" style="color:#9a6535;font-weight:bold;text-decoration:underline;">auricmovement@outlook.com</a> and we&rsquo;ll come out and get you.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Sign-off -->
+        <tr>
+          <td align="center" style="padding:24px 40px 30px;">
+            <p style="font-family:Georgia,serif;font-size:15px;color:#3a2f26;line-height:1.75;margin:0 0 8px 0;">See you on the mat. &#10084;&#65039;</p>
+            <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:20px;color:#9a6535;margin:0;">&mdash; Niara</p>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background-color:#1f1a17;padding:24px 34px;" align="center">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#ffffff;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">Auric Movement</div>
+            <div style="font-family:Georgia,serif;font-size:12px;color:#d8c8b6;line-height:1.8;">
+              Pilates events in NYC &amp; Long Island, hosted with intention.<br>
+              <a href="mailto:auricmovement@outlook.com" style="color:#e2c79a;text-decoration:none;">auricmovement@outlook.com</a> &middot; <a href="https://book.auricmovement.com" style="color:#e2c79a;text-decoration:none;">book.auricmovement.com</a>
+            </div>
+            <div style="border-top:1px solid rgba(255,255,255,0.18);margin-top:16px;padding-top:13px;">
+              <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#d8c8b6;letter-spacing:2px;text-transform:uppercase;">Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect</div>
+            </div>
+          </td>
+        </tr>
+
+      </table>
+
+    </td>
+  </tr>
+</table>
+
+<!-- CAN-SPAM footer: opt-out + physical address -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f1e9da;">
+  <tr><td align="center" style="padding:18px 24px 26px;font-family:Georgia,'Times New Roman',serif;font-size:11px;line-height:1.7;color:#8a7c62;">
+    You&rsquo;re receiving this because you booked an Auric Movement class at Valley Studio.<br>
+    Prefer not to get event updates? <a href="mailto:auricmovement@outlook.com?subject=Unsubscribe" style="color:#8a7c62;text-decoration:underline;">Unsubscribe</a> and we&rsquo;ll take you off.<br>
+    Auric Movement LLC &middot; New York, NY
+  </td></tr>
+</table>
+</body>
+</html>
