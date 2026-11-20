@@ -5709,7 +5709,7 @@
         var nav=document.getElementById('admin-tabnav'); if(!nav || nav._wired) return; nav._wired=true;
         var MAP={
           rosters:['admin-body'],
-          reminders:['admin-reminder-section','admin-waitlist-section','admin-wlcustom-section'],
+          reminders:['admin-reminder-section','admin-waitlist-section','admin-wlcustom-section','admin-getin-section'],
           add:['admin-manual-add-section'],
           addevent:['admin-add-event-section'],
           lists:['admin-shared-lists','admin-agreements-section','admin-standalone-waivers-section','admin-club-section','admin-notify-list-section'],
@@ -5770,6 +5770,27 @@
       <h3 style="font-size:.82rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#185fa5;margin-bottom:.4rem;">&#128227; Waitlist &mdash; Notify</h3>
       <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:.85rem;line-height:1.5;">Everyone on a waitlist, across all events. Tick who to notify that a spot has opened, then send &mdash; each person automatically gets the right email for their event.</p>
       <div id="admin-waitlist-body"><div class="au-meta">Loading&hellip;</div></div>
+    </div>
+
+
+    <!-- How to get in — the Cherry Valley Sports walk-through, on its own.
+         Only Valley Studio dates are listed: the photos are of that building,
+         and the whole point of a directions email is that it is right. -->
+    <div id="admin-getin-section" style="margin-top:1.5rem;padding:1.25rem;background:#f4ece0;border:1px solid #e0cfae;border-radius:10px;">
+      <h3 style="font-size:.82rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9a6535;margin-bottom:.4rem;">&#128205; How To Get In &mdash; Valley Studio</h3>
+      <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:.85rem;line-height:1.5;">The four Cherry Valley Sports photos, the address and a map, as their own email. Goes to everyone booked and paid on the date you pick &mdash; you see the names before it sends.</p>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:.75rem;align-items:end;">
+        <div>
+          <label for="getin-event" class="au-label">Event</label>
+          <select id="getin-event" style="width:100%;padding:.5rem .75rem;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:.82rem;background:#fff;color:#3d322a;">
+            <option value="turkey-burn-2026-11-22" data-event-date="2026-11-22">Riddim &times; Kompa Pre-Turkey Burn (Nov 22)</option>
+            <option value="halloween-creek-2026-10-24" data-event-date="2026-10-24">Shhh&hellip; Quiet on the Creek (Oct 24)</option>
+            <option value="riddim-kompa-reformer-2026-09-13" data-event-date="2026-09-13">Riddim &amp; Kompa &mdash; West Hempstead (Sep 13)</option>
+          </select>
+        </div>
+        <button type="button" id="getin-send" onclick="rfSendGetIn(this)" class="btn btn-primary" style="font-size:.82rem;white-space:nowrap;">&#128205; Send directions</button>
+      </div>
+      <div id="getin-status" style="margin-top:.5rem;font-size:.82rem;"></div>
     </div>
 
 
@@ -16503,6 +16524,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Riddim & Kompa on the Reformer — confirmation email (from RIDDIM_KOMPA_CONFIRMATION_TEMPLATE.html).
   // Replace with the real EmailJS template id once created.
   var RF_TMPL_CONFIRM    = 'template_pdfnmgu';
+  // The standalone Cherry Valley Sports walk-in email
+  // (HOW_TO_GET_IN_TEMPLATE.html) — sent via Resend.
+  var RF_TMPL_GETIN    = 'template_j9mg8hf';
   var RF_TMPL_WL_OPEN    = 'template_2oft3ms';  // Riddim & Kompa — waitlist "3 PM just opened" (RIDDIM_KOMPA_3PM_WAITLIST_TEMPLATE) — sent via Resend
   var RF_BK_TMPL_CONFIRM = 'template_pq0dq1h';  // Riddim & Kompa — Brooklyn confirmation (RIDDIM_KOMPA_BROOKLYN_CONFIRMATION_TEMPLATE.html) — sent via Resend
   var RF_BK_TMPL_POLICY  = 'template_7mtoiwi';  // Riddim x Kompa — Brooklyn pre-event cancellation/credit/transfer reminder (RIDDIM_KOMPA_BROOKLYN_POLICY_REMINDER_TEMPLATE.html) — sent via Resend
@@ -17765,6 +17789,73 @@ document.addEventListener('DOMContentLoaded', function() {
         failed++; failedList.push(r.email); console.error('[waitlist custom] failed for ' + r.email, err);
       }).then(function(){ setTimeout(function(){ next(i + 1); }, 700); });
     })(0);
+  };
+
+  // The Cherry Valley Sports walk-in email, to everyone booked on one date.
+  //
+  // Paid and not archived and not waitlisted — the same test every other
+  // roster count uses. A waitlister has no seat yet, so sending them the way
+  // in reads as an invitation that was never made.
+  //
+  // One email per person however many rows they hold, and the names are shown
+  // before anything leaves, because a directions email that reaches the wrong
+  // date is worse than none at all.
+  window.rfSendGetIn = function(btn){
+    var sel = document.getElementById('getin-event');
+    var out = document.getElementById('getin-status');
+    var ev  = sel ? sel.value : '';
+    var evName = sel && sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].textContent.trim() : ev;
+    function say(html){ if(out) out.innerHTML = html; }
+    if (RF_TMPL_GETIN.indexOf('REPLACE') !== -1){
+      say('<span style="color:var(--red);">Set RF_TMPL_GETIN to the EmailJS template id first.</span>'); return;
+    }
+    if (typeof emailjs === 'undefined'){ say('<span style="color:var(--red);">EmailJS not loaded.</span>'); return; }
+    var label = btn ? btn.textContent : '';
+    if (btn){ btn.disabled = true; btn.textContent = 'Loading…'; }
+    function restore(){ if (btn){ btn.disabled = false; btn.textContent = label; } }
+
+    supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(res){
+      var rows = ((res && res.data) || []).filter(function(r){
+        return r && r.event === ev && r.email && r.is_paid && !r.archived && r.type !== 'waitlist';
+      });
+      var seen = {}, list = [], dupes = 0;
+      rows.forEach(function(r){
+        var k = String(r.email).trim().toLowerCase();
+        if (seen[k]){ dupes++; return; }
+        seen[k] = 1; list.push(r);
+      });
+      if (!list.length){ restore(); say('<span style="color:#8a6b3a;">Nobody booked and paid on ' + escapeHTML(evName) + ' yet.</span>'); return; }
+      if (!confirm('Send the "how to get in" email for ' + evName + ' to ' + list.length + ' guest'
+                   + (list.length === 1 ? '' : 's') + '?\n\n'
+                   + list.map(function(r){ return '   ' + (r.name || r.email); }).join('\n')
+                   + (dupes ? '\n\n(' + dupes + ' duplicate row' + (dupes === 1 ? '' : 's') + ' skipped.)' : ''))){
+        restore(); say(''); return;
+      }
+      var sent = 0, failed = [], i = 0;
+      (function next(){
+        if (i >= list.length){
+          restore();
+          say('<span style="color:#2e7d32;">✅ Sent to ' + sent + ' guest' + (sent === 1 ? '' : 's') + '.</span>'
+              + (failed.length ? '<div style="color:var(--red);margin-top:.3rem;">⚠️ ' + failed.length
+                 + ' failed: ' + escapeHTML(failed.join(', ')) + ' — check EmailJS → History.</div>' : ''));
+          return;
+        }
+        var r = list[i++];
+        if (btn) btn.textContent = 'Sending… (' + i + '/' + list.length + ')';
+        var s = RF_REMINDER_SESS[r.session] || {};
+        emailjs.send(EMAILJS_SERVICE_RESEND, RF_TMPL_GETIN, {
+          to_email:     r.email,
+          from_name:    r.name || '',
+          event_name:   RF_TURKEY_NAME[r.event] || s.label || evName,
+          event_date:   s.date || '',
+          arrival_time: s.arrival || '',
+          class_time:   s.start || ''
+        // One second apart. Resend throttles a burst, and a directions email
+        // that silently fails is one guest standing outside a locked door.
+        }).then(function(){ sent++; setTimeout(next, 1000); },
+                function(){ failed.push(r.email); setTimeout(next, 1000); });
+      })();
+    }, function(){ restore(); say('<span style="color:var(--red);">Could not read the roster.</span>'); });
   };
 
   // Email everyone on a reformer waitlist that a spot opened (sequential — 1s
