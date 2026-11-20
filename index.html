@@ -13132,6 +13132,14 @@ document.addEventListener('DOMContentLoaded', function() {
     var today = new Date(); today.setHours(0,0,0,0);
     var up = [], past = [], undated = [];
     Object.keys(FOUNDING_EVENTS).forEach(function(k){
+      // A session that stopped taking bookings has no first booker left to
+      // find, so it is not offered. Same test the booking page uses, so the
+      // Nov 22 1:30 drops out by being closed rather than by being deleted
+      // here — reopen it and it comes back on its own. A session hidden
+      // behind an unlock link is still selling, so it stays.
+      var _m = FOUNDING_EVENTS[k];
+      if(_m && _m.dbEvent && _m.session && window.auricSessionClosed
+         && window.auricSessionClosed(_m.dbEvent, _m.session)) return;
       var d = foundingDay(k);
       var opt = '<option value="'+k+'">'+escapeHTML(FOUNDING_EVENTS[k].name)+'</option>';
       if(!d){ undated.push({o:opt}); return; }
