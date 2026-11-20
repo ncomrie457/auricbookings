@@ -13113,11 +13113,44 @@ document.addEventListener('DOMContentLoaded', function() {
       } catch(e){ cb([]); }
     } else cb([]);
   }
+  // The picker listed events in the order they were written into
+  // FOUNDING_EVENTS, which is the order they were added — so the oldest came
+  // first and the date you actually want was nineteen entries down, below a
+  // fold, looking absent. Soonest-first, with everything finished filed under
+  // Past, the way the other admin pickers already work.
+  //
+  // The day comes out of the event id, which ends in its own date
+  // ('turkey-burn-2026-11-22'). The three events that predate that convention
+  // are named here. An entry with no date sorts last rather than disappearing.
+  var FOUNDING_DAY_FALLBACK = { matchat:'2026-08-01', recharge:'2026-08-15', pilates:'2026-06-19' };
+  function foundingDay(key){
+    var meta = FOUNDING_EVENTS[key] || {};
+    var m = /(\d{4}-\d{2}-\d{2})/.exec(meta.dbEvent || '');
+    return (m && m[1]) || FOUNDING_DAY_FALLBACK[key] || '';
+  }
+  function foundingOptions(){
+    var today = new Date(); today.setHours(0,0,0,0);
+    var up = [], past = [], undated = [];
+    Object.keys(FOUNDING_EVENTS).forEach(function(k){
+      var d = foundingDay(k);
+      var opt = '<option value="'+k+'">'+escapeHTML(FOUNDING_EVENTS[k].name)+'</option>';
+      if(!d){ undated.push({o:opt}); return; }
+      var dt = new Date(d+'T00:00:00');
+      (dt < today ? past : up).push({ o:opt, d:dt });
+    });
+    up.sort(function(a,b){ return a.d - b.d; });        // soonest first
+    past.sort(function(a,b){ return b.d - a.d; });      // most recent first
+    function group(label, arr){
+      return arr.length ? '<optgroup label="'+label+'">'+arr.map(function(x){return x.o;}).join('')+'</optgroup>' : '';
+    }
+    return group('Upcoming', up) + group('Past · archive', past) + group('No date', undated);
+  }
+
   function openFoundingOne(){
     var prior=document.getElementById('founding-one'); if(prior) prior.remove();
     var ov=document.createElement('div'); ov.id='founding-one';
     ov.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(27,34,21,.62);display:flex;align-items:center;justify-content:center;padding:20px;';
-    var opts=Object.keys(FOUNDING_EVENTS).map(function(k){ return '<option value="'+k+'">'+escapeHTML(FOUNDING_EVENTS[k].name)+'</option>'; }).join('');
+    var opts=foundingOptions();
     ov.innerHTML='<div style="background:#f4ecdb;max-width:440px;width:100%;border-radius:16px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.4);font-family:\'Jost\',sans-serif;">'
       +'<div style="font-family:\'Cormorant Garamond\',serif;font-style:italic;font-size:1.6rem;color:#3b4a2f;margin-bottom:2px;">🎁 Send Founding One</div>'
       +'<div style="font-size:.86em;color:#6b6750;margin-bottom:14px;">Emails the free-tote note. It starts on the <strong>first person who paid</strong> for a seat — change it below to hand the gift to somebody else.</div>'
