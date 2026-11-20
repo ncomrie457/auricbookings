@@ -19,6 +19,10 @@
      {{{question_block}}}   ← the whole highlighted prompt box (raw HTML; empty = omitted)
      {{{message_body}}}     ← the message you typed, with any link made clickable
      {{{link_block}}}       ← the optional button (raw HTML; empty = omitted)
+     {{{hero_block}}}       ← optional artwork under the header (raw HTML;
+                              empty = omitted). Paste an image URL into the
+                              panel; it is saved per event, so a private
+                              event keeps its own flyer.
 
    NOTE ON THE TRIPLE BRACES: {{{ }}} tells Mustache to leave the HTML alone.
    Written as {{message_body}} the <a> tags would be escaped and your guests
@@ -50,6 +54,12 @@
         <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:22px;color:#ffffff;letter-spacing:2px;">Auric Movement</div>
         <div style="font-family:Georgia,serif;font-size:10px;color:#f3e6c9;letter-spacing:3px;text-transform:uppercase;margin-top:6px;">Align &middot; Unwind &middot; Recharge &middot; Intend &middot; Connect</div>
       </td></tr>
+
+      <!-- Optional artwork, straight from the panel. Sits under the brown
+           header rather than above it, so the email still opens as an Auric
+           Movement email and not as an untitled picture. Blank = this row
+           vanishes and the reminder looks exactly as it always has. -->
+      {{{hero_block}}}
 
       <!-- Greeting -->
       <tr><td style="padding:36px 40px 8px;">
