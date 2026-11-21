@@ -7344,8 +7344,14 @@ Can't wait to move and connect with you!</textarea>
     // and the 12:30 carry on as normal; delete this line to put it back on
     // sale. Anyone already booked onto the 1:30 keeps their seat and still
     // shows on the roster — this closes the door, it does not empty the room.
+    // Nov 22 runs the 11:30 and the 12:30. The 1:30 is taken off the page
+    // altogether rather than greyed out: a time with "Registration closed"
+    // on it still reads as a time that exists and invites the question.
+    // hide with no unlock keeps it closed everywhere else too — out of the
+    // Founding One picker, and out of the roster header unless somebody is
+    // already on it. Swap back to 'Registration closed' to show it again.
     'turkey-burn-2026-11-22': {
-      'tb130': 'Registration closed'
+      'tb130': { hide: true }
     }
   };
   // Lock every held slot on a screen, without asking the database anything.
