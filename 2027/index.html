@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2027 Dates — Tell Me What You Want | Auric Movement</title>
+  <meta name="description" content="2027 dates are being planned. Four taps: reformer or mat, and the days that actually work for you. You'll hear first when dates are set.">
+
+  <!-- Open Graph / iMessage / social preview -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Auric Movement">
+  <meta property="og:url" content="https://book.auricmovement.com/2027">
+  <meta property="og:title" content="2027 dates — tell me what you want ✦">
+  <meta property="og:description" content="Reformer or mat? Weekdays or weekends? Takes 20 seconds, and you'll hear first.">
+  <meta property="og:image" content="https://book.auricmovement.com/cr-group-01.jpg?v=1">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="2027 dates — tell me what you want ✦">
+  <meta name="twitter:description" content="Reformer or mat? Weekdays or weekends? Takes 20 seconds.">
+  <meta name="twitter:image" content="https://book.auricmovement.com/cr-group-01.jpg?v=1">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{ --cream:#f7f0e2; --card:#fdfbf7; --green:#123522; --brown:#5A3A1A; --gold:#a9832f; --muted:#8a7d6b; --border:#e6dbc8; }
+    *{ margin:0; padding:0; box-sizing:border-box; }
+    body{ font-family:'Jost','Helvetica Neue',Arial,sans-serif; background:linear-gradient(158deg,#f7f0e2,#efe3cd); color:#3d322a; min-height:100vh; -webkit-font-smoothing:antialiased; }
+    .wrap{ max-width:520px; margin:0 auto; padding:2.4rem 1.2rem 4rem; }
+    .card{ background:var(--card); border:1px solid var(--border); border-radius:18px; overflow:hidden; box-shadow:0 24px 60px -34px rgba(90,58,26,.5); }
+    .stripe{ display:flex; height:8px; }
+    .stripe>span{ flex:1; } .stripe .a{background:#5A3A1A;} .stripe .b{background:#7a5326;} .stripe .c{background:#a9832f;} .stripe .d{background:#c9a455;}
+    .head{ text-align:center; padding:2rem 1.6rem 1rem; }
+    .brand{ font-size:.72rem; letter-spacing:.34em; text-transform:uppercase; color:var(--gold); font-weight:600; padding-left:.34em; }
+    h1{ font-family:'Cormorant Garamond',Georgia,serif; font-style:italic; font-weight:600; font-size:2rem; color:var(--green); margin:.5rem 0 .2rem; line-height:1.12; }
+    .sub{ font-size:.95rem; color:var(--muted); line-height:1.6; margin-top:.6rem; }
+    form{ padding:.4rem 1.6rem 1.8rem; }
+    label{ display:block; font-size:.8rem; font-weight:600; color:var(--brown); margin:1rem 0 .4rem; }
+    input[type=text],input[type=email],input[type=tel]{ width:100%; padding:.8rem .9rem; border:1px solid var(--border); border-radius:10px; font-family:inherit; font-size:1rem; background:#fff; color:#2c1a0e; }
+    input:focus{ outline:none; border-color:var(--gold); }
+    .opt{ font-weight:400; color:var(--muted); }
+
+    /* Tap targets. Real radios/checkboxes underneath, so the keyboard and
+       screen readers still work — the chip is only how it looks. */
+    .chips{ display:flex; flex-wrap:wrap; gap:.5rem; }
+    .chips.two{ display:grid; grid-template-columns:1fr 1fr; }
+    .chips.three{ display:grid; grid-template-columns:1fr 1fr 1fr; }
+    .chip{ position:relative; }
+    .chip input{ position:absolute; opacity:0; width:100%; height:100%; left:0; top:0; margin:0; cursor:pointer; }
+    .chip span{ display:block; text-align:center; padding:.7rem .85rem; border:1px solid var(--border); border-radius:999px; background:#fff; font-size:.88rem; color:#3d322a; line-height:1.25; transition:background .15s,border-color .15s,color .15s; }
+    .chip input:checked + span{ background:var(--green); border-color:var(--green); color:#f5efe0; font-weight:600; }
+    .chip input:focus-visible + span{ outline:2px solid var(--gold); outline-offset:2px; }
+    .chips.two .chip span,.chips.three .chip span{ border-radius:12px; }
+
+    .btn{ width:100%; margin-top:1.5rem; padding:.95rem 1rem; border:none; border-radius:999px; background:var(--green); color:#f5efe0; font-family:inherit; font-size:1rem; font-weight:600; letter-spacing:.02em; cursor:pointer; }
+    .btn:hover{ background:#0e2b1b; }
+    .btn:disabled{ opacity:.6; cursor:not-allowed; }
+    .err{ display:none; color:#b0432e; font-size:.85rem; margin-top:.8rem; }
+    .confirmed{ display:none; text-align:center; padding:2.2rem 1.8rem 2.6rem; }
+    .confirmed .mk{ font-size:2rem; color:var(--gold); }
+    .confirmed h2{ font-family:'Cormorant Garamond',Georgia,serif; font-style:italic; font-size:1.7rem; color:var(--green); margin:.5rem 0 .4rem; }
+    .confirmed p{ color:var(--muted); font-size:.95rem; line-height:1.6; }
+    .foot{ text-align:center; font-size:.8rem; color:var(--muted); margin-top:1.4rem; }
+    .foot a{ color:var(--gold); text-decoration:none; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="stripe"><span class="a"></span><span class="b"></span><span class="c"></span><span class="d"></span></div>
+      <div class="head">
+        <div class="brand">Auric Movement</div>
+        <h1>2027 dates<br>are being planned</h1>
+        <p class="sub">Tell me what you&rsquo;d actually come to and when you&rsquo;re free &mdash; it shapes what I book. <strong>Takes 20 seconds</strong>, and you&rsquo;ll hear first.</p>
+      </div>
+      <form id="interest-form" novalidate>
+        <label for="nx-name">Full name</label>
+        <input type="text" id="nx-name" autocomplete="name" placeholder="Your name">
+
+        <label for="nx-email">Email</label>
+        <input type="email" id="nx-email" autocomplete="email" placeholder="you@email.com">
+
+        <label for="nx-phone">Phone <span class="opt">&mdash; optional, for a text when dates drop</span></label>
+        <input type="tel" id="nx-phone" autocomplete="tel" placeholder="(555) 555-5555">
+
+        <label>What would you come to?</label>
+        <div class="chips three" role="radiogroup" aria-label="What would you come to?">
+          <div class="chip"><input type="radio" name="nx-kind" id="nx-kind-both" value="Reformer &amp; mat"><span>Reformer<br>&amp; mat</span></div>
+          <div class="chip"><input type="radio" name="nx-kind" id="nx-kind-ref" value="Reformer only"><span>Reformer<br>only</span></div>
+          <div class="chip"><input type="radio" name="nx-kind" id="nx-kind-mat" value="Mat only"><span>Mat<br>only</span></div>
+        </div>
+
+        <label>When works? <span class="opt">(tap all that do)</span></label>
+        <div class="chips two">
+          <div class="chip"><input type="checkbox" class="nx-when" id="nx-wd-am" value="Weekday mornings"><span>Weekday<br>mornings</span></div>
+          <div class="chip"><input type="checkbox" class="nx-when" id="nx-wd-pm" value="Weekday afternoons"><span>Weekday<br>afternoons</span></div>
+          <div class="chip"><input type="checkbox" class="nx-when" id="nx-we-am" value="Weekend mornings"><span>Weekend<br>mornings</span></div>
+          <div class="chip"><input type="checkbox" class="nx-when" id="nx-we-pm" value="Weekend afternoons"><span>Weekend<br>afternoons</span></div>
+        </div>
+
+        <div class="err" id="nx-error"></div>
+        <button type="submit" class="btn" id="nx-submit">Add me to the list</button>
+      </form>
+      <div class="confirmed" id="nx-confirmed">
+        <div class="mk">&#10022;</div>
+        <h2>You&rsquo;re on the list!</h2>
+        <p>Thank you &mdash; this genuinely shapes what gets booked. You&rsquo;ll hear from me first when the 2027 dates are set.</p>
+      </div>
+    </div>
+    <div class="foot">Auric Movement &middot; <a href="https://book.auricmovement.com">book.auricmovement.com</a></div>
+  </div>
+
+  <script src="/vendor/supabase-js-2.117.3.min.js"></script>
+  <script>
+  (function(){
+    var SB_URL='https://qvmiwyxerotkqpbuhpun.supabase.co';
+    var SB_KEY='sb_publishable_PHihtZqr-zBTcppyHSwSjg_klBABTpJ';
+    var sb=null; try{ if(window.supabase&&window.supabase.createClient) sb=window.supabase.createClient(SB_URL,SB_KEY); }catch(e){}
+    var form=document.getElementById('interest-form'), btn=document.getElementById('nx-submit'),
+        errBox=document.getElementById('nx-error'), confirmed=document.getElementById('nx-confirmed');
+    function showError(m){ errBox.textContent=m; errBox.style.display='block'; }
+    form.addEventListener('submit', function(ev){
+      ev.preventDefault(); errBox.style.display='none';
+      var name=document.getElementById('nx-name').value.trim();
+      var email=document.getElementById('nx-email').value.trim();
+      var phone=document.getElementById('nx-phone').value.trim();
+      if(!name){ showError('Please add your name.'); return; }
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ showError('Please enter a valid email.'); return; }
+      var kindEl=document.querySelector('input[name="nx-kind"]:checked');
+      if(!kindEl){ showError('Pick reformer, mat, or both — one tap.'); return; }
+      var kind=kindEl.value;
+      var when=[];
+      Array.prototype.forEach.call(document.querySelectorAll('.nx-when:checked'), function(c){ when.push(c.value); });
+      var whenText=when.join(', ');
+
+      btn.disabled=true; btn.textContent='Saving…';
+
+      // blooming_interest is shared by every interest list on the site; the
+      // event/source tags are what keep these rows out of the others.
+      var TAGS={ event:'auric-2027', source:'2027-interest' };
+      // Three shapes, widest first. equipment may not be a column yet, and
+      // preferred_times may not be either — on this site a signup is worth
+      // more than a tidy row, so each failure drops a field rather than the
+      // person. The middle shape folds the equipment answer into the times
+      // text so nothing she needs is actually lost.
+      var recFull={ name:name, email:email, phone:(phone||null), event:TAGS.event, source:TAGS.source, equipment:kind, preferred_times:(whenText||null) };
+      var recMid ={ name:name, email:email, phone:(phone||null), event:TAGS.event, source:TAGS.source, preferred_times:(kind+(whenText?' — '+whenText:'')) };
+      var recBase={ name:name, email:email, phone:(phone||null), event:TAGS.event, source:TAGS.source };
+      try{ var a=JSON.parse(localStorage.getItem('auric_2027_interest')||'[]'); a.push(recFull); localStorage.setItem('auric_2027_interest', JSON.stringify(a)); }catch(e){}
+      function done(){ form.style.display='none'; confirmed.style.display='block'; confirmed.scrollIntoView({behavior:'smooth',block:'center'}); }
+      function insert(rec, next){
+        sb.from('blooming_interest').insert([rec]).then(function(res){
+          if(res&&res.error){ console.warn('insert error:', res.error.message); next ? next() : done(); }
+          else done();
+        }, function(){ next ? next() : done(); });
+      }
+      if(sb){ insert(recFull, function(){ insert(recMid, function(){ insert(recBase, null); }); }); }
+      else { done(); }
+    });
+  })();
+  </script>
+</body>
+</html>

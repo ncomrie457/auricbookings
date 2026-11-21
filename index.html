@@ -3352,6 +3352,18 @@
         <span class="bq-event-link">Join the list <span aria-hidden="true">&#8594;</span></span>
       </a>
 
+      <!-- 2027 dates — what do you want, and when (join the list) -->
+      <a href="/2027" id="event-card-2027-interest" class="bq-event scroll-reveal" data-event-name="2027 Dates — Interest" data-location="all">
+        <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
+        <div class="bq-event-photo">
+          <img src="cr-group-01.jpg?v=1" alt="An Auric Movement group after class — 2027 dates are being planned" loading="lazy" decoding="async">
+        </div>
+        <div class="bq-event-date">Now Planning &#183; 2027</div>
+        <div class="bq-event-name">2027 dates <em>&mdash; what do you want?</em></div>
+        <div class="bq-event-sub">Reformer or mat &#183; the days that work for you &#183; 20 seconds</div>
+        <span class="bq-event-link">Tell me <span aria-hidden="true">&#8594;</span></span>
+      </a>
+
       <!-- AURIC MVMT bag — reserve yours (no payment) -->
       <a href="/reserve-bag" id="event-card-bag-reserve" class="bq-event scroll-reveal" data-event-name="AURIC MVMT Bag — Reserve" data-location="all">
         <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
@@ -12520,6 +12532,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var bloomContainer    = document.createElement('div'); bloomContainer.id    = 'admin-bloom-container';
     var riddimContainer   = document.createElement('div'); riddimContainer.id   = 'admin-riddim-interest-container';
     var bagContainer      = document.createElement('div'); bagContainer.id      = 'admin-bag-reserve-container';
+    var nx27Container     = document.createElement('div'); nx27Container.id     = 'admin-2027-interest-container';
     var archivedContainer = document.createElement('div'); archivedContainer.id = 'admin-archived-container';
     var corpContainer     = document.createElement('div'); corpContainer.id     = 'admin-corp-container';
     // Tag each event section with its date so the filter can sort past vs upcoming.
@@ -12590,6 +12603,7 @@ document.addEventListener('DOMContentLoaded', function() {
     upcomingSections.forEach(function(x){ body.appendChild(x.el); });
     body.appendChild(riddimContainer);      // Riddim & Kompa — next-date interest list
     body.appendChild(bagContainer);         // AURIC MVMT bag — reserve list
+    body.appendChild(nx27Container);        // 2027 dates — interest list
     pastSections.forEach(function(x){ body.appendChild(x.el); });
     body.appendChild(archivedContainer);    // Archived — didn't pay (all events), always shown
     body.appendChild(corpContainer);        // Partner With Us — no date, always shown
@@ -12621,6 +12635,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof renderBloomingSection === 'function') renderBloomingSection(bloomContainer);
     if (typeof renderRiddimInterestSection === 'function') renderRiddimInterestSection(riddimContainer);
     if (typeof renderBagReserveSection === 'function') renderBagReserveSection(bagContainer);
+    if (typeof render2027InterestSection === 'function') render2027InterestSection(nx27Container);
     if (typeof renderWaitlistNotify === 'function') renderWaitlistNotify();
     if (typeof renderSignedAgreements === 'function') renderSignedAgreements();
     if (typeof renderNorthwellAgreement === 'function') renderNorthwellAgreement();
@@ -14114,7 +14129,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
           supabase.from('blooming_interest').select('*').order('created_at').then(function(res){
             var rows = (res && res.data) || [];
-            var confirmed = rows.filter(function(r){ return r.email && r.source!=='riddim-interest' && r.event!=='riddim-kompa-next' && r.source!=='bag-reserve' && r.event!=='auric-bag-reserve'; }).map(function(rec){
+            var confirmed = rows.filter(function(r){ return r.email && r.source!=='riddim-interest' && r.event!=='riddim-kompa-next' && r.source!=='bag-reserve' && r.event!=='auric-bag-reserve' && r.source!=='2027-interest' && r.event!=='auric-2027'; }).map(function(rec){
               return { rec: { name: rec.name, email: rec.email }, sess: { label: 'Something’s Blooming', date: 'Saturday, December 13th', arrival: 'TBD', start: 'TBD' } };
             });
             callback(confirmed);
@@ -18714,7 +18729,7 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
       supabase.from('blooming_interest').select('*').order('created_at').then(function(res){
         if(res && res.error){ render([], true); return; }
-        var data = ((res && res.data) || []).filter(function(r){ return r.source!=='riddim-interest' && r.event!=='riddim-kompa-next' && r.source!=='bag-reserve' && r.event!=='auric-bag-reserve'; });
+        var data = ((res && res.data) || []).filter(function(r){ return r.source!=='riddim-interest' && r.event!=='riddim-kompa-next' && r.source!=='bag-reserve' && r.event!=='auric-bag-reserve' && r.source!=='2027-interest' && r.event!=='auric-2027'; });
         render(data, false);
       }, function(){ render([], true); });
     } catch(e){ render([], true); }
@@ -18917,6 +18932,112 @@ document.addEventListener('DOMContentLoaded', function() {
     var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a'); a.href = url; a.download = 'riddim-kompa-interest.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  };
+  /* ── 2027 dates — interest list roster ───────────────────────────────
+     The point of this list is not the names, it is the tally: what people
+     actually want and when they are free, so a date gets booked against
+     evidence instead of a guess. So the counts sit at the top, above the
+     roster, and they are what the section leads with.
+
+     The two answers can arrive in one of two shapes. Normally equipment
+     has its own column. If that column does not exist, the form folds the
+     answer into the front of preferred_times ("Reformer only — Weekend
+     mornings") rather than dropping it, so both are read back here. */
+  var nx27Rows = [];
+  var NX27_SLOTS = ['Weekday mornings','Weekday afternoons','Weekend mornings','Weekend afternoons'];
+  function nx27Kind(r){
+    if(r.equipment) return r.equipment;
+    var t = r.preferred_times || '';
+    if(t.indexOf('Reformer & mat') === 0) return 'Reformer & mat';
+    if(t.indexOf('Reformer only') === 0) return 'Reformer only';
+    if(t.indexOf('Mat only') === 0)      return 'Mat only';
+    return '';
+  }
+  function nx27Times(r){
+    var t = r.preferred_times || '';
+    if(r.equipment) return t;              // its own column: times stand alone
+    var i = t.indexOf(' \u2014 ');          // folded shape: strip the equipment half
+    if(i >= 0) return t.slice(i + 3);
+    return nx27Kind(r) ? '' : t;           // equipment only, no times given
+  }
+  function render2027InterestSection(container){
+    if(!container) return;
+    var block = document.createElement('div'); block.className='admin-session-block';
+    function render(rows, err){
+      nx27Rows = rows || [];
+      block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F5D3}\uFE0F 2027 Dates \u2014 Interest List \u00b7 '+rows.length+' answered</h3>';
+      if(err){ block.innerHTML += '<div class="empty-state">Interest list unavailable \u2014 run the blooming_interest read policy SQL to view it here. (Signups are still being saved.)</div>'; return; }
+      if(!rows.length){ block.innerHTML += '<div class="empty-state">No answers yet. Share book.auricmovement.com/2027</div>'; return; }
+
+      // The tally. Counted off the rows on screen, so it can never drift
+      // from the roster below it.
+      var kinds = {}, slots = {}, withPhone = 0;
+      rows.forEach(function(r){
+        var k = nx27Kind(r); if(k) kinds[k] = (kinds[k]||0) + 1;
+        var t = nx27Times(r);
+        NX27_SLOTS.forEach(function(s){ if(t.indexOf(s) >= 0) slots[s] = (slots[s]||0) + 1; });
+        if(r.phone) withPhone++;
+      });
+      function bar(label, n){
+        var pct = rows.length ? Math.round((n/rows.length)*100) : 0;
+        return '<div style="display:flex;align-items:center;gap:.5rem;margin:.22rem 0;">'
+          +'<span style="flex:0 0 9.5rem;font-size:.76rem;color:var(--brown);">'+escapeHTML(label)+'</span>'
+          +'<span style="flex:1;height:7px;background:#f0e7d6;border-radius:999px;overflow:hidden;"><span style="display:block;height:100%;width:'+pct+'%;background:var(--gold-text);"></span></span>'
+          +'<span style="flex:0 0 3.6rem;text-align:right;font-size:.76rem;color:var(--text-muted);">'+n+' \u00b7 '+pct+'%</span></div>';
+      }
+      var tally = '<div style="background:#fffdf9;border:1px solid var(--border);border-radius:10px;padding:.8rem .95rem;margin:.2rem 0 .8rem;">'
+        +'<div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.45rem;">What they want</div>';
+      ['Reformer & mat','Reformer only','Mat only'].forEach(function(k){ tally += bar(k, kinds[k]||0); });
+      tally += '<div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin:.7rem 0 .45rem;">When they\u2019re free</div>';
+      NX27_SLOTS.forEach(function(s){ tally += bar(s, slots[s]||0); });
+      tally += '<div style="font-size:.72rem;color:var(--text-muted);margin-top:.6rem;">\u{1F4DE} '+withPhone+' of '+rows.length+' left a phone number.</div></div>';
+      block.innerHTML += tally;
+
+      block.innerHTML += '<button onclick="nx27ExportCSV()" style="margin:.1rem 0 .7rem;background:#eef4fb;border:1px solid #b5d4f4;color:#185fa5;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u2b07\ufe0f Export interest list (CSV)</button>';
+      rows.forEach(function(rec){
+        var item=document.createElement('div'); item.className='admin-sub-item';
+        var when=''; try{ when=rec.created_at?new Date(rec.created_at).toLocaleString():''; }catch(e){}
+        var phone = rec.phone ? '<br><span class="au-meta">\u{1F4DE} '+escapeHTML(rec.phone)+'</span>' : '';
+        var k = nx27Kind(rec);
+        var kindBadge = k ? ' <span class="atype" style="background:#f3ece0;color:#7a5326;">'+escapeHTML(k)+'</span>' : '';
+        var t = nx27Times(rec);
+        var times = t ? '<br><span class="au-meta">\u{1F551} '+escapeHTML(t)+'</span>' : '';
+        var removeBtn='<button onclick="nx27AdminRemove(\''+String(rec.id).replace(/'/g,"\\'")+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F5D1} Remove</button>';
+        item.innerHTML='<div style="flex:1;min-width:0;"><span class="aname">'+escapeHTML(rec.name||'')+'</span>'+kindBadge+'<br><span class="aemail">'+escapeHTML(rec.email||'')+'</span>'+phone+times+'</div>'+
+          '<div style="text-align:right"><span class="au-meta">'+escapeHTML(when)+'</span><br><div style="margin-top:.3rem;">'+removeBtn+'</div></div>';
+        block.appendChild(item);
+      });
+    }
+    container.innerHTML=''; container.appendChild(block);
+    try {
+      supabase.from('blooming_interest').select('*').order('created_at').then(function(res){
+        if(res && res.error){ render([], true); return; }
+        var data = ((res && res.data) || []).filter(function(r){ return r.source==='2027-interest' || r.event==='auric-2027'; });
+        render(data, false);
+      }, function(){ render([], true); });
+    } catch(e){ render([], true); }
+  }
+  window.nx27AdminRemove = function(id){
+    if(!id) return;
+    if(!confirm('Remove this person from the 2027 interest list?')) return;
+    supabase.from('blooming_interest').delete().eq('id', id).then(function(res){
+      if(res&&res.error){ alert('Could not remove \u2014 run the blooming_interest delete policy SQL first.'); return; }
+      renderAdmin();
+    }, function(){ alert('Could not remove. Try again.'); });
+  };
+  window.nx27ExportCSV = function(){
+    var rows = nx27Rows || [];
+    if(!rows.length){ alert('No answers to export yet.'); return; }
+    var csv = 'Name,Email,Phone,Wants,Days/times,Signed up\n';
+    rows.forEach(function(r){
+      var when=''; try{ when = r.created_at ? new Date(r.created_at).toLocaleString() : ''; }catch(e){}
+      csv += [csvEscape(r.name), csvEscape(r.email), csvEscape(r.phone||''), csvEscape(nx27Kind(r)), csvEscape(nx27Times(r)), csvEscape(when)].join(',') + '\n';
+    });
+    var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a'); a.href = url; a.download = 'auric-2027-interest.csv';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
   };
