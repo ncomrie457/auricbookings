@@ -9658,6 +9658,20 @@ document.addEventListener('DOMContentLoaded', function() {
   //   3. Photos display in the order listed (first = cover)
   // ────────────────────────────────────────────────────────
   var EVENT_PHOTO_GALLERIES = {
+    'reformer-n21': {
+      title:  'Riddim &times; Kompa Recap',
+      date:   'November 21, 2026',
+      soldOut: true,            // all four times — 12, 1, 2 and 3 PM
+      cover:  'riddim-n21-01.jpg',   // the largest group of the day
+      photos: [
+        'riddim-n21-01.jpg',  // 1. Six of them around the flag by the sauna (COVER)
+        'riddim-n21-02.jpg',  // 2. Session group with the flag
+        'riddim-n21-03.jpg',  // 3. Session group with the flag
+        'riddim-n21-04.jpg'   // 4. Session group with the flag
+      ],
+      description: 'Our sold-out Riddim &times; Kompa on the Reformer at Maison Luxe Pilates &amp; Wellness in Brooklyn &mdash; four back-to-back sessions of reformer Pilates moving to dancehall, reggae and kompa, with a complimentary goodie bag.',
+      reflection: 'Two islands, one rhythm &mdash; and a room that moved like it.'
+    },
     recharge: {
       title:  'Create + Recharge Recap',
       date:   'August 15, 2026',
@@ -9796,11 +9810,9 @@ document.addEventListener('DOMContentLoaded', function() {
     'reformer-n21': {
       title:   'Riddim &times; Kompa on the Reformer',
       soldOut: true,   // all four times — 12, 1, 2 and 3 PM — sold out
-      // The recap video is up (riddim-nov21-recap.mp4); the photos follow.
-      // Without this the card beside the video would read "Recap Coming
-      // Soon" while the recap played next to it.
-      pendingText: 'Photos Coming Soon',
-      pendingSub:  'Photos from this event are on the way.',
+      // Both the photos (EVENT_PHOTO_GALLERIES['reformer-n21']) and the
+      // recap video (riddim-nov21-recap.mp4) are up, so no "Coming Soon"
+      // card is needed — same as the Sep 13 entry below.
       description: 'Our sold-out Riddim &times; Kompa on the Reformer at Maison Luxe Pilates &amp; Wellness in Brooklyn &mdash; four back-to-back sessions of reformer Pilates moving to dancehall, reggae and kompa.'
     },
     'reformer-o10': {
