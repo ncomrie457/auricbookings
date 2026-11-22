@@ -16225,7 +16225,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // gets its own artwork. Leave either empty and the flyer stands in.
         pvField('pv-img-pending', 'Email image &mdash; not paid yet', { ph:'https://...', value:d.email_pending_image || '', hint:'— optional' }) +
         pvField('pv-img-confirm', 'Email image &mdash; confirmed', { ph:'https://...', value:d.email_confirm_image || '', hint:'— optional' }) +
-        pvField('pv-closes', 'Registration closes', { type:'date', value:d.closes_at || '', hint:'— optional' }) +
+        // The hint names the second thing this date does. It is the only
+        // real date on a private event — "Date" above it is free text
+        // ("Saturday, March 14") and cannot be compared to today — so it
+        // is also what files a finished event under Past in the list.
+        pvField('pv-closes', 'Registration closes', { type:'date', value:d.closes_at || '', hint:'— optional · also files the event under Past once it has passed' }) +
         pvField('pv-blurb', 'Short description', { textarea:true, value:d.blurb || '', ph:'A 45-minute mat class, then birthday desserts.' }) +
         '<div id="pv-err" style="color:var(--red);font-size:.78rem;margin:.3rem 0;"></div>' +
         '<button type="button" onclick="pvSave(this)" style="background:#6a3ca5;border:1px solid #6a3ca5;color:#fff;' +
@@ -16285,6 +16289,18 @@ document.addEventListener('DOMContentLoaded', function() {
         alert('Could not open that event. ' + ((res.error && res.error.message) || 'Have you re-run PRIVATE_EVENTS.sql?'));
         return;
       }
+      // auric_private_one does NOT return capacity, closes_at or active —
+      // it is the page-facing lookup and the public page needs none of
+      // them. The form has fields for all three and saves all three, so
+      // opening Edit left Capacity and "Registration closes" blank and
+      // saving wiped whatever was there. The list's own rows do carry
+      // them, so fill them in from there rather than from a second
+      // round-trip. If the list has not loaded yet, the fields stay as
+      // they were rather than being overwritten with undefined.
+      var listRow = pvEventRows[code] || {};
+      ['capacity','closes_at','active'].forEach(function(f){
+        if (row[f] === undefined && listRow[f] !== undefined) row[f] = listRow[f];
+      });
       document.getElementById('pv-form').style.display = 'none';
       pvToggleForm(row);
       document.getElementById('pv-form').scrollIntoView({ behavior:'smooth', block:'nearest' });
