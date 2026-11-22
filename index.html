@@ -19499,13 +19499,20 @@ document.addEventListener('DOMContentLoaded', function() {
       // was created a moment ago and PostgREST has not reloaded yet. The
       // error cannot tell those apart, so neither does this: both fixes are
       // offered, cheapest first.
+      // The SQL is put on its own line, alone, with an explicit "only this
+      // line" — the first version of this message had the command inline in
+      // a sentence and the whole paragraph got pasted into the SQL Editor,
+      // which answered with: syntax error at or near "Supabase".
       return 'Could not ' + doing + '.\n\n'
            + 'Supabase cannot see this function. Two reasons, in order:\n\n'
-           + '1. If you JUST ran the SQL, it is there but not registered yet.\n'
-           + '   In SQL Editor run:   notify pgrst, \'reload schema\';\n'
-           + '   Wait ten seconds, reload this page, try again.\n\n'
-           + '2. If you have not run it, run ' + sqlFile + '\n'
-           + '   in Supabase → SQL Editor, then reload this page.\n\n'
+           + '1. If you JUST ran the SQL, it is there but Supabase has not\n'
+           + '   registered it yet. Copy ONLY the line between the arrows\n'
+           + '   into the SQL Editor — none of the words around it:\n\n'
+           + '>>>  notify pgrst, \'reload schema\';  <<<\n\n'
+           + '   Then wait ten seconds, reload this page, and try again.\n\n'
+           + '2. If you have NOT run it yet, that is the real fix: open\n'
+           + '   ' + sqlFile + ' and run the whole file in\n'
+           + '   Supabase → SQL Editor, then reload this page.\n\n'
            + '(' + (code ? code + ': ' : '') + msg + ')';
     }
     if (low.indexOf('not authorized') >= 0 || code === '42501' || code === 'PGRST301'){
