@@ -52,21 +52,39 @@
       <p class="sub">Pilates Edition &mdash; thank you for celebrating with us.<br>The photos are yours; save as many as you like.</p>
       <a class="allbtn" href="fainola-photos.zip" download>
         &darr; Download all
-        <small>one zip &middot; 2 photos + the video</small>
+        <small>one zip &middot; 3 videos + 2 photos &middot; 37 MB</small>
       </a>
     </header>
 
-    <!-- The recap video. Full width above the photos because it is the piece
-         people actually came back for, and it carries the title card.
-         playsinline keeps iPhones from hijacking it into fullscreen the
-         moment it starts; preload="none" means the 12MB is only fetched if
-         somebody presses play, so the page still opens instantly on data. -->
+    <!-- The videos, above the photos because they are what people came back
+         for. playsinline keeps iPhones from hijacking them into fullscreen
+         the moment they start; preload="none" means none of the 36MB is
+         fetched until somebody presses play, so the page still opens
+         instantly on phone data. Each sits in its own figure rather than the
+         grid: one is landscape and two are portrait, and a grid would
+         stretch them to a common height. -->
     <figure class="video">
       <video controls playsinline preload="none" poster="/fainola-video-01-poster.jpg">
         <source src="/fainola-video-01.mp4" type="video/mp4">
         Your browser can&rsquo;t play this video &mdash; use the Save button below.
       </video>
-      <div class="bar"><span>Recap video &middot; 19 seconds</span><a class="dl" href="/fainola-video-01.mp4" download="fainola-birthday-recap.mp4">&darr; Save</a></div>
+      <div class="bar"><span>The recap &middot; 19 seconds</span><a class="dl" href="/fainola-video-01.mp4" download="fainola-birthday-recap.mp4">&darr; Save</a></div>
+    </figure>
+
+    <figure class="video">
+      <video controls playsinline preload="none" poster="/fainola-video-03-poster.jpg">
+        <source src="/fainola-video-03.mp4" type="video/mp4">
+        Your browser can&rsquo;t play this video &mdash; use the Save button below.
+      </video>
+      <div class="bar"><span>The celebration &middot; 29 seconds</span><a class="dl" href="/fainola-video-03.mp4" download="fainola-birthday-celebration.mp4">&darr; Save</a></div>
+    </figure>
+
+    <figure class="video">
+      <video controls playsinline preload="none" poster="/fainola-video-02-poster.jpg">
+        <source src="/fainola-video-02.mp4" type="video/mp4">
+        Your browser can&rsquo;t play this video &mdash; use the Save button below.
+      </video>
+      <div class="bar"><span>The group &middot; 6 seconds</span><a class="dl" href="/fainola-video-02.mp4" download="fainola-birthday-group.mp4">&darr; Save</a></div>
     </figure>
 
     <div class="grid">
