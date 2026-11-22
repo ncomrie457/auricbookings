@@ -12675,6 +12675,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Left as the 21st it filed the roster under Past events on the morning of
     // the event itself, which is the one day it most needs to be under Recent.
     turkeyContainer.setAttribute('data-event-date', '2026-11-22');
+    // Ran on the 22nd, both times, and its recap is up. Stated rather than
+    // left to isEventPast, which is strictly before-today: without this the
+    // section sits under Recent for the whole of event day, above dates that
+    // are still selling, and only drops back once the reader's own clock
+    // passes midnight. The roster stays reachable either way — this changes
+    // where the section files, not what it holds.
+    turkeyContainer.setAttribute('data-past', 'true');
     turkey28Container.setAttribute('data-event-date', '2026-11-28');
     halloweenContainer.setAttribute('data-event-date', '2026-10-24');
     reformerBkContainer.setAttribute('data-event-date', '2026-09-26');
