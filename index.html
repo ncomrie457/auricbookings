@@ -9738,69 +9738,6 @@ document.addEventListener('DOMContentLoaded', function() {
   //   2. Upload them to GitHub along with index.html
   //   3. Photos display in the order listed (first = cover)
   // ────────────────────────────────────────────────────────
-  // ── Donor photos ────────────────────────────────────────────────────
-  // A picture of what a donor actually sent, shown underneath the
-  // "With thanks to" credit on the event card and on the past-event
-  // recap card. The donor NAMES still come from the admin panel
-  // (Recognition → 🎁 Donor Recognition); this only adds a picture to a
-  // name that is already there.
-  //
-  // Keyed by a fragment of the donor's name: a donor matches when its
-  // name — lowercased, with spaces and punctuation stripped — contains
-  // the key. So "MASA", "MASA Chips" and "Masa Tortilla Chips" all find
-  // the same photo, and a typo in the admin field does not blank it out.
-  var DONOR_PHOTOS = {
-    masa: {
-      src:  'donor-masa.jpg',
-      name: 'MASA Chips',
-      alt:  'The MASA tortilla chips table at the Pre-Turkey Burn'
-    }
-  };
-
-  function donorPhotosFor(donors) {
-    var out = [], seen = {};
-    (donors || []).forEach(function(d){
-      var norm = String(d).toLowerCase().replace(/[^a-z0-9]/g, '');
-      Object.keys(DONOR_PHOTOS).forEach(function(key){
-        if (seen[key] || norm.indexOf(key) === -1) return;
-        seen[key] = 1;
-        out.push(DONOR_PHOTOS[key]);
-      });
-    });
-    return out;
-  }
-
-  function donorPhotosHTML(donors) {
-    var pics = donorPhotosFor(donors);
-    if (!pics.length) return '';
-    return '<div class="bq-donor-photos" style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.55rem;">' +
-      pics.map(function(p){
-        return '<button type="button" data-donor-photo="' + p.src + '" data-donor-name="' + p.name + '" ' +
-            'style="padding:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#fff;cursor:zoom-in;line-height:0;box-shadow:0 1px 4px rgba(0,0,0,.08);" ' +
-            'aria-label="View the photo from ' + p.name + '">' +
-            '<img loading="lazy" src="' + p.src + '" alt="' + p.alt + '" style="width:92px;height:92px;object-fit:cover;display:block;">' +
-          '</button>';
-      }).join('') +
-    '</div>';
-  }
-
-  // Click a donor photo to open it full size. stopPropagation so it does
-  // not also trigger the card it sits inside (a gallery cover, a flyer).
-  function wireDonorPhotos(root) {
-    if (!root) return;
-    Array.prototype.forEach.call(root.querySelectorAll('[data-donor-photo]'), function(btn){
-      if (btn.getAttribute('data-wired') === '1') return;
-      btn.setAttribute('data-wired', '1');
-      btn.addEventListener('click', function(e){
-        e.stopPropagation();
-        if (typeof openFlyerLightbox === 'function') {
-          openFlyerLightbox(btn.getAttribute('data-donor-photo'),
-                            btn.getAttribute('data-donor-name') || '', '');
-        }
-      });
-    });
-  }
-
   var EVENT_PHOTO_GALLERIES = {
     turkey: {
       title:  'Pre-Turkey Burn Recap',
@@ -10198,7 +10135,6 @@ document.addEventListener('DOMContentLoaded', function() {
       donorLine =
         '<div class="bq-video-donors" style="margin-top:.4rem;font-family:Cormorant Garamond,serif;font-style:italic;font-size:.82rem;color:var(--gold-text);line-height:1.5;letter-spacing:0;">' +
           '🎁 Donor Supported &mdash; <strong style="font-weight:600;">' + donorList.join('</strong> &middot; <strong style="font-weight:600;">') + '</strong>' +
-          donorPhotosHTML(donorList) +
         '</div>';
     }
 
@@ -10246,7 +10182,6 @@ document.addEventListener('DOMContentLoaded', function() {
         donorLine;
     }
     wrapper.appendChild(card);
-    wireDonorPhotos(card);
 
     if (p.flyer) {
       var flyerBtn = document.createElement('button');
@@ -11059,10 +10994,8 @@ document.addEventListener('DOMContentLoaded', function() {
             thanks.setAttribute('data-donor-thanks', '1');
             // Larger, more visible
             thanks.style.cssText = 'font-family:Cormorant Garamond,serif;font-style:italic;font-size:1rem;color:var(--gold-text);margin-top:.5rem;letter-spacing:0;line-height:1.5;';
-            thanks.innerHTML = 'With thanks to <strong style="font-weight:600;font-size:1rem;">' + donors.join('</strong> &middot; <strong style="font-weight:600;font-size:1rem;">') + '</strong>' +
-              donorPhotosHTML(donors);
+            thanks.innerHTML = 'With thanks to <strong style="font-weight:600;font-size:1rem;">' + donors.join('</strong> &middot; <strong style="font-weight:600;font-size:1rem;">') + '</strong>';
             sub.parentNode.insertBefore(thanks, sub.nextSibling);
-            wireDonorPhotos(thanks);
           }
         }
         });
