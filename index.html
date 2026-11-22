@@ -2938,7 +2938,7 @@
      nth-child(1) below or they drift apart again. */
   .bq-hero-slides{position:absolute;inset:0;z-index:0;background:#ece3d2 url('hero-slide-1.jpg') center/cover no-repeat;}
   .bq-hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;
-    animation:bqHeroFade 35s linear infinite;will-change:opacity;}
+    animation:bqHeroFade 55s linear infinite;will-change:opacity;}
   /* Oldest event to newest, so the reel ends on the most recent rooms rather
      than opening on them. The goodie-bag slide came out — both Juneteenth
      pictures show the bags already. */
@@ -2955,15 +2955,29 @@
   .bq-hero-slide:nth-child(6){animation-delay:25s;background-image:url('hero-slide-9.jpg');background-position:center 30%;}
   /* Riddim x Kompa Brooklyn, Oct 10 — a different session */
   .bq-hero-slide:nth-child(7){animation-delay:30s;background-image:url('hero-slide-10.jpg');background-position:center 28%;}
+  /* Riddim x Kompa Brooklyn, Nov 21 — the four sessions with the flag, newest
+     last so the reel still runs oldest to newest. These are 4:3 where the
+     others are wider, so cover crops a band out of the middle: the positions
+     below hold that band on the faces rather than the ceiling.
+     They are their own files, not the gallery copies — those are 350-900KB
+     sharpened full-size photos, and the hero is a background behind a cream
+     scrim at 1200px, where that detail cannot be seen but still downloads. */
+  .bq-hero-slide:nth-child(8){animation-delay:35s;background-image:url('hero-slide-11.jpg');background-position:center 32%;}
+  .bq-hero-slide:nth-child(9){animation-delay:40s;background-image:url('hero-slide-12.jpg');background-position:center 34%;}
+  .bq-hero-slide:nth-child(10){animation-delay:45s;background-image:url('hero-slide-13.jpg');background-position:center 32%;}
+  .bq-hero-slide:nth-child(11){animation-delay:50s;background-image:url('hero-slide-14.jpg');background-position:center 33%;}
   /* Each slide holds at full opacity until the NEXT one has completely faded
-     in over it, then drops out behind it. Slides are 5s apart in a 35s cycle
-     (14.29%) and fade in over 1.2s (3.43%), so the next slide isn't fully
-     opaque until 17.71% — the hold has to run past that. Fading out any
+     in over it, then drops out behind it. Slides are 5s apart in a 55s cycle
+     (9.09%) and fade in over 1.2s (2.18%), so the next slide isn't fully
+     opaque until 11.27% — the hold has to run past that. Fading out any
      earlier leaves a gap where neither slide is opaque and the plate behind
-     shows through — that was the flash between pictures. Every slide added or
-     removed moves both numbers: three was a 15s cycle at 8% and 41.4%, four
-     was 20s at 6% and 31.4%, five was 25s at 4.8% and 24.9%. */
-  @keyframes bqHeroFade{0%{opacity:0}3.43%{opacity:1}17.8%{opacity:1}17.9%{opacity:0}100%{opacity:0}}
+     shows through — that was the flash between pictures.
+     Every slide added or removed moves both numbers. For N slides the cycle
+     is 5N seconds, the fade ends at 24/N %, and the hold must outlast
+     124/N %. Seven slides was a 35s cycle at 3.43% and 17.8%; before that
+     five was 25s at 4.8% and 24.9%, four 20s at 6% and 31.4%, three 15s at
+     8% and 41.4%. Eleven is 55s at 2.18% and 11.35%. */
+  @keyframes bqHeroFade{0%{opacity:0}2.18%{opacity:1}11.35%{opacity:1}11.45%{opacity:0}100%{opacity:0}}
   .bq-hero-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
     background:linear-gradient(180deg, rgba(248,244,236,.9) 0%, rgba(248,244,236,.52) 20%, rgba(248,244,236,.42) 52%, rgba(248,244,236,.78) 100%);}
   .bq-hero-inner{z-index:4 !important;}
@@ -2990,6 +3004,10 @@
 </style>
 <section class="bq-hero hero" role="banner">
   <div class="bq-hero-slides" aria-hidden="true">
+    <div class="bq-hero-slide"></div>
+    <div class="bq-hero-slide"></div>
+    <div class="bq-hero-slide"></div>
+    <div class="bq-hero-slide"></div>
     <div class="bq-hero-slide"></div>
     <div class="bq-hero-slide"></div>
     <div class="bq-hero-slide"></div>
