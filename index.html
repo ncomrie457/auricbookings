@@ -19475,6 +19475,55 @@ document.addEventListener('DOMContentLoaded', function() {
         rfRefresh();
       }, function(){ alert('Could not save that label. Try again.'); });
   };
+  /* Say what actually went wrong with an RPC, instead of always blaming the
+     SQL file. The old message told you to run a file you may already have
+     run, which is a dead end when the real cause is something else — and
+     there are three quite different causes here:
+
+       · the function genuinely is not there (PGRST202 / "could not find"),
+         which IS the SQL file;
+       · it is there but PostgREST has not noticed yet, because Supabase
+         caches the schema — same code, but running the file again will not
+         help and reloading the cache will;
+       · it is there and it refused you, because is_owner() said no, which
+         usually means the admin session is signed out.
+
+     Each one needs a different thing done, so each one gets told apart. */
+  function rfRpcProblem(err, doing, sqlFile){
+    var msg  = (err && (err.message || err.hint || '')) || '';
+    var code = (err && err.code) || '';
+    var low  = msg.toLowerCase();
+    if (code === 'PGRST202' || low.indexOf('could not find') >= 0 || low.indexOf('does not exist') >= 0){
+      // PGRST202 reads "could not find the function … in the schema cache",
+      // which is the same error whether the function was never created or
+      // was created a moment ago and PostgREST has not reloaded yet. The
+      // error cannot tell those apart, so neither does this: both fixes are
+      // offered, cheapest first.
+      return 'Could not ' + doing + '.\n\n'
+           + 'Supabase cannot see this function. Two reasons, in order:\n\n'
+           + '1. If you JUST ran the SQL, it is there but not registered yet.\n'
+           + '   In SQL Editor run:   notify pgrst, \'reload schema\';\n'
+           + '   Wait ten seconds, reload this page, try again.\n\n'
+           + '2. If you have not run it, run ' + sqlFile + '\n'
+           + '   in Supabase → SQL Editor, then reload this page.\n\n'
+           + '(' + (code ? code + ': ' : '') + msg + ')';
+    }
+    if (low.indexOf('not authorized') >= 0 || code === '42501' || code === 'PGRST301'){
+      return 'Could not ' + doing + '.\n\n'
+           + 'The database refused it — your admin session looks signed out.\n'
+           + 'Reload the page, sign in again, and retry.\n\n'
+           + '(' + (code ? code + ': ' : '') + msg + ')';
+    }
+    if (low.indexOf('schema cache') >= 0){
+      return 'Could not ' + doing + '.\n\n'
+           + 'The function exists but Supabase has not picked it up yet.\n'
+           + 'In SQL Editor run:   notify pgrst, \'reload schema\';\n'
+           + 'Then wait a few seconds and try again. Running ' + sqlFile + ' again will not help.\n\n'
+           + '(' + (code ? code + ': ' : '') + msg + ')';
+    }
+    return 'Could not ' + doing + '.\n\n' + (msg || 'The database returned an error with no message.')
+         + (code ? '\n\n(' + code + ')' : '');
+  }
   // Auric Club — give a reformer attendee half a mark for referring a friend.
   // The other events tag admin_notes by code; reformer rows are keyed by id,
   // so they go through the owner-only RPC and keep a count instead.
@@ -19483,7 +19532,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!confirm('Add a half-point referral credit to this member?')) return;
     supabase.rpc('reformer_set_referral', { pass: ADMIN_PASSWORD, rid: id, delta: 1 })
       .then(function(res){
-        if (res && res.error){ alert('Could not add referral point — run REFORMER_REFERRAL.sql in Supabase first.'); console.error(res.error); return; }
+        if (res && res.error){ alert(rfRpcProblem(res.error, 'add a referral point', 'RUN_ME_THREE_FIXES.sql')); console.error(res.error); return; }
         var btn = document.getElementById('admin-club-btn'); if (btn) btn.click();
       }, function(err){ alert('Could not add referral point. Try again.'); console.error(err); });
   };
