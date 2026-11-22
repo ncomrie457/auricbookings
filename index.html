@@ -19004,11 +19004,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // The tally. Counted off the rows on screen, so it can never drift
       // from the roster below it.
-      var kinds = {}, slots = {}, withPhone = 0;
+      var kinds = {}, slots = {}, locs = {}, withPhone = 0;
       rows.forEach(function(r){
         var k = nx27Kind(r); if(k) kinds[k] = (kinds[k]||0) + 1;
         var t = nx27Times(r);
         NX27_SLOTS.forEach(function(s){ if(t.indexOf(s) >= 0) slots[s] = (slots[s]||0) + 1; });
+        if(r.location) locs[r.location] = (locs[r.location]||0) + 1;
         if(r.phone) withPhone++;
       });
       function bar(label, n){
@@ -19019,7 +19020,9 @@ document.addEventListener('DOMContentLoaded', function() {
           +'<span style="flex:0 0 3.6rem;text-align:right;font-size:.76rem;color:var(--text-muted);">'+n+' \u00b7 '+pct+'%</span></div>';
       }
       var tally = '<div style="background:#fffdf9;border:1px solid var(--border);border-radius:10px;padding:.8rem .95rem;margin:.2rem 0 .8rem;">'
-        +'<div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.45rem;">What they want</div>';
+        +'<div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.45rem;">Where they want it</div>';
+      ['West Hempstead','Brooklyn','Either'].forEach(function(l){ tally += bar(l, locs[l]||0); });
+      tally += '<div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin:.7rem 0 .45rem;">What they want</div>';
       ['Reformer & mat','Reformer only','Mat only'].forEach(function(k){ tally += bar(k, kinds[k]||0); });
       tally += '<div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin:.7rem 0 .45rem;">When they\u2019re free</div>';
       NX27_SLOTS.forEach(function(s){ tally += bar(s, slots[s]||0); });
@@ -19033,6 +19036,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var phone = rec.phone ? '<br><span class="au-meta">\u{1F4DE} '+escapeHTML(rec.phone)+'</span>' : '';
         var k = nx27Kind(rec);
         var kindBadge = k ? ' <span class="atype" style="background:#f3ece0;color:#7a5326;">'+escapeHTML(k)+'</span>' : '';
+        if(rec.location) kindBadge += ' <span class="atype" style="background:#eef3e8;color:#3b6b3f;">\u{1F4CD} '+escapeHTML(rec.location)+'</span>';
         var t = nx27Times(rec);
         var times = t ? '<br><span class="au-meta">\u{1F551} '+escapeHTML(t)+'</span>' : '';
         var removeBtn='<button onclick="nx27AdminRemove(\''+String(rec.id).replace(/'/g,"\\'")+'\')" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--red);border-radius:6px;padding:.2rem .5rem;font-size:.72rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F5D1} Remove</button>';
@@ -19061,10 +19065,10 @@ document.addEventListener('DOMContentLoaded', function() {
   window.nx27ExportCSV = function(){
     var rows = nx27Rows || [];
     if(!rows.length){ alert('No answers to export yet.'); return; }
-    var csv = 'Name,Email,Phone,Wants,Days/times,Signed up\n';
+    var csv = 'Name,Email,Phone,Location,Wants,Days/times,Signed up\n';
     rows.forEach(function(r){
       var when=''; try{ when = r.created_at ? new Date(r.created_at).toLocaleString() : ''; }catch(e){}
-      csv += [csvEscape(r.name), csvEscape(r.email), csvEscape(r.phone||''), csvEscape(nx27Kind(r)), csvEscape(nx27Times(r)), csvEscape(when)].join(',') + '\n';
+      csv += [csvEscape(r.name), csvEscape(r.email), csvEscape(r.phone||''), csvEscape(r.location||''), csvEscape(nx27Kind(r)), csvEscape(nx27Times(r)), csvEscape(when)].join(',') + '\n';
     });
     var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
     var url = URL.createObjectURL(blob);

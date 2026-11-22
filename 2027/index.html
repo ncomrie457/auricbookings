@@ -81,6 +81,13 @@
         <label for="nx-phone">Phone <span class="opt">&mdash; optional, for a text when dates drop</span></label>
         <input type="tel" id="nx-phone" autocomplete="tel" placeholder="(555) 555-5555">
 
+        <label>Which location?</label>
+        <div class="chips three" role="radiogroup" aria-label="Which location?">
+          <div class="chip"><input type="radio" name="nx-loc" id="nx-loc-wh" value="West Hempstead"><span>West<br>Hempstead</span></div>
+          <div class="chip"><input type="radio" name="nx-loc" id="nx-loc-bk" value="Brooklyn"><span>Brooklyn</span></div>
+          <div class="chip"><input type="radio" name="nx-loc" id="nx-loc-either" value="Either"><span>Either</span></div>
+        </div>
+
         <label>What would you come to?</label>
         <div class="chips three" role="radiogroup" aria-label="What would you come to?">
           <div class="chip"><input type="radio" name="nx-kind" id="nx-kind-both" value="Reformer &amp; mat"><span>Reformer<br>&amp; mat</span></div>
@@ -124,6 +131,9 @@
       var phone=document.getElementById('nx-phone').value.trim();
       if(!name){ showError('Please add your name.'); return; }
       if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ showError('Please enter a valid email.'); return; }
+      var locEl=document.querySelector('input[name="nx-loc"]:checked');
+      if(!locEl){ showError('Pick a location — one tap.'); return; }
+      var loc=locEl.value;
       var kindEl=document.querySelector('input[name="nx-kind"]:checked');
       if(!kindEl){ showError('Pick reformer, mat, or both — one tap.'); return; }
       var kind=kindEl.value;
@@ -141,8 +151,8 @@
       // more than a tidy row, so each failure drops a field rather than the
       // person. The middle shape folds the equipment answer into the times
       // text so nothing she needs is actually lost.
-      var recFull={ name:name, email:email, phone:(phone||null), event:TAGS.event, source:TAGS.source, equipment:kind, preferred_times:(whenText||null) };
-      var recMid ={ name:name, email:email, phone:(phone||null), event:TAGS.event, source:TAGS.source, preferred_times:(kind+(whenText?' — '+whenText:'')) };
+      var recFull={ name:name, email:email, phone:(phone||null), event:TAGS.event, source:TAGS.source, location:loc, equipment:kind, preferred_times:(whenText||null) };
+      var recMid ={ name:name, email:email, phone:(phone||null), event:TAGS.event, source:TAGS.source, location:loc, preferred_times:(kind+(whenText?' — '+whenText:'')) };
       var recBase={ name:name, email:email, phone:(phone||null), event:TAGS.event, source:TAGS.source };
       try{ var a=JSON.parse(localStorage.getItem('auric_2027_interest')||'[]'); a.push(recFull); localStorage.setItem('auric_2027_interest', JSON.stringify(a)); }catch(e){}
       function done(){ form.style.display='none'; confirmed.style.display='block'; confirmed.scrollIntoView({behavior:'smooth',block:'center'}); }
