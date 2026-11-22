@@ -12217,8 +12217,18 @@ document.addEventListener('DOMContentLoaded', function() {
       // Reformer events (Riddim & Kompa, Halloween, Turkey Burn) count too.
       // Admin can read the full roster, so tally "attended" rows in here —
       // one mark per event, so multiple sessions never double-count.
+      // Why the Club can look short, and why it used to say nothing about it:
+      //   · this RPC fails → the whole reformer branch was skipped in silence
+      //     and the list showed only Pilates, Mat & Chat and Create &
+      //     Recharge, with no hint that six events were missing;
+      //   · it works, but nobody has been marked attended → a mark is what
+      //     puts someone in the Club, so a roster full of people who were
+      //     never ticked produces an empty-looking Club.
+      // Both are now counted and reported above the list.
+      var rfRosterError = null, rfUnmarked = 0, rfUnmarkedEvents = {};
       try {
         supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(r){
+          if (r && r.error) rfRosterError = r.error;
           if (r && !r.error){
             var seen = {};
             ((r && r.data) || []).forEach(function(row){
@@ -12230,6 +12240,16 @@ document.addEventListener('DOMContentLoaded', function() {
               if (newAttend) seen[ek] = true;
               // Referrals are half a mark each, same as the other events.
               var pts = (newAttend ? 1 : 0) + 0.5 * (Number(row.referrals) || 0);
+              // Someone who paid, turned up on a roster and has not been
+              // ticked either way earns nothing and so never appears. Count
+              // them, so the Club can say how many are waiting on a tick
+              // rather than just looking short.
+              if (row.is_paid && row.type !== 'waitlist' && !row.archived
+                  && row.attendance !== 'attended' && row.attendance !== 'noshow'){
+                rfUnmarked++;
+                var _el = RF_EVENT_LABELS[row.event] || row.event || 'Reformer event';
+                rfUnmarkedEvents[_el] = (rfUnmarkedEvents[_el] || 0) + 1;
+              }
               if (pts <= 0 && !marks[key]) return;   // nothing to show for them yet
               if (!marks[key]) marks[key] = { email: row.email, name: row.name || '', count: 0, table: '', code: '', rfId: null, attendedAt: [], referrals: 0 };
               if (!marks[key].attendedAt) { marks[key].attendedAt = []; marks[key].referrals = 0; }
@@ -12246,10 +12266,26 @@ document.addEventListener('DOMContentLoaded', function() {
       } catch(e){ renderClubList(); }
 
       function renderClubList(){
+      // Say what is missing before showing what is there.
+      var notice = '';
+      if (rfRosterError){
+        notice += '<div style="background:#fdecea;border:1px solid #f5c6c2;color:#8a2a1c;border-radius:8px;padding:.6rem .8rem;margin:0 0 .7rem;font-size:.78rem;line-height:1.6;">'
+                + '<strong>Reformer events are missing from this list.</strong><br>'
+                + 'The roster could not be read, so Riddim &amp; Kompa, Halloween and Turkey Burn are not counted below — only Pilates, Mat &amp; Chat and Create &amp; Recharge are.<br>'
+                + '<span style="color:#6a4a42;">(' + escapeHTML(String((rfRosterError.code ? rfRosterError.code + ': ' : '') + (rfRosterError.message || 'no message'))) + ')</span>'
+                + '</div>';
+      } else if (rfUnmarked > 0){
+        var _parts = Object.keys(rfUnmarkedEvents).map(function(k){ return escapeHTML(k) + ' (' + rfUnmarkedEvents[k] + ')'; });
+        notice += '<div style="background:#fff8e6;border:1px solid #f0dca0;color:#7a6320;border-radius:8px;padding:.6rem .8rem;margin:0 0 .7rem;font-size:.78rem;line-height:1.6;">'
+                + '<strong>' + rfUnmarked + ' paid guest' + (rfUnmarked === 1 ? '' : 's') + ' not yet ticked.</strong><br>'
+                + 'A mark is what puts somebody in this list, so until you tap &ldquo;&#9711; Attended&rdquo; on them they will not show here.<br>'
+                + '<span style="color:#8a7340;">' + _parts.join(' &middot; ') + '</span>'
+                + '</div>';
+      }
       var arr = Object.keys(marks).map(function(k){ return marks[k]; });
-      if (!arr.length){ box.innerHTML = '<div style="color:var(--text-muted);font-size:.82rem;padding:.5rem;">No attendance marks yet. Tap &ldquo;&#9711; Attended&rdquo; on someone in the lists above to give them a mark.</div>'; return; }
+      if (!arr.length){ box.innerHTML = notice + '<div style="color:var(--text-muted);font-size:.82rem;padding:.5rem;">No attendance marks yet. Tap &ldquo;&#9711; Attended&rdquo; on someone in the lists above to give them a mark.</div>'; return; }
       arr.sort(function(a,b){ return b.count - a.count; });
-      var html = '<table style="width:100%;border-collapse:collapse;font-size:.82rem;"><tr style="text-align:left;color:var(--gold-text);border-bottom:1px solid var(--border);"><th style="padding:.4rem;">Member</th><th>Marks</th><th>Status</th><th></th></tr>';
+      var html = notice + '<table style="width:100%;border-collapse:collapse;font-size:.82rem;"><tr style="text-align:left;color:var(--gold-text);border-bottom:1px solid var(--border);"><th style="padding:.4rem;">Member</th><th>Marks</th><th>Status</th><th></th></tr>';
       arr.forEach(function(m){
         var earned = Math.floor(m.count/10);
         var prog = m.count % 10;
