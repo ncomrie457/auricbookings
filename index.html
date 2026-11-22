@@ -3668,6 +3668,21 @@
       .bq-nextup{max-width:1000px;margin:3rem auto 3.5rem;display:grid;grid-template-columns:280px 1fr;gap:2.2rem;
         background:var(--cream-light);border:1px solid var(--border);border-radius:16px;overflow:hidden;
         box-shadow:0 24px 60px -34px rgba(var(--warm-shadow),.4);}
+      /* display:grid above is a class selector and beats the browser's own
+         [hidden]{display:none}, so the hidden attribute on this section did
+         nothing. For as long as there was always an event to feature that
+         never showed; the day there wasn't one, the block rendered as an
+         empty frame with a dead Reserve button. */
+      .bq-nextup[hidden]{display:none;}
+      /* The second action in the no-dates state. Same size as the primary
+         button, outlined rather than filled, because the two lists are a
+         choice between equals and not a main and a fallback. */
+      .bq-nextup-btn2{padding:.9rem 2.1rem;border-radius:999px;background:transparent;color:var(--brown);
+        border:1px solid var(--border);cursor:pointer;font-family:'Jost',sans-serif;font-size:.72rem;
+        letter-spacing:.22em;text-transform:uppercase;font-weight:600;text-decoration:none;display:inline-block;
+        transition:border-color .25s ease,color .25s ease;}
+      .bq-nextup-btn2:hover{border-color:var(--gold);color:var(--gold-text);}
+      .bq-nextup-btn.is-link{text-decoration:none;display:inline-block;}
       .bq-nextup-media{display:block;align-self:stretch;border:0;padding:0;background:none;cursor:pointer;}
       .bq-nextup-media img{width:100%;height:100%;object-fit:cover;display:block;}
       .bq-nextup-body{padding:2rem 2.2rem 2rem 0;display:flex;flex-direction:column;justify-content:center;}
@@ -3738,7 +3753,32 @@
           if(opens){ var od=new Date(opens+'T00:00:00'); if(!isNaN(od.getTime()) && od>today) return; }
           if(!bestDate || dt<bestDate){ best=c; bestDate=dt; }
         });
-        if(!best) return;                                    // nothing upcoming → stay hidden
+        // Nothing bookable — every date has either run, sold out or closed.
+        // Rather than leave the slot empty (or blank, which is what it did
+        // before: the hidden attribute does not work on this section), point
+        // at the two interest lists. They are the only thing anybody can
+        // actually do here when there is no date on sale, and they are what
+        // fills the next one.
+        if(!best){
+          var si0 = document.getElementById('bq-nextup-img');
+          if(si0){ si0.src = 'riddim-interest-card.jpg?v=1'; si0.alt = 'Riddim & Kompa on the Reformer — join the list for the next date'; }
+          document.getElementById('bq-nextup-name').innerHTML = 'New dates <em>are coming</em>';
+          document.getElementById('bq-nextup-meta').innerHTML =
+            '<strong>Nothing on sale this minute.</strong><br>'
+            + 'Join a list and you&rsquo;ll hear the next date before it&rsquo;s public &mdash; '
+            + 'and the 2027 list decides what actually gets booked.';
+          var acts = document.querySelector('.bq-nextup-actions');
+          if(acts){
+            acts.innerHTML =
+              '<a class="bq-nextup-btn is-link" href="/riddim-interest">Riddim &times; Kompa list</a>'
+            + '<a class="bq-nextup-btn2" href="/2027">Tell me about 2027</a>'
+            + '<a class="bq-nextup-all bq-tab-next-link" href="#tab-events" data-nav-tab="btn-events">View all events <span aria-hidden="true">&rarr;</span></a>';
+          }
+          var media0 = document.getElementById('bq-nextup-media');
+          if(media0) media0.addEventListener('click', function(){ window.location.href = '/riddim-interest'; });
+          mount.hidden = false;
+          return;
+        }
         var img=best.querySelector('.bq-event-photo img');
         var nameEl=best.querySelector('.bq-event-name');
         var subEl=best.querySelector('.bq-event-sub');
