@@ -16374,20 +16374,30 @@ document.addEventListener('DOMContentLoaded', function() {
         // event gets its own page. Left blank the button is hidden by
         // EmailJS, so a party whose photos are not up yet simply does not
         // show one — better than a button that leads nowhere.
-        var pvLinkKey = 'auric_pv_photolink_' + code, savedLink = '';
-        try { savedLink = localStorage.getItem(pvLinkKey) || ''; } catch(e){}
-        var photoLink = prompt(
-          'Photo download page for “' + (ev.title || code) + '”\n\n'
-          + 'Paste the link guests should get, e.g.\n'
-          + '   https://book.auricmovement.com/fainola\n\n'
-          + 'Leave blank to send the email with no photo button.',
-          savedLink);
-        if (photoLink === null){ restore(); return; }   // cancelled
-        photoLink = photoLink.trim();
-        try { localStorage.setItem(pvLinkKey, photoLink); } catch(e){}
+        // An event with its own template already carries its photo link, so
+        // there is nothing to ask for; the generic template needs one.
+        var override = pvTemplateFor(ev);
+        var tmplId = override ? override.tmpl : PV_TMPL_THANKYOU;
+        var photoLink = '';
+        if (!override){
+          var pvLinkKey = 'auric_pv_photolink_' + code, savedLink = '';
+          try { savedLink = localStorage.getItem(pvLinkKey) || ''; } catch(e){}
+          photoLink = prompt(
+            'Photo download page for “' + (ev.title || code) + '”\n\n'
+            + 'Paste the link guests should get, e.g.\n'
+            + '   https://book.auricmovement.com/fainola\n\n'
+            + 'Leave blank to send the email with no photo button.',
+            savedLink);
+          if (photoLink === null){ restore(); return; }   // cancelled
+          photoLink = photoLink.trim();
+          try { localStorage.setItem(pvLinkKey, photoLink); } catch(e){}
+        }
         var dupes = rows.filter(function(g){ return g && g.email; }).length - list.length;
+        // The template is named in the confirm box because two events can
+        // look identical here and only differ in which email they send.
         if (!confirm('Send the thank-you for “' + (ev.title || code) + '” to ' + list.length + ' guest'
                      + (list.length === 1 ? '' : 's') + '?\n\n'
+                     + 'Template: ' + tmplId + (override ? '  (this event’s own)' : '  (the shared one)') + '\n\n'
                      + list.map(function(g){ return '   ' + (g.name || g.email); }).join('\n')
                      + (dupes ? '\n\n(' + dupes + ' duplicate row' + (dupes === 1 ? '' : 's') + ' skipped.)' : ''))){
           restore(); return;
@@ -16403,7 +16413,7 @@ document.addEventListener('DOMContentLoaded', function() {
           }
           var g = list[i++];
           if (btn) btn.textContent = 'Sending… (' + i + '/' + list.length + ')';
-          emailjs.send(EMAILJS_SERVICE_RESEND, PV_TMPL_THANKYOU, {
+          emailjs.send(EMAILJS_SERVICE_RESEND, tmplId, {
             to_email:    g.email,
             from_name:   g.name || '',
             event_title: ev.title || '',
@@ -16755,6 +16765,26 @@ document.addEventListener('DOMContentLoaded', function() {
   // from PRIVATE_EVENT_THANKYOU_TEMPLATE.html and paste its id here; until
   // then the button says so rather than failing silently.
   var PV_TMPL_THANKYOU    = 'template_kr7y8gh'; // PRIVATE_EVENT_THANKYOU_TEMPLATE.html
+  /* An event that has its own thank-you template instead of the generic one.
+     Fainola's has her photo page, her party's name and her name written into
+     it rather than passed as variables, so it must only ever reach HER
+     guests — matching on the event record is what keeps that true.
+
+     Matched against the event's host name and title, not a code, so it keeps
+     working if the event is recreated. First match wins; no match means the
+     generic template, which is what every other private event should use.
+     An override's template supplies its own photo link, so the panel does
+     not ask for one. */
+  var PV_TMPL_OVERRIDES = [
+    { match: /fainola/i, tmpl: 'template_7k5mzsm' }   // FAINOLA_THANKYOU_TEMPLATE.html
+  ];
+  function pvTemplateFor(ev){
+    var hay = ((ev && ev.host_name) || '') + ' ' + ((ev && ev.title) || '');
+    for (var i = 0; i < PV_TMPL_OVERRIDES.length; i++){
+      if (PV_TMPL_OVERRIDES[i].match.test(hay)) return PV_TMPL_OVERRIDES[i];
+    }
+    return null;
+  }
   var PV_TMPL_PENDING     = 'template_ozy2pcc'; // PRIVATE_EVENT_PENDING_TEMPLATE.html — must
                                                 // match private/index.html, which sends it
                                                 // automatically when someone books.
