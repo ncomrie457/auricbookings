@@ -12568,6 +12568,12 @@ document.addEventListener('DOMContentLoaded', function() {
     var corpContainer     = document.createElement('div'); corpContainer.id     = 'admin-corp-container';
     // Tag each event section with its date so the filter can sort past vs upcoming.
     bloomContainer.setAttribute('data-event-date', '2026-12-13');
+    // Dec 13 is not happening. Its card is already off the public page and the
+    // date was never announced, so the section belongs with the finished ones
+    // rather than sitting at the top of the panel as the next thing due. The
+    // interest list it holds stays reachable — those people still need closing
+    // the loop with, which is the whole reason the section is kept at all.
+    bloomContainer.setAttribute('data-past', 'true');
     // Nov 22, not the 21st. Pre-Turkey Burn was originally the 21st and moved
     // to Sunday the 22nd; the card and TB_EVENT followed, this line did not.
     // Left as the 21st it filed the roster under Past events on the morning of
