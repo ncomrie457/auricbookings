@@ -3326,7 +3326,7 @@
       </button>
 
       <!-- Pre-Turkey Burn — Sun Nov 22, Valley Studio. Opens its booking overlay. -->
-      <button type="button" id="event-card-turkey" class="bq-event scroll-reveal" data-event-id="turkey-burn-2026-11-22" data-event-date="2026-11-22" data-event-name="Pre-Turkey Burn" data-location="long-island" data-riddim="true">
+      <button type="button" id="event-card-turkey" class="bq-event scroll-reveal" data-event-id="turkey-burn-2026-11-22" data-past="true" data-event-date="2026-11-22" data-event-name="Pre-Turkey Burn" data-location="long-island" data-riddim="true">
         <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
         <div class="bq-event-photo">
           <img src="turkey-burn-flyer.jpg?v=6" alt="Riddim &#215; Kompa Pre-Turkey Burn on the Reformer &#8212; Sunday, November 22 at Valley Studio, West Hempstead NY &#183; two sessions (11:30 AM &amp; 12:30 PM) &#183; $45 &#183; complimentary goodie bag &#183; all levels welcome. A turkey in a head wrap and an AURIC MVMT tank on a reformer, with Jamaican and Haitian colours in its tail." loading="lazy" decoding="async">
@@ -9634,6 +9634,17 @@ document.addEventListener('DOMContentLoaded', function() {
   // ============================================================
   var PAST_EVENT_VIDEOS = [
     {
+      file:     'turkey-nov22-recap.mp4',   // self-hosted video in the repo
+      title:    'Pre-Turkey Burn Recap',
+      date:     'November 22, 2026',
+      subtitle: 'Pre-Turkey Burn &middot; 11:30 AM &middot; Valley Studio',
+      // Silent on purpose — the music was stripped before it went up, so
+      // the file carries no audio track at all. Nothing to mute.
+      sortDate: '2026-11-22'
+      // eventId omitted on purpose, same as every other entry here, so the
+      // photo card for this date still shows beside the video.
+    },
+    {
       file:     'riddim-nov21-recap.mp4',   // self-hosted video in the repo
       title:    'Riddim × Kompa Recap',
       date:     'November 21, 2026',
@@ -9864,6 +9875,21 @@ document.addEventListener('DOMContentLoaded', function() {
       // Both the photos (EVENT_PHOTO_GALLERIES.reformer) and the recap video
       // (riddim-sep13-recap.mp4) are up, so no "Coming Soon" card is needed.
       description: 'Our sold-out Riddim &amp; Kompa on the Reformer at Valley Studio in West Hempstead &mdash; three back-to-back sessions of reformer Pilates moving to the riddim, with a complimentary goodie bag and a prize drawing for a 4-class package.'
+    },
+    turkey: {
+      title:   'Pre-Turkey Burn on the Reformer',
+      // soldOut deliberately not set — it is not known that both times
+      // filled, and claiming sold out when it was not is worse than
+      // saying nothing. Add `soldOut: true` here if they did.
+      //
+      // forcePast because the recap went up the evening of the event. Both
+      // times had run by then, and without this the card sits under
+      // Upcoming until the viewer's own clock rolls past midnight — the
+      // same timezone trap that hid the Nov 21 gallery all day.
+      forcePast: true,
+      pendingText: 'Photos Coming Soon',
+      pendingSub:  'Photos from this event are on the way.',
+      description: 'Our Pre-Turkey Burn on the Reformer at Valley Studio in West Hempstead &mdash; two sessions of reformer Pilates to work up an appetite before the holiday, with a complimentary goodie bag and a prize drawing for a 4-class package.'
     },
     'reformer-n21': {
       title:   'Riddim &times; Kompa on the Reformer',
