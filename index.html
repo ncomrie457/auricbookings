@@ -16380,14 +16380,27 @@ document.addEventListener('DOMContentLoaded', function() {
       var rows = res.data || [];
       rows.forEach(function(e){ pvEventRows[e.code] = e; });
       if (!rows.length){ list.innerHTML = '<div style="font-size:.78rem;color:#8a7d9b;">None yet.</div>'; return; }
-      list.innerHTML = rows.map(function(e){
+      // Finished private events drop to the bottom under their own heading,
+      // the same as the dated sections in the panel. event_date cannot do
+      // this: it is free text ("Saturday, March 14"), so it cannot be
+      // compared to today. closes_at is a real date, and switching an event
+      // off is the explicit lever for one with no closes_at — either reads
+      // as finished, which mirrors sectionIsPast(data-past OR date passed).
+      function pvIsPast(e){
+        if (!e.active) return true;
+        return !!e.closes_at && isEventPast(String(e.closes_at).slice(0,10));
+      }
+      var pvPast = rows.filter(pvIsPast), pvLive = rows.filter(function(e){ return !pvIsPast(e); });
+      function pvCard(e, past){
         var link = window.location.origin + '/private?c=' + e.code;
-        return '<div style="background:#fff;border:1px solid #d4bff4;border-radius:8px;padding:.55rem .75rem;margin-bottom:.4rem;">' +
+        return '<div style="background:#fff;border:1px solid #d4bff4;border-radius:8px;padding:.55rem .75rem;margin-bottom:.4rem;'
+          + (past ? 'opacity:.72;' : '') + '">' +
           '<div style="display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;align-items:baseline;">' +
             '<div><strong style="font-size:.86rem;color:#3d322a;">' + escapeHTML(e.title) + '</strong>' +
               '<span style="font-size:.75rem;color:#8a7d9b;"> · code <strong style="color:#6a3ca5;">' +
               escapeHTML(String(e.code).toUpperCase()) + '</strong></span>' +
               (e.active ? '' : '<span style="font-size:.7rem;color:var(--red);"> · switched off</span>') +
+              (past ? '<span style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6a3ca5;background:#f3ecfb;border-radius:10px;padding:.1rem .45rem;margin-left:.35rem;">Past</span>' : '') +
             '</div>' +
             '<div style="font-size:.75rem;color:#5c4a72;">' + (e.taken || 0) +
               (e.capacity ? ' / ' + e.capacity : '') + ' booked</div>' +
@@ -16410,7 +16423,16 @@ document.addEventListener('DOMContentLoaded', function() {
           '</div>' +
           '<div id="pv-guests-' + e.code + '"></div>' +
         '</div>';
-      }).join('');
+      }
+      // The divider is drawn only when there is something on both sides of
+      // it. With only past events it would be a heading over the whole list
+      // saying nothing; with only live ones it would head an empty section.
+      list.innerHTML =
+        pvLive.map(function(e){ return pvCard(e, false); }).join('')
+        + (pvPast.length && pvLive.length
+            ? '<div style="font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#8a7d9b;border-top:1px solid #d4bff4;margin:.8rem 0 .5rem;padding-top:.6rem;">Past events</div>'
+            : '')
+        + pvPast.map(function(e){ return pvCard(e, true); }).join('');
     });
   };
 
@@ -17026,10 +17048,21 @@ document.addEventListener('DOMContentLoaded', function() {
   var RF_TB_TMPL_CONFIRM  = 'template_96eon3x';   // Turkey Burn! payment confirmation (TURKEY_BURN_CONFIRMATION_TEMPLATE.html) — sent via Resend
   var RF_TB_TMPL_THANKYOU = 'template_cnl8smi';  // Turkey Burn! post-event thank-you (TURKEY_BURN_THANKYOU_TEMPLATE.html) — sent via Resend
   // The SECOND email, sent after the thank-you: "your photos are up", with
-  // the link to /turkey-photos/ and the Auric Club. Separate template so it
-  // can go to people who have already had the thank-you.
+  // the link to /turkey-photos/ and the Auric Club.
   // (TURKEY_BURN_PHOTOS_TEMPLATE.html) — sent via Resend
-  var RF_TB_TMPL_PHOTOS   = 'template_REPLACE_ME';
+  //
+  // ⚠ SAME ID AS THE THANK-YOU ABOVE. The photos email was pasted OVER
+  // template_cnl8smi rather than into a new template, so that one template
+  // now holds the photos email and the thank-you no longer exists in
+  // EmailJS. The Nov 22 thank-you had already gone out, so nothing was
+  // lost — but the 🦃 thank-you picker would now send the photos email to
+  // whoever it is pointed at. rfSendThankYou asks before letting that
+  // happen; see the guard there.
+  //
+  // To separate them again: make a NEW EmailJS template from
+  // TURKEY_BURN_THANKYOU_TEMPLATE.html and put its id in
+  // RF_TB_TMPL_THANKYOU above. Then the guard stops firing on its own.
+  var RF_TB_TMPL_PHOTOS   = 'template_cnl8smi';
   // ONE generic payment-pending reminder for ALL reformer-style events (GENERIC_PAYMENT_PENDING_TEMPLATE.html).
   // Create it once in EmailJS, then paste the id here to enable the admin "Payment reminder" buttons.
   var GEN_PAY_PENDING_TMPL = 'template_547l0yl';
@@ -20299,6 +20332,16 @@ document.addEventListener('DOMContentLoaded', function() {
     if(!recips.length){ alert('Nobody is marked "✓ Attended" for '+eventLabel+' — '+where+' yet.\n\nTap "✓ Attended" on everyone who showed up first, then send. That way the '+kind+' only goes to people who actually came.'); return; }
     if(typeof emailjs==='undefined'){ alert('EmailJS not loaded.'); return; }
     if(thankTmpl.indexOf('REPLACE')!==-1){ alert('Set '+thankVar+' to your real EmailJS template id first.'); return; }
+    // Two sends pointing at one template is not an error — it is what
+    // happens when an email is pasted over an existing template instead of
+    // into a new one. It is only wrong in one direction: asking for the
+    // thank-you and getting whatever now lives at that id. Say which email
+    // would actually arrive, and let her decide.
+    if(!modeCfg && thankTmpl === RF_TB_TMPL_PHOTOS){
+      if(!confirm('Heads up — this would NOT send a thank-you.\n\n'
+        + thankTmpl + ' now holds the “your photos are up” email; the thank-you was pasted over.\n\n'
+        + 'Send the photos email to these ' + recips.length + ' people anyway?')) return;
+    }
     // Show exactly who this would reach, and let her untick anyone, before
     // a single email leaves. The filters above decide the candidates; this
     // decides the send.
