@@ -17025,6 +17025,11 @@ document.addEventListener('DOMContentLoaded', function() {
   var RF_HW_TMPL_PROMO    = 'template_cnxgnd5';  // AURICFAM $10-off win-back for past attendees (HALLOWEEN_AURICFAM_PROMO_TEMPLATE.html) — sent via Resend
   var RF_TB_TMPL_CONFIRM  = 'template_96eon3x';   // Turkey Burn! payment confirmation (TURKEY_BURN_CONFIRMATION_TEMPLATE.html) — sent via Resend
   var RF_TB_TMPL_THANKYOU = 'template_cnl8smi';  // Turkey Burn! post-event thank-you (TURKEY_BURN_THANKYOU_TEMPLATE.html) — sent via Resend
+  // The SECOND email, sent after the thank-you: "your photos are up", with
+  // the link to /turkey-photos/ and the Auric Club. Separate template so it
+  // can go to people who have already had the thank-you.
+  // (TURKEY_BURN_PHOTOS_TEMPLATE.html) — sent via Resend
+  var RF_TB_TMPL_PHOTOS   = 'template_REPLACE_ME';
   // ONE generic payment-pending reminder for ALL reformer-style events (GENERIC_PAYMENT_PENDING_TEMPLATE.html).
   // Create it once in EmailJS, then paste the id here to enable the admin "Payment reminder" buttons.
   var GEN_PAY_PENDING_TMPL = 'template_547l0yl';
@@ -18775,6 +18780,10 @@ document.addEventListener('DOMContentLoaded', function() {
       block.innerHTML = '<h3 style="color:var(--gold-text);">\u{1F983} Pre-Turkey Burn · Nov 22nd · '+paid+' paid / '+display.length+' registered <span style="font-weight:400;text-transform:none;letter-spacing:0;">('+window.auricSessionLine('turkey-burn-2026-11-22',{'tb1130':'11:30 AM','tb1230':'12:30 PM','tb130':'1:30 PM'},pd,CAP,display)+')</span></h3>';
       block.innerHTML += '<button onclick="rfSendWinnerEmail(\'turkey\', this)" style="margin:.1rem .35rem .7rem 0;background:#fbf3e2;border:1px solid #e6d3a8;color:#9a6535;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F39F}\u{FE0F} Send 4-class winner email ('+win+')</button>';
       block.innerHTML += tyTurkeyPicker('ty-turkey-pick-22', 'turkey');
+      // The second email, after the thank-you: the photos are up, plus the
+      // Auric Club. Its own button rather than a row in the thank-you picker,
+      // because it is not a thank-you and must not inherit that memory.
+      block.innerHTML += '<button type="button" onclick="rfSendThankYou(\'turkey\', this, \'photos\')" style="margin:.1rem .35rem .7rem 0;background:#eef3ea;border:1px solid #b7cfa8;color:#3b5a2f;border-radius:6px;padding:.4rem .85rem;font-size:.82rem;cursor:pointer;font-family:\'Jost\',sans-serif;">\u{1F4F7} Send “photos are up” ('+att+' attended)</button>';
       block.innerHTML += '<button type="button" onclick="rfTyForget()" title="Allow everyone to be thanked again" style="margin:.1rem 0 .7rem .35rem;background:none;border:none;color:#8a7d6b;font-size:.72rem;text-decoration:underline;cursor:pointer;font-family:Jost,sans-serif;">Reset thank-you memory</button>';
       if(err){ block.innerHTML += '<div class="empty-state">Roster unavailable — run the reformer_roster SQL to enable it. (Bookings still work.)</div>'; return; }
       if(!display.length){ block.innerHTML += '<div class="empty-state">No registrations yet.</div>'; return; }
@@ -20257,15 +20266,27 @@ document.addEventListener('DOMContentLoaded', function() {
       if(onlySession && r.session !== onlySession) return false; // one session at a time
       return true;
     });
-    var isFollowUp = (mode==='followup');
-    var kind = isFollowUp ? 'follow-up' : 'thank-you';
-    var thankTmpl = isFollowUp ? RF_TMPL_FOLLOWUP : ty.tmpl;
-    var thankVar  = isFollowUp ? 'RF_TMPL_FOLLOWUP' : ty.tmplVar;
+    // A mode swaps the template without changing who it reaches. This was a
+    // set of ternaries that only knew about 'followup'; a map means a third
+    // mode is one row here rather than another branch in four places.
+    var TY_MODES = {
+      followup: { tmpl:RF_TMPL_FOLLOWUP,  tmplVar:'RF_TMPL_FOLLOWUP',  kind:'follow-up' },
+      photos:   { tmpl:RF_TB_TMPL_PHOTOS, tmplVar:'RF_TB_TMPL_PHOTOS', kind:'photos-are-up' }
+    };
+    var modeCfg = mode ? TY_MODES[mode] : null;
+    if (mode && !modeCfg){ alert('Unknown send mode "'+mode+'" — nothing was sent.\n\nAdd it to TY_MODES.'); return; }
+    // The already-sent memory belongs to the THANK-YOU. Every mode email
+    // goes to people who have had the thank-you by definition, so applying
+    // that memory to one would skip the entire list.
+    var isAltMode = !!modeCfg;
+    var kind = modeCfg ? modeCfg.kind : 'thank-you';
+    var thankTmpl = modeCfg ? modeCfg.tmpl : ty.tmpl;
+    var thankVar  = modeCfg ? modeCfg.tmplVar : ty.tmplVar;
     var eventLabel = ty.label;
     var where = ty.where;
     // Drop anyone who already had this email. Follow-ups are tracked separately.
     var already = 0;
-    if (!isFollowUp) {
+    if (!isAltMode) {
       var sentIds = rfTySentIds();
       var fresh = recips.filter(function(r){ return sentIds.indexOf(String(r.id)) < 0; });
       already = recips.length - fresh.length;
@@ -20303,7 +20324,7 @@ document.addEventListener('DOMContentLoaded', function() {
           var rec=list[i];
           if(btn){ btn.textContent='Sending... ('+(sent+failed)+'/'+list.length+')'; }
           emailjs.send(EMAILJS_SERVICE_RESEND, thankTmpl, { from_name: rec.name, to_email: rec.email, event_name: eventLabel })
-            .then(function(){ sent++; if(!isFollowUp) rfTyRemember(rec.id); }).catch(function(err){ failed++; failedRecipients.push(rec.email); console.error('[rf '+kind+'] FAILED for '+rec.email, err); })
+            .then(function(){ sent++; if(!isAltMode) rfTyRemember(rec.id); }).catch(function(err){ failed++; failedRecipients.push(rec.email); console.error('[rf '+kind+'] FAILED for '+rec.email, err); })
             .then(function(){ setTimeout(function(){ sendNext(i+1); }, 600); });
         }
         sendNext(0);
