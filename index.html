@@ -3280,15 +3280,16 @@
 
       <!-- Riddim & Kompa on the Reformer — Brooklyn, Nov 21. Opens the Nov 21
            booking overlay. Pre-Turkey Burn moved to Sun Nov 22, so this date is Brooklyn only. -->
-      <button type="button" id="event-card-reformer-n21" class="bq-event scroll-reveal" data-event-id="riddim-kompa-brooklyn-2026-11-21" data-event-date="2026-11-21" data-event-name="Riddim &amp; Kompa &#8212; Brooklyn, Nov 21" data-location="brooklyn" data-riddim="true">
+      <button type="button" id="event-card-reformer-n21" class="bq-event scroll-reveal" data-event-id="riddim-kompa-brooklyn-2026-11-21" data-past="true" data-event-date="2026-11-21" data-event-name="Riddim &amp; Kompa &#8212; Brooklyn, Nov 21" data-location="brooklyn" data-riddim="true" data-soldout="true">
         <div data-donor-badge-wrap="1" class="bq-donor-slot"></div>
         <div class="bq-event-photo">
           <img src="riddim-kompa-nov21-flyer.webp?v=3" alt="Riddim &#215; Kompa on the Reformer &#8212; hosted by Auric Movement at Maison Luxe Pilates &amp; Wellness, Brooklyn. Saturday, November 21 &#183; 12, 1 &amp; 2 PM &#183; $45 per person, 45 minutes. Two islands, one rhythm." loading="lazy" decoding="async">
+          <div class="bq-event-status" aria-hidden="true">Sold Out</div>
         </div>
         <div class="bq-event-date">11.21.26 &#183; Riddim &amp; Kompa</div>
         <div class="bq-event-name">Riddim &amp; Kompa <em>on the Reformer</em></div>
         <div class="bq-event-loc">Brooklyn, NY</div>
-        <div class="bq-event-sub">Sat &#183; 12, 1 &amp; 2 PM &#183; $45 &#183; Maison Luxe Pilates &amp; Wellness, Brooklyn</div>
+        <div class="bq-event-sub">Sat &#183; 12, 1, 2 &amp; 3 PM &#183; $45 &#183; Maison Luxe Pilates &amp; Wellness, Brooklyn &#183; sold out</div>
         <span class="bq-event-link">Reserve <span aria-hidden="true">&#8594;</span></span>
       </button>
 
@@ -7337,23 +7338,20 @@ Can't wait to move and connect with you!</textarea>
       'hw1130': 'Registration closed',
       'hw1230': 'Registration closed'
     },
-    // Nov 21 Brooklyn keeps the 3 PM off the public page — the flyer only
-    // ever advertised 12, 1 and 2 — but `unlock` lets a link bring it back
-    // for the people you send it to:
+    // Nov 21 Brooklyn has run, and all four times sold out. While it was
+    // selling, the 3 PM was hidden from the public page — the flyer only ever
+    // advertised 12, 1 and 2 — and an `unlock` key let an invited guest open
+    // it. That is over: the date is in the archive now, and hiding the 3 PM
+    // there would under-report the day. So all four read Sold out instead,
+    // which is what they were.
     //
-    //   book.auricmovement.com/?book=reformer-n21&s=n3&k=3pm7h2k
-    //
-    // Once a guest opens that, the 3 PM behaves like any other time: real
-    // seat count, same Stripe link, same roster, same confirmation email.
-    //
-    // THIS IS A QUIET DOOR, NOT A LOCKED ONE. The key sits in this file and
-    // this repository is public, so anyone who reads the page source can
-    // find it. It stops the 3 PM being seen, not a determined person being
-    // let in. If it ever needs to be properly private, the thing to use is
-    // the private-event system in /private — its codes live in the database
-    // and never in the page. Change the key here and old links stop working.
+    // (The old quiet-door link, ?book=reformer-n21&s=n3&k=3pm7h2k, no longer
+    // does anything. Nothing needs it to.)
     'riddim-kompa-brooklyn-2026-11-21': {
-      'n3': { hide: true, unlock: '3pm7h2k' }
+      'n12': 'Sold out',
+      'n1':  'Sold out',
+      'n2':  'Sold out',
+      'n3':  'Sold out'
     },
     // Nov 22 Pre-Turkey Burn stops taking bookings for the 1:30 PM. The 11:30
     // and the 12:30 carry on as normal; delete this line to put it back on
@@ -9578,6 +9576,17 @@ document.addEventListener('DOMContentLoaded', function() {
   // ============================================================
   var PAST_EVENT_VIDEOS = [
     {
+      file:     'riddim-nov21-recap.mp4',   // self-hosted video in the repo
+      title:    'Riddim × Kompa Recap',
+      date:     'November 21, 2026',
+      subtitle: 'Riddim × Kompa · Brooklyn',
+      // All four times (12, 1, 2 and 3 PM) sold out. No flyer key: "View The
+      // Flyer" belongs to the photo card beside this one, never the video.
+      sortDate: '2026-11-21'
+      // eventId omitted on purpose, same as every other entry here, so the
+      // photo card for this date still shows beside the video.
+    },
+    {
       file:     'riddim-oct10-recap.mp4',   // self-hosted video in the repo
       title:    'Riddim × Kompa Recap',
       date:     'October 10, 2026',
@@ -9783,6 +9792,16 @@ document.addEventListener('DOMContentLoaded', function() {
       // Both the photos (EVENT_PHOTO_GALLERIES.reformer) and the recap video
       // (riddim-sep13-recap.mp4) are up, so no "Coming Soon" card is needed.
       description: 'Our sold-out Riddim &amp; Kompa on the Reformer at Valley Studio in West Hempstead &mdash; three back-to-back sessions of reformer Pilates moving to the riddim, with a complimentary goodie bag and a prize drawing for a 4-class package.'
+    },
+    'reformer-n21': {
+      title:   'Riddim &times; Kompa on the Reformer',
+      soldOut: true,   // all four times — 12, 1, 2 and 3 PM — sold out
+      // The recap video is up (riddim-nov21-recap.mp4); the photos follow.
+      // Without this the card beside the video would read "Recap Coming
+      // Soon" while the recap played next to it.
+      pendingText: 'Photos Coming Soon',
+      pendingSub:  'Photos from this event are on the way.',
+      description: 'Our sold-out Riddim &times; Kompa on the Reformer at Maison Luxe Pilates &amp; Wellness in Brooklyn &mdash; four back-to-back sessions of reformer Pilates moving to dancehall, reggae and kompa.'
     },
     'reformer-o10': {
       title:   'Riddim &times; Kompa on the Reformer',
