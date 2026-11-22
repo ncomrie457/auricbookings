@@ -12568,7 +12568,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var corpContainer     = document.createElement('div'); corpContainer.id     = 'admin-corp-container';
     // Tag each event section with its date so the filter can sort past vs upcoming.
     bloomContainer.setAttribute('data-event-date', '2026-12-13');
-    turkeyContainer.setAttribute('data-event-date', '2026-11-21');
+    // Nov 22, not the 21st. Pre-Turkey Burn was originally the 21st and moved
+    // to Sunday the 22nd; the card and TB_EVENT followed, this line did not.
+    // Left as the 21st it filed the roster under Past events on the morning of
+    // the event itself, which is the one day it most needs to be under Recent.
+    turkeyContainer.setAttribute('data-event-date', '2026-11-22');
     turkey28Container.setAttribute('data-event-date', '2026-11-28');
     halloweenContainer.setAttribute('data-event-date', '2026-10-24');
     reformerBkContainer.setAttribute('data-event-date', '2026-09-26');
@@ -12582,6 +12586,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // for all of event day, above dates that are still selling.
     reformerO10Container.setAttribute('data-past', 'true');
     reformerN21Container.setAttribute('data-event-date', '2026-11-21');
+    // Ran on the 21st, sold out across all four times, and its recap and photo
+    // gallery are both up. Stated rather than left to isEventPast so the
+    // section files under Past on any clock, the same as Sep 26 and Oct 10.
+    reformerN21Container.setAttribute('data-past', 'true');
     reformerContainer.setAttribute('data-event-date', '2026-09-13');
     crContainer.setAttribute('data-event-date', '2026-08-15');
     mcContainer.setAttribute('data-event-date', '2026-08-01');
