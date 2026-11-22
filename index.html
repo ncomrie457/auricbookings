@@ -10118,9 +10118,21 @@ document.addEventListener('DOMContentLoaded', function() {
       // AURIC_CLOSED_EVENTS is the list of dates that were called off.
       var _cc = window.auricClosedCopy ? window.auricClosedCopy(card.getAttribute('data-event-id') || '') : null;
       if (_cc && !_cc.ran) return;
-      // Show once the event date has passed — or immediately when meta.forcePast is
-      // set (e.g. Mat & Chat, whose recap goes up the same evening as the event).
-      if (today <= eventDate && !meta.forcePast) return;
+      // Show once the event date has passed — or immediately when the card is
+      // marked finished, by data-past on the card itself or meta.forcePast
+      // (e.g. Mat & Chat, whose recap goes up the same evening as the event).
+      //
+      // data-past has to count here, and this was the one past-check on the
+      // page that ignored it. `today` is the VIEWER'S midnight, so on the
+      // evening of an event, for anyone west of UTC, today == eventDate and
+      // this returned — the recap video still appeared, because videos never
+      // pass through here, but the photo gallery beside it silently did not.
+      // The gallery was live and correct; it just could not be built until
+      // the reader's own clock rolled over. Every other past-check —
+      // isPastCard, sectionIsPast — reads data-past first, so this one now
+      // does too and the card's own marking decides.
+      var cardForcedPast = card.getAttribute('data-past') === 'true';
+      if (!cardForcedPast && today <= eventDate && !meta.forcePast) return;
       if (manualEventIds[slug]) return; // manual video exists; skip placeholder
       var img = card.querySelector('img');
       var flyer = img ? img.getAttribute('src') : '';
