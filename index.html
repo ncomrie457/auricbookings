@@ -16368,6 +16368,23 @@ document.addEventListener('DOMContentLoaded', function() {
           seen[k] = 1; list.push(g);
         });
         if (!list.length){ restore(); alert('Nobody on this guest list has an email address.'); return; }
+        // The photo page for THIS event, which the email's "Get the photos"
+        // button points at. Remembered per event so a second pass does not
+        // ask again, and asked rather than guessed because each private
+        // event gets its own page. Left blank the button is hidden by
+        // EmailJS, so a party whose photos are not up yet simply does not
+        // show one — better than a button that leads nowhere.
+        var pvLinkKey = 'auric_pv_photolink_' + code, savedLink = '';
+        try { savedLink = localStorage.getItem(pvLinkKey) || ''; } catch(e){}
+        var photoLink = prompt(
+          'Photo download page for “' + (ev.title || code) + '”\n\n'
+          + 'Paste the link guests should get, e.g.\n'
+          + '   https://book.auricmovement.com/fainola\n\n'
+          + 'Leave blank to send the email with no photo button.',
+          savedLink);
+        if (photoLink === null){ restore(); return; }   // cancelled
+        photoLink = photoLink.trim();
+        try { localStorage.setItem(pvLinkKey, photoLink); } catch(e){}
         var dupes = rows.filter(function(g){ return g && g.email; }).length - list.length;
         if (!confirm('Send the thank-you for “' + (ev.title || code) + '” to ' + list.length + ' guest'
                      + (list.length === 1 ? '' : 's') + '?\n\n'
@@ -16393,6 +16410,7 @@ document.addEventListener('DOMContentLoaded', function() {
             host_name:   ev.host_name || '',
             event_date:  ev.event_date || '',
             venue_name:  ev.venue_name || '',
+            photo_link:  photoLink,
             hero_image:  ev.flyer_url || 'https://book.auricmovement.com/og-preview.jpg?v=2'
           }).then(function(){ sent++; next(); }, function(){ failed.push(g.email); next(); });
         })();
