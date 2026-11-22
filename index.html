@@ -12226,12 +12226,26 @@ document.addEventListener('DOMContentLoaded', function() {
       //     never ticked produces an empty-looking Club.
       // Both are now counted and reported above the list.
       var rfRosterError = null, rfUnmarked = 0, rfUnmarkedEvents = {};
+      // Counters for the one-line audit under the list. When somebody says
+      // "the new people are not in the Club", the useful question is which
+      // link of the chain dropped them — the roster came back empty, or it
+      // came back without the attendance column, or the marks are there and
+      // the merge lost them. Guessing at that from outside took three
+      // wrong turns; these numbers answer it in one look.
+      var rfRows = 0, rfWithEmail = 0, rfAttendedRows = 0, rfHasAttendanceCol = false, rfMerged = 0;
       try {
         supabase.rpc('reformer_roster', { pass: ADMIN_PASSWORD }).then(function(r){
           if (r && r.error) rfRosterError = r.error;
           if (r && !r.error){
             var seen = {};
+            rfRows = ((r && r.data) || []).length;
+            // Does the roster function actually hand back the column? A row
+            // that has never been ticked carries null, which is still the
+            // column being present — so look for the KEY, not a value.
+            if (rfRows) rfHasAttendanceCol = Object.prototype.hasOwnProperty.call(r.data[0], 'attendance');
             ((r && r.data) || []).forEach(function(row){
+              if (row && row.email) rfWithEmail++;
+              if (row && row.attendance === 'attended') rfAttendedRows++;
               if (!row || !row.email) return;
               var key = String(row.email).trim().toLowerCase();
               // One attendance mark per event, so multiple sessions never double-count.
@@ -12251,7 +12265,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 rfUnmarkedEvents[_el] = (rfUnmarkedEvents[_el] || 0) + 1;
               }
               if (pts <= 0 && !marks[key]) return;   // nothing to show for them yet
-              if (!marks[key]) marks[key] = { email: row.email, name: row.name || '', count: 0, table: '', code: '', rfId: null, attendedAt: [], referrals: 0 };
+              if (!marks[key]) { marks[key] = { email: row.email, name: row.name || '', count: 0, table: '', code: '', rfId: null, attendedAt: [], referrals: 0 }; rfMerged++; }
               if (!marks[key].attendedAt) { marks[key].attendedAt = []; marks[key].referrals = 0; }
               // Keep a reformer row id so "+½ ref" has somewhere to write.
               if (!marks[key].rfId) marks[key].rfId = row.id;
@@ -12282,10 +12296,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 + '<span style="color:#8a7340;">' + _parts.join(' &middot; ') + '</span>'
                 + '</div>';
       }
+      // The audit line. Plain numbers, always shown, so the next time this
+      // list looks short the answer is on screen instead of guessed at.
+      var audit = '<div style="font-size:.7rem;color:var(--text-muted);margin:.1rem 0 .7rem;line-height:1.6;">'
+        + 'Reformer roster: <strong>' + rfRows + '</strong> rows &middot; '
+        + '<strong>' + rfWithEmail + '</strong> with an email &middot; '
+        + '<strong>' + rfAttendedRows + '</strong> ticked attended &middot; '
+        + 'attendance column ' + (rfHasAttendanceCol ? 'present' : '<strong style="color:#b23a2e;">MISSING</strong>') + ' &middot; '
+        + '<strong>' + rfMerged + '</strong> added to this list'
+        + '</div>';
       var arr = Object.keys(marks).map(function(k){ return marks[k]; });
-      if (!arr.length){ box.innerHTML = notice + '<div style="color:var(--text-muted);font-size:.82rem;padding:.5rem;">No attendance marks yet. Tap &ldquo;&#9711; Attended&rdquo; on someone in the lists above to give them a mark.</div>'; return; }
+      if (!arr.length){ box.innerHTML = notice + audit + '<div style="color:var(--text-muted);font-size:.82rem;padding:.5rem;">No attendance marks yet. Tap &ldquo;&#9711; Attended&rdquo; on someone in the lists above to give them a mark.</div>'; return; }
       arr.sort(function(a,b){ return b.count - a.count; });
-      var html = notice + '<table style="width:100%;border-collapse:collapse;font-size:.82rem;"><tr style="text-align:left;color:var(--gold-text);border-bottom:1px solid var(--border);"><th style="padding:.4rem;">Member</th><th>Marks</th><th>Status</th><th></th></tr>';
+      var html = notice + audit + '<table style="width:100%;border-collapse:collapse;font-size:.82rem;"><tr style="text-align:left;color:var(--gold-text);border-bottom:1px solid var(--border);"><th style="padding:.4rem;">Member</th><th>Marks</th><th>Status</th><th></th></tr>';
       arr.forEach(function(m){
         var earned = Math.floor(m.count/10);
         var prog = m.count % 10;
