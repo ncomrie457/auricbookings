@@ -33,6 +33,10 @@
      {{event_title}}  — e.g. "Fainola's Birthday Celebration"
      {{host_name}}    — e.g. "Fainola"
      {{hero_image}}   — the event's flyer
+     {{photo_link}}   — this event's photo download page, e.g.
+                        https://book.auricmovement.com/fainola
+                        The admin panel asks for it when you hit
+                        "Thank-you to all" and remembers it per event.
 
    SEASONAL: the holiday block is the only dated thing in this file.
    Delete that whole <tr> in January.
@@ -88,9 +92,26 @@
               <tr>
                 <td style="padding:22px 26px;" align="center">
                   <div style="font-size:22px;line-height:1;">&#128247;</div>
-                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#6a3ca5;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin:10px 0 8px;">Photos</div>
-                  <p style="font-family:Georgia,serif;font-size:15px;line-height:1.7;color:#3a2f26;margin:0;">
-                    Photos go up soon. Posting yours? Tag <strong style="color:#6a3ca5;">@auricmovement</strong> &mdash; we&rsquo;d love to share them.
+                  <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#6a3ca5;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin:10px 0 8px;">Your Photos</div>
+                  <p style="font-family:Georgia,serif;font-size:15px;line-height:1.7;color:#3a2f26;margin:0 0 16px 0;">
+                    The photos are ready &mdash; they&rsquo;re yours to keep. Save the ones you like, or grab them all at once.
+                  </p>
+                  <!-- {{photo_link}} is the event's own download page, e.g.
+                       book.auricmovement.com/fainola. One page per private
+                       event, so this template stays date-neutral: put the new
+                       event's link into the panel and nothing here changes.
+                       If an event has no page yet, send the link empty and
+                       swap this box back to the old "photos go up soon" line
+                       rather than mailing a button that goes nowhere. -->
+                  <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto 14px;">
+                    <tr>
+                      <td style="background-color:#6a3ca5;border-radius:8px;">
+                        <a href="{{photo_link}}" style="display:block;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;padding:13px 30px;">&#11015; Get the photos</a>
+                      </td>
+                    </tr>
+                  </table>
+                  <p style="font-family:Georgia,serif;font-size:14px;line-height:1.7;color:#7a6a55;margin:0;">
+                    Posting yours? Tag <strong style="color:#6a3ca5;">@auricmovement</strong> &mdash; we&rsquo;d love to share them.
                   </p>
                 </td>
               </tr>
@@ -126,6 +147,24 @@
               Thinking of doing something like this for your own celebration? We host private groups all year &mdash; just reply to this email and we&rsquo;ll talk it through.
             </p>
             <a href="https://book.auricmovement.com/partner" style="display:inline-block;background-color:#f6f0e4;border:1px solid #d9cba6;color:#6a3ca5;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:13px 30px;border-radius:8px;">Host Your Own &rarr;</a>
+          </td>
+        </tr>
+
+        <!-- Future dates. Deliberately AFTER "host your own" and before the
+             holidays: a guest at somebody else's party is not a lead, so the
+             public dates are offered as an invitation rather than a pitch.
+             The link is the Riddim & Kompa interest list, which is where the
+             next public dates are announced first. -->
+        <tr>
+          <td align="center" style="padding:22px 42px 10px;">
+            <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#6a3ca5;letter-spacing:3px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">Coming Up</div>
+            <p style="font-family:Georgia,serif;font-size:15px;line-height:1.7;color:#3a2f26;margin:0 0 6px 0;">
+              If the class was your first taste of Auric Movement &mdash; we run public events too, and <strong>new dates are coming in the new year</strong>.
+            </p>
+            <p style="font-family:Georgia,serif;font-size:14px;line-height:1.7;color:#7a6a55;margin:0 0 16px 0;">
+              Join the list and you&rsquo;ll hear the next date before it&rsquo;s public.
+            </p>
+            <a href="https://book.auricmovement.com/riddim-interest" style="display:inline-block;background-color:#f6f0e4;border:1px solid #d9cba6;color:#6a3ca5;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:13px 30px;border-radius:8px;">&#10022; Get the next date first</a>
           </td>
         </tr>
 
