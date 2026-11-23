@@ -9756,8 +9756,7 @@ document.addEventListener('DOMContentLoaded', function() {
     turkey: {
       title:  'Pre-Turkey Burn Recap',
       date:   'November 22, 2026',
-      // soldOut deliberately not set — same reason as PAST_EVENT_META.turkey
-      // below: it is not known that both times filled.
+      soldOut: true,            // confirmed by Niara, Nov 22
       cover:  'turkey-n22-01.jpg',
       // Ordered people first, then the room — the file numbers are not in
       // display order because 05-07 arrived after 01-04 were already
@@ -9926,9 +9925,10 @@ document.addEventListener('DOMContentLoaded', function() {
     },
     turkey: {
       title:   'Pre-Turkey Burn on the Reformer',
-      // soldOut deliberately not set — it is not known that both times
-      // filled, and claiming sold out when it was not is worse than
-      // saying nothing. Add `soldOut: true` here if they did.
+      // Confirmed by Niara on Nov 22. Set here as well as on the gallery so
+      // the two cannot disagree: the gallery's own soldOut is what draws the
+      // chip today, and this is the fallback if the photos ever come down.
+      soldOut: true,
       //
       // forcePast because the recap went up the evening of the event. Both
       // times had run by then, and without this the card sits under
