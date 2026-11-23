@@ -12929,22 +12929,32 @@ document.addEventListener('DOMContentLoaded', function() {
       if (allPast) pvSection.setAttribute('data-past','true');
       else pvSection.removeAttribute('data-past');
 
-      // Walk body's own dated sections and drop in at the right point.
-      // Upcoming run soonest-first and sit above the interest lists; past
-      // run most-recent-first and sit below them, so each group is scanned
-      // with its own comparison and the fallback anchor differs too.
+      // Where it lands differs by group, on purpose.
+      //
+      // Finished: the HEAD of the past group, above every past roster
+      // whatever their dates. Sorted strictly by date it slotted between
+      // two rosters a day either side of it and was a thing to hunt for.
+      // It is not one event — it is the box holding every private event
+      // and the button that makes new ones — so it reads better as the
+      // first thing under the live sections than as one row in a date
+      // list. This is why Fainola's Nov 21 sits above the Nov 22
+      // Pre-Turkey Burn rather than under it.
+      //
+      // Live: still sorted by date among the upcoming rosters, where a
+      // private event genuinely is one date among others competing for
+      // the same weekend.
       var anchor = allPast ? archivedContainer : riddimContainer;
-      if (when) {
-        var kids = Array.prototype.slice.call(body.children);
-        for (var i = 0; i < kids.length; i++){
-          var el = kids[i];
-          if (el === pvSection) continue;
-          var ds = el.getAttribute && el.getAttribute('data-event-date');
-          if (!ds) continue;
-          if (sectionIsPast(el) !== allPast) continue;
-          var d = new Date(ds + 'T00:00:00'); if (isNaN(d)) continue;
-          if (allPast ? (d < when) : (d > when)) { anchor = el; break; }
-        }
+      var kids = Array.prototype.slice.call(body.children);
+      for (var i = 0; i < kids.length; i++){
+        var el = kids[i];
+        if (el === pvSection) continue;
+        var ds = el.getAttribute && el.getAttribute('data-event-date');
+        if (!ds) continue;
+        if (sectionIsPast(el) !== allPast) continue;
+        if (allPast) { anchor = el; break; }          // first past section wins
+        if (!when) continue;
+        var d = new Date(ds + 'T00:00:00'); if (isNaN(d)) continue;
+        if (d > when) { anchor = el; break; }
       }
       if (anchor && anchor.parentNode === body) body.insertBefore(pvSection, anchor);
       else body.appendChild(pvSection);
