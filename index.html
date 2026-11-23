@@ -11773,9 +11773,11 @@ document.addEventListener('DOMContentLoaded', function() {
       adminPanel.classList.add('visible');
       renderAdmin();
       if (typeof refreshAdminBadgeToggles === 'function') { try{ refreshAdminBadgeToggles(); }catch(e){} }
-      // Private events live outside admin-body, so renderAdmin does not draw
-      // them. Without this the list only ever filled in after saving or
-      // deleting one, and an event created in an earlier visit looked missing.
+      // renderAdmin places the private-events box but does not fill it —
+      // its rows come from Supabase. Without this the list only ever filled
+      // in after saving or deleting one, and an event created in an earlier
+      // visit looked missing. It is also what tells the panel where the box
+      // belongs, since that depends on the rows.
       if (typeof pvRefresh === 'function') { try{ pvRefresh(); }catch(e){} }
       // Same reason pvRefresh is here: the private events the reminder picker
       // offers are the ones that exist right now, not the ones that existed
@@ -12750,6 +12752,12 @@ document.addEventListener('DOMContentLoaded', function() {
   function renderAdmin(){
     renderVendorStatus();
     var body=document.getElementById('admin-body');
+    // Grabbed BEFORE the clear below. Once the private section has been
+    // moved into the panel body it is one of body's children, and
+    // innerHTML='' would detach it on every re-render — getElementById
+    // after the clear would then find nothing. Holding the node keeps it
+    // alive through the clear so it can be put back.
+    var pvSection = document.getElementById('admin-private-section');
     body.innerHTML='';
     document.getElementById('admin-notify-list-body').innerHTML='<div style="text-align:center;padding:.5rem;color:var(--text-muted);font-size:.82rem;">Loading...</div>';
 
@@ -12875,6 +12883,76 @@ document.addEventListener('DOMContentLoaded', function() {
         c.style.display = show ? '' : 'none';
       });
     }
+    // ── The private-events box joins the ordering ────────────────────────
+    // It used to be pinned above the tab nav, so a finished private event
+    // sat at the very top of the panel however it was labelled. It is a
+    // list rather than one event, so it carries the date of whichever of
+    // its events matters now — the soonest still to come while any are
+    // live, the most recent once they are all done — and sorts on that
+    // like every other section.
+    //
+    // Re-placed rather than placed once: the list loads from Supabase
+    // after this runs, so at this point pvEventRows is usually empty and
+    // the box would otherwise be stuck wherever that first guess put it.
+    // pvRefresh calls back here when the rows arrive.
+    function pvSectionDate(e){
+      var d = pvParseLooseDate(e.event_date);
+      if (d) return d;
+      if (e.closes_at){ var c = new Date(String(e.closes_at).slice(0,10) + 'T00:00:00'); if(!isNaN(c)) return c; }
+      return null;
+    }
+    function placePrivateSection(){
+      if(!pvSection) return;
+      var rows = Object.keys(pvEventRows).map(function(k){ return pvEventRows[k]; });
+      var live = rows.filter(function(e){ return !pvIsPastEvent(e); });
+      // No events at all counts as live: the box still holds "+ New private
+      // event", and burying the only way to create one under the finished
+      // sections would be a strange place to leave it.
+      var allPast = rows.length > 0 && live.length === 0;
+      var pick = (live.length ? live : rows).map(pvSectionDate).filter(Boolean).sort(function(a,b){ return a - b; });
+      var when = pick.length ? (allPast ? pick[pick.length-1] : pick[0]) : null;
+
+      // Deliberately NOT data-event-date. The Show-events filter hides every
+      // element carrying that attribute whose side it is not on, and this
+      // box holds "+ New private event" — the only way to create one. Left
+      // filterable, picking "Recent / upcoming" after the last private event
+      // finished would hide the button with no hint as to where it went.
+      // Position comes from the insert below, not from the attribute, so
+      // leaving it off costs nothing. data-pv-date is for reading in
+      // devtools; nothing keys off it.
+      if (when) {
+        pvSection.setAttribute('data-pv-date',
+          when.getFullYear() + '-' + String(when.getMonth()+1).padStart(2,'0') + '-' + String(when.getDate()).padStart(2,'0'));
+      } else {
+        pvSection.removeAttribute('data-pv-date');
+      }
+      if (allPast) pvSection.setAttribute('data-past','true');
+      else pvSection.removeAttribute('data-past');
+
+      // Walk body's own dated sections and drop in at the right point.
+      // Upcoming run soonest-first and sit above the interest lists; past
+      // run most-recent-first and sit below them, so each group is scanned
+      // with its own comparison and the fallback anchor differs too.
+      var anchor = allPast ? archivedContainer : riddimContainer;
+      if (when) {
+        var kids = Array.prototype.slice.call(body.children);
+        for (var i = 0; i < kids.length; i++){
+          var el = kids[i];
+          if (el === pvSection) continue;
+          var ds = el.getAttribute && el.getAttribute('data-event-date');
+          if (!ds) continue;
+          if (sectionIsPast(el) !== allPast) continue;
+          var d = new Date(ds + 'T00:00:00'); if (isNaN(d)) continue;
+          if (allPast ? (d < when) : (d > when)) { anchor = el; break; }
+        }
+      }
+      if (anchor && anchor.parentNode === body) body.insertBefore(pvSection, anchor);
+      else body.appendChild(pvSection);
+      applyAdminEventFilter(adminEventFilterValue);
+    }
+    window.auricPlacePrivateSection = placePrivateSection;
+    placePrivateSection();
+
     var _afs = adminFilterBar.querySelector('#admin-event-filter-select');
     if(_afs){ _afs.value = adminEventFilterValue; _afs.addEventListener('change', function(){ applyAdminEventFilter(_afs.value); }); }
     applyAdminEventFilter(adminEventFilterValue);
@@ -16306,6 +16384,35 @@ document.addEventListener('DOMContentLoaded', function() {
   // LIMIT: a date more than six months ahead and written without a year
   // reads as last year's and would file as past. Set "Registration closes"
   // on that event — it takes precedence over this.
+  // Is one private event finished? Used in two places — the list, which
+  // drops past events under their own heading, and the panel, which sorts
+  // the whole box by whether anything in it is still live — so it lives
+  // here rather than in either of them. The two must never disagree about
+  // what "past" means.
+  //
+  // In precedence order, because the first two are stated and the third is
+  // inferred:
+  //   1. closes_at — a real date field. If it is set it decides, both ways:
+  //      a future close date keeps an event live even when the written date
+  //      has passed, which is what a moved event needs.
+  //   2. switched off — the explicit "this is done" lever.
+  //   3. the written date — free text, read as best it can be. Unreadable
+  //      means live, never past: filing an upcoming event under Past is the
+  //      worse mistake.
+  //
+  // The written date is why this exists at all. The private events here
+  // carry a date and no close date, so without reading it one that
+  // finished yesterday sat with the ones still selling.
+  function pvIsPastEvent(e){
+    if (!e) return false;
+    if (e.closes_at) return isEventPast(String(e.closes_at).slice(0,10));
+    if (!e.active) return true;
+    var d = pvParseLooseDate(e.event_date);
+    if (!d) return false;
+    var today = new Date(); today.setHours(0,0,0,0);
+    return today > d;
+  }
+
   var PV_MONTHS = { jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11 };
   function pvParseLooseDate(text){
     if(!text) return null;
@@ -16384,32 +16491,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var rows = res.data || [];
       rows.forEach(function(e){ pvEventRows[e.code] = e; });
       if (!rows.length){ list.innerHTML = '<div style="font-size:.78rem;color:#8a7d9b;">None yet.</div>'; return; }
-      // Finished private events drop to the bottom under their own heading,
-      // the same as the dated sections in the panel.
-      //
-      // In precedence order, because the first two are stated and the third
-      // is inferred:
-      //   1. closes_at — a real date field. If it is set it decides, both
-      //      ways: a future close date keeps an event live even when the
-      //      written date has passed, which is what you want for one that
-      //      moved.
-      //   2. switched off — the explicit "this is done" lever.
-      //   3. the written date — free text ("Saturday, March 14"), read as
-      //      best it can be. Unreadable means live, never past: filing an
-      //      upcoming event under Past is the worse mistake.
-      //
-      // The written date is why this exists at all. Niara's private events
-      // carry a date and no close date, so without reading it an event that
-      // finished yesterday sat with the ones still selling.
-      function pvIsPast(e){
-        if (e.closes_at) return isEventPast(String(e.closes_at).slice(0,10));
-        if (!e.active) return true;
-        var d = pvParseLooseDate(e.event_date);
-        if (!d) return false;
-        var today = new Date(); today.setHours(0,0,0,0);
-        return today > d;
-      }
-      var pvPast = rows.filter(pvIsPast), pvLive = rows.filter(function(e){ return !pvIsPast(e); });
+      var pvPast = rows.filter(pvIsPastEvent), pvLive = rows.filter(function(e){ return !pvIsPastEvent(e); });
       function pvCard(e, past){
         var link = window.location.origin + '/private?c=' + e.code;
         return '<div style="background:#fff;border:1px solid #d4bff4;border-radius:8px;padding:.55rem .75rem;margin-bottom:.4rem;'
@@ -16452,6 +16534,10 @@ document.addEventListener('DOMContentLoaded', function() {
             ? '<div style="font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#8a7d9b;border-top:1px solid #d4bff4;margin:.8rem 0 .5rem;padding-top:.6rem;">Past events</div>'
             : '')
         + pvPast.map(function(e){ return pvCard(e, true); }).join('');
+      // The rows are only known now, so this is the first moment the panel
+      // can tell whether the box belongs with the upcoming sections or the
+      // finished ones. Harmless before the panel has rendered.
+      if (typeof window.auricPlacePrivateSection === 'function') window.auricPlacePrivateSection();
     });
   };
 
