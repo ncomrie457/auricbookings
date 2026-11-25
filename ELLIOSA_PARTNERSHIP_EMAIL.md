@@ -84,16 +84,6 @@ auricmovement@outlook.com
 - **Do Elliosa make grip socks?** The fourth paragraph turns on it. If
   they make regular socks, cut that paragraph — a brand will know, and
   a pitch built on a wrong premise is worse than a plain one.
-- **Add the guest count.** The event, date and venue are in now. The
-  one number missing is how many people were actually in the room on
-  Nov 22 — "a sold-out Friendsgiving reformer class, 18 guests" is
-  stronger than the sentence without it, and you are the only one who
-  knows it. Drop it in after "Valley Studio".
-
-  (Related: the site still describes Nov 22 as "two sessions" while the
-  booking page had three slots. Whichever is right, use the same number
-  in both places — a brand that clicks through should not find a
-  different story to the one in the email.)
 - **"Our last three reformer dates sold out"** — Sep 13, Nov 21 and
   Nov 22 are all marked sold out on the site. Just confirm that's the
   claim you want in writing.
