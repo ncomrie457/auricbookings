@@ -2,12 +2,13 @@
 
 **To:** hello@elliosa.com
 **From:** auricmovement@outlook.com
-**Subject:** Grip socks sold themselves at our sold-out Nov 22 class — partnership?
+**Subject:** Your socks sold themselves at our sold-out Nov 22 class
 
-> Leads with proof, not with the ask. A brand reads "I already bought
-> this category with my own money, my guests loved it, and they're
-> going out to buy their own" very differently from "would you send us
-> free product." The ask comes after.
+> Leads with proof, not with the ask — and the proof is about THEIR
+> product, not the category. "I bought your socks with my own money,
+> my guests loved them, and they're going back for more" is the single
+> strongest thing a brand can be told by a stranger. Everything else in
+> this email is supporting material. The ask comes after.
 
 ---
 
@@ -22,12 +23,15 @@ and Maison Luxe in Brooklyn, plus mat and wellness events in the city.
 Small rooms on purpose: six people per reformer session, two to four
 sessions a date. Our last three reformer dates sold out.
 
-Here's why I'm writing. On November 22 we ran a sold-out Friendsgiving
-reformer class at Valley Studio. I bought grip socks for every guest
-out of my own pocket and put them in the goodie bags. They were the
-most talked-about thing in the bag — and several guests have since
-told me they're going out to buy more for themselves. I've run these
-events with a lot of brands in the bag. That reaction is rare.
+Here's why I'm writing: you already worked in my room, and you didn't
+know about it.
+
+On November 22 we ran a sold-out Friendsgiving reformer class at
+Valley Studio. I bought Elliosa socks for every guest, out of my own
+pocket, and put a pair in each goodie bag. They were the most
+talked-about thing in the bag — and several guests have since told me
+they're going back to buy their own. I've put a lot of brands in those
+bags. That reaction is rare, and it was yours.
 
 You can see the room that morning here:
 book.auricmovement.com/turkey-photos
@@ -39,8 +43,9 @@ front desk before they can get on the machine. So a pair in the bag
 isn't a sample that ends up in a drawer — it's worn that morning,
 photographed in the room, and used every week after.
 
-Which is a long way of saying: I'd like the next pairs to be Elliosa's.
-Would you be open to sending a run of socks for an upcoming date?
+So I'd like to keep putting Elliosa in those bags — for more than one
+room at a time, which is more than I can fund myself. Would you be
+open to sending a run for an upcoming date?
 
 **What partners get from us:**
 
@@ -76,14 +81,10 @@ auricmovement@outlook.com
 
 ## Check before you send
 
-- **Were the socks you bought Elliosa's?** If so, say it outright — it
-  is a far stronger line than the one above. Something like: *"The
-  socks I bought were yours. My guests loved them, and several are
-  going back for more."* A brand will take a meeting on that sentence
-  alone. Tell me and I'll rewrite it that way.
-- **Do Elliosa make grip socks?** The fourth paragraph turns on it. If
-  they make regular socks, cut that paragraph — a brand will know, and
-  a pitch built on a wrong premise is worse than a plain one.
+- **Were they grip socks?** The "required at our studios" paragraph
+  turns on it. If what you bought were their regular socks, cut that
+  paragraph — the proof above it stands on its own and does not need
+  the argument.
 - **"Our last three reformer dates sold out"** — Sep 13, Nov 21 and
   Nov 22 are all marked sold out on the site. Just confirm that's the
   claim you want in writing.
@@ -97,9 +98,10 @@ auricmovement@outlook.com
 
 ## If there's no reply in 10 days
 
-> Hi — following up on the note below. Short version: I bought grip
-> socks for our sold-out Nov 22 class, my guests loved them enough to
-> go buy their own, and I'd like the next pairs to be Elliosa's. Happy to start with
+> Hi — following up on the note below. Short version: I bought Elliosa
+> socks for our sold-out Nov 22 class with my own money, my guests
+> loved them enough to go buy their own, and I'd like to keep putting
+> you in the bag. Happy to start with
 > a single date if that's easier to say yes to. If partnerships aren't
 > open right now, no problem at all — just say and I'll stop filling
 > your inbox. 🤍
