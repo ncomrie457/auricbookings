@@ -29,7 +29,7 @@ most talked-about thing in the bag — and several guests have since
 told me they're going out to buy more for themselves. I've run these
 events with a lot of brands in the bag. That reaction is rare.
 
-You can see that exact room, and those bags, here:
+You can see the room that morning here:
 book.auricmovement.com/turkey-photos
 
 It makes sense when you look at the room: grip socks are *required* at
@@ -97,9 +97,13 @@ auricmovement@outlook.com
 - **"Our last three reformer dates sold out"** — Sep 13, Nov 21 and
   Nov 22 are all marked sold out on the site. Just confirm that's the
   claim you want in writing.
-- ~~Link a recap.~~ Done — /turkey-photos is in the email now, and it
-  happens to be the very event you're describing. They'll look at that
-  before they read a word, which is exactly what you want.
+- **A photo of the bag with the socks in it would be worth more than
+  the rest of this email.** The recap page shows the room, the people
+  and the food table, but no close-up of a goodie bag, so the email
+  only claims the room. If you have one on your phone, attach it. If
+  not, a leftover pair photographed next to a bag and a reformer takes
+  two minutes and does the same job — a brand wants to see their
+  category sitting in the thing you're describing.
 
 ## If there's no reply in 10 days
 
